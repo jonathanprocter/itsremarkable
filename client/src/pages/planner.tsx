@@ -758,16 +758,31 @@ export default function Planner() {
           break;
 
         case 'bidirectional-weekly-package':
-          console.log('🔗 BIDIRECTIONAL WEEKLY PACKAGE EXPORT STARTING...');
+          console.log('🔗 ENHANCED BIDIRECTIONAL WEEKLY PACKAGE EXPORT STARTING...');
           try {
             const weekStart = currentWeek[0]?.date || new Date();
             const weekEnd = currentWeek[6]?.date || new Date();
             console.log(`📅 Week range: ${weekStart.toDateString()} to ${weekEnd.toDateString()}`);
             console.log(`📊 Events count: ${allEvents.length}`);
-            await exportLinkedWeeklyPackage(weekStart, weekEnd, allEvents);
-            console.log('✅ Bidirectional weekly package export completed');
+            
+            const filename = await exportLinkedWeeklyPackage(weekStart, weekEnd, allEvents);
+            
+            console.log('✅ Enhanced bidirectional weekly package export completed');
+            console.log(`📄 Generated: ${filename}`);
+            console.log('🔗 Single PDF with clickable navigation between all 8 pages');
+            
+            toast({
+              title: "Export Complete",
+              description: `Bidirectional weekly package saved as ${filename}`,
+              variant: "default"
+            });
           } catch (error) {
-            console.error('❌ Bidirectional weekly package export failed:', error);
+            console.error('❌ Enhanced bidirectional weekly package export failed:', error);
+            toast({
+              title: "Export Failed",
+              description: "Failed to create bidirectional weekly package. Check console for details.",
+              variant: "destructive"
+            });
             throw error;
           }
           break;
