@@ -58,6 +58,13 @@ export const exportBidirectionalWeeklyPackage = async (
 
     console.log('🔍 Audit validation:', auditResults);
 
+    // Initialize PDF in landscape mode for the weekly overview
+    const pdf = new jsPDF({
+      orientation: 'landscape',
+      unit: 'pt',
+      format: 'letter'
+    });
+
     // Filter events for the current week
     const weekEvents = events.filter(event => {
       const eventDate = new Date(event.startTime);
@@ -67,7 +74,12 @@ export const exportBidirectionalWeeklyPackage = async (
     console.log('📊 Week events:', weekEvents.length);
 
     // PAGE 1: Weekly Overview (Landscape)
-    await generateWeeklyOverviewPage(pdf, weekStartDate, weekEndDate, weekEvents);
+    const eventMap = await generateWeeklyOverviewPage(
+      pdf,
+      weekStartDate,
+      weekEndDate,
+      weekEvents
+    );
 
     // PAGES 2-8: Daily Pages (Portrait)
     for (let dayIndex = 0; dayIndex < 7; dayIndex++) {
@@ -81,7 +93,15 @@ export const exportBidirectionalWeeklyPackage = async (
 
       // Add new page for daily view
       pdf.addPage('letter', 'portrait');
-      await generateDailyPage(pdf, currentDate, dayEvents, dayIndex, weekStartDate, weekEndDate);
+      await generateDailyPage(
+        pdf,
+        currentDate,
+        dayEvents,
+        dayIndex,
+        weekStartDate,
+        weekEndDate,
+        eventMap
+      );
     }
 
     // Generate filename
@@ -109,8 +129,11 @@ async function generateWeeklyOverviewPage(
   weekStartDate: Date,
   weekEndDate: Date,
   events: CalendarEvent[]
-) {
+): Promise<Record<string, { x: number; y: number; width: number; height: number }>> {
   const config = PACKAGE_CONFIG.weekly;
+
+  // Map of event positions for linking from daily pages
+  const eventMap: Record<string, { x: number; y: number; width: number; height: number }> = {};
 
   // Page setup
   pdf.setFillColor(255, 255, 255);
@@ -247,6 +270,7 @@ async function generateWeeklyOverviewPage(
 
         // Link the event block to its daily page
         pdf.link(eventX + 1, eventY + 1, eventWidth - 2, eventHeight - 2, { pageNumber: adjustedDay + 2 });
+
       }
     }
   });
@@ -256,18 +280,9 @@ async function generateWeeklyOverviewPage(
   pdf.setFontSize(10);
   pdf.text('Navigation: Pages 2-8 contain detailed daily views', config.width / 2, config.height - 35, { align: 'center' });
 
-  // Simple day buttons for quick access
-  const navDays = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-  const btnWidth = 40;
-  const startX = config.width / 2 - (btnWidth * 7 + 6 * 5) / 2;
-  const btnY = config.height - 25;
 
-  for (let i = 0; i < 7; i++) {
-    const x = startX + i * (btnWidth + 5);
-    pdf.rect(x, btnY, btnWidth, 15, 'S');
-    pdf.text(navDays[i], x + btnWidth / 2, btnY + 10, { align: 'center' });
-    pdf.link(x, btnY, btnWidth, 15, { pageNumber: i + 2 });
-  }
+  return eventMap;
+
 }
 
 /**
@@ -280,7 +295,8 @@ async function generateDailyPage(
   events: CalendarEvent[],
   dayIndex: number,
   weekStartDate: Date,
-  weekEndDate: Date
+  weekEndDate: Date,
+  eventMap: Record<string, { x: number; y: number; width: number; height: number }>
 ) {
   const config = PACKAGE_CONFIG.daily;
 
@@ -441,6 +457,11 @@ async function generateDailyPage(
       pdf.setFontSize(10);
       pdf.text(event.source || 'Manual', eventX + 8, eventY + 28);
       pdf.text(timeRange, eventX + 8, eventY + 41);
+
+      // Link this event back to the weekly overview
+      if (eventMap[event.id]) {
+        pdf.link(eventX, eventY, eventWidth, eventHeight, { pageNumber: 1 });
+      }
     }
   });
 
