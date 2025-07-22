@@ -372,7 +372,10 @@ export const DailyView = ({
   };
 
   const getDayNavigationName = (date: Date) => {
-    return date.toLocaleDateString('en-US', { weekday: 'long' });
+    const weekday = date.toLocaleDateString('en-US', { weekday: 'short' });
+    const month = date.toLocaleDateString('en-US', { month: 'short' });
+    const day = date.getDate();
+    return `${weekday} ${month} ${day}`;
   };
 
   const getPreviousDay = () => {
