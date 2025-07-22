@@ -714,11 +714,11 @@ export function registerRoutes(app: Express) {
       const { promisify } = await import('util');
       const execAsync = promisify(exec);
       
-      // Prepare command arguments
+      // Prepare command arguments using the existing PyMyPDF template
       const eventsArg = typeof events === 'string' ? events : JSON.stringify(events);
       const pythonCommand = `python3 pymypdf_bidirectional_export.py "${eventsArg}" "${weekStart}" "${weekEnd}"`;
       
-      console.log(`🔧 Executing: ${pythonCommand.substring(0, 100)}...`);
+      console.log(`🔧 Executing existing PyMyPDF template: ${pythonCommand.substring(0, 100)}...`);
       
       // Execute Python script
       const { stdout, stderr } = await execAsync(pythonCommand);

@@ -17,12 +17,20 @@ try:
     from pymypdf.generic import DictionaryObject, ArrayObject, TextStringObject, FloatObject, NameObject
     PYMYPDF_AVAILABLE = True
 except ImportError:
-    print("PyMyPDF not available, using fallback implementation")
+    print("PyMyPDF not available, using reportlab fallback implementation")
     PYMYPDF_AVAILABLE = False
+    try:
+        from reportlab.pdfgen import canvas
+        from reportlab.lib.pagesizes import letter, A4
+        from reportlab.lib import colors
+        REPORTLAB_AVAILABLE = True
+    except ImportError:
+        print("ReportLab not available either, using basic text export")
+        REPORTLAB_AVAILABLE = False
 
 def create_bidirectional_linked_pdf(events_data, week_start_str, week_end_str):
     """
-    Creates a single PDF with bidirectional navigation using PyMyPDF
+    Creates a single PDF with bidirectional navigation using available libraries
     
     Args:
         events_data: JSON string containing calendar events
@@ -30,7 +38,7 @@ def create_bidirectional_linked_pdf(events_data, week_start_str, week_end_str):
         week_end_str: ISO date string for week end
     
     Returns:
-        str: Filename of generated PDF
+        str: Filename of generated PDF or text file
     """
     
     try:
@@ -42,58 +50,133 @@ def create_bidirectional_linked_pdf(events_data, week_start_str, week_end_str):
         print(f"🔗 Creating bidirectional PDF for week {week_start.strftime('%Y-%m-%d')} to {week_end.strftime('%Y-%m-%d')}")
         print(f"📊 Processing {len(events)} events")
         
-        # Create PDF writer
-        writer = PdfWriter()
-        
         # Generate filename
         week_str = week_start.strftime('%Y-%m-%d')
-        filename = f"bidirectional_weekly_planner_{week_str}.pdf"
         
-        # Create temporary files for individual pages
-        temp_files = []
-        
-        # Create weekly overview page (Page 1)
-        weekly_pdf = create_weekly_overview_page(events, week_start, week_end)
-        temp_files.append(weekly_pdf)
-        
-        # Create daily pages (Pages 2-8)
-        for day_offset in range(7):
-            current_date = week_start + timedelta(days=day_offset)
-            daily_pdf = create_daily_page(events, current_date, day_offset + 2)
-            temp_files.append(daily_pdf)
-        
-        # Combine all pages and add navigation links
-        for i, temp_file in enumerate(temp_files):
-            reader = PdfReader(temp_file)
-            page = reader.pages[0]
-            
-            # Add navigation links based on page type
-            if i == 0:  # Weekly overview page
-                add_weekly_navigation_links(page, writer)
-            else:  # Daily pages
-                add_daily_navigation_links(page, writer, i + 1, current_date)
-            
-            writer.add_page(page)
-        
-        # Save the final PDF
-        with open(filename, 'wb') as output_file:
-            writer.write(output_file)
-        
-        # Clean up temporary files
-        for temp_file in temp_files:
-            try:
-                os.unlink(temp_file)
-            except:
-                pass
-        
-        print(f"✅ Successfully created {filename}")
-        print(f"📄 Generated single PDF with 8 pages and bidirectional navigation")
-        
-        return filename
+        if PYMYPDF_AVAILABLE:
+            return create_pymypdf_version(events, week_start, week_end, week_str)
+        elif globals().get('REPORTLAB_AVAILABLE', False):
+            return create_reportlab_version(events, week_start, week_end, week_str)
+        else:
+            return create_text_version(events, week_start, week_end, week_str)
         
     except Exception as e:
         print(f"❌ Error creating bidirectional PDF: {str(e)}")
         raise e
+
+def create_pymypdf_version(events, week_start, week_end, week_str):
+    """Create PDF using PyMyPDF"""
+    
+    # Create PDF writer
+    writer = PdfWriter()
+    filename = f"bidirectional_weekly_planner_{week_str}.pdf"
+    
+    # Create temporary files for individual pages
+    temp_files = []
+    
+    # Create weekly overview page (Page 1)
+    weekly_pdf = create_weekly_overview_page(events, week_start, week_end)
+    temp_files.append(weekly_pdf)
+    
+    # Create daily pages (Pages 2-8)
+    for day_offset in range(7):
+        current_date = week_start + timedelta(days=day_offset)
+        daily_pdf = create_daily_page(events, current_date, day_offset + 2)
+        temp_files.append(daily_pdf)
+    
+    # Combine all pages and add navigation links
+    for i, temp_file in enumerate(temp_files):
+        reader = PdfReader(temp_file)
+        page = reader.pages[0]
+        
+        # Add navigation links based on page type
+        if i == 0:  # Weekly overview page
+            add_weekly_navigation_links(page, writer)
+        else:  # Daily pages
+            add_daily_navigation_links(page, writer, i + 1, current_date)
+        
+        writer.add_page(page)
+    
+    # Save the final PDF
+    with open(filename, 'wb') as output_file:
+        writer.write(output_file)
+    
+    # Clean up temporary files
+    for temp_file in temp_files:
+        try:
+            os.unlink(temp_file)
+        except:
+            pass
+    
+    print(f"✅ Successfully created {filename}")
+    print(f"📄 Generated single PDF with 8 pages and bidirectional navigation")
+    
+    return filename
+
+def create_text_version(events, week_start, week_end, week_str):
+    """Create text-based weekly planner as fallback"""
+    
+    filename = f"bidirectional_weekly_planner_{week_str}.txt"
+    
+    with open(filename, 'w', encoding='utf-8') as f:
+        f.write("BIDIRECTIONAL WEEKLY PLANNER\n")
+        f.write("=" * 50 + "\n\n")
+        f.write(f"Week: {week_start.strftime('%B %d, %Y')} to {week_end.strftime('%B %d, %Y')}\n\n")
+        
+        # Page 1: Weekly Overview
+        f.write("PAGE 1: WEEKLY OVERVIEW\n")
+        f.write("-" * 30 + "\n")
+        f.write("Navigation Links: [Mon] [Tue] [Wed] [Thu] [Fri] [Sat] [Sun]\n\n")
+        
+        # Add week summary
+        f.write(f"Total Events: {len(events)}\n")
+        f.write("Events by Day:\n")
+        
+        for day_offset in range(7):
+            current_date = week_start + timedelta(days=day_offset)
+            day_events = [e for e in events if e.get('date', '').startswith(current_date.strftime('%Y-%m-%d'))]
+            day_name = current_date.strftime('%A')
+            f.write(f"  {day_name}: {len(day_events)} events\n")
+        
+        f.write("\n" + "=" * 50 + "\n\n")
+        
+        # Pages 2-8: Daily Views
+        for day_offset in range(7):
+            current_date = week_start + timedelta(days=day_offset)
+            day_name = current_date.strftime('%A')
+            page_num = day_offset + 2
+            
+            f.write(f"PAGE {page_num}: {day_name.upper()} - {current_date.strftime('%B %d, %Y')}\n")
+            f.write("-" * 50 + "\n")
+            f.write("Navigation: [Weekly Overview] [Prev Day] [Next Day]\n\n")
+            
+            # Filter events for this day
+            day_events = []
+            for event in events:
+                event_date = event.get('date', '')
+                if event_date.startswith(current_date.strftime('%Y-%m-%d')):
+                    day_events.append(event)
+            
+            if day_events:
+                f.write(f"Events for {day_name}:\n")
+                for event in sorted(day_events, key=lambda x: x.get('date', '')):
+                    start_time = event.get('date', '')
+                    if 'T' in start_time:
+                        time_part = start_time.split('T')[1][:5]  # HH:MM
+                        f.write(f"  {time_part} - {event.get('title', 'Untitled')}\n")
+                        if event.get('source'):
+                            f.write(f"    Source: {event.get('source')}\n")
+                    else:
+                        f.write(f"  {event.get('title', 'Untitled')}\n")
+            else:
+                f.write("No events scheduled for this day.\n")
+            
+            f.write("\n" + "=" * 50 + "\n\n")
+    
+    print(f"✅ Successfully created text version: {filename}")
+    print(f"📄 Generated weekly planner with 8 sections and navigation references")
+    
+    return filename
 
 def create_simple_pdf_page(content, is_weekly=False):
     """Create a simple PDF page with text content"""
