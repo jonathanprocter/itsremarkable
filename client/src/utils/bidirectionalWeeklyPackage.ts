@@ -287,18 +287,6 @@ async function generateWeeklyOverviewPage(
   pdf.setFontSize(10);
   pdf.text('Navigation: Pages 2-8 contain detailed daily views', config.width / 2, config.height - 35, { align: 'center' });
 
-  // Simple day buttons for quick access
-  const navDays = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-  const btnWidth = 40;
-  const startX = config.width / 2 - (btnWidth * 7 + 6 * 5) / 2;
-  const btnY = config.height - 25;
-
-  for (let i = 0; i < 7; i++) {
-    const x = startX + i * (btnWidth + 5);
-    pdf.rect(x, btnY, btnWidth, 15, 'S');
-    pdf.text(navDays[i], x + btnWidth / 2, btnY + 10, { align: 'center' });
-    pdf.link(x, btnY, btnWidth, 15, { pageNumber: i + 2 });
-  }
 
   return eventMap;
 }
