@@ -202,6 +202,53 @@ export function getComprehensiveAuthStatus(req: any) {
   };
 }
 
+// Update Google Calendar event
+export async function updateGoogleCalendarEvent(calendarId: string, eventId: string, eventData: any, accessToken?: string) {
+  try {
+    const oauth2Client = createComprehensiveOAuth2Client();
+    
+    // Use provided token or fallback to environment token
+    const token = accessToken || process.env.GOOGLE_ACCESS_TOKEN;
+    if (!token) {
+      throw new Error('No access token available for Google Calendar update');
+    }
+    
+    oauth2Client.setCredentials({ access_token: token });
+    
+    const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
+    
+    // Convert the event data to Google Calendar format
+    const googleEventData = {
+      summary: eventData.title,
+      description: eventData.description || '',
+      location: eventData.location || '',
+      start: {
+        dateTime: eventData.startTime.toISOString(),
+        timeZone: 'America/New_York' // You might want to make this configurable
+      },
+      end: {
+        dateTime: eventData.endTime.toISOString(),
+        timeZone: 'America/New_York'
+      }
+    };
+    
+    console.log(`🔄 Updating Google Calendar event ${eventId} in calendar ${calendarId}`);
+    
+    const response = await calendar.events.update({
+      calendarId: calendarId,
+      eventId: eventId,
+      resource: googleEventData
+    });
+    
+    console.log(`✅ Successfully updated Google Calendar event ${eventId}`);
+    return response.data;
+    
+  } catch (error) {
+    console.error(`❌ Failed to update Google Calendar event ${eventId}:`, error);
+    throw error;
+  }
+}
+
 // Ensure authentication with comprehensive fallback
 export function ensureComprehensiveAuth(req: any, res: any, next: any) {
   const authStatus = getComprehensiveAuthStatus(req);

@@ -17,6 +17,7 @@ export interface IStorage {
    */
   upsertEvent(userId: number, sourceId: string, event: Partial<Event>): Promise<Event>;
   updateEvent(eventId: number, updates: Partial<Event>): Promise<Event>;
+  updateEventBySourceId(userId: number, sourceId: string, updates: Partial<Event>): Promise<Event>;
   deleteEvent(eventId: number): Promise<void>;
   getDailyNote(userId: number, date: string): Promise<DailyNote | undefined>;
   createOrUpdateDailyNote(note: InsertDailyNote): Promise<DailyNote>;

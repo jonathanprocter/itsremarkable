@@ -188,19 +188,64 @@ export function registerRoutes(app: Express) {
 
       const userIdNumber = parseInt(userId) || 1;
       
-      // Try to update by sourceId first (for Google Calendar events)
-      let event = await storage.updateEventBySourceId(userIdNumber, eventId, updates);
-
+      // First, get the current event to check its source and calendar info
+      let currentEvent = await storage.getEventBySourceId(userIdNumber, eventId);
+      
       // If not found by sourceId, try by numeric ID for manual events
-      if (!event) {
+      if (!currentEvent) {
         const numericId = parseInt(eventId);
         if (!isNaN(numericId) && numericId > 0) {
-          event = await storage.updateEvent(numericId, updates);
+          const allEvents = await storage.getEvents(userIdNumber);
+          currentEvent = allEvents.find(e => e.id === numericId);
         }
       }
 
-      if (!event) {
+      if (!currentEvent) {
         return res.status(404).json({ error: "Event not found" });
+      }
+
+      // If this is a Google Calendar event, also update it in Google Calendar
+      if (currentEvent.source === 'google' && currentEvent.calendarId) {
+        try {
+          console.log(`🔄 Attempting to update Google Calendar event ${eventId} in calendar ${currentEvent.calendarId}`);
+          
+          // Import the Google Calendar update function
+          const { updateGoogleCalendarEvent } = await import('./oauth-comprehensive-fix');
+          
+          // Prepare the updated event data
+          const eventDataToUpdate = {
+            title: updates.title || currentEvent.title,
+            description: updates.description || currentEvent.description,
+            location: updates.location || currentEvent.location,
+            startTime: updates.startTime || currentEvent.startTime,
+            endTime: updates.endTime || currentEvent.endTime
+          };
+          
+          // Update in Google Calendar
+          await updateGoogleCalendarEvent(
+            currentEvent.calendarId,
+            eventId, // This should be the Google Calendar event ID
+            eventDataToUpdate
+          );
+          
+          console.log(`✅ Successfully updated Google Calendar event ${eventId}`);
+        } catch (googleError) {
+          console.error(`❌ Failed to update Google Calendar event ${eventId}:`, googleError);
+          // Continue with local update even if Google Calendar update fails
+          console.log('⚠️ Continuing with local database update despite Google Calendar error');
+        }
+      }
+      
+      // Update in local database
+      let event;
+      if (currentEvent.sourceId) {
+        event = await storage.updateEventBySourceId(userIdNumber, eventId, updates);
+      } else {
+        event = await storage.updateEvent(currentEvent.id, updates);
+      }
+
+      if (!event) {
+        return res.status(500).json({ error: "Failed to update local event" });
       }
 
       console.log("[SUCCESS] Updated event " + eventId);

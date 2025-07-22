@@ -39,6 +39,8 @@ export const DailyView = ({
   const [currentNotes, setCurrentNotes] = useState(dailyNotes);
   const [expandedEventId, setExpandedEventId] = useState<string | null>(null);
   const [noteTimers, setNoteTimers] = useState<{[key: string]: NodeJS.Timeout}>({});
+  const [draggedEventId, setDraggedEventId] = useState<string | null>(null);
+  const [dragOverSlot, setDragOverSlot] = useState<number | null>(null);
 
   // Get events for the selected date with null checks and proper date conversion
   const dayEvents = events.filter(event => {
@@ -257,10 +259,24 @@ export const DailyView = ({
       startTime: event.startTime,
       endTime: event.endTime
     }));
+    setDraggedEventId(event.id);
+    
+    // Add dragging class to the event
+    const target = e.target as HTMLElement;
+    target.classList.add('dragging');
+  };
+
+  const handleDragEnd = (e: React.DragEvent) => {
+    const target = e.target as HTMLElement;
+    target.classList.remove('dragging');
+    setDraggedEventId(null);
+    setDragOverSlot(null);
   };
 
   const handleDrop = (e: React.DragEvent, slot: any, slotIndex: number) => {
     e.preventDefault();
+    setDragOverSlot(null);
+    
     try {
       const dragData = JSON.parse(e.dataTransfer.getData('text/plain'));
       const { eventId, startTime, endTime } = dragData;
@@ -278,6 +294,8 @@ export const DailyView = ({
 
       const newEndTime = new Date(newStartTime.getTime() + duration);
 
+      console.log(`🔄 Moving event ${eventId} to ${newStartTime.toLocaleTimeString()}`);
+
       if (onEventMove) {
         onEventMove(eventId, newStartTime, newEndTime);
       }
@@ -288,6 +306,19 @@ export const DailyView = ({
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
+  };
+
+  const handleSlotDragEnter = (e: React.DragEvent, slotIndex: number) => {
+    e.preventDefault();
+    setDragOverSlot(slotIndex);
+  };
+
+  const handleSlotDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    // Only clear if we're leaving the slot and not entering a child element
+    if (!(e.currentTarget as HTMLElement).contains(e.relatedTarget as Node)) {
+      setDragOverSlot(null);
+    }
   };
 
   const handleSlotDoubleClick = (slot: any, slotIndex: number) => {
@@ -520,7 +551,7 @@ export const DailyView = ({
         </div>
 
         {/* Appointments Column - Grid layout for proper alignment */}
-        <div className="appointments-column" 
+        <div className={`appointments-column ${draggedEventId ? 'drag-over' : ''}`} 
              onDrop={(e) => handleDrop(e, null, 0)}
              onDragOver={handleDragOver}
              onDoubleClick={() => handleSlotDoubleClick(null, 0)}
@@ -575,10 +606,11 @@ export const DailyView = ({
             return (
               <div
                 key={`event-container-${event.id}-${eventIndex}`}
-                className={`appointment ${calendarClass} ${statusClass} ${className}`}
+                className={`appointment ${calendarClass} ${statusClass} ${className} ${draggedEventId === event.id ? 'dragging' : ''}`}
                 style={style}
                 draggable
                 onDragStart={(e) => handleDragStart(e, event)}
+                onDragEnd={handleDragEnd}
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
