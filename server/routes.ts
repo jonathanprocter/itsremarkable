@@ -698,6 +698,89 @@ export function registerRoutes(app: Express) {
     }
   });
 
+  // PyMyPDF Bidirectional Export endpoint
+  app.post('/api/export/pymypdf-bidirectional', async (req, res) => {
+    try {
+      console.log('🐍 PyMyPDF bidirectional export request received');
+      
+      const { events, weekStart, weekEnd } = req.body;
+      
+      if (!events || !weekStart || !weekEnd) {
+        return res.status(400).json({ error: 'Missing required parameters: events, weekStart, weekEnd' });
+      }
+
+      // Import and execute Python script
+      const { exec } = await import('child_process');
+      const { promisify } = await import('util');
+      const execAsync = promisify(exec);
+      
+      // Prepare command arguments
+      const eventsArg = typeof events === 'string' ? events : JSON.stringify(events);
+      const pythonCommand = `python3 pymypdf_bidirectional_export.py "${eventsArg}" "${weekStart}" "${weekEnd}"`;
+      
+      console.log(`🔧 Executing: ${pythonCommand.substring(0, 100)}...`);
+      
+      // Execute Python script
+      const { stdout, stderr } = await execAsync(pythonCommand);
+      
+      if (stderr) {
+        console.error('⚠️ Python script stderr:', stderr);
+      }
+      
+      const filename = stdout.trim();
+      console.log(`✅ PyMyPDF export completed: ${filename}`);
+      
+      res.json({ 
+        success: true, 
+        filename: filename,
+        message: 'Bidirectional PDF created successfully with PyMyPDF'
+      });
+      
+    } catch (error) {
+      console.error('❌ PyMyPDF export failed:', error);
+      res.status(500).json({ 
+        error: 'PyMyPDF export failed', 
+        details: error.message 
+      });
+    }
+  });
+
+  // PDF download endpoint
+  app.get('/api/download/:filename', (req, res) => {
+    try {
+      const filename = req.params.filename;
+      const fs = require('fs');
+      const path = require('path');
+      
+      const filePath = path.join(process.cwd(), filename);
+      
+      if (!fs.existsSync(filePath)) {
+        return res.status(404).json({ error: 'File not found' });
+      }
+      
+      res.download(filePath, filename, (err) => {
+        if (err) {
+          console.error('Download error:', err);
+          res.status(500).json({ error: 'Download failed' });
+        } else {
+          // Clean up file after download
+          setTimeout(() => {
+            try {
+              fs.unlinkSync(filePath);
+              console.log(`🗑️ Cleaned up downloaded file: ${filename}`);
+            } catch (cleanupError) {
+              console.error('File cleanup error:', cleanupError);
+            }
+          }, 5000); // Delete after 5 seconds
+        }
+      });
+      
+    } catch (error) {
+      console.error('Download endpoint error:', error);
+      res.status(500).json({ error: 'Download failed' });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

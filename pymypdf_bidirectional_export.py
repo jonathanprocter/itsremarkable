@@ -7,12 +7,18 @@ Creates a single navigable PDF with clickable links between weekly and daily vie
 import sys
 import json
 from datetime import datetime, timedelta
-import pymypdf
-from pymypdf import PdfWriter, PdfReader
-from pymypdf.generic import DictionaryObject, ArrayObject, TextStringObject, FloatObject, NameObject
 import tempfile
 import os
-import io
+
+# Try to import PyMyPDF with fallback
+try:
+    import pymypdf
+    from pymypdf import PdfWriter, PdfReader
+    from pymypdf.generic import DictionaryObject, ArrayObject, TextStringObject, FloatObject, NameObject
+    PYMYPDF_AVAILABLE = True
+except ImportError:
+    print("PyMyPDF not available, using fallback implementation")
+    PYMYPDF_AVAILABLE = False
 
 def create_bidirectional_linked_pdf(events_data, week_start_str, week_end_str):
     """
