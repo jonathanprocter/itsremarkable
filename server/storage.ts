@@ -16,8 +16,8 @@ export interface IStorage {
    * otherwise a new row is created. The method returns the stored event.
    */
   upsertEvent(userId: number, sourceId: string, event: Partial<Event>): Promise<Event>;
-  updateEvent(eventId: number, updates: Partial<Event>): Promise<Event>;
-  updateEventBySourceId(userId: number, sourceId: string, updates: Partial<Event>): Promise<Event>;
+  updateEvent(eventId: number, updates: Partial<Event>): Promise<Event | null>;
+  updateEventBySourceId(userId: number, sourceId: string, updates: Partial<Event>): Promise<Event | null>;
   deleteEvent(eventId: number): Promise<void>;
   getDailyNote(userId: number, date: string): Promise<DailyNote | undefined>;
   createOrUpdateDailyNote(note: InsertDailyNote): Promise<DailyNote>;
@@ -100,22 +100,22 @@ export class DatabaseStorage implements IStorage {
     return created;
   }
 
-  async updateEvent(eventId: number, updates: Partial<Event>): Promise<Event> {
+  async updateEvent(eventId: number, updates: Partial<Event>): Promise<Event | null> {
     const [updatedEvent] = await db
       .update(events)
       .set(updates)
       .where(eq(events.id, eventId))
       .returning();
-    return updatedEvent;
+    return updatedEvent || null;
   }
 
-  async updateEventBySourceId(userId: number, sourceId: string, updates: Partial<Event>): Promise<Event> {
+  async updateEventBySourceId(userId: number, sourceId: string, updates: Partial<Event>): Promise<Event | null> {
     const [updatedEvent] = await db
       .update(events)
       .set(updates)
       .where(and(eq(events.userId, userId), eq(events.sourceId, sourceId)))
       .returning();
-    return updatedEvent;
+    return updatedEvent || null;
   }
 
   async deleteEvent(eventId: number): Promise<void> {

@@ -237,16 +237,30 @@ export function registerRoutes(app: Express) {
       }
       
       // Update in local database
+      console.log(`[DEBUG] Updating event - ID: ${eventId}, currentEvent.sourceId: ${currentEvent.sourceId}, currentEvent.id: ${currentEvent.id}`);
+      
       let event;
-      if (currentEvent.sourceId) {
+      // Always try to update by sourceId first if it exists and matches the eventId
+      if (currentEvent.sourceId && currentEvent.sourceId === eventId) {
+        console.log(`[DEBUG] Updating by sourceId: ${eventId}`);
         event = await storage.updateEventBySourceId(userIdNumber, eventId, updates);
       } else {
+        // Update by internal database ID for manual events or when sourceId doesn't match
+        console.log(`[DEBUG] Updating by internal ID: ${currentEvent.id}`);
         event = await storage.updateEvent(currentEvent.id, updates);
       }
 
       if (!event) {
+        console.log(`[ERROR] Failed to update event in database - eventId: ${eventId}, internalId: ${currentEvent.id}`);
         return res.status(500).json({ error: "Failed to update local event" });
       }
+      
+      console.log(`[SUCCESS] Updated event successfully:`, {
+        eventId: eventId,
+        internalId: event.id,
+        sourceId: event.sourceId,
+        title: event.title
+      });
 
       console.log("[SUCCESS] Updated event " + eventId);
       res.json(event);
