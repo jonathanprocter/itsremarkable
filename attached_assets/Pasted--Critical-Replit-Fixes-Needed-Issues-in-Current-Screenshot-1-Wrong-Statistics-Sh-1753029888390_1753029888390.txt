@@ -1,0 +1,160 @@
+# Critical Replit Fixes Needed
+
+## 🚨 **Issues in Current Screenshot:**
+
+1. **Wrong Statistics**: Shows 11 appointments, 1.0h scheduled, 96% free time
+2. **Missing Appointment**: Amberly Comeau (22:30-23:30) not visible
+3. **No Grey/White Alternating**: Time slots all appear white
+4. **David Grossman**: Not spanning full 90 minutes (20:00-21:30)
+5. **Appointment Positioning**: Not extending across full duration
+
+## 🔧 **Required Fixes for Replit:**
+
+### **1. Update Statistics Data**
+```html
+<!-- Change this in the stats-bar section -->
+<div class="stat">
+    <div class="stat-number">12</div>  <!-- Was 11 -->
+    <div class="stat-label">Appointments</div>
+</div>
+<div class="stat">
+    <div class="stat-number">11.5h</div>  <!-- Was 1.0h -->
+    <div class="stat-label">Scheduled</div>
+</div>
+<div class="stat">
+    <div class="stat-number">12.5h</div>  <!-- Was 23.0h -->
+    <div class="stat-label">Available</div>
+</div>
+<div class="stat">
+    <div class="stat-number">52%</div>  <!-- Was 96% -->
+    <div class="stat-label">Free Time</div>
+</div>
+```
+
+### **2. Fix Appointment Count Header**
+```html
+<div class="appointment-count">12 appointments</div>  <!-- Was 11 -->
+```
+
+### **3. Critical CSS Fix - Force Backgrounds**
+```css
+/* Add this CSS to ensure alternating backgrounds work */
+.time-slot.hour,
+.time-slot-container.hour {
+    background-color: #f8f9fa !important;
+}
+
+.time-slot.half-hour,
+.time-slot-container.half-hour {
+    background-color: white !important;
+}
+
+/* Ensure appointments span properly */
+.appointment {
+    position: absolute !important;
+    z-index: 10 !important;
+    left: 2px !important;
+    right: 2px !important;
+}
+```
+
+### **4. JavaScript Debugging - Add Console Logs**
+```javascript
+// Add these console.log statements to debug
+console.log("Total appointments:", appointments.length);
+console.log("Appointments data:", appointments);
+
+// Check if DOM elements exist
+console.log("appointmentsColumn exists:", !!document.getElementById('appointmentsColumn'));
+console.log("timeColumn exists:", !!document.getElementById('timeColumn'));
+```
+
+### **5. Verify Amberly Comeau Data**
+Check this appointment exists in your data:
+```javascript
+{
+    name: "Amberly Comeau Appointment",
+    source: "SIMPLEPRACTICE", 
+    time: "22:30-23:30",
+    startHour: 22.5,
+    duration: 1,
+    eventNotes: ["She processed events with her father, and he with her, at the 'family getaway' that ended early for her.", "She will continue engaging in 'dates' and weekly 5-meeting-a-week..."],
+    actionItems: ["I will see her in Woodbury this coming Monday for our typically scheduled appointment"],
+    type: "telehealth"
+}
+```
+
+## 🎯 **Replit Testing Steps:**
+
+### **Step 1: Clear Cache**
+```bash
+# In Replit console
+rm -rf .cache
+# Then restart the repl
+```
+
+### **Step 2: Force Refresh**
+- Press `Ctrl+Shift+R` (or `Cmd+Shift+R` on Mac)
+- Open Developer Tools (F12)
+- Check for JavaScript errors
+
+### **Step 3: Verify Data Loading**
+```javascript
+// Add this to the end of your script
+setTimeout(() => {
+    console.log("Final check:");
+    console.log("Appointments rendered:", document.querySelectorAll('.appointment').length);
+    console.log("Time slots rendered:", document.querySelectorAll('.time-slot').length);
+}, 2000);
+```
+
+### **Step 4: Debug Background Colors**
+```javascript
+// Add this to verify backgrounds are applied
+document.querySelectorAll('.time-slot.hour').forEach(slot => {
+    console.log("Hour slot background:", getComputedStyle(slot).backgroundColor);
+});
+
+document.querySelectorAll('.time-slot.half-hour').forEach(slot => {
+    console.log("Half-hour slot background:", getComputedStyle(slot).backgroundColor);
+});
+```
+
+## 🚀 **Expected Console Output:**
+```
+Total appointments: 12
+appointmentsColumn exists: true
+timeColumn exists: true
+Final check:
+Appointments rendered: 12
+Time slots rendered: 36
+Hour slot background: rgb(248, 249, 250)
+Half-hour slot background: rgb(255, 255, 255)
+```
+
+## ⚡ **Quick Fix Template:**
+If issues persist, replace the entire `initializeCalendar()` function:
+
+```javascript
+function initializeCalendar() {
+    console.log("Initializing calendar...");
+    
+    // Clear existing content
+    const calendarGrid = document.getElementById('calendarGrid');
+    calendarGrid.innerHTML = '';
+    
+    // Force regenerate
+    generateTimeSlots();
+    generateAppointments();
+    
+    console.log("Calendar initialization complete");
+}
+```
+
+## 🔍 **Visual Verification Checklist:**
+- [ ] 12 appointments visible (not 11)
+- [ ] Stats show 11.5h/12.5h/52% (not 1.0h/23.0h/96%)
+- [ ] Amberly Comeau appears at 22:30-23:30
+- [ ] David Grossman spans 20:00-21:30 continuously
+- [ ] Time slots alternate grey/white
+- [ ] All appointments extend full duration

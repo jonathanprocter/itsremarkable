@@ -1,0 +1,183 @@
+# Appointment Status System - Setup Guide
+
+## Quick Setup
+
+### 1. Install Requirements
+```bash
+pip install -r requirements.txt
+```
+
+### 2. Django Settings
+Add to your `settings.py`:
+```python
+INSTALLED_APPS = [
+    # ... other apps
+    'appointments',
+]
+```
+
+### 3. Database Migration
+```bash
+python manage.py makemigrations appointments
+python manage.py migrate
+```
+
+### 4. Create Template Directory
+```
+your_project/
+├── appointments/
+│   ├── templates/
+│   │   └── appointments/
+│   │       ├── calendar.html
+│   │       └── appointment_detail.html
+│   ├── templatetags/
+│   │   ├── __init__.py
+│   │   └── appointment_filters.py
+│   └── ...
+```
+
+### 5. Add URLs
+In your main `urls.py`:
+```python
+from django.urls import path, include
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('appointments/', include('appointments.urls')),
+]
+```
+
+## Usage
+
+### 1. Creating Appointments
+```python
+from appointments.models import Appointment, Patient, AppointmentStatus
+
+# Create appointment
+appointment = Appointment.objects.create(
+    patient=patient,
+    clinician=clinician,
+    appointment_date=datetime.now() + timedelta(days=1),
+    duration_minutes=60,
+    status=AppointmentStatus.SCHEDULED
+)
+```
+
+### 2. Updating Status Programmatically
+```python
+# Mark as no-show
+appointment.status = AppointmentStatus.NO_SHOW
+appointment.status_changed_by = request.user
+appointment.status_changed_at = timezone.now()
+appointment.cancellation_reason = "Patient did not show up"
+appointment.save()
+```
+
+### 3. Frontend Integration
+The calendar view provides:
+- **Click to update**: Click any appointment to open status update modal
+- **Visual indicators**: Different colors for each status
+- **Real-time updates**: AJAX updates without page refresh
+- **Status history**: Track all status changes
+
+### 4. API Usage (Optional)
+```python
+# For mobile apps or external integrations
+POST /api/appointments/{id}/update_status/
+{
+    "status": "no_show",
+    "reason": "Patient did not show up"
+}
+```
+
+## Status Types
+
+| Status | CSS Class | Color | Use Case |
+|--------|-----------|-------|----------|
+| **No Show** | `cancelled-red` | Red | Patient didn't appear |
+| **Cancelled** | `no-show` | Amber | Patient cancelled |
+| **Clinician Canceled** | `cancelled-minimal` | Gray | Internal cancellation |
+| **Scheduled** | `appointment` | Blue | Regular appointment |
+| **Confirmed** | `appointment` | Blue | Confirmed appointment |
+| **Completed** | `appointment completed` | Green | Finished appointment |
+
+## Customization
+
+### Adding New Status Types
+1. Update `AppointmentStatus` choices in `models.py`
+2. Add CSS styling for new status
+3. Update `get_css_class()` method
+4. Add to admin interface
+
+### Styling Customization
+Modify the CSS classes in your template:
+```css
+.appointment.custom-status {
+    background: #your-color;
+    color: #text-color;
+    border: 2px solid #border-color;
+}
+```
+
+### Notification Integration
+Implement in `utils.py`:
+```python
+def send_status_notification(appointment, old_status, new_status, changed_by):
+    # Send email/SMS notifications
+    # Integration with your notification system
+    pass
+```
+
+## Background Tasks
+
+### Auto-mark No-Shows
+Set up a cron job or Celery task:
+```bash
+# Run every 15 minutes
+*/15 * * * * cd /path/to/project && python manage.py mark_no_shows
+```
+
+### Celery Task (Optional)
+```python
+from celery import shared_task
+
+@shared_task
+def auto_mark_no_shows():
+    # Your logic here
+    pass
+```
+
+## Security Considerations
+
+1. **Permission Checks**: Only clinicians can update their own appointments
+2. **CSRF Protection**: All forms include CSRF tokens
+3. **Input Validation**: Status values are validated against choices
+4. **Audit Trail**: All changes are logged with user and timestamp
+
+## Production Deployment
+
+### Environment Variables
+```bash
+DEBUG=False
+SECRET_KEY=your-secret-key
+DATABASE_URL=postgres://...
+REDIS_URL=redis://...
+```
+
+### Nginx Configuration
+```nginx
+location /appointments/ {
+    proxy_pass http://127.0.0.1:8000;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+}
+```
+
+### Monitoring
+Consider adding:
+- Status change analytics
+- No-show rate tracking
+- Appointment utilization metrics
+- Performance monitoring
+
+This system provides a robust foundation for managing appointment statuses in a medical practice with the visual styling you requested!

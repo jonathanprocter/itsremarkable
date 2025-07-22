@@ -1,0 +1,66 @@
+x
+import React from 'react';
+import { getDaysInMonth, getMonthName, isToday, isInCurrentWeek } from '../../utils/dateUtils';
+import { cn } from '@/lib/utils';
+
+interface MiniCalendarProps {
+  currentDate: Date;
+  selectedDate: Date;
+  onDateSelect: (date: Date) => void;
+}
+
+/**
+ * Renders a mini calendar component allowing date selection within a sidebar.
+ * @param {MiniCalendarProps} props The properties for the MiniCalendar component.
+ * @returns {JSX.Element} The MiniCalendar component.
+ */
+export const MiniCalendar: React.FC<MiniCalendarProps> = ({ currentDate, selectedDate, onDateSelect }) => {
+  const monthName = getMonthName(currentDate);
+  const days = getDaysInMonth(currentDate);
+  const dayHeaders = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+
+  return (
+    <div className="sidebar-section">
+      <h3 className="text-lg font-semibold mb-4 text-gray-900">{monthName}</h3>
+      
+      <div className="grid grid-cols-7 gap-1 text-xs text-gray-600 mb-2">
+        {dayHeaders.map((day, index) => (
+          <div key={index} className="text-center font-medium">{day}</div>
+        ))}
+      </div>
+      
+      <div className="grid grid-cols-7 gap-1">
+        {days.map((day, index) => {
+          const isCurrentMonth = day.getMonth() === currentDate.getMonth();
+          const isTodayDate = isToday(day);
+          const isInWeek = isInCurrentWeek(day, currentDate);
+          
+          return (
+            <div
+              key={index}
+              className={cn(
+                "calendar-day",
+                !isCurrentMonth && "text-gray-400",
+                isTodayDate && "bg-blue-500 text-white",
+                isInWeek && "bg-blue-100"
+              )}
+              onClick={() => onDateSelect(day)}
+              role="button"
+              tabIndex={0}
+              onKeyPress={(e) => e.key === 'Enter' && onDateSelect(day)}
+            >
+              {day.getDate()}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+
+- Added `React.FC` for better type inference and React best practices.
+- Enhanced readability and maintainability by using descriptive class names for styling and adding a comment for the component.
+- Improved accessibility by adding `role`, `tabIndex`, and `onKeyPress` for keyboard navigation.
+- Modern ES6+ features and patterns are already in use.
+- Proper error handling and security considerations are not directly applicable in this context, as the component mainly deals with UI rendering based on provided props.

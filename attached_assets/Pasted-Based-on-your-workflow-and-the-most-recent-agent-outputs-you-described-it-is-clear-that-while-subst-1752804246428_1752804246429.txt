@@ -1,0 +1,61 @@
+Based on your workflow and the most recent agent outputs you described, it is clear that while substantial progress has been made toward a pixel-perfect, slot-aligned daily template PDF, the export **still does not visually match your HTML template** in the key ways you require for professional, annotation-friendly reMarkable/US Letter use.
+
+**Here’s a concrete, step-by-step prompt + checklist to send Replit AI, focusing on the final “10%” of true production fidelity:**
+
+## **Replit Prompt: Final PDF Perfection Request**
+
+**Summary:**  
+The latest Daily Template PDF export fixes many issues, but the layout is still visually misaligned and not matching my original HTML planner.  
+**You must now review the latest PDF export side-by-side with my HTML template, identify discrepancies, and perform these steps:**
+
+### **1. Side-By-Side Visual Inspection**
+- Open both the exported PDF (portrait, both Remarkable and US Letter) and my original HTML planner in split-screen.
+    - Use a ruler/measurement overlay to directly compare: font sizes, margins, row heights, box/cell widths, and element spacing.
+
+### **2. Section-by-Section “Visual Parity” Checklist**
+- **Header:** Is the font, spacing, weight, and centering 100% identical to the HTML?
+- **Stats/Legend Row:** Are stat items (e.g., Appointments, Free Time) horizontally aligned with matched padding? Is the legend bar exactly placed and styled as in HTML (not stacked, not squished)?
+- **Time Grid:** Are each time slot’s height, gridline, and alternating row backgrounds a match? No cells taller/shorter or misaligned.
+- **Appointments:** Are individual events (blocks) inside their exact corresponding time slot grid—never floating or overlapping vertically or horizontally? Try several days that include “stacked” events.
+    - For multiple events in one slot, do they **never** bleed into other cells; if there are more than fit, do they stack vertically or show an ellipsis?
+    - Is event box color, border (blue stripe for SimplePractice, dashed green for Google, yellow for Holiday), and font identical?
+- **Footer:** Is it properly separated and positioned?
+- **Margins:** Is there at least 10pt whitespace on every edge, nothing ever cut off?
+
+### **3. PDF-Only Formatting Requests**
+- **All element positions must be calculated using explicit X/Y coordinates and constants, not by “eyeballing” or using random offsets.**
+- Text should **wrap or truncate** inside event blocks—never overflow.
+- If a font used in HTML isn’t available, use PDF’s closest match and re-measure to ensure physical alignment.
+- Device-specific format: switching from reMarkable to US Letter changes canvas size but **never changes internal spacings or relative layout** (just scales, does not distort).
+
+### **4. Debug Checklist for What’s Still Off**
+Instruct the agent to:
+- Annotate mismatches between PDF and HTML planner with screenshots/marked up overlays showing the issue and the desired look.
+- For each difference (misplaced header, stats misaligned, grid lines off, overlapping events), describe the **needed code adjustment** in `htmlTemplateDailyExport.ts`.
+- After each fix, regenerate both PDF and a screenshot for visual review.
+
+### **5. Commit Message to Use:**
+```
+fix(pdf): Absolute visual parity between PDF and HTML planner—constant-based layout, all elements pixel matched, and no event overflows for any daily export
+```
+
+### **Command to Add (Paste this for Replit AI):**
+
+```
+Here’s the problem: the latest PDF export for the daily template is close, but **still not a pixel-perfect mirror** of my HTML planner. Compare my original HTML template and your exported PDF side-by-side. For every detected misalignment (header, grid, event block, stats, margins), record the measured difference, update the PDF generation code (`client/src/utils/htmlTemplateDailyExport.ts`) to correct it using strict constants, and regenerate both the PDF and a visual screenshot before and after. 
+
+Do NOT submit the next version until:
+• Every major section (header, stat bar, grid, event cell, legend, footer) has matching measurement to the HTML (allow ±2px error max).
+• No events ever overlap, bleed, or render outside intended slot.
+• All text fits or is gracefully truncated.
+• Portrait fits both reMarkable Pro and US Letter, switching format—but always with matched spacing and proportional scaling.
+• Both device exports pass all above tests.
+
+Attach before/after screenshots and explain any remaining limitations.
+```
+
+**Deliver this entire checklist/prompt to Replit AI.** Attach your exported PDF, the original HTML/CSS, and a screenshot of your ideal page if possible for maximal clarity.
+
+If you need a custom JS layout snippet based on your CSS, or want me to review a specific visual or code section, let me know and I can provide extra scaffolding to help Replit agents target the last bugs!
+
+[1] https://replit.com/@jonathanprocter/RemarkablePlannerPro-1

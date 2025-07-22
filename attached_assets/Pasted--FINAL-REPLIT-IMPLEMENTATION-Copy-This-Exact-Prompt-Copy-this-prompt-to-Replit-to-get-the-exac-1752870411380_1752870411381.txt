@@ -1,0 +1,140 @@
+# FINAL REPLIT IMPLEMENTATION - Copy This Exact Prompt
+
+Copy this prompt to Replit to get the **exact replica** of your application interface:
+
+---
+
+**REPLIT PROMPT:**
+
+"I need you to create an EXACT replica of my daily calendar view for PDF export. I've shown you screenshots of how my application interface looks, and I want the PDF to match it perfectly.
+
+Please implement the following:
+
+1. **Create a new file** called `ApplicationReplicaPDF.tsx` in my src/components folder using the complete code provided in the artifacts.
+
+2. **Replace my existing PDF export** completely with this new implementation that replicates the exact look of my application interface.
+
+3. **Key styling requirements** (match my application exactly):
+   - Clean white background with subtle borders
+   - Time column on the left (70px wide, gray background)
+   - Appointment boxes with subtle borders and left border accent
+   - "Clinician Canceled" badge exactly like my app (gray background, white text)
+   - Strikethrough text on cancelled appointments
+   - Proper spacing and typography matching my interface
+   - Time slots from 06:00 to 19:00 with 30-minute intervals
+
+4. **Use this exact appointment data structure**:
+```typescript
+const appointments = [
+  {
+    id: '1',
+    startTime: '07:00',
+    endTime: '08:00', 
+    clientName: 'Richie Hayes',
+    status: 'confirmed'
+  },
+  {
+    id: '2',
+    startTime: '08:00',
+    endTime: '09:00',
+    clientName: 'John Best', 
+    status: 'clinician_canceled'  // This should show badge + strikethrough
+  },
+  {
+    id: '3',
+    startTime: '11:00',
+    endTime: '12:00',
+    clientName: 'Sarah Palladino',
+    status: 'confirmed'
+  },
+  {
+    id: '4',
+    startTime: '13:00', 
+    endTime: '14:00',
+    clientName: 'Noah Silverman',
+    status: 'confirmed'
+  },
+  {
+    id: '5',
+    startTime: '14:00',
+    endTime: '15:00',
+    clientName: 'Zena Frey',
+    status: 'confirmed'
+  },
+  {
+    id: '6',
+    startTime: '16:00',
+    endTime: '17:00',
+    clientName: 'Trendall Storey', 
+    status: 'confirmed'
+  },
+  {
+    id: '7',
+    startTime: '17:00',
+    endTime: '18:00',
+    clientName: 'Michael Bower & Bob Delmond',
+    status: 'confirmed'
+  },
+  {
+    id: '8',
+    startTime: '18:00',
+    endTime: '19:00',
+    clientName: 'Brianna Brickman',
+    status: 'confirmed' 
+  }
+];
+```
+
+5. **Replace my export button** with:
+```typescript
+import { ApplicationReplicaButton, sampleAppointmentData } from './components/ApplicationReplicaPDF';
+
+// In your main component:
+<ApplicationReplicaButton appointments={sampleAppointmentData} />
+```
+
+6. **Critical styling details**:
+   - Font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto
+   - Time column: #f9fafb background, #6b7280 text
+   - Appointment boxes: white background, #e5e7eb border, blue left accent
+   - Cancelled appointments: #f3f4f6 background, gray left accent, strikethrough text
+   - Badge: #6b7280 background, white text, 9px font, uppercase
+   - Header metrics: correct calculations (8 appointments, 8.0h, 4.0h, 33%)
+
+7. **Test the export** and verify it shows:
+   - ✅ Clean interface matching my application screenshots exactly
+   - ✅ Correct metrics (8 appointments, not 1722)
+   - ✅ "Clinician Canceled" badge on John Best appointment  
+   - ✅ Strikethrough text on John Best name and time
+   - ✅ All 8 appointments positioned correctly in time slots
+   - ✅ Professional styling matching my daily view interface
+
+The key is that this PDF should look EXACTLY like my application's daily view - same colors, same layout, same styling, same typography. Remove any old PDF code and use only this new replica component."
+
+---
+
+**VERIFICATION CHECKLIST:**
+
+After implementation, your PDF should match your application interface with:
+
+✅ **Header**: "Friday, July 18, 2025" with 8 appointments, correct metrics  
+✅ **Time Grid**: Clean 06:00-19:00 slots with gray time column  
+✅ **Appointments**: White boxes with subtle borders and blue left accent  
+✅ **John Best (08:00)**: Gray background, "Clinician Canceled" badge, strikethrough text  
+✅ **All other appointments**: Clean white styling with proper names and times  
+✅ **Typography**: Matches your application's font and sizing  
+✅ **Spacing**: Matches your application's layout exactly  
+
+**EXPECTED RESULT:**
+
+The PDF will be a **pixel-perfect replica** of your daily calendar view interface, looking professional and clean exactly like your application screenshots. No more broken exports, wrong metrics, or missing styling - just a perfect match of your beautiful interface design.
+
+**DEBUGGING:**
+
+If something doesn't look right, check:
+1. Is the font loading correctly?
+2. Are the appointment statuses set correctly?
+3. Is the container width set to 1000px?
+4. Are all dependencies (html2canvas, jspdf) installed?
+
+This implementation is specifically designed to match your application interface exactly as shown in your screenshots.

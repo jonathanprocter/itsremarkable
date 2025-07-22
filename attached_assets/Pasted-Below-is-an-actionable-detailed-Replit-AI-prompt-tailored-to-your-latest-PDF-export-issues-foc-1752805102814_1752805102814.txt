@@ -1,0 +1,64 @@
+Below is an actionable, detailed Replit AI prompt tailored to your **latest PDF export issues**, focusing on all the persistent problems (formatting/styling, overlapping, and emoji artifacts):
+
+## **Replit AI Prompt: Pixel-Perfect PDF Export—Final Fixes for Formatting, Overlap, and Emoji Purity**
+
+**What’s broken:**
+- PDF still has broken formatting: misaligned section layouts, font/spacing mismatches, and grid isn’t matching HTML pixel-for-pixel.
+- Appointments are still sometimes overlapping or not confined to their correct grid cells—side-by-side/stacking is not being strictly enforced.
+- SimplePractice appointments with locked progress notes still show garbled emoji/padlock artifacts (corrupting patient names or causing nonsense symbols in export).
+
+### **Immediate Action Items:**
+
+#### 1. **Emoji/Unicode Artifact Stripping**
+- Before rendering any appointment title for export, strictly filter out **all leading emoji, padlock, or Unicode symbol artifacts**—especially those added by SimplePractice to indicate a “locked note.”
+    - Use a Unicode regex at the start of each appointment title to remove any emoji or special status icon.
+    - Do NOT remove regular patient names or notes content—just the emoji/status icons at the start.
+- Example utility:
+```typescript
+function stripLeadingEmoji(text: string): string {
+  return text.replace(
+    /^[\p{Emoji}\p{So}\p{Sk}\uFE0F\u200D\p{P}\p{S}]{1,4}/gu, '' // strips 1–4 leading symbols
+  ).trim();
+}
+// Usage: appointment.title = stripLeadingEmoji(appointment.title);
+```
+- Test against titles like "🔒 David Grossman", "🚩 Sherrifa Hoosein", etc. Export should show only "David Grossman" or "Sherrifa Hoosein".
+
+#### 2. **Absolute Layout and NO Overlapping!**
+- Use explicit X/Y coordinates and constants for every planner element: header, stats, legend, grid, time slots, and every appointment box.
+- Every appointment:
+    - **Must appear only inside its designated time slot cell** (never running over borders or stacked on top of others).
+    - If multiple events happen simultaneously, lay them out side-by-side OR as vertically stacked cells, with clear visual separation and NO overlap.
+    - Truncate text that’s too long for a slot so it never overlaps or spills out of its event box.
+
+#### 3. **Styling and Section Matching**
+- Font family, size, bold/weight, and colors for each section (header, stats, legend, time grid, event blocks, footer) must match your provided HTML/CSS *exactly*.
+- Reproduce gridlines, alternating backgrounds, left color flags for event types.
+- Keep at least 10pt margin from all edges for e-ink annotation.
+
+#### 4. **Final QA Checklist:**
+- The **header/title, stats bar, legend, grid, appointments, and footer** are all spaced and styled exactly as in the HTML planner—inspect visually with a ruler if needed.
+- No “random” Unicode/emoji shows up in any exported text, ever.
+- Appointments are always confined to their own grid cells.
+- Both reMarkable and US Letter exports look visually identical, just resized—no scaling artifacts, no cut-off content.
+
+**Commit message:**
+```
+fix(pdf): Absolute visual and functional parity; remove emoji/unicode artifacts, fix section layout, enforce non-overlapping events in Daily Template PDF export
+```
+
+### **Instructions to follow:**
+
+> Open the latest PDF and my original HTML planner template side-by-side.  
+> For each section (header, stats, legend, time grid, appointments, footer), measure pixel values, verify color/fonts, match grid.  
+> Implement explicit stripLeadingEmoji() before rendering any appointment text in the export.  
+> Use explicit slot-based positioning and ensure NO overlapping, with truncation rules for overlong content.  
+> Show screenshots with markup of all changes made and validate both reMarkable and US Letter results visually.  
+> Do not close the issue until export is 100% visually and functionally identical to the original planner, with all emoji artifacts gone and perfect event positioning.
+
+Give this prompt to Replit’s AI or developer.  
+If needed, paste your HTML/CSS alongside, and require both before-and-after screenshots for validation.
+
+Let me know if you need a longer regex or an expanded appointment cell logic example!
+
+[1] https://replit.com/@jonathanprocter/RemarkablePlannerPro-1

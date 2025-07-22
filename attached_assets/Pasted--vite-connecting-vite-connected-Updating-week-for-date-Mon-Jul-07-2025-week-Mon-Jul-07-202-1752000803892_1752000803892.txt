@@ -1,0 +1,44 @@
+[vite] connecting...
+[vite] connected.
+Updating week for date: Mon Jul 07 2025, week: Mon Jul 07 2025 to Sun Jul 13 2025
+reMarkable Pro optimizations applied: 
+Object {resolution: "2160x1620", ppi: 229, isDetected: false}
+Updating week for date: Mon Jul 07 2025, week: Mon Jul 07 2025 to Sun Jul 13 2025
+Updating current week with events: 309
+Updating week for date: Mon Jul 07 2025, week: Mon Jul 07 2025 to Sun Jul 13 2025
+✅ MONDAY MATCH: David Grossman Appointment matched with day Mon Jul 07 2025
+✅ MONDAY MATCH: Steven Deluca Appointment matched with day Mon Jul 07 2025
+✅ MONDAY MATCH: Nancy Grossman Appointment matched with day Mon Jul 07 2025
+✅ MONDAY MATCH: Amberly Comeau Appointment matched with day Mon Jul 07 2025
+✅ MONDAY MATCH: Maryellen Dankenbrink Appointment matched with day Mon Jul 07 2025
+✅ MONDAY MATCH: Angelica Ruden Appointment matched with day Mon Jul 07 2025
+✅ MONDAY MATCH: Noah Silverman Appointment matched with day Mon Jul 07 2025
+✅ MONDAY MATCH: Sarah Palladino Appointment matched with day Mon Jul 07 2025
+✅ MONDAY MATCH: 🔒 Nico Luppino Appointment matched with day Mon Jul 07 2025
+✅ MONDAY MATCH: Dan re: Supervision matched with day Mon Jul 07 2025
+✅ MONDAY MATCH: Sherrifa Hoosein Appointment matched with day Mon Jul 07 2025
+Event: Independence Day on Fri Jul 04 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 David Grossman Appointment on Mon Jun 30 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Ava Moskowitz Appointment on Mon Jun 30 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: Coffee with Nora on Tue Jul 01 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Valentina Gjidoda Appointment on Tue Jul 01 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: Call with Blake on Tue Jul 01 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Maryellen Dankenbrink Appointment on Tue Jul 01 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Max Hafker Appointment on Tue Jul 01 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Vivian Meador Appointment on Tue Jul 01 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Krista Flood Appointment on Wed Jul 02 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Brian Kolsch Appointment on Wed Jul 02 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Luke Knox Appointment on Wed Jul 02 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Chris Balabanick Appointment on Wed Jul 02 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Gavin Perna Appointment on Wed Jul 02 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Max Moskowitz Appointment on Wed Jul 02 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Owen Lennon Appointment on Wed Jul 02 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 David Grossman Appointment on Wed Jul 02 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Ruben Spilberg Appointment on Thu Jul 03 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Gavin Fisch Appointment on Thu Jul 03 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Kristi Rook Appointment on Thu Jul 03 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Sarah Palladino Appointment on Thu Jul 03 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Noah Silverman Appointment on Thu Jul 03 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 John Best Appointment on Thu Jul 03 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Freddy Rodriguez Appointment on Thu Jul 03 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Hector Mendez Appointment on Thu Jul 03 2025, Selected: Mon Jul 07 2025, Matches: false

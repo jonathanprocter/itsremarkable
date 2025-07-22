@@ -1,0 +1,58 @@
+Here is a **comprehensively detailed AI prompt** tailored to your Replit project, addressing everything necessary for **bidirectional linking between daily and weekly planner views** and **guaranteed US Letter portrait PDF exports**—leveraging your existing weekly layout insight.
+
+**Copy and Paste AI Prompt for Replit (Daily & Weekly Planner Integration and Export):**
+
+I am developing a digital planner in Replit using a weekly layout as the main navigation and dynamic daily PDF exports for detailed schedule management. My tech stack includes TypeScript, Node/Express backend, and a Vite/React frontend. Here is what I need:
+
+### **1. Bidirectional Event and View Linking**
+
+- Design and implement a **centralized event data model**—preferably as a persistent database or global JS/TS store—where each event has:
+  - a unique, stable `id`
+  - full date/time details, title, description, and recurrence info (if applicable)
+- **Daily and weekly views must both read from and write to this central event source**.  
+  - Any changes in one view must immediately propagate to the other.
+  - The daily view is for a single date; the weekly view shows events for 7 continuous days (Sunday–Saturday or user-selected).
+- When a user selects or clicks an event in the weekly view, provide automatic navigation (route, scroll, or modal jump) to the corresponding daily view for that event’s date. Likewise, allow users in the daily view to easily jump to the weekly overview containing the event.
+- In **PDF outputs** (if PDF bookmarks/searchable or clickable features are available with your PDF tool), embed hyperlinks or cross-referenced bookmarks for each event.
+- Generate a RESTful API route (e.g., `/api/events`) to fetch, add, update, and delete events, ensuring the frontend always has a consistent view.
+
+### **2. PDF Export — US Letter Portrait, Print-Optimized**
+
+- When exporting a daily planner PDF, enforce:
+  - **Page size**: US Letter (8.5 x 11 inches, portrait, 215.9 mm x 279.4 mm)
+  - **Margins**: At least 0.5 inch (12.7mm) on all sides to avoid clipping during printing.
+  - **Resolution**: If rasterizing, use at least 300 DPI; otherwise, prefer vector PDF output.
+  - **Layout**: All content for the day (06:00 to 23:30) is visibly and evenly distributed vertically, using scalable layout for variable numbers of appointments/notes.
+  - **Font & element sizing**: Choose sizes that are clear in print, and scalable for various screen resolutions.
+- Allow the export routine to dynamically scale fonts, time rows, and contents to fully utilize the content area without overlap or spillover.
+- Use a Node.js-friendly, well-documented PDF library (e.g., pdf-lib, pdfkit, or jsPDF) and provide clear config examples.
+- Optionally, for extremely crisp output, use SVG or native canvas drawing for planner gridlines and text, then embed/export as PDF.
+- (Advanced) If the PDF library supports it, add **internal hyperlinks or bookmarks** so that, for example, each week’s events can be rapidly navigated to their daily page when the full planner is exported.
+
+### **3. Code and Architecture Guidance**
+
+- Provide **integration-ready code samples** for:
+  - The event data model and event CRUD logic (Node/Express API, shared TS interfaces, etc.)
+  - Cross-view syncing logic and React state handling (e.g., hooks, context, or Redux if relevant)
+  - Export routine for daily PDF with explicit layout, size, and print-quality settings (show at least one solid example)
+  - Optional: code/pseudocode for embedding bidirectional page references
+- Include pointers for plugging this into a Vite/React frontend and Express/TypeScript backend on Replit.
+- Advise any special troubleshooting for edge cases (e.g., events not appearing, PDFs not scaling, issues with time zone logic).
+
+### **4. User Experience Details**
+
+- Ensure fast, intuitive navigation between daily and weekly views within the web app.
+- Where possible, offer users clickable links/buttons to go from a week’s event directly into that date’s daily detail view, and vice versa.
+- Let users choose the PDF export date or range (not just today), ensuring dynamic daily PDFs always match the visible app state.
+
+**Summary:**
+Provide robust, integration-oriented code and architecture for a Vite/React/TypeScript Replit project that:
+- **Bidirectionally links events** between daily and weekly planner views,
+- Exports sharp, dynamic daily PDFs fully fitted to US Letter portrait size,
+- And supports user navigation between views and across exported documents.
+
+*If you detect any specific libraries or patterns in my current codebase, adapt the implementation to fit seamlessly with what’s already being used.*
+
+**Paste this prompt into your AI assistant or agent in Replit for high-quality, implementation-focused output that covers data, presentation, and output/export guarantees.**
+
+[1] file:///Users/jonathanprocter/Downloads/Daily_Planner_2025-07-11%20(1).pdf

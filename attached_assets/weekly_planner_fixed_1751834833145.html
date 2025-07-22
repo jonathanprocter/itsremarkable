@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weekly Planner - Week 26</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Times New Roman', serif;
+            background-color: white;
+            color: black;
+            line-height: 1.2;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .planner-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border: 2px solid black;
+        }
+
+        .header {
+            border-bottom: 3px solid black;
+            padding: 20px;
+            text-align: center;
+            background: white;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .week-info {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .week-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            border-bottom: 2px solid black;
+            background: #f8f8f8;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 15px;
+            border-right: 1px solid black;
+            font-size: 12px;
+        }
+
+        .stat-card:last-child {
+            border-right: none;
+        }
+
+        .stat-number {
+            font-size: 18px;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .legend {
+            padding: 12px 20px;
+            border-bottom: 2px solid black;
+            font-size: 10px;
+            background: #f8f8f8;
+        }
+
+        .legend-item {
+            display: inline-block;
+            margin-right: 20px;
+            margin-bottom: 4px;
+        }
+
+        .legend-symbol {
+            display: inline-block;
+            width: 14px;
+            height: 12px;
+            margin-right: 5px;
+            vertical-align: middle;
+        }
+
+        .legend-symbol.simplepractice {
+            background: #f5f5f5;
+            border: 2px solid #6495ED;
+            border-left: 6px solid #6495ED;
+        }
+
+        .legend-symbol.google-calendar {
+            background: #e0e0e0;
+            border: 2px dashed #666;
+        }
+
+        .legend-symbol.outlook {
+            background: #f5f5f5;
+            border: 2px dotted #333;
+        }
+
+        .legend-symbol.personal {
+            background: #f0f0f0;
+            border: 2px solid #999;
+            border-style: double;
+        }
+
+        .calendar-container {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: 80px repeat(7, 1fr);
+            grid-template-rows: 60px repeat(29, 35px);
+            background: white;
+        }
+
+        .time-header {
+            background: #f0f0f0;
+            padding: 15px 8px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 12px;
+            border-right: 2px solid black;
+            border-bottom: 3px solid black;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .day-header {
+            background: #f0f0f0;
+            padding: 10px 8px;
+            text-align: center;
+            font-weight: bold;
+            border-right: 1px solid black;
+            border-bottom: 3px solid black;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .day-header:last-child {
+            border-right: none;
+        }
+
+        .day-name {
+            font-size: 12px;
+            margin-bottom: 3px;
+            text-transform: uppercase;
+        }
+
+        .day-date {
+            font-size: 16px;
+        }
+
+        .time-slot {
+            background: #f8f8f8;
+            padding: 5px;
+            text-align: center;
+            font-size: 10px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-right: 2px solid black;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .time-slot.hour {
+            background: #f0f0f0;
+            border-bottom: 2px solid black;
+            font-size: 11px;
+        }
+
+        .calendar-cell {
+            background: white;
+            border-right: 1px solid #ddd;
+            border-bottom: 1px solid #ddd;
+            position: relative;
+        }
+
+        .calendar-cell:last-child {
+            border-right: none;
+        }
+
+        .calendar-cell.hour {
+            border-bottom: 2px solid black;
+        }
+
+        .appointment {
+            position: absolute;
+            left: 2px;
+            right: 2px;
+            top: 2px;
+            padding: 3px 4px;
+            font-size: 8px;
+            font-weight: bold;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            text-align: center;
+            overflow: hidden;
+            border-radius: 2px;
+            z-index: 10;
+        }
+
+        .appointment-name {
+            font-size: 7px;
+            line-height: 1.1;
+            margin-bottom: 1px;
+            text-transform: uppercase;
+            font-weight: bold;
+            word-wrap: break-word;
+        }
+
+        .appointment-time {
+            font-size: 6px;
+            font-weight: normal;
+            opacity: 0.8;
+        }
+
+        /* Appointment types */
+        .appointment.simplepractice {
+            background: #f5f5f5;
+            color: black;
+            border: 1px solid #6495ED;
+            border-left: 4px solid #6495ED;
+        }
+
+        .appointment.google-calendar {
+            background: #e0e0e0;
+            color: black;
+            border: 1px dashed #666;
+        }
+
+        .appointment.outlook {
+            background: #f5f5f5;
+            color: black;
+            border: 1px dotted #333;
+        }
+
+        .appointment.personal {
+            background: #f0f0f0;
+            color: black;
+            border: 1px solid #999;
+            border-style: double;
+        }
+
+        /* Height classes for different durations */
+        .appointment.duration-60 { height: 68px; }
+        .appointment.duration-90 { height: 103px; }
+
+        .footer {
+            background: #f8f8f8;
+            padding: 15px 20px;
+            text-align: center;
+            font-size: 11px;
+            border-top: 2px solid black;
+        }
+
+        .footer a {
+            color: black;
+            text-decoration: underline;
+            margin: 0 10px;
+        }
+
+        /* E-ink optimizations */
+        @media (max-device-width: 1404px) and (max-device-height: 1872px) {
+            .planner-container {
+                margin: 5px;
+                max-width: none;
+                border-width: 2px;
+            }
+            .calendar-grid {
+                font-size: 8px;
+            }
+            .appointment-name {
+                font-size: 6px;
+            }
+            .appointment-time {
+                font-size: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="planner-container">
+        <div class="header">
+            <h1>Weekly Planner</h1>
+            <div class="week-info">June 23-29, 2025 • Week 26</div>
+        </div>
+
+        <div class="week-stats">
+            <div class="stat-card">
+                <span class="stat-number">24</span>
+                Total Appointments
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">26.0h</span>
+                Scheduled Time
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">3.7h</span>
+                Daily Average
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">142h</span>
+                Available Time
+            </div>
+        </div>
+
+        <div class="legend">
+            <span class="legend-item">
+                <span class="legend-symbol simplepractice"></span>SimplePractice
+            </span>
+            <span class="legend-item">
+                <span class="legend-symbol google-calendar"></span>Google Calendar
+            </span>
+            <span class="legend-item">
+                <span class="legend-symbol outlook"></span>Outlook
+            </span>
+            <span class="legend-item">
+                <span class="legend-symbol personal"></span>Personal
+            </span>
+        </div>
+
+        <div class="calendar-container">
+            <div class="calendar-grid">
+                <!-- Headers -->
+                <div class="time-header">TIME</div>
+                <div class="day-header"><div class="day-name">MON</div><div class="day-date">23</div></div>
+                <div class="day-header"><div class="day-name">TUE</div><div class="day-date">24</div></div>
+                <div class="day-header"><div class="day-name">WED</div><div class="day-date">25</div></div>
+                <div class="day-header"><div class="day-name">THU</div><div class="day-date">26</div></div>
+                <div class="day-header"><div class="day-name">FRI</div><div class="day-date">27</div></div>
+                <div class="day-header"><div class="day-name">SAT</div><div class="day-date">28</div></div>
+                <div class="day-header"><div class="day-name">SUN</div><div class="day-date">29</div></div>
+
+                <!-- 7:00 AM -->
+                <div class="time-slot hour">7:00</div>
+                <div class="calendar-cell hour"></div>
+                <div class="calendar-cell hour"></div>
+                <div class="calendar-cell hour"></div>
+                <div class="calendar-cell hour"></div>
+                <div class="calendar-cell hour">
+                    <div class="appointment simplepractice duration-60">
+                        <div class="appointment-name">Richie Hayes</div>
+                        <div class="appointment-time">7:00-8:00</div>
+                    </div>
+                </div>
+                <div class="calendar-cell hour"></div>
+                <div class="calendar-cell hour"></div>
+
+                <!-- 7:30 AM -->
+                <div class="time-slot">7:30</div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell">
+                    <div class="appointment simplepractice duration-60">
+                        <div class="appointment-name">Ruben Spilberg</div>
+                        <div class="appointment-time">7:30-8:30</div>
+                    </div>
+                </div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+
+                <!-- 8:00 AM -->
+                <div class="time-slot hour">8:00</div>
+                <div class="calendar-cell hour"></div>
+                <div class="calendar-cell hour">
+                    <div class="appointment personal duration-60">
+                        <div class="appointment-name">Coffee with Nora</div>
+                        <div class="appointment-time">8:00-9:00</div>
+                    </div>
+                </div>
+                <div class="calendar-cell hour"></div>
+                <div class="calendar-cell hour"></div>
+                <div class="calendar-cell hour">
+                    <div class="appointment simplepractice duration-60">
+                        <div class="appointment-name">John Best</div>
+                        <div class="appointment-time">8:00-9:00</div>
+                    </div>
+                </div>
+                <div class="calendar-cell hour"></div>
+                <div class="calendar-cell hour"></div>
+
+                <!-- 8:30 AM -->
+                <div class="time-slot">8:30</div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+
+                <!-- 9:00 AM -->
+                <div class="time-slot hour">9:00</div>
+                <div class="calendar-cell hour"></div>
+                <div class="calendar-cell hour"></div>
+                <div class="calendar-cell hour">
+                    <div class="appointment simplepractice duration-60">
+                        <div class="appointment-name">Krista Flood</div>
+                        <div class="appointment-time">9:00-10:00</div>
+                    </div>
+                </div>
+                <div class="calendar-cell hour"></div>
+                <div class="calendar-cell hour"></div>
+                <div class="calendar-cell hour"></div>
+                <div class="calendar-cell hour"></div>
+
+                <!-- 9:30 AM -->
+                <div class="time-slot">9:30</div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell">
+                    <div class="appointment simplepractice duration-60">
+                        <div class="appointment-name">Kristi Rook</div>
+                        <div class="appointment-time">9:30-10:30</div>
+                    </div>
+                </div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+
+                <!-- 10:00 AM -->
+                <div class="time-slot hour">10:00</div>
+                <div class="calendar-cell hour"></div>
+                <div class="calendar-cell hour"></div>
+                <div class="calendar-cell hour">
+                    <div class="appointment simplepractice duration-60">
+                        <div class="appointment-name">Amberly Comeau</div>
+                        <div class="appointment-time">10:00-11:00</div>
+                    </div>
+                </div>
+                <div class="calendar-cell hour"></div>
+                <div class="calendar-cell hour">
+                    <div class="appointment simplepractice duration-60">
+                        <div class="appointment-name">Calvin Hill</div>
+                        <div class="appointment-time">10:00-11:00</div>
+                    </div>
+                </div>
+                <div class="calendar-cell hour"></div>
+                <div class="calendar-cell hour"></div>
+
+                <!-- 10:30 AM -->
+                <div class="time-slot">10:30</div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+
+                <!-- 11:00 AM -->
+                <div class="time-slot hour">11:00</div>
+                <div class="calendar-cell hour"></div>
+                <div class="calendar-cell hour"></div>
+                <div class="calendar-cell hour">
+                    <div class="appointment simplepractice duration-60">
+                        <div class="appointment-name">Caitlin Dunn</div>
+                        <div class="appointment-time">11:00-12:00</div>
+                    </div>
+                </div>
+                <div class="calendar-cell hour">
+                    <div class="appointment simplepractice duration-60">
+                        <div class="appointment-name">Maryellen Dankenbrink</div>
+                        <div class="appointment-time">11:00-12:00</div>
+                    </div>
+                </div>
+                <div class="calendar-cell hour">
+                    <div class="appointment simplepractice duration-60">
+                        <div class="appointment-name">David Grossman</div>
+                        <div class="appointment-time">11:00-12:00</div>
+                    </div>
+                </div>
+                <div class="calendar-cell hour"></div>
+                <div class="calendar-cell hour"></div>
+
+                <!-- 11:30 AM -->
+                <div class="time-slot">11:30</div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell">
+                    <div class="appointment simplepractice duration-60">
+                        <div class="appointment-name">Valentina Gjidoda</div>
+                        <div class="appointment-time">11:30-12:30</div>
+                    </div>
+                </div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+
+                <!-- 12:00 PM -->
+                <div class="time-slot hour">12:00</div>
+                <div class="calendar-cell hour"></div>
+                <div class="calendar-cell hour"></div>
+                <div class="calendar-cell hour"></div>
+                <div class="calendar-cell hour">
+                    <div class="appointment simplepractice duration-60">
+                        <div class="appointment-name">Luke Knox</div>
+                        <div class="appointment-time">12:00-13:00</div>
+                    </div>
+                </div>
+                <div class="calendar-cell hour">
+                    <div class="appointment simplepractice duration-60">
+                        <div class="appointment-name">Brian Kolsch</div>
+                        <div class="appointment-time">12:00-13:00</div>
+                    </div>
+                </div>
+                <div class="calendar-cell hour"></div>
+                <div class="calendar-cell hour"></div>
+
+                <!-- 12:30 PM -->
+                <div class="time-slot">12:30</div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+
+                <!-- 13:00 (1:00 PM) -->
+                <div class="time-slot hour">13:00</div>
+                <div class="calendar-cell hour"></div>
+                <div class="calendar-cell hour"></div>
+                <div class="calendar-cell hour"></div>
+                <div class="calendar-cell hour">
+                    <div class="appointment simplepractice duration-60">
+                        <div class="appointment-name">Ava Moskowitz</div>
+                        <div class="appointment-time">13:00-14:00</div>
+                    </div>
+                </div>
+                <div class="calendar-cell hour">
+                    <div class="appointment simplepractice duration-60">
+                        <div class="appointment-name">Noah Silverman</div>
+                        <div class="appointment-time">13:00-14:00</div>
+                    </div>
+                </div>
+                <div class="calendar-cell hour"></div>
+                <div class="calendar-cell hour"></div>
+
+                <!-- 13:30 (1:30 PM) -->
+                <div class="time-slot">13:30</div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+
+                <!-- 14:00 (2:00 PM) -->
+                <div class="time-slot hour">14:00</div>
+                <div class="calendar-cell hour"></div>
+                <div class="calendar-cell hour"></div>
+                <div class="calendar-cell hour">
+                    <div class="appointment simplepractice duration-60">
+                        <div class="appointment-name">Noah Silverman</div>
+                        <div class="appointment-time">14:00-15:00</div>
+                    </div>
+                </div>
+                <div class="calendar-cell hour"></div>
+                <div class="calendar-cell hour"></div>
+                <div class="calendar-cell hour"></div>
+                <div class="calendar-cell hour"></div>
+
+                <!-- 14:30 (2:30 PM) -->
+                <div class="time-slot">14:30</div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell">
+                    <div class="appointment simplepractice duration-60">
+                        <div class="appointment-name">Sarah Palladino</div>
+                        <div class="appointment-time">14:30-15:30</div>
+                    </div>
+                </div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+
+                <!-- 15:00 (3:00 PM) -->
+                <div class="time-slot hour">15:00</div>
+                <div class="calendar-cell hour">
+                    <div class="appointment simplepractice duration-60">
+                        <div class="appointment-name">Jason Laskin</div>
+                        <div class="appointment-time">15:00-16:00</div>
+                    </div>
+                </div>
+                <div class="calendar-cell hour"></div>
+                <div class="calendar-cell hour"></div>
+                <div class="calendar-cell hour">
+                    <div class="appointment simplepractice duration-60">
+                        <div class="appointment-name">Hector Mendez</div>
+                        <div class="appointment-time">15:00-16:00</div>
+                    </div>
+                </div>
+                <div class="calendar-cell hour"></div>
+                <div class="calendar-cell hour"></div>
+                <div class="calendar-cell hour"></div>
+
+                <!-- 15:30 (3:30 PM) -->
+                <div class="time-slot">15:30</div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+
+                <!-- 16:00 (4:00 PM) -->
+                <div class="time-slot hour">16:00</div>
+                <div class="calendar-cell hour">
+                    <div class="appointment simplepractice duration-60">
+                        <div class="appointment-name">Noah Silverman</div>
+                        <div class="appointment-time">16:00-17:00</div>
+                    </div>
+                </div>
+                <div class="calendar-cell hour"></div>
+                <div class="calendar-cell hour"></div>
+                <div class="calendar-cell hour">
+                    <div class="appointment simplepractice duration-60">
+                        <div class="appointment-name">Freddy Rodriguez</div>
+                        <div class="appointment-time">16:00-17:00</div>
+                    </div>
+                </div>
+                <div class="calendar-cell hour">
+                    <div class="appointment simplepractice duration-60">
+                        <div class="appointment-name">Trendall Storey</div>
+                        <div class="appointment-time">16:00-17:00</div>
+                    </div>
+                </div>
+                <div class="calendar-cell hour"></div>
+                <div class="calendar-cell hour"></div>
+
+                <!-- 16:30 (4:30 PM) -->
+                <div class="time-slot">16:30</div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+
+                <!-- 17:00 (5:00 PM) -->
+                <div class="time-slot hour">17:00</div>
+                <div class="calendar-cell hour"></div>
+                <div class="calendar-cell hour"></div>
+                <div class="calendar-cell hour">
+                    <div class="appointment simplepractice duration-60">
+                        <div class="appointment-name">Gavin Perna</div>
+                        <div class="appointment-time">17:00-18:00</div>
+                    </div>
+                </div>
+                <div class="calendar-cell hour">
+                    <div class="appointment simplepractice duration-60">
+                        <div class="appointment-name">Sherrifa Hoosein</div>
+                        <div class="appointment-time">17:00-18:00</div>
+                    </div>
+                </div>
+                <div class="calendar-cell hour">
+                    <div class="appointment simplepractice duration-60">
+                        <div class="appointment-name">Michael Bower Bob Delmond</div>
+                        <div class="appointment-time">17:00-18:00</div>
+                    </div>
+                </div>
+                <div class="calendar-cell hour"></div>
+                <div class="calendar-cell hour"></div>
+
+                <!-- 17:30 (5:30 PM) -->
+                <div class="time-slot">17:30</div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+
+                <!-- 18:00 (6:00 PM) -->
+                <div class="time-slot hour">18:00</div>
+                <div class="calendar-cell hour"></div>
+                <div class="calendar-cell hour"></div>
+                <div class="calendar-cell hour">
+                    <div class="appointment simplepractice duration-60">
+                        <div class="appointment-name">Max Moskowitz</div>
+                        <div class="appointment-time">18:00-19:00</div>
+                    </div>
+                </div>
+                <div class="calendar-cell hour">
+                    <div class="appointment simplepractice duration-60">
+                        <div class="appointment-name">Nico Luppino</div>
+                        <div class="appointment-time">18:00-19:00</div>
+                    </div>
+                </div>
+                <div class="calendar-cell hour">
+                    <div class="appointment simplepractice duration-60">
+                        <div class="appointment-name">Brianna Brickman</div>
+                        <div class="appointment-time">18:00-19:00</div>
+                    </div>
+                </div>
+                <div class="calendar-cell hour"></div>
+                <div class="calendar-cell hour"></div>
+
+                <!-- 18:30 (6:30 PM) -->
+                <div class="time-slot">18:30</div>
+                <div class="calendar-cell">
+                    <div class="appointment simplepractice duration-90">
+                        <div class="appointment-name">David Grossman</div>
+                        <div class="appointment-time">18:30-20:00</div>
+                    </div>
+                </div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+
+                <!-- 19:00 (7:00 PM) -->
+                <div class="time-slot hour">19:00</div>
+                <div class="calendar-cell hour"></div>
+                <div class="calendar-cell hour">
+                    <div class="appointment simplepractice duration-60">
+                        <div class="appointment-name">Vivian Meador</div>
+                        <div class="appointment-time">19:00-20:00</div>
+                    </div>
+                </div>
+                <div class="calendar-cell hour"></div>
+                <div class="calendar-cell hour">
+                    <div class="appointment simplepractice duration-60">
+                        <div class="appointment-name">Jennifer McNally</div>
+                        <div class="appointment-time">19:00-20:00</div>
+                    </div>
+                </div>
+                <div class="calendar-cell hour"></div>
+                <div class="calendar-cell hour"></div>
+                <div class="calendar-cell hour"></div>
+
+                <!-- 19:30 (7:30 PM) -->
+                <div class="time-slot">19:30</div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+
+                <!-- 20:00 (8:00 PM) -->
+                <div class="time-slot hour">20:00</div>
+                <div class="calendar-cell hour">
+                    <div class="appointment simplepractice duration-60">
+                        <div class="appointment-name">Sarah Palladino</div>
+                        <div class="appointment-time">20:00-21:00</div>
+                    </div>
+                </div>
+                <div class="calendar-cell hour"></div>
+                <div class="calendar-cell hour">
+                    <div class="appointment simplepractice duration-90">
+                        <div class="appointment-name">David Grossman</div>
+                        <div class="appointment-time">20:00-21:30</div>
+                    </div>
+                </div>
+                <div class="calendar-cell hour">
+                    <div class="appointment simplepractice duration-60">
+                        <div class="appointment-name">David Grossman</div>
+                        <div class="appointment-time">20:00-21:00</div>
+                    </div>
+                </div>
+                <div class="calendar-cell hour"></div>
+                <div class="calendar-cell hour"></div>
+                <div class="calendar-cell hour"></div>
+
+                <!-- 20:30 (8:30 PM) -->
+                <div class="time-slot">20:30</div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+
+                <!-- 21:00 (9:00 PM) -->
+                <div class="time-slot hour">21:00</div>
+                <div class="calendar-cell hour"></div>
+                <div class="calendar-cell hour"></div>
+                <div class="calendar-cell hour"></div>
+                <div class="calendar-cell hour"></div>
+                <div class="calendar-cell hour"></div>
+                <div class="calendar-cell hour"></div>
+                <div class="calendar-cell hour"></div>
+
+                <!-- 21:30 (9:30 PM) -->
+                <div class="time-slot">21:30</div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+                <div class="calendar-cell"></div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <a href="#prev-week">← Week 25</a> |
+            <a href="#daily-view">Daily Details</a> |
+            <a href="#monthly">Monthly View</a> |
+            <a href="#next-week">Week 27 →</a>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weekly Package - July 7-13, 2025</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Times New Roman', serif;
+            background-color: white;
+            color: black;
+            line-height: 1.2;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Print styles for PDF generation */
+        @page {
+            size: A4 landscape;
+            margin: 0.5in;
+        }
+
+        .page {
+            page-break-after: always;
+            min-height: 100vh;
+        }
+
+        .page:last-child {
+            page-break-after: avoid;
+        }
+
+        /* Common styles */
+        .planner-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border: 2px solid black;
+            min-height: calc(100vh - 1in);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            border-bottom: 3px solid black;
+            padding: 20px;
+            text-align: center;
+            background: white;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .week-info, .date-info {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .navigation {
+            font-size: 12px;
+            margin-top: 8px;
+            border-top: 1px solid black;
+            padding-top: 8px;
+        }
+
+        .footer {
+            background: #f8f8f8;
+            padding: 15px 20px;
+            text-align: center;
+            font-size: 11px;
+            border-top: 2px solid black;
+            margin-top: auto;
+        }
+
+        .footer a {
+            color: black;
+            text-decoration: underline;
+            margin: 0 10px;
+            cursor: pointer;
+        }
+
+        /* Weekly view specific styles */
+        .week-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background: #f0f0f0;
+            border-bottom: 1px solid black;
+        }
+
+        .week-navigation {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-button {
+            background: white;
+            border: 1px solid #666;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .view-toggle {
+            display: flex;
+            background: white;
+            border: 1px solid black;
+        }
+
+        .toggle-btn {
+            background: #999;
+            color: white;
+            border: none;
+            padding: 5px 15px;
+            cursor: pointer;
+            font-size: 11px;
+        }
+
+        .toggle-btn.active {
+            background: black;
+        }
+
+        .calendar-container {
+            position: relative;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: 80px repeat(7, 1fr);
+            height: 100%;
+            background: white;
+        }
+
+        .time-header {
+            background: #999;
+            color: white;
+            padding: 15px 8px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 12px;
+            border-right: 2px solid black;
+            border-bottom: 3px solid black;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .day-header {
+            background: #f0f0f0;
+            padding: 10px 8px;
+            text-align: center;
+            font-weight: bold;
+            border-right: 1px solid black;
+            border-bottom: 3px solid black;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .day-header:last-child {
+            border-right: none;
+        }
+
+        .day-name {
+            font-size: 12px;
+            margin-bottom: 3px;
+            text-transform: uppercase;
+        }
+
+        .day-date {
+            font-size: 16px;
+        }
+
+        .time-column {
+            border-right: 2px solid black;
+        }
+
+        .time-slot {
+            height: 30px;
+            background: #f8f8f8;
+            padding: 5px;
+            text-align: center;
+            font-size: 10px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .time-slot.hour {
+            background: #f0f0f0;
+            border-bottom: 2px solid black;
+            font-size: 11px;
+        }
+
+        .day-column {
+            position: relative;
+            border-right: 1px solid #ddd;
+            background: white;
+        }
+
+        .day-column:last-child {
+            border-right: none;
+        }
+
+        .hour-line {
+            height: 60px;
+            border-bottom: 2px solid black;
+            position: relative;
+        }
+
+        .half-hour-line {
+            height: 30px;
+            border-bottom: 1px solid #ddd;
+            position: relative;
+        }
+
+        /* Appointment styles */
+        .appointment {
+            position: absolute;
+            left: 2px;
+            right: 2px;
+            background: #87CEEB;
+            color: black;
+            padding: 2px 4px;
+            font-size: 9px;
+            line-height: 1.1;
+            overflow: hidden;
+            border-radius: 2px;
+            z-index: 10;
+        }
+
+        .appointment-name {
+            font-weight: bold;
+            margin-bottom: 1px;
+        }
+
+        .appointment-time {
+            font-size: 8px;
+            opacity: 0.8;
+        }
+
+        /* Position appointments based on time - each 30min = 30px */
+        .monday .apt-0800 { top: 120px; height: 58px; } /* 8:00-9:00 */
+        .monday .apt-0900 { top: 180px; height: 58px; } /* 9:00-10:00 */
+        .monday .apt-1000 { top: 240px; height: 58px; } /* 10:00-11:00 */
+        .monday .apt-1100 { top: 300px; height: 28px; } /* 11:00-11:30 */
+        .monday .apt-1200 { top: 360px; height: 28px; } /* 12:00-12:30 */
+        .monday .apt-1400 { top: 480px; height: 58px; } /* 14:00-15:00 */
+        .monday .apt-1600 { top: 600px; height: 58px; } /* 16:00-17:00 */
+        .monday .apt-1700 { top: 660px; height: 28px; } /* 17:00-17:30 */
+        .monday .apt-1800 { top: 720px; height: 28px; } /* 18:00-18:30 */
+        .monday .apt-1830 { top: 750px; height: 28px; } /* 18:30-19:00 */
+        .monday .apt-2000 { top: 840px; height: 58px; } /* 20:00-21:00 */
+
+        .tuesday .apt-0800 { top: 120px; height: 58px; } /* 8:00-9:00 */
+        .tuesday .apt-1000 { top: 240px; height: 28px; } /* 10:00-10:30 */
+        .tuesday .apt-1600 { top: 600px; height: 58px; } /* 16:00-17:00 */
+        .tuesday .apt-1800 { top: 720px; height: 58px; } /* 18:00-19:00 */
+        .tuesday .apt-1900 { top: 780px; height: 58px; } /* 19:00-20:00 */
+
+        .wednesday .apt-1600 { top: 600px; height: 58px; } /* 16:00-17:00 */
+        .wednesday .apt-2000 { top: 840px; height: 58px; } /* 20:00-21:00 */
+
+        .thursday .apt-0700 { top: 60px; height: 28px; } /* 7:00-7:30 */
+        .thursday .apt-1000 { top: 240px; height: 58px; } /* 10:00-11:00 */
+        .thursday .apt-1300 { top: 420px; height: 58px; } /* 13:00-14:00 */
+        .thursday .apt-1400 { top: 480px; height: 58px; } /* 14:00-15:00 */
+        .thursday .apt-1600 { top: 600px; height: 58px; } /* 16:00-17:00 */
+        .thursday .apt-1700 { top: 660px; height: 58px; } /* 17:00-18:00 */
+        .thursday .apt-1800 { top: 720px; height: 58px; } /* 18:00-19:00 */
+
+        .friday .apt-0700 { top: 60px; height: 58px; } /* 7:00-8:00 */
+        .friday .apt-0800 { top: 120px; height: 58px; } /* 8:00-9:00 */
+        .friday .apt-1100 { top: 300px; height: 58px; } /* 11:00-12:00 */
+        .friday .apt-1300 { top: 420px; height: 58px; } /* 13:00-14:00 */
+        .friday .apt-1600 { top: 600px; height: 58px; } /* 16:00-17:00 */
+
+        .saturday .apt-1000 { top: 240px; height: 58px; } /* 10:00-11:00 */
+
+        /* JavaScript will handle page navigation */
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @media print {
+            .page {
+                display: block !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Page 1: Weekly Overview -->
+    <div class="page active" id="weekly-overview">
+        <div class="planner-container">
+            <div class="header">
+                <h1>Week of Jul 7 - Jul 13, 2025</h1>
+            </div>
+
+            <div class="week-controls">
+                <div class="week-navigation">
+                    <button class="nav-button">&lt;</button>
+                    <span style="font-weight: bold;">Week of Jul 7 - Jul 13, 2025</span>
+                    <button class="nav-button">&gt;</button>
+                </div>
+                <div class="view-toggle">
+                    <button class="toggle-btn active">Weekly</button>
+                    <button class="toggle-btn">Daily</button>
+                </div>
+            </div>
+
+            <div class="calendar-container">
+                <div class="calendar-grid">
+                    <!-- Headers -->
+                    <div class="time-header">TIME</div>
+                    <div class="day-header"><div class="day-name">Monday</div><div class="day-date">Jul 7</div></div>
+                    <div class="day-header"><div class="day-name">Tuesday</div><div class="day-date">Jul 8</div></div>
+                    <div class="day-header"><div class="day-name">Wednesday</div><div class="day-date">Jul 9</div></div>
+                    <div class="day-header"><div class="day-name">Thursday</div><div class="day-date">Jul 10</div></div>
+                    <div class="day-header"><div class="day-name">Friday</div><div class="day-date">Jul 11</div></div>
+                    <div class="day-header"><div class="day-name">Saturday</div><div class="day-date">Jul 12</div></div>
+                    <div class="day-header"><div class="day-name">Sunday</div><div class="day-date">Jul 13</div></div>
+
+                    <!-- Time column -->
+                    <div class="time-column">
+                        <div class="time-slot hour">06:00</div>
+                        <div class="time-slot">06:30</div>
+                        <div class="time-slot hour">07:00</div>
+                        <div class="time-slot">07:30</div>
+                        <div class="time-slot hour">08:00</div>
+                        <div class="time-slot">08:30</div>
+                        <div class="time-slot hour">09:00</div>
+                        <div class="time-slot">09:30</div>
+                        <div class="time-slot hour">10:00</div>
+                        <div class="time-slot">10:30</div>
+                        <div class="time-slot hour">11:00</div>
+                        <div class="time-slot">11:30</div>
+                        <div class="time-slot hour">12:00</div>
+                        <div class="time-slot">12:30</div>
+                        <div class="time-slot hour">13:00</div>
+                        <div class="time-slot">13:30</div>
+                        <div class="time-slot hour">14:00</div>
+                        <div class="time-slot">14:30</div>
+                        <div class="time-slot hour">15:00</div>
+                        <div class="time-slot">15:30</div>
+                        <div class="time-slot hour">16:00</div>
+                        <div class="time-slot">16:30</div>
+                        <div class="time-slot hour">17:00</div>
+                        <div class="time-slot">17:30</div>
+                        <div class="time-slot hour">18:00</div>
+                        <div class="time-slot">18:30</div>
+                        <div class="time-slot hour">19:00</div>
+                        <div class="time-slot">19:30</div>
+                        <div class="time-slot hour">20:00</div>
+                        <div class="time-slot">20:30</div>
+                        <div class="time-slot hour">21:00</div>
+                        <div class="time-slot">21:30</div>
+                        <div class="time-slot hour">22:00</div>
+                        <div class="time-slot">22:30</div>
+                        <div class="time-slot hour">23:00</div>
+                        <div class="time-slot">23:30</div>
+                    </div>
+
+                    <!-- Monday -->
+                    <div class="day-column monday">
+                        <div style="height: 1080px; position: relative;">
+                            <div class="appointment apt-0800">
+                                <div class="appointment-name">Dan Re:</div>
+                                <div class="appointment-time">60min</div>
+                            </div>
+                            <div class="appointment apt-0900">
+                                <div class="appointment-name">Sheriff's Hoosein</div>
+                                <div class="appointment-time">60min</div>
+                            </div>
+                            <div class="appointment apt-1000">
+                                <div class="appointment-name">Nancy Grossman</div>
+                                <div class="appointment-time">60min</div>
+                            </div>
+                            <div class="appointment apt-1100">
+                                <div class="appointment-name">Amberly Comeau</div>
+                                <div class="appointment-time">60min</div>
+                            </div>
+                            <div class="appointment apt-1200">
+                                <div class="appointment-name">Margaron Darkenbrink</div>
+                                <div class="appointment-time">60min</div>
+                            </div>
+                            <div class="appointment apt-1400">
+                                <div class="appointment-name">Angelica Ruden</div>
+                                <div class="appointment-time">60min</div>
+                            </div>
+                            <div class="appointment apt-1600">
+                                <div class="appointment-name">Noah Silverman</div>
+                                <div class="appointment-time">60min</div>
+                            </div>
+                            <div class="appointment apt-1700">
+                                <div class="appointment-name">Sarah Palladino</div>
+                                <div class="appointment-time">60min</div>
+                            </div>
+                            <div class="appointment apt-1800">
+                                <div class="appointment-name">Valentina Gjioda</div>
+                                <div class="appointment-time">60min</div>
+                            </div>
+                            <div class="appointment apt-1830">
+                                <div class="appointment-name">Vivian Meador</div>
+                                <div class="appointment-time">60min</div>
+                            </div>
+                            <div class="appointment apt-2000">
+                                <div class="appointment-name">Steven Deluca</div>
+                                <div class="appointment-time">60min</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tuesday -->
+                    <div class="day-column tuesday">
+                        <div style="height: 1080px; position: relative;">
+                            <div class="appointment apt-0800">
+                                <div class="appointment-name">Coffee With Nora</div>
+                                <div class="appointment-time">60min</div>
+                            </div>
+                            <div class="appointment apt-1000">
+                                <div class="appointment-name">Call with Blake</div>
+                                <div class="appointment-time">50min</div>
+                            </div>
+                            <div class="appointment apt-1600">
+                                <div class="appointment-name">Brianna Brickman</div>
+                                <div class="appointment-time">60min</div>
+                            </div>
+                            <div class="appointment apt-1800">
+                                <div class="appointment-name">Max Atorkowitz</div>
+                                <div class="appointment-time">60min</div>
+                            </div>
+                            <div class="appointment apt-1900">
+                                <div class="appointment-name">Joan Lennon</div>
+                                <div class="appointment-time">60min</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Wednesday -->
+                    <div class="day-column wednesday">
+                        <div style="height: 1080px; position: relative;">
+                            <div class="appointment apt-1600">
+                                <div class="appointment-name">Gavin Perna</div>
+                                <div class="appointment-time">60min</div>
+                            </div>
+                            <div class="appointment apt-2000">
+                                <div class="appointment-name">David Grossman</div>
+                                <div class="appointment-time">60min</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Thursday -->
+                    <div class="day-column thursday">
+                        <div style="height: 1080px; position: relative;">
+                            <div class="appointment apt-0700">
+                                <div class="appointment-name">Huben Spilberg</div>
+                                <div class="appointment-time">60min</div>
+                            </div>
+                            <div class="appointment apt-1000">
+                                <div class="appointment-name">Kraal Rook</div>
+                                <div class="appointment-time">60min</div>
+                            </div>
+                            <div class="appointment apt-1300">
+                                <div class="appointment-name">Markowirz</div>
+                                <div class="appointment-time">60min</div>
+                            </div>
+                            <div class="appointment apt-1400">
+                                <div class="appointment-name">Luke Knox</div>
+                                <div class="appointment-time">60min</div>
+                            </div>
+                            <div class="appointment apt-1600">
+                                <div class="appointment-name">Freddy Rodriguez</div>
+                                <div class="appointment-time">60min</div>
+                            </div>
+                            <div class="appointment apt-1700">
+                                <div class="appointment-name">Gavin Fisch</div>
+                                <div class="appointment-time">60min</div>
+                            </div>
+                            <div class="appointment apt-1800">
+                                <div class="appointment-name">Nico Luppino</div>
+                                <div class="appointment-time">60min</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Friday -->
+                    <div class="day-column friday">
+                        <div style="height: 1080px; position: relative;">
+                            <div class="appointment apt-0700">
+                                <div class="appointment-name">Richie Hayes</div>
+                                <div class="appointment-time">60min</div>
+                            </div>
+                            <div class="appointment apt-0800">
+                                <div class="appointment-name">John Best</div>
+                                <div class="appointment-time">60min</div>
+                            </div>
+                            <div class="appointment apt-1100">
+                                <div class="appointment-name">Paul Benjamin</div>
+                                <div class="appointment-time">60min</div>
+                            </div>
+                            <div class="appointment apt-1300">
+                                <div class="appointment-name">Noah Silverman</div>
+                                <div class="appointment-time">60min</div>
+                            </div>
+                            <div class="appointment apt-1600">
+                                <div class="appointment-name">Trendall Storey</div>
+                                <div class="appointment-time">60min</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Saturday -->
+                    <div class="day-column saturday">
+                        <div style="height: 1080px; position: relative;">
+                            <div class="appointment apt-1000">
+                                <div class="appointment-name">Calvin Hill</div>
+                                <div class="appointment-time">60min</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sunday -->
+                    <div class="day-column sunday">
+                        <div style="height: 1080px; position: relative;">
+                            <!-- No appointments for Sunday in the image -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Navigation between pages
+        function navigateToPage(pageId) {
+            // Hide all pages
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(page => page.classList.remove('active'));
+            
+            // Show the selected page
+            const targetPage = document.getElementById(pageId);
+            if (targetPage) {
+                targetPage.classList.add('active');
+            }
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Home') {
+                navigateToPage('weekly-overview');
+                event.preventDefault();
+            }
+        });
+
+        // Print function to generate PDF
+        function printWeeklyPackage() {
+            window.print();
+        }
+    </script>
+</body>
+</html>

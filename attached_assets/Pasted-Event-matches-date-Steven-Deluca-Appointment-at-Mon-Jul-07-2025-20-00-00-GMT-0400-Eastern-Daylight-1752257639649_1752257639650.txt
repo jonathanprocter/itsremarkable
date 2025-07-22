@@ -1,0 +1,41 @@
+Event matches date: Steven Deluca Appointment at Mon Jul 07 2025 20:00:00 GMT-0400 (Eastern Daylight Time)
+Event matches date: Nancy Grossman Appointment at Mon Jul 07 2025 10:00:00 GMT-0400 (Eastern Daylight Time)
+Event matches date: Amberly Comeau Appointment at Mon Jul 07 2025 11:00:00 GMT-0400 (Eastern Daylight Time)
+Event matches date: Maryellen Dankenbrink Appointment at Mon Jul 07 2025 12:00:00 GMT-0400 (Eastern Daylight Time)
+Event matches date: Angelica Ruden Appointment at Mon Jul 07 2025 14:00:00 GMT-0400 (Eastern Daylight Time)
+Event matches date: Noah Silverman Appointment at Mon Jul 07 2025 16:00:00 GMT-0400 (Eastern Daylight Time)
+Event matches date: Sarah Palladino Appointment at Mon Jul 07 2025 17:00:00 GMT-0400 (Eastern Daylight Time)
+Event matches date: 🔒 Nico Luppino Appointment at Mon Jul 07 2025 15:00:00 GMT-0400 (Eastern Daylight Time)
+Event matches date: Dan re: Supervision at Mon Jul 07 2025 08:00:00 GMT-0400 (Eastern Daylight Time)
+Event matches date: Sherrifa Hoosein Appointment at Mon Jul 07 2025 09:00:00 GMT-0400 (Eastern Daylight Time)
+Found 11 events for Mon Jul 07 2025
+❌ SIGNIFICANT ISSUES - PDF may not match dashboard accurately
+Generated export data: 
+Object {date: "Monday, July 7, 2025", appointments: Array(11), totalAppointments: 11, dailyNotes: ""}
+================================================================================
+=== EXPORT TYPE DEBUG ===
+Export type received: "Exact Weekly Spec"
+Type length: 17
+Type === "Daily View": false
+=== EXACT WEEKLY SPEC PDF EXPORT ===
+Week start: Mon Jul 07 2025
+Week end: Sun Jul 13 2025
+Total events: 313
+🎯 Creating EXACT weekly PDF with precise specifications...
+🎯 Starting EXACT weekly planner export with precise specifications...
+Exact weekly spec PDF export error: 
+ReferenceError {}
+message: "Cannot access 'title' before initialization"
+stack: "ReferenceError: Cannot access 'title' before initialization↵ at https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/utils/exactWeeklySpecExport.ts:197:36↵ at Array.forEach (<anonymous>)↵ at drawExactAppointments (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/utils/exactWeeklySpecExport.ts:171:10)↵ at drawExactTable (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/utils/exactWeeklySpecExport.ts:168:3)↵ at exportExactWeeklySpec (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/utils/exactWeeklySpecExport.ts:57:3)↵ at handleExportAction (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/pages/planner.tsx:775:19)"
+get stack: ƒ ()
+set stack: ƒ ()
+[[Prototype]]: Object
+
+🔧 ExportToPDF component rendered
+🔧 onExportCurrentView: function
+🔧 onExportDailyView: function
+✅ Cleaned 1600 hour time slot: 16:00 -> 16:00
+🔧 ExportToPDF component rendered
+🔧 onExportCurrentView: function
+🔧 onExportDailyView: function
+✅ Cleaned 1600 hour time slot: 16:00 -> 16:00

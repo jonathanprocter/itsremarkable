@@ -1,0 +1,64 @@
+To get your PDF export “all the way there,” you should provide **clear, detailed feedback on every remaining difference** between your exported PDF and the browser’s daily view—plus any edge cases you care about.
+
+Use the following insights and structure in your next prompt:
+
+**AI Prompt for Final Polishing of Daily View PDF Export**
+
+We are very close to 1:1 parity between my PDF export and the browser daily calendar view! Please help me close the final gaps. Here’s what I want you to do:
+
+### 1. **Describe What is Correct**
+- The event time placement is now accurate.
+- The background, left border color, and font choices are matching the daily view.
+- Major elements (title, notes, action items) are rendering.
+
+### 2. **Explicitly List Remaining Differences or Missing Details**
+For example:
+- ☐ The vertical spacing (padding/margin) around event blocks isn’t matching the browser.
+- ☐ The font size of Notes/Action Items looks off compared to the browser.
+- ☐ Multi-line notes/action items are not wrapping as in-browser.
+- ☐ Section headers (“Notes”, “Action Items”) should be bolded/underlined, not plain.
+- ☐ Hover or selection highlights are missing (if needed).
+- ☐ The event block/minimum height, or how overlapping events are handled, is different.
+- ☐ [List any other detail, including colors, icons, line height, etc.]
+
+(Replace or expand this list based on what you actually see is still not perfect!)
+
+### 3. **Attach or Reference Screenshots**
+- Say:  
+  “Please see attached for (A) browser daily view, and (B) latest PDF output. Focus on [describe differences in red boxes/arrows if possible].”
+  (Drag/drop screenshots if allowed.)
+
+### 4. **Restate Essential Style/Behavioral Requirements**
+You can say:
+- All fonts, colors, paddings, border radii, and spacing should match the browser exactly.  
+- Event blocks must render full metadata (notes and items) in clear, readable, wrapped lines.
+- Use css: `[insert the .event-card css, or Tailwind utility list if relevant]`  
+- The export must visually handle edge cases (long notes, many actionItems, overlapping events, etc.)
+
+### 5. **Ask for Focused, Iterative Help**
+- “Please tell me exactly what adjustments, CSS, or HTML changes are needed to correct the remaining issues above.  
+If you need any more screenshots, the actual event JSON, my component code, or PDF output, tell me exactly what to provide or where to look.”
+
+**Example Prompt:**
+
+We're almost there! The PDF export is very close to matching the browser daily view, but I still need these issues resolved:
+
+1. The spacing above and below event notes is too tight versus in-browser.
+2. Notes and action items are not wrapping onto multiple lines.
+3. The "Action Items" header should be bold and underlined, matching the browser.
+4. The event block height seems shorter than in the browser for 1-hour events.
+5. [List any other differences you see.]
+
+Here are screenshots of the browser and current PDF for comparison.  
+I want exact pixel-level parity on fonts, colors, padding, all event metadata.  
+Use these CSS classes: `.event-card { ... }`, etc.  
+If you need to see my actual React code, or event JSON, let me know.
+
+What explicit changes do I need to make (in HTML, styles, or component logic) for full fidelity?
+
+**Tip:**  
+Be as **specific** and **visual** as possible—highlight even tiny spacing/size differences, and always provide sample data and visual references when you want perfection.
+
+Let me know if you want help building side-by-side screenshot comparisons or making the checklist of visible mismatches!
+
+[1] file:///Users/jonathanprocter/Downloads/daily-calendar-2025-07-20%20(8).pdf

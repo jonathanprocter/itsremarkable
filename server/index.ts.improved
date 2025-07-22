@@ -1,0 +1,145 @@
+import express, { Request, Response, NextFunction } from "express";
+import session from "express-session";
+import passport from "passport";
+import { registerRoutes } from "./routes";
+import { setupVite, serveStatic, log } from "./vite";
+import { pool } from "./db";
+import ConnectPgSimple from "connect-pg-simple";
+import http from "http";
+import { configureGoogleStrategy, configurePassportSerialization } from "./oauth-fix";
+import { Server } from "http";
+
+const app = express();
+
+app.set('trust proxy', 1);
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+const PgSession = ConnectPgSimple(session);
+
+const sessionStore = new PgSession({
+  conString: process.env.DATABASE_URL!,
+  tableName: 'session',
+  createTableIfMissing: true,
+  pruneSessionInterval: 60 * 15,
+  ttl: 24 * 60 * 60,
+  schemaName: 'public'
+});
+
+sessionStore.on('error', console.error);
+sessionStore.on('connect', () => console.log('✅ Session store connected to PostgreSQL'));
+sessionStore.on('disconnect', () => console.warn('⚠️ Session store disconnected from PostgreSQL'));
+
+app.use(session({
+  store: sessionStore,
+  secret: process.env.SESSION_SECRET || 'remarkable-planner-secret-key-2025',
+  resave: false,
+  saveUninitialized: true,
+  rolling: false,
+  name: 'remarkable.sid',
+  cookie: {
+    secure: app.get("env") === "production",
+    maxAge: 30 * 24 * 60 * 60 * 1000,
+    httpOnly: true,
+    sameSite: 'lax',
+    path: '/',
+  }
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+configureGoogleStrategy();
+configurePassportSerialization();
+
+app.use((req: Request, res: Response, next: NextFunction) => {
+  const start = Date.now();
+  const path = req.path;
+  let capturedJsonResponse: Record<string, any> | undefined = undefined;
+
+  const originalResJson = res.json.bind(res);
+  res.json = (bodyJson: any, ...args: any[]) => {
+    capturedJsonResponse = bodyJson;
+    return originalResJson(bodyJson, ...args);
+  };
+
+  res.on("finish", () => {
+    const duration = Date.now() - start;
+    if (path.startsWith("/api")) {
+      let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
+      if (capturedJsonResponse) {
+        logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
+      }
+      log(logLine.length > 80 ? `${logLine.slice(0, 79)}…` : logLine);
+    }
+  });
+
+  next();
+});
+
+(async () => {
+  try {
+    console.log('Starting server setup...');
+    const server: Server = await registerRoutes(app);
+    console.log('Routes registered successfully');
+
+    app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
+      const status = 'status' in err ? err['status'] : 500;
+      const message = 'message' in err ? err['message'] : "Internal Server Error";
+      console.error('Server error:', err);
+      if (!res.headersSent) {
+        res.status(status).json({ message });
+      }
+    });
+
+    process.on('unhandledRejection', (reason, promise) => {
+      console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+    });
+
+    process.on('uncaughtException', (error) => {
+      console.error('Uncaught Exception:', error);
+    });
+
+    console.log('✅ All API routes registered, now setting up frontend...');
+    
+    if (app.get("env") === "development") {
+      console.log('Setting up Vite (after API routes)...');
+      await setupVite(app, server);
+      console.log('Vite setup complete');
+    } else {
+      serveStatic(app);
+    }
+
+    const port = 5000;
+    
+    server.on('error', (err: NodeJS.ErrnoException) => {
+      console.error('Server error:', err);
+      if (err.code === 'EADDRINUSE') {
+        console.error(`Port ${port} is already in use`);
+        process.exit(1);
+      }
+    });
+    
+    const gracefulShutdown = () => {
+      console.log('Shutting down gracefully...');
+      server.close(() => {
+        console.log('HTTP server closed');
+        pool.end(() => {
+          console.log('Database pool closed');
+          process.exit(0);
+        });
+      });
+    };
+
+    process.on('SIGTERM', gracefulShutdown);
+    process.on('SIGINT', gracefulShutdown);
+    
+    server.listen(port, "0.0.0.0", () => {
+      log(`serving on port ${port}`);
+    });
+  } catch (error) {
+    console.error('Server startup failed:', error);
+    process.exit(1);
+  }
+})();

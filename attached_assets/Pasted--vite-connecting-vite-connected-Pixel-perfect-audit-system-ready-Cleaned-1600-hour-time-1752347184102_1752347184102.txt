@@ -1,0 +1,36 @@
+[vite] connecting...
+[vite] connected.
+🔍 Pixel-perfect audit system ready!
+✅ Cleaned 1600 hour time slot: 16:00 -> 16:00
+Cannot read properties of undefined (reading 'toDateString')
+Global error: 
+TypeError {}
+
+Cannot read properties of undefined (reading 'toDateString')
+Global error: 
+TypeError {}
+
+The above error occurred in the <DailyView> component:
+
+    at DailyView (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/components/calendar/DailyView.tsx:23:3)
+    at div
+    at _c9 (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/components/ui/card.tsx:114:12)
+    at div
+    at _c (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/components/ui/card.tsx:20:11)
+    at div
+    at div
+    at div
+    at div
+    at Planner (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/pages/planner.tsx:41:44)
+    at Route (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=243ff4c6:323:16)
+    at Switch (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=243ff4c6:379:17)
+    at Router
+    at ErrorBoundary (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/components/common/ErrorBoundary.tsx:7:5)
+    at AccessibilityProvider (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/components/common/AccessibilityProvider.tsx:20:41)
+    at Provider (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-64W3HXLC.js?v=243ff4c6:39:15)
+    at TooltipProvider (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=243ff4c6:2249:5)
+    at QueryClientProvider (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=243ff4c6:2805:3)
+    at ErrorBoundary (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/components/common/ErrorBoundary.tsx:7:5)
+    at App
+
+React will try to recreate this component tree from scratch using the error boundary you provided, ErrorBoundary.

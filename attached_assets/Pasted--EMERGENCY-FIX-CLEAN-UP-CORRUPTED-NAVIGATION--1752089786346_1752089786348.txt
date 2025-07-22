@@ -1,0 +1,358 @@
+// ========================================
+// EMERGENCY FIX - CLEAN UP CORRUPTED NAVIGATION
+// ========================================
+
+// STEP 1: REMOVE ALL CORRUPTED ELEMENTS
+function removeCorruptedElements() {
+    // Remove all corrupted symbols and broken navigation
+    const corruptedElements = document.querySelectorAll('*');
+    corruptedElements.forEach(element => {
+        if (element.textContent.includes('Ø=ÜÅ') || 
+            element.textContent.includes('!•') ||
+            element.textContent.includes('Page') && element.textContent.includes('of 8')) {
+            element.remove();
+        }
+    });
+    
+    console.log('Removed corrupted navigation elements');
+}
+
+// STEP 2: FIX HEADER DATE FORMAT
+function fixWeeklyHeader() {
+    // Find and fix the header date
+    const headerElements = document.querySelectorAll('h1, h2, .header, .title');
+    headerElements.forEach(element => {
+        if (element.textContent.includes('July 7 - 2025 (day: 13)')) {
+            element.textContent = 'July 7 - 13, 2025';
+        }
+    });
+    
+    console.log('Fixed header date format');
+}
+
+// STEP 3: CREATE CLEAN WEEKLY VIEW NAVIGATION
+function createCleanWeeklyNavigation() {
+    const weeklyContainer = document.querySelector('.weekly-view, .weekly-calendar, [data-view="weekly"]');
+    
+    if (weeklyContainer) {
+        // Remove any existing navigation
+        const existingNav = weeklyContainer.querySelectorAll('.nav, .navigation, .buttons');
+        existingNav.forEach(nav => nav.remove());
+        
+        // Create clean header
+        const headerHTML = `
+        <div class="weekly-header" style="
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 20px; 
+            background: #f8f9fa; 
+            border-bottom: 2px solid #e0e0e0;
+        ">
+            <h1 style="margin: 0; font-size: 24px; font-weight: 600;">July 7 - 13, 2025</h1>
+            <div class="legend" style="display: flex; gap: 20px; font-size: 12px;">
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <div style="width: 16px; height: 16px; background: #e3f2fd; border: 1px solid #ccc; border-radius: 4px;"></div>
+                    <span>SimplePractice</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <div style="width: 16px; height: 16px; background: #f3e5f5; border: 1px solid #ccc; border-radius: 4px;"></div>
+                    <span>Google Calendar</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <div style="width: 16px; height: 16px; background: #fff3e0; border: 1px solid #ccc; border-radius: 4px;"></div>
+                    <span>Holidays</span>
+                </div>
+            </div>
+        </div>`;
+        
+        weeklyContainer.insertAdjacentHTML('afterbegin', headerHTML);
+        
+        // Create clean day navigation buttons at bottom
+        const dayNavHTML = `
+        <div class="day-navigation" style="
+            display: flex; 
+            justify-content: center; 
+            gap: 10px; 
+            padding: 20px; 
+            background: #f8f9fa; 
+            border-top: 2px solid #e0e0e0;
+        ">
+            <button onclick="showDay('monday')" style="
+                background: #f0f0f0; 
+                border: 2px solid #ccc; 
+                border-radius: 8px; 
+                padding: 8px 16px; 
+                cursor: pointer; 
+                font-size: 14px;
+                transition: all 0.2s;
+            ">Monday</button>
+            <button onclick="showDay('tuesday')" style="
+                background: #f0f0f0; 
+                border: 2px solid #ccc; 
+                border-radius: 8px; 
+                padding: 8px 16px; 
+                cursor: pointer; 
+                font-size: 14px;
+                transition: all 0.2s;
+            ">Tuesday</button>
+            <button onclick="showDay('wednesday')" style="
+                background: #f0f0f0; 
+                border: 2px solid #ccc; 
+                border-radius: 8px; 
+                padding: 8px 16px; 
+                cursor: pointer; 
+                font-size: 14px;
+                transition: all 0.2s;
+            ">Wednesday</button>
+            <button onclick="showDay('thursday')" style="
+                background: #f0f0f0; 
+                border: 2px solid #ccc; 
+                border-radius: 8px; 
+                padding: 8px 16px; 
+                cursor: pointer; 
+                font-size: 14px;
+                transition: all 0.2s;
+            ">Thursday</button>
+            <button onclick="showDay('friday')" style="
+                background: #f0f0f0; 
+                border: 2px solid #ccc; 
+                border-radius: 8px; 
+                padding: 8px 16px; 
+                cursor: pointer; 
+                font-size: 14px;
+                transition: all 0.2s;
+            ">Friday</button>
+            <button onclick="showDay('saturday')" style="
+                background: #f0f0f0; 
+                border: 2px solid #ccc; 
+                border-radius: 8px; 
+                padding: 8px 16px; 
+                cursor: pointer; 
+                font-size: 14px;
+                transition: all 0.2s;
+            ">Saturday</button>
+            <button onclick="showDay('sunday')" style="
+                background: #f0f0f0; 
+                border: 2px solid #ccc; 
+                border-radius: 8px; 
+                padding: 8px 16px; 
+                cursor: pointer; 
+                font-size: 14px;
+                transition: all 0.2s;
+            ">Sunday</button>
+        </div>`;
+        
+        weeklyContainer.insertAdjacentHTML('beforeend', dayNavHTML);
+    }
+    
+    console.log('Created clean weekly navigation');
+}
+
+// STEP 4: CREATE CLEAN DAILY VIEW NAVIGATION
+function createCleanDailyNavigation() {
+    const dailyViews = document.querySelectorAll('.daily-view, .daily-planner, [data-view="daily"]');
+    
+    const dayConfigs = [
+        { day: 'Monday', date: 'July 7, 2025', count: 11, prev: 'Sunday', next: 'Tuesday' },
+        { day: 'Tuesday', date: 'July 8, 2025', count: 5, prev: 'Monday', next: 'Wednesday' },
+        { day: 'Wednesday', date: 'July 9, 2025', count: 6, prev: 'Tuesday', next: 'Thursday' },
+        { day: 'Thursday', date: 'July 10, 2025', count: 10, prev: 'Wednesday', next: 'Friday' },
+        { day: 'Friday', date: 'July 11, 2025', count: 6, prev: 'Thursday', next: 'Saturday' },
+        { day: 'Saturday', date: 'July 12, 2025', count: 2, prev: 'Friday', next: 'Sunday' },
+        { day: 'Sunday', date: 'July 13, 2025', count: 0, prev: 'Saturday', next: 'Monday' }
+    ];
+    
+    dailyViews.forEach((view, index) => {
+        if (index < dayConfigs.length) {
+            const config = dayConfigs[index];
+            
+            // Remove existing corrupted navigation
+            const existingNav = view.querySelectorAll('.nav, .navigation, .buttons');
+            existingNav.forEach(nav => nav.remove());
+            
+            // Create clean header
+            const headerHTML = `
+            <div class="daily-header" style="
+                display: flex; 
+                justify-content: space-between; 
+                align-items: center; 
+                padding: 15px 20px; 
+                background: #f8f9fa; 
+                border-bottom: 2px solid #e0e0e0;
+            ">
+                <button onclick="showWeeklyView()" style="
+                    background: #f0f0f0; 
+                    border: 2px solid #ccc; 
+                    border-radius: 8px; 
+                    padding: 10px 16px; 
+                    cursor: pointer; 
+                    font-size: 14px;
+                    display: flex; 
+                    align-items: center; 
+                    gap: 8px;
+                    transition: all 0.2s;
+                ">📅 Weekly Overview</button>
+                
+                <div style="text-align: center;">
+                    <h2 style="margin: 0; font-size: 22px; font-weight: 600;">${config.day}, ${config.date}</h2>
+                    <span style="font-size: 14px; color: #666;">${config.count} appointments</span>
+                </div>
+                
+                <div></div>
+            </div>`;
+            
+            view.insertAdjacentHTML('afterbegin', headerHTML);
+            
+            // Create clean footer
+            const footerHTML = `
+            <div class="daily-footer" style="
+                display: flex; 
+                justify-content: space-between; 
+                align-items: center; 
+                padding: 15px 20px; 
+                background: #f8f9fa; 
+                border-top: 2px solid #e0e0e0;
+            ">
+                <button onclick="showDay('${config.prev.toLowerCase()}')" style="
+                    background: #f0f0f0; 
+                    border: 2px solid #ccc; 
+                    border-radius: 8px; 
+                    padding: 8px 16px; 
+                    cursor: pointer; 
+                    font-size: 14px;
+                    transition: all 0.2s;
+                ">← ${config.prev}</button>
+                
+                <button onclick="showWeeklyView()" style="
+                    background: #f0f0f0; 
+                    border: 2px solid #ccc; 
+                    border-radius: 8px; 
+                    padding: 10px 16px; 
+                    cursor: pointer; 
+                    font-size: 14px;
+                    display: flex; 
+                    align-items: center; 
+                    gap: 8px;
+                    transition: all 0.2s;
+                ">📅 Weekly Overview</button>
+                
+                <button onclick="showDay('${config.next.toLowerCase()}')" style="
+                    background: #f0f0f0; 
+                    border: 2px solid #ccc; 
+                    border-radius: 8px; 
+                    padding: 8px 16px; 
+                    cursor: pointer; 
+                    font-size: 14px;
+                    transition: all 0.2s;
+                ">${config.next} →</button>
+            </div>`;
+            
+            view.insertAdjacentHTML('beforeend', footerHTML);
+        }
+    });
+    
+    console.log('Created clean daily navigation');
+}
+
+// STEP 5: ADD PROPER NAVIGATION FUNCTIONS
+function addNavigationFunctions() {
+    // Weekly view function
+    window.showWeeklyView = function() {
+        document.querySelectorAll('.daily-view, .daily-planner, [data-view="daily"]').forEach(view => {
+            view.style.display = 'none';
+        });
+        
+        const weeklyView = document.querySelector('.weekly-view, .weekly-calendar, [data-view="weekly"]');
+        if (weeklyView) {
+            weeklyView.style.display = 'block';
+        }
+        
+        console.log('Showing weekly view');
+    };
+    
+    // Daily view function
+    window.showDay = function(dayName) {
+        const weeklyView = document.querySelector('.weekly-view, .weekly-calendar, [data-view="weekly"]');
+        if (weeklyView) {
+            weeklyView.style.display = 'none';
+        }
+        
+        document.querySelectorAll('.daily-view, .daily-planner, [data-view="daily"]').forEach(view => {
+            view.style.display = 'none';
+        });
+        
+        const targetDay = document.querySelector(`[data-day="${dayName}"], .${dayName}-view`);
+        if (targetDay) {
+            targetDay.style.display = 'block';
+        }
+        
+        console.log('Showing day:', dayName);
+    };
+    
+    console.log('Added navigation functions');
+}
+
+// STEP 6: ADD BUTTON HOVER EFFECTS
+function addButtonHoverEffects() {
+    const style = document.createElement('style');
+    style.textContent = `
+        button:hover {
+            background: #e0e0e0 !important;
+            border-color: #999 !important;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        button:active {
+            transform: translateY(0);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+    `;
+    document.head.appendChild(style);
+    
+    console.log('Added button hover effects');
+}
+
+// MAIN EMERGENCY FIX FUNCTION
+function emergencyFix() {
+    console.log('🚨 STARTING EMERGENCY FIX...');
+    
+    removeCorruptedElements();
+    fixWeeklyHeader();
+    createCleanWeeklyNavigation();
+    createCleanDailyNavigation();
+    addNavigationFunctions();
+    addButtonHoverEffects();
+    
+    console.log('✅ EMERGENCY FIX COMPLETE!');
+    console.log('Navigation should now be clean and functional');
+}
+
+// AUTO-RUN THE FIX
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', emergencyFix);
+} else {
+    emergencyFix();
+}
+
+// Manual trigger function
+window.emergencyFix = emergencyFix;
+
+// ========================================
+// INSTRUCTIONS FOR REPLIT
+// ========================================
+
+/*
+PASTE THIS CODE AND RUN: emergencyFix()
+
+This will:
+1. ✅ Remove all "Ø=ÜÅ" corrupted symbols
+2. ✅ Remove all "!•" broken navigation  
+3. ✅ Fix header to "July 7 - 13, 2025"
+4. ✅ Create clean button navigation
+5. ✅ Add proper hover effects
+6. ✅ Make navigation functional
+
+After running this, your calendar should be clean and working properly!
+*/

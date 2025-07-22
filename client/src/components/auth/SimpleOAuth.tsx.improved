@@ -1,0 +1,83 @@
+x
+import React, { useState, useCallback } from 'react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ExternalLink, RefreshCw } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+
+interface SimpleOAuthProps {
+  onAuthSuccess?: () => void;
+}
+
+/**
+ * Component to handle OAuth authentication, specifically for Google Calendar.
+ * @param {SimpleOAuthProps} props - Component props.
+ */
+export const SimpleOAuth: React.FC<SimpleOAuthProps> = ({ onAuthSuccess }) => {
+  const [isAuthenticating, setIsAuthenticating] = useState<boolean>(false);
+  const { toast } = useToast();
+
+  /**
+   * Handles the authentication process with Google OAuth.
+   */
+  const handleGoogleAuth = useCallback(() => {
+    setIsAuthenticating(true);
+    
+    const authWindow = window.open('/api/auth/google', 'google-auth', 'width=500,height=600');
+    
+    if (!authWindow) {
+      toast.error('Failed to open authentication window. Please check your popup settings.');
+      setIsAuthenticating(false);
+      return;
+    }
+
+    const checkClosed = setInterval(() => {
+      if (authWindow.closed) {
+        clearInterval(checkClosed);
+        setIsAuthenticating(false);
+        
+        setTimeout(() => {
+          onAuthSuccess?.();
+        }, 1000);
+      }
+    }, 1000);
+  }, [onAuthSuccess, toast]);
+
+  return (
+    <Card className="max-w-md mx-auto">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <ExternalLink className="h-5 w-5" />
+          Connect Google Calendar
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <p className="text-sm text-muted-foreground">
+          Connect your Google Calendar to sync events and enable PDF exports to Google Drive.
+        </p>
+        
+        <Button 
+          onClick={handleGoogleAuth}
+          disabled={isAuthenticating}
+          className="w-full"
+        >
+          {isAuthenticating ? (
+            <>
+              <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+              Connecting...
+            </>
+          ) : (
+            <>
+              <ExternalLink className="h-4 w-4 mr-2" />
+              Connect Google Calendar
+            </>
+          )}
+        </Button>
+        
+        <p className="text-xs text-muted-foreground">
+          This will open a new window where you can authorize access to your Google Calendar and Google Drive.
+        </p>
+      </CardContent>
+    </Card>
+  );
+};

@@ -1,0 +1,83 @@
+Your backend logs and UI both point to **Google OAuth authentication still being broken**, due to **no valid (or expired) tokens being present in the session**:
+
+### Exact Log Evidence:
+```
+🔍 Auth status check: { isAuthenticated: true, hasValidTokens: false, userEmail: 'jonathan.procter@gmail.com' }
+❌ No access token - authentication required
+401 ... {"error":"Google authentication required"}
+```
+and
+```
+No valid Google tokens - requiring fresh authentication
+No valid session tokens - redirecting to authentication
+```
+
+## What’s Actually Broken (Summary):
+
+- **OAuth flow/authentication is not completing successfully.**
+- **Your backend is not storing or retrieving valid Google OAuth tokens (access_token, refresh_token) in the user session.**
+- Any calendar/Google API endpoint returns 401 Unauthorized because it finds no valid token.
+
+### Why does this happen?
+
+- The OAuth callback route might NOT be receiving the `code` parameter, or isn’t exchanging it for fresh tokens.
+- OR, the session isn’t being written/persisted properly, possibly due to cookie/session config or the app running in "stateless" or wrong environment.
+- OR, your app is reading environment tokens (from `.env` or Replit Secrets), but these are expired or never refreshed.
+
+## Step-by-Step: How to Fix This Issue
+
+### 1. **Confirm the OAuth callback route (`/api/auth/callback`) is working:**
+
+- **Does it ever log both `req.query.code` (authorization code) and a successful token response?**
+- If you never see the `code` in logs, Google is not completing the auth (likely routing/config/CORS/session/host issue).
+
+### 2. **Check/rewrite your callback to always store tokens:**
+The code in your Express/Node `/api/auth/callback` handler should look like this (simplified):
+```js
+app.get('/api/auth/callback', async (req, res) => {
+  if (!req.query.code) {
+    return res.status(400).send('No code parameter in callback!');
+  }
+  // Exchange code for tokens:
+  const tokenRes = await exchangeCodeForToken(req.query.code);
+  if (tokenRes && tokenRes.access_token) {
+    req.session.access_token = tokenRes.access_token;
+    req.session.refresh_token = tokenRes.refresh_token;
+    req.session.save();
+    return res.redirect('/'); // or your app main page
+  }
+  res.status(400).send('Token exchange failed');
+});
+```
+**If this ever fails or the code isn't saved in the session, all future API calls will fail.**
+
+### 3. **Check your session configuration:**
+- Ensure Express uses a proper session middleware and cookie parser with a secure, non-empty secret.
+- Use the same domain, protocol (http/https), and no cross-site frame when doing OAuth, or browsers will block session cookies.
+
+### 4. **Check whether you are using expired or missing Environment Tokens**
+- Your Replit "Secrets" show `GOOGLE_ACCESS_TOKEN`, `GOOGLE_REFRESH_TOKEN`, etc. If these were manually populated a long time ago, they may be **expired**.
+- Forever relying on these is not a substitute for a working, full OAuth exchange (which yields new tokens as needed).
+
+### 5. **Try a full, fresh OAuth sign-in**
+- Remove/disable the use of environment tokens so you force the app to do a fresh Google login. Watch backend logs for:
+  - `/api/auth/callback` request
+  - Logs showing token acquisition and session save
+
+-----  
+
+## **Recap:**
+- **Every time your server logs `hasValidTokens: false` or “No access token - authentication required,” the backend does NOT have a valid access token in session and CANNOT communicate with Google for this user.**
+- This must be fixed in the OAuth callback route/session save logic.
+- Using environment tokens as an "emergency fix" is only a band-aid and will keep breaking as those tokens expire.
+
+### **What you should do right now:**
+
+1. Make sure `/api/auth/callback` is getting a Google `code` and successfully exchanging it for fresh tokens.
+2. Save **both** `access_token` and `refresh_token` to the session—log them out on every login for debugging.
+3. Use the `refresh_token` to get a new `access_token` as needed, automatically.
+4. Only use environment tokens for one-time emergency/manual debug—not for production.
+
+**If you paste the exact backend code for `/api/auth/callback`, I can tell you exactly what line is broken or needs fixing.** Or, if you post the output of a new OAuth sign-in backend log, I’ll diagnose exact next steps!
+
+[1] https://replit.com/t/jonathan-procter-phd/repls/RemarkablePlannerPro

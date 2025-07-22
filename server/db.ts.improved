@@ -1,0 +1,36 @@
+import { Pool, neonConfig } from '@neondatabase/serverless';
+import { drizzle } from 'drizzle-orm/neon-serverless';
+import WebSocket from 'ws';
+import * as schema from '@shared/schema';
+
+// Set WebSocket constructor for neonConfig
+neonConfig.webSocketConstructor = WebSocket;
+
+// Ensure DATABASE_URL is set
+const databaseUrl = process.env.DATABASE_URL;
+if (!databaseUrl) {
+  throw new Error('DATABASE_URL must be set. Did you forget to provision a database?');
+}
+
+/**
+ * Configures and exports a connection pool for database interactions.
+ * Ensures efficient management of database connections with proper limits.
+ */
+export const pool = new Pool({
+  connectionString: databaseUrl,
+  max: 5, // Maximum number of connections in the pool
+  min: 1, // Minimum number of connections in the pool
+  idleTimeoutMillis: 30000, // Close idle connections after 30 seconds
+  connectionTimeoutMillis: 10000, // Timeout after 10 seconds trying to connect
+});
+
+// Handle and log pool errors
+pool.on('error', (err: Error) => {
+  console.error('Unexpected database pool error:', err);
+});
+
+/**
+ * Initializes and exports the database interface using Drizzle ORM.
+ * Utilizes the configured connection pool and shared schema.
+ */
+export const db = drizzle({ client: pool, schema });

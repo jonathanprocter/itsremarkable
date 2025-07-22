@@ -1,0 +1,31 @@
+{
+  "timestamp": "2025-07-21T18:36:45.506445",
+  "overall_score": 100.0,
+  "max_score": 100,
+  "critical_issues": [],
+  "warnings": [],
+  "validations": {
+    "currentWeeklyExport.ts_exists": true,
+    "browserReplicaPDF.ts_exists": true,
+    "import_structure": true,
+    "function_implementation": true,
+    "integration": true
+  },
+  "template_analysis": {
+    "currentWeeklyExport.ts": {
+      "has_pdf_creation": true,
+      "has_html_canvas": false,
+      "has_event_filtering": true,
+      "has_navigation_elements": true,
+      "parameter_count": 1
+    },
+    "browserReplicaPDF.ts": {
+      "has_pdf_creation": true,
+      "has_html_canvas": true,
+      "has_event_filtering": true,
+      "has_navigation_elements": true,
+      "parameter_count": 1
+    }
+  },
+  "export_readiness": true
+}

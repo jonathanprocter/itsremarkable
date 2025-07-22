@@ -1,0 +1,177 @@
+// Replace your handleExportAction function in the Planner component with this:
+
+import { generateCompleteExportData, exportToText, exportToJSON, exportToCSV, testExportData } from '../utils/completePDFExport';
+
+const handleExportAction = async (type: string = 'Current View') => {
+  try {
+    console.log('=== STARTING EXPORT ===');
+    console.log('Export type:', type);
+    console.log('Current view mode:', state.viewMode);
+    console.log('Current events count:', currentEvents.length);
+    console.log('Selected date:', state.selectedDate);
+    console.log('Current week start:', state.currentWeek.startDate);
+    console.log('Current week end:', state.currentWeek.endDate);
+
+    // First, let's test the data to see what we're working with
+    console.log('=== DEBUGGING CURRENT EVENTS ===');
+    currentEvents.forEach((event, index) => {
+      console.log(`Event ${index + 1}:`, {
+        id: event.id,
+        title: event.title,
+        startTime: event.startTime,
+        endTime: event.endTime,
+        source: event.source
+      });
+    });
+
+    // Generate complete export data
+    const selectedDateForExport = state.viewMode === 'daily' ? state.selectedDate : state.currentDate;
+    const currentDateString = selectedDateForExport.toISOString().split('T')[0];
+    const dailyNotes = state.dailyNotes[currentDateString] || '';
+
+    const exportData = generateCompleteExportData(
+      selectedDateForExport,
+      currentEvents,
+      dailyNotes
+    );
+
+    console.log('Generated export data:', exportData);
+
+    if (exportData.appointments.length === 0) {
+      toast({
+        title: "No Appointments",
+        description: `No appointments found for ${exportData.date}. Check your calendar filters.`,
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Export based on type
+    let fileContent: string;
+    let fileName: string;
+    let mimeType: string;
+
+    switch (type) {
+      case 'Current View':
+      case 'Daily View':
+      case 'reMarkable Daily':
+        fileContent = exportToText(exportData);
+        fileName = `daily-planner-${selectedDateForExport.toISOString().split('T')[0]}.txt`;
+        mimeType = 'text/plain';
+        break;
+
+      case 'Weekly Package':
+      case 'reMarkable Weekly':
+        // For weekly exports, generate data for each day of the week
+        const weeklyData = [];
+        const weekStart = state.currentWeek.startDate;
+        const weekEnd = state.currentWeek.endDate;
+        
+        for (let d = new Date(weekStart); d <= weekEnd; d.setDate(d.getDate() + 1)) {
+          const dayData = generateCompleteExportData(
+            new Date(d),
+            currentEvents,
+            state.dailyNotes[d.toISOString().split('T')[0]] || ''
+          );
+          weeklyData.push(dayData);
+        }
+        
+        fileContent = generateWeeklyText(weeklyData);
+        fileName = `weekly-planner-${weekStart.toISOString().split('T')[0]}.txt`;
+        mimeType = 'text/plain';
+        break;
+
+      case 'JSON Export':
+        fileContent = exportToJSON(exportData);
+        fileName = `daily-planner-${selectedDateForExport.toISOString().split('T')[0]}.json`;
+        mimeType = 'application/json';
+        break;
+
+      case 'CSV Export':
+        fileContent = exportToCSV(exportData);
+        fileName = `daily-planner-${selectedDateForExport.toISOString().split('T')[0]}.csv`;
+        mimeType = 'text/csv';
+        break;
+
+      case 'Test Export':
+        // This will download a test file and log everything to console
+        testExportData(currentEvents, selectedDateForExport);
+        toast({
+          title: "Test Export Complete",
+          description: "Check console and downloads for test data"
+        });
+        return;
+
+      default:
+        fileContent = exportToText(exportData);
+        fileName = `planner-export-${selectedDateForExport.toISOString().split('T')[0]}.txt`;
+        mimeType = 'text/plain';
+    }
+
+    // Create and download the file
+    const blob = new Blob([fileContent], { type: mimeType });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = fileName;
+    link.style.display = 'none';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    console.log('=== EXPORT COMPLETE ===');
+    console.log('File name:', fileName);
+    console.log('File size:', fileContent.length, 'characters');
+    console.log('Appointments exported:', exportData.appointments.length);
+
+    toast({
+      title: "Export Successful",
+      description: `${fileName} downloaded with ${exportData.appointments.length} appointments!`
+    });
+
+  } catch (error) {
+    console.error('=== EXPORT ERROR ===', error);
+    toast({
+      title: "Export Error",
+      description: `Failed to generate export: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      variant: "destructive"
+    });
+  }
+};
+
+// Helper function for weekly text export
+const generateWeeklyText = (weeklyData: any[]): string => {
+  let output = 'WEEKLY PLANNER\n';
+  output += `Week of ${weeklyData[0]?.date} - ${weeklyData[weeklyData.length - 1]?.date}\n`;
+  output += '='.repeat(80) + '\n\n';
+
+  let totalAppointments = 0;
+  
+  weeklyData.forEach((dayData, index) => {
+    output += `${dayData.date}\n`;
+    output += '-'.repeat(40) + '\n';
+    
+    if (dayData.appointments.length === 0) {
+      output += 'No appointments\n';
+    } else {
+      dayData.appointments.forEach((apt: any, aptIndex: number) => {
+        output += `${aptIndex + 1}. ${apt.time} - ${apt.title} (${apt.source})\n`;
+        if (apt.notes && apt.notes.trim()) {
+          output += `   Notes: ${apt.notes}\n`;
+        }
+      });
+      totalAppointments += dayData.appointments.length;
+    }
+    
+    if (dayData.dailyNotes && dayData.dailyNotes.trim()) {
+      output += `Daily Notes: ${dayData.dailyNotes}\n`;
+    }
+    
+    output += '\n';
+  });
+
+  output += `\nWEEK SUMMARY: ${totalAppointments} total appointments\n`;
+  
+  return output;
+};

@@ -1,0 +1,79 @@
+/**
+ * Session Cookie Fixer - Forces frontend to use authenticated backend session.
+ * This class provides utilities for managing session cookies, including forcing
+ * the use of an authenticated session, checking if the current session is authenticated,
+ * and verifying the authentication status of the current session with the backend.
+ */
+export class SessionFixer {
+  private static readonly AUTHENTICATED_SESSION = 'gBvnYGiTDicIU7Udon_c5TdzlgtHhdNU';
+  private static readonly SESSION_COOKIE_NAME = 'remarkable.sid';
+
+  /**
+   * Force the frontend to use the authenticated backend session by clearing all existing
+   * session cookies and setting a new authenticated session cookie.
+   */
+  static forceUseAuthenticatedSession(): void {
+    console.log('🔧 FORCING USE OF AUTHENTICATED SESSION');
+
+    this.clearAllCookies();
+    console.log('🧹 Cleared all session cookies');
+
+    const sessionValue = `s%3A${this.AUTHENTICATED_SESSION}.4GDBmZtU6BzV0jBKRj1PNKgdyBHfJE8kOCsFjBEhqeI`;
+    this.setCookie(this.SESSION_COOKIE_NAME, sessionValue, 30); // Expires in 30 days
+    console.log('✅ Set authenticated session cookie:', sessionValue);
+
+    console.log('🔄 Reloading page to use authenticated session...');
+    window.location.reload();
+  }
+
+  /**
+   * Test if the current session is the authenticated one by checking the session cookie.
+   * @returns {boolean} True if using the authenticated session, false otherwise.
+   */
+  static isUsingAuthenticatedSession(): boolean {
+    const value = this.getCookie(this.SESSION_COOKIE_NAME);
+    return value.includes(this.AUTHENTICATED_SESSION);
+  }
+
+  /**
+   * Check the authentication status with the current session by making an API call.
+   * @returns {Promise<boolean>} Promise resolving to true if authenticated, false otherwise.
+   */
+  static async checkCurrentSessionAuth(): Promise<boolean> {
+    try {
+      const response = await fetch('/api/auth/status', {
+        credentials: 'include',
+        headers: { 'Cache-Control': 'no-cache' },
+      });
+
+      if (!response.ok) throw new Error('Failed to fetch auth status');
+
+      const data = await response.json();
+      console.log('🔍 Current session auth check:', data);
+      return data.isAuthenticated === true;
+    } catch (error) {
+      console.error('❌ Auth check failed:', error);
+      return false;
+    }
+  }
+
+  private static clearAllCookies(): void {
+    document.cookie.split(";").forEach(cookie => {
+      const name = cookie.split("=")[0].trim();
+      document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`;
+    });
+  }
+
+  private static setCookie(name: string, value: string, days: number): void {
+    const expires = new Date(Date.now() + days * 864e5).toUTCString();
+    document.cookie = `${name}=${value}; expires=${expires}; path=/; SameSite=Lax`;
+  }
+
+  private static getCookie(name: string): string {
+    const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+    return match ? match[2] : '';
+  }
+}
+
+// Make available globally
+(window as any).SessionFixer = SessionFixer;

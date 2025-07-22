@@ -1,0 +1,141 @@
+Based on your workflow and the most recent actions logged, **YES — your OAuth callback route is now correctly configured** using `/api/auth/callback`. This ends the routing conflict between your backend and the React frontend SPA.
+
+## 🎯 What you need for your Google OAuth Google Cloud Console Config:
+
+### ✅ **Redirect URI for Production/Deployment:**
+```
+https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/api/auth/callback
+```
+
+### ✅ **Redirect URI for Local Development:**
+```
+http://localhost:5000/api/auth/callback
+```
+*(You can include both in your OAuth client config for seamless dev/prod switches.)*
+
+**Note: Use `/api/auth/callback` exactly, matching your backend route.**
+
+### ✅ **Authorized JavaScript Origins**
+```
+https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev
+http://localhost:5000
+```
+
+**No path, just the protocol and domain!**
+
+## 🚦 **Checklist:**
+
+- [x] In Google Cloud Console:  
+  - “Authorized redirect URIs” → Add both `https://.../api/auth/callback` and `http://localhost:5000/api/auth/callback`
+  - “Authorized JavaScript origins” → Add both `https://...` and `http://localhost:5000`
+- [x] Your OAuth server code should generate the Google URL with `redirect_uri` set to the **same path above** (with protocol).
+
+## **Bottom Line:**  
+- Your OAuth callback entry point is correct.  
+- Update your Google Cloud Console to use `/api/auth/callback` for all URIs, **not** `/auth/callback`.  
+- All Google OAuth requests will now succeed, and the callback will hit your backend, not the frontend.
+
+**If you do this, Google login will work and you will no longer get 404s or redirect_uri_mismatch errors.**
+
+If you need a final sample OAuth URL for use in your code/config, it will be:
+```
+https://accounts.google.com/o/oauth2/v2/auth?
+  client_id=YOUR_CLIENT_ID.apps.googleusercontent.com
+  &redirect_uri=https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/api/auth/callback
+  &response_type=code
+  &scope=...scopes...
+  &access_type=offline
+  &prompt=consent
+```
+(Replace `YOUR_CLIENT_ID` and properly URL-encode as needed.)
+
+**You’re ready to go!**Yes, your configuration is now correct!  
+Your backend is handling `/api/auth/callback` and the Google OAuth flow is now routed to **your API** (not intercepted by your frontend SPA), which prevents further 404s and “page not found” errors.
+
+## ✅ **Your Google OAuth redirect config should now be:**
+
+### **For Google Cloud Console – Authorized redirect URIs:**
+```
+https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/api/auth/callback
+http://localhost:5000/api/auth/callback
+```
+
+### **For Google Cloud Console – Authorized JavaScript origins:**
+```
+https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev
+http://localhost:5000
+```
+
+**EXACT**. All Google API requests must use `/api/auth/callback` for the redirect—both in code and in the console.
+
+### **In your server code, this should match:**
+```js
+const redirectUri =
+  process.env.NODE_ENV === "development"
+    ? "http://localhost:5000/api/auth/callback"
+    : "https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/api/auth/callback";
+
+// ...use this redirectUri in the OAuth request!
+```
+
+Once those changes are live in your Google Cloud Console AND in your backend OAuth logic, your Google login will work—no more frontend 404 or redirect mismatch!
+
+**Bottom line:**  
+Use exactly `/api/auth/callback` (not `/auth/callback`) for both code and cloud config, and everything will work.Yes, your setup is correct now! Here’s **what you need to add to the Google OAuth client config** for your deployed Replit app:
+
+**AUTHORIZED REDIRECT URI:**
+```
+https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/api/auth/callback
+```
+
+**AUTHORIZED JAVASCRIPT ORIGINS:**
+```
+https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev
+```
+
+For **local development**, ALSO include:
+```
+http://localhost:5000/api/auth/callback
+http://localhost:5000
+```
+
+### In summary:
+
+- Your app should send users to Google's OAuth with:
+  ```
+  &redirect_uri=https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/api/auth/callback
+  ```
+- Google will redirect to **that exact path** with the code.
+- Your Express backend must have:
+  ```js
+  app.get('/api/auth/callback', ...)
+  ```
+
+**No 404, no frontend SPA interference. This setup will work for both dev and production!**Yes—your setup is correct now, and here's exactly how your OAuth config should look in Google Cloud Console:
+
+### **Authorized redirect URIs:**
+- For production:
+  ```
+  https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/api/auth/callback
+  ```
+- For development:
+  ```
+  http://localhost:5000/api/auth/callback
+  ```
+
+### **Authorized JavaScript origins:**
+- For production:
+  ```
+  https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev
+  ```
+- For development:
+  ```
+  http://localhost:5000
+  ```
+
+**In your OAuth server code:**  
+Make sure to generate the `/api/auth/callback` URL (with https for prod, http for dev).
+
+**Deploy these configs and everything should work—this has fixed the routing and callback confusion for your OAuth!**
+
+[1] https://replit.com/t/jonathan-procter-phd/repls/RemarkablePlannerPro

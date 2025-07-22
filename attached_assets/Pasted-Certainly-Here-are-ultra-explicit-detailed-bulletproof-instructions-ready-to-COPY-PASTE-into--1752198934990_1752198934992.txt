@@ -1,0 +1,76 @@
+Certainly. Here are **ultra-explicit, detailed, bulletproof instructions**—ready to COPY/PASTE into Replit’s AI or directly to your dev—to fix the remaining issues and achieve the exact look you want for your “pixel-perfect” daily export based on your latest PDF results:
+
+## 🚩**DAILY PLANNER PDF EXPORT — EXACT SPEC FOR FINAL FIXES**
+
+### 1. HEADER LAYOUT & BUTTON  
+**a.** The “Back to week” (or "Weekly Overview") button must be a distinct, clearly-outlined dashboard-style button:  
+- Aligned LEFT, above or beside the header title—not mixed with the title text.
+- Sized and spaced as on the dashboard, with a clear rectangular border.
+- No part of the “Back” wording should touch or overlap the main header.
+- Button text: **"Back to week"** (not mixed-case, not split between lines).
+
+**b.** The header line should read:  
+**DAILY PLANNER**  
+**Monday, July 7, 2025     11 appointments today**  
+- “DAILY PLANNER” is bold, centered  
+- Underneath (or in a row if dashboard does so), left-aligned: Today’s date and “N appointments today”  
+- “SimplePractice / Google Calendar / Holidays in US” legend must appear directly beneath this, styled as colored badges (not plain text or bullet points).
+
+### 2. LEGEND (CALENDAR SOURCE COLORS)  
+Show legend as horizontal colored badges, visually matching dashboard:  
+- **SimplePractice:** Blue badge  
+- **Google Calendar:** Green badge  
+- **Holidays:** Yellow/orange badge  
+All badges should be horizontally aligned, with consistent left/right padding, not stacked or using hashtags. Use dashboard colors and border radius.
+
+### 3. TIME GRID & EVENTS  
+**a.** **Vertical Divider:**  
+- A BLACK (#222) or dashboard-matching vertical line must separate the time column from the appointment/event cells for the full height of the grid/table.
+- Do NOT use dashed or faint lines; use the same style/weight as in the weekly view.
+
+**b.** **Time Column:**  
+- All times are right-aligned, vertically centered.
+- Do NOT bold the times or increase size unless shown in dashboard.
+
+**c.** **Appointment/Event Rendering:**  
+- All events MUST be fully INSIDE the cells, not above, below, or outside grid lines.
+- The font for event titles (e.g., "Nico Luppino") should be as large and bold as will fit, filling space but never overflowing.
+- The source label ("SIMPLEPRACTICE" or "GOOGLE CALENDAR") and time (e.g., "15:00–16:00") should appear directly below the title, NOT outside the event boundaries.
+- Event "box" backgrounds must be **white** unless dashboard specifies color, with a thin border if shown in dashboard.
+
+--- 
+
+### 4. EVENT NOTES & ACTION ITEMS  
+- Only show “Event Notes” and “Action Items” if there are actual (non-empty) notes or actions for that event.
+- If no notes or actions exist, **omit these headers and sections entirely** (e.g., for "Sherrifa Hoosein Appointment" in your example).
+
+### 5. SPACING, LINE-WEIGHTS, AND ALIGNMENT  
+- Equal padding inside event cells and between rows. No text should touch any border line.
+- All horizontal and vertical lines should have **exactly** the same weight and color as your on-screen dashboard.
+- The entire appointment/event (title, time, source) must be visually “owned” by the cell, never running over, under, or outside the grid.
+
+### 6. PRINT/PDF PARITY & PAGE FORMAT  
+- Page orientation: **Portrait**  
+- Export must reproduce the **exact visible layout** of the on-screen daily view with zero changes to row heights, widths, or font scaling.
+- Margin space above header: **minimal**, match the dashboard look.
+
+### 7. CHECKLIST FOR FINAL EXPORT  
+**When finished, export a PDF and verify:**  
+- [ ]  The “Back to week” button is a solid, standalone left-aligned button  
+- [ ]  The header/date/appointments/legend are all in a single clean area at top, not split or misaligned  
+- [ ]  The legend badges are harmonious, horizontal, colored, matching dashboard  
+- [ ]  Time column has a solid vertical divider matched to the weekly view  
+- [ ]  Every event is 100% inside its corresponding cell with large, bold text, fully filling the space  
+- [ ]  No “Event Notes / Action Items” section is displayed for events that lack notes/actions  
+- [ ]  All lines, spacings, and fonts are visually identical to dashboard  
+- [ ]  There’s **no text or box overflow** or overlap anywhere  
+- [ ]  PDF is portrait orientation
+
+**If any check fails, iterate until all criteria are met.**
+
+**Compare the FINAL PDF export directly (“side-by-side”) with the daily dashboard view and make sure they match perfectly before approving!**
+
+Paste these instructions exactly to your agent/dev/AI prompt for bulletproof results.  
+Let me know if you want ready-to-paste CSS/HTML example for any specific widget or row.
+
+[1] file:///Users/jonathanprocter/Downloads/pixel-perfect-daily-planner-2025-07-07%20(2).pdf

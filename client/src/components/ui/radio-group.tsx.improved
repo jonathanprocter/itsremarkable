@@ -1,0 +1,45 @@
+import React from 'react';
+import { Root as RadioGroupRoot, Item as RadioGroupItemPrimitive, Indicator as RadioGroupIndicator } from '@radix-ui/react-radio-group';
+import { Circle } from 'lucide-react';
+
+/**
+ * Utility function to concatenate class names.
+ * @param classNames - A list of class names to be combined.
+ * @returns A string with combined class names.
+ */
+const cn = (...classNames: (string | undefined)[]): string => classNames.filter(Boolean).join(' ');
+
+type RadioGroupProps = React.ComponentPropsWithoutRef<typeof RadioGroupRoot>;
+
+/**
+ * RadioGroup component wrapping Radix UI's RadioGroup with additional styling.
+ */
+const RadioGroup = React.forwardRef<HTMLDivElement, RadioGroupProps>(({ className, ...props }, ref) => (
+  <RadioGroupRoot className={cn('grid gap-2', className)} {...props} ref={ref} />
+));
+
+RadioGroup.displayName = 'RadioGroup';
+
+type RadioGroupItemProps = React.ComponentPropsWithoutRef<typeof RadioGroupItemPrimitive>;
+
+/**
+ * RadioGroupItem component wrapping Radix UI's RadioGroupItem with additional styling and an indicator.
+ */
+const RadioGroupItem = React.forwardRef<HTMLButtonElement, RadioGroupItemProps>(({ className, ...props }, ref) => (
+  <RadioGroupItemPrimitive
+    ref={ref}
+    className={cn(
+      'aspect-square h-4 w-4 rounded-full border border-primary text-primary ring-offset-background focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
+      className
+    )}
+    {...props}
+  >
+    <RadioGroupIndicator className="flex items-center justify-center">
+      <Circle className="h-2.5 w-2.5 fill-current" />
+    </RadioGroupIndicator>
+  </RadioGroupItemPrimitive>
+));
+
+RadioGroupItem.displayName = 'RadioGroupItem';
+
+export { RadioGroup, RadioGroupItem };

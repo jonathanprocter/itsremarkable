@@ -1,0 +1,153 @@
+If your deployed **page is loading**, but the **“Connect Google Calendar” flow opens a new window and that window says “page isn’t found,”** this almost always means:
+
+### 1. **Your server doesn’t have a matching `/auth/callback` route deployed and accessible at the HTTPS root of your Replit app.**
+
+The Google OAuth flow must redirect to a URL like:
+```
+https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/auth/callback?code=...
+```
+If Google redirects there and your server does **not** have a matching GET `/auth/callback` route (on the deployed HTTPS domain), you’ll get “404: not found.”
+
+## **Checklist for Fixing “Page not found” on OAuth Callback:**
+
+### ✅ 1. **Does your Express/Node server have this?**
+```js
+app.get('/auth/callback', async (req, res) => {
+  // Handle code exchange and token saving
+});
+```
+Or for TypeScript, in your **deployed server code**, a matching handler under `/auth/callback`.
+
+### ✅ 2. **Is your Replit app running in production on HTTPS?**
+- The server has to be listening on the **deployment** HTTPS domain, **not** just on localhost or just in development.
+
+### ✅ 3. **Did you correctly set your Google Cloud Console “Authorized redirect URI” to exactly:**
+```
+https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/auth/callback
+```
+- **No trailing slash. No missing protocol.**
+
+### ✅ 4. **Is your Replit “Preview” port/externalPort set to 443 or 80, matching the HTTPS domain?**
+
+### ✅ 5. **How to Debug the Route**
+- Open a new tab on the deployed domain and visit `/auth/callback` directly:
+  ```
+  https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/auth/callback
+  ```
+- If you still receive “Not Found” (not a Google error, but your own server’s 404):  
+  → **Your code is missing the handler, or router/middleware setup is wrong for that path.**
+
+## **What to do next**
+
+- **Add the route if missing:**
+  ```js
+  app.get('/auth/callback', /* ... */);
+  ```
+- **Restart/redeploy Replit app.**
+- **Test by directly visiting `/auth/callback` on the deployed site.**  
+  (Should not be a 404 if route exists—it can say “Missing code” or similar, but not a “not found” error.)
+
+**Summary:**  
+The OAuth flow is nearly working, but your backend must implement a GET `/auth/callback` route that handles the Google OAuth “code” on the public HTTPS deployment.  
+Once this route is present and registered in Express (or your framework), “page not found” will disappear and the flow will finish!A "page isn't found" error after clicking "Connect Google Calendar" means your deployed backend **doesn't have a working `/auth/callback` (or similarly named) route** at the right URL.
+
+**Here's why:**  
+- After Google login, Google redirects the browser to:  
+  `https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/auth/callback?...`
+- Your server must have a live, working route at `/auth/callback` to receive the `code` param, exchange it for tokens, and finish the login.
+- If the route is missing, you see "404 page not found" in the popup.
+
+## **How to Fix:**
+
+1. **Double-check your server code on Replit:**
+  - It must have something like:
+    ```js
+    app.get('/auth/callback', async (req, res) => {
+      // ...token exchange here
+    });
+    ```
+   or the equivalent in your framework.
+
+2. **Visit that URL directly:**  
+   Go to  
+   `https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/auth/callback`
+   If you see "Not Found" or a 404, the route is not registered or your API router is not mounted at `/`.
+
+3. **Common mistakes to check:**  
+   - The route path is wrong, e.g., `/api/auth/callback` instead of `/auth/callback`.
+   - The route is only registered in development, not in production/deploy.
+   - Your deployed site didn't reload after new code was added.
+
+4. **If using a router prefix:**  
+   If your API is under `/api`, then you must set the redirect URI to  
+   `https://.../api/auth/callback` in both Google and your code.
+
+## **Summary Table:**
+
+| URL (should work)                                                                    | Response    |
+|--------------------------------------------------------------------------------------|-------------|
+| https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/auth/callback | No 404, some (even empty) page. If 404, the route is missing/broken. |
+
+## **Conclusion**
+You need to:
+- Ensure your **deployed Express (or server) app exposes** `/auth/callback` as a route.
+- Update your Google Console redirect URI to this URL if needed.
+- Redeploy/restart the app if you just added the route.
+
+This will unblock the Google login flow and allow the server to receive and exchange OAuth 2.0 codes for access tokens.If you’re seeing “page isn’t found” after connecting Google Calendar, the **most likely issue** is that your live deployed server does **not** have a working `/auth/callback` route at this exact URL:
+
+```
+https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/auth/callback
+```
+
+**What this means:**
+- Google tries to send the login result there, but your deployed server returns a 404 (route handler missing or path typo).
+- It can ALSO happen if your auth router is mounted somewhere else (like `/api/auth/callback`).
+
+## How to Fix
+
+- In your deployed (production) server’s code, you must have:
+  ```js
+  app.get('/auth/callback', (req, res) => { ... });
+  // or for TypeScript: router.get('/auth/callback', ...)
+  ```
+- The route should be mounted on the “bare” app, not only behind `/api` unless your redirect URI is also `/api/auth/callback`.
+- **Restart/redeploy your server** after making any changes.
+- Manually visit `https://ed4c6ee6.../auth/callback` in your browser.  
+  - If you still get 404, the route is not set up.
+  - If you see something like “Missing code argument” or a blank page, it’s working (waiting for a real code from Google).
+
+**Biggest Gotcha:**  
+> If your redirect URI in Google is `/auth/callback` but your backend only listens at `/api/auth/callback` (or vice versa), Google will reach a 404 “page isn’t found.”
+
+**To summarize:**  
+You need to define a GET `/auth/callback` (no `/api/`, unless you want that) route in your deployed server.  
+Once it handles requests, the Google OAuth window will finish open and your login will work.When you get “page isn’t found” after clicking “Connect Google Calendar,” it means Google is redirecting to your site’s `/auth/callback`, but your deployed Node/Express server does **not** have a live route handler for `/auth/callback` on that exact URL.
+
+**What this means:**
+- Your server does not have a GET route for `/auth/callback` (or it is only available in dev, or has the wrong base path).
+- Google, after login, tries to go to `https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/auth/callback`, but your app responds with 404 “not found.”
+
+**How to Fix:**
+
+1. **Inside your deployed Express/Node app’s code:**
+    ```js
+    app.get('/auth/callback', function(req, res) {
+      // OAuth token exchange logic here
+    });
+    ```
+    Or your exact framework equivalent.
+2. **Don’t put the route behind another prefix** (like `/api/auth/callback`) unless you use that full path in your Google OAuth “redirect URI.”
+3. **Restart/redeploy** after code changes.
+4. **Sanity check:** Open this URL in a browser tab:
+   ```
+   https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/auth/callback
+   ```
+   - If you see 404, your server is not set up right 
+   - If you see any other message (“missing code,” etc.), your route is working
+
+**Bottom line:**  
+You need a deployed backend GET route exactly at `/auth/callback` for this to work.  
+Once you add or fix it, “page isn’t found” will disappear and OAuth will succeed.
+
+[1] https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/

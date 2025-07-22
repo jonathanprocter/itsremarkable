@@ -1,0 +1,67 @@
+Here is a **ready-to-use AI prompt** for Replit or any developer/AI agent who has full access to your codebase and the reference material you’ve provided (PDF exports and screenshots). This prompt is comprehensive and prescriptive to guarantee a true pixel-perfect outcome.
+
+**Prompt for Replit AI: Achieving Pixel-Perfect PDF Export (Weekly & Daily Planner Calendar)**
+
+**Context:**
+I want my PDF export (weekly and daily planner/calendar) to be a true pixel-perfect clone of my live dashboard/calendar view. You have access to all of my code, assets, and the sample PDF/output, as well as screenshots. The exported PDF should visually match the dashboard/web app at a pixel level—the result should be indistinguishable when overlaying the PDF with a screenshot of the app at 100% zoom.
+
+**Here is what you need to do:**
+
+### 1. **Compare Visuals**
+- Thoroughly review the provided **reference screenshots** and **PDF export(s)** (see screenshots and PDF attached).
+- Identify and list all pixel-level discrepancies—spacing, alignment, fonts, border thicknesses, colors, iconography, row heights, summary widget styles, etc.
+
+### 2. **Grid & Typography**
+- Ensure all fonts (family, size, weight, color) match the dashboard **exactly**.
+- Replicate the **cell grid, column widths, and row heights** from the dashboard, including all padding and spacing.
+- All text alignment, indents, and baseline offsets must appear the same in PDF and HTML.
+
+### 3. **UI/UX & Visual Elements**
+- Header widgets (e.g., Appointments, Hours, Free Time) must look and be positioned exactly as in the app (color, font, box alignment, icons if any).
+- Color palette—backgrounds, borders, event sources (SimplePractice, Google Calendar, Holidays)—must exactly match dashboard values (hex codes or equivalent).
+- Draw lines, boxes, icons, and highlights in the **precise locations, widths, styles** as used in the web dashboard.
+
+### 4. **Data Completeness**
+- Every field/label/note/action item visible on the dashboard must appear in the export (no omissions or logic skipping).
+- Notes, action items, and appointment titles must have consistent formatting and bulleting (styled per dashboard rules).
+
+### 5. **Style Source Synchronization**
+- Sync ALL styling variables/constants (spacing, colors, fonts, grid) between the web app and the PDF export logic. If using Tailwind, Chakra, Material UI, or a custom theme, **import or mirror those values directly**.
+- Avoid hardcoded or “similar” values; only use values derived from the actual dashboard styles.
+
+### 6. **Pixel-overlap QA**
+- Overlay a PDF export page and a dashboard screenshot in an image editing tool to confirm complete visual fidelity.
+- If necessary, automate a pixel-difference regression check (using a library like Pixelmatch or Resemble.js) to identify misplaced pixels.
+
+### 7. **Method Recommendation**
+- **Preferred:** Use an HTML-to-PDF method (e.g., Puppeteer/Chromium print-to-PDF, React-pdf, or a headless browser) to capture dashboard “print views” for 1:1 accuracy.
+- If continuing with jsPDF, ensure every draw call’s sizing and positioning comes straight from the dashboard’s computed style/theme system.
+
+### 8. **Deliverable Success Criteria**
+- **“The visual overlay of PDF and dashboard screenshot yields NO perceptible difference. Font, color, grid, box, text, widgets, all match exactly. A QA or stakeholder must be unable to distinguish the exported PDF from the true HTML view.”**
+- Provide at least one example (“after” screenshot) confirming full visual match for both the weekly and daily planner views.
+
+**Required Attachments/Data for this Request:**
+- All code for the current export logic (already accessible)
+- The PDF export you’ve generated and the screenshots of the dashboard at 100% zoom (already attached/provided above)
+- If using CSS-in-JS or exported theme variables, point to the relevant theme/style file(s)
+- (Optional but ideal) Any Figma files or formal CSS spec/theme variable exports to clarify color/font exactness
+
+**How to respond:**
+- Provide a summary of the main changes you will make (or made) to achieve pixel perfection
+- List any style/remapping decisions, and call out any non-reproducible (browser/environment/Webfont) issues
+- Paste or comment code diffs for critical sections (PDF template, style import, font/file changes)
+- Attach a new PDF export and comparison screenshot overlaying the HTML app and PDF as final QA
+
+**Special Instructions:**
+- Do NOT implement “approximate” or “close” styling. Every spacing, color, and style must be literally identical to the reference.
+- If you encounter rendering differences due to webfonts or PDF limitations, report those explicitly and attempt a workaround (e.g., font embedding).
+- If you switch from drawing-based export to an HTML print-to-PDF, ensure the “print view” HTML page is already pixel-perfect.
+
+*If you require any of the above files or assets, query them directly or ask the user for a shareable link/attachment.*
+
+**End prompt**
+
+[1] https://pplx-res.cloudinary.com/image/private/user_uploads/9626311/1cd14bd4-2fa8-4f70-9920-5d7c5e295c77/screenshot.jpg
+[2] https://pplx-res.cloudinary.com/image/private/user_uploads/9626311/ab0738f9-7cbf-4d6a-893d-3b8e42faa34b/screenshot.jpg
+[3] file:///Users/jonathanprocter/Downloads/weekly-package-Jul%207-to-Jul%2013-2025%20(27).pdf

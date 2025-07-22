@@ -1,0 +1,34 @@
+import React, { ForwardedRef, ComponentProps } from "react";
+
+/**
+ * Utility function to concatenate class names.
+ * @param classNames - An array of class names to be joined.
+ * @returns A string of concatenated class names.
+ */
+const cn = (...classNames: (string | undefined)[]): string => classNames.filter(Boolean).join(" ");
+
+interface InputProps extends ComponentProps<"input"> {
+  /** Additional class names for styling */
+  className?: string;
+}
+
+/**
+ * A forward-ref input component that applies default and custom styling.
+ * @param props - Component props including React standard input props and custom class name.
+ * @param ref - Ref forwarded to the input element.
+ * @returns A styled input element.
+ */
+const Input = React.forwardRef<HTMLInputElement, InputProps>(({ className, ...props }, ref: ForwardedRef<HTMLInputElement>) => (
+  <input
+    {...props}
+    className={cn(
+      "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
+      className
+    )}
+    ref={ref}
+  />
+));
+
+Input.displayName = "Input";
+
+export { Input };

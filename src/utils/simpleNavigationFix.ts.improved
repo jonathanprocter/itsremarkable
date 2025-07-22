@@ -1,0 +1,89 @@
+/**
+ * Utility to enhance navigation elements and fix specific formatting issues.
+ * It throttles its execution to run at most every 5 seconds to avoid performance hits.
+ */
+
+// Constants
+const FIX_INTERVAL = 5000; // Only run every 5 seconds
+
+// State
+let lastFixTime = 0;
+
+/**
+ * Removes corrupted navigation elements and fixes header date format.
+ * Throttles execution to prevent frequent runs.
+ */
+export const simpleNavigationFix = (): void => {
+  const now = Date.now();
+  if (now - lastFixTime < FIX_INTERVAL) {
+    return; // Skip if run too recently
+  }
+  lastFixTime = now;
+
+  try {
+    cleanNavigationElements();
+    fixHeaderDateFormat();
+  } catch (error) {
+    console.error('Navigation fix error:', error);
+  }
+};
+
+/**
+ * Removes corrupted navigation elements based on specific text patterns.
+ */
+const cleanNavigationElements = (): void => {
+  const elementsToRemove: Element[] = Array.from(document.querySelectorAll('*')).filter(element => {
+    const text = element.textContent || '';
+    return text.includes('Ø=') || text.includes('!•') || 
+           (text.includes('Page') && text.includes('of 8')) ||
+           (text.includes('←') && text.includes('Back to Weekly Overview'));
+  });
+
+  if (elementsToRemove.length > 0) {
+    elementsToRemove.forEach(el => el.remove());
+    console.log('🔧 Cleaned up navigation elements');
+  }
+};
+
+/**
+ * Fixes the header date format to a more standard representation.
+ */
+const fixHeaderDateFormat = (): void => {
+  const walker = document.createTreeWalker(
+    document.body,
+    NodeFilter.SHOW_TEXT,
+    null
+  );
+
+  const textNodes: Text[] = [];
+  let node: Node | null;
+  while ((node = walker.nextNode())) {
+    if (node.textContent?.includes('July 7 - 2025 (day: 13)')) {
+      textNodes.push(node as Text);
+    }
+  }
+
+  if (textNodes.length > 0) {
+    textNodes.forEach(textNode => {
+      textNode.textContent = textNode.textContent?.replace(
+        /July 7 - 2025 \(day: 13\)/g, 
+        'July 7 - 13, 2025'
+      ) || '';
+    });
+    console.log('✅ Fixed date format');
+  }
+};
+
+// Initialization
+const initializeNavigationFix = (): void => {
+  if (typeof window !== 'undefined') {
+    const runFix = (): void => setTimeout(simpleNavigationFix, 100);
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', runFix);
+    } else {
+      runFix();
+    }
+  }
+};
+
+initializeNavigationFix();

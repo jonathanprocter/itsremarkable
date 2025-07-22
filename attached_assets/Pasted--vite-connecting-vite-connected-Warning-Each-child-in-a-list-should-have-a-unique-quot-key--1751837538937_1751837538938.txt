@@ -1,0 +1,45 @@
+[vite] connecting...
+[vite] connected.
+Warning: Each child in a list should have a unique &quot;key&quot; prop.
+
+Check the render method of `WeeklyPlannerView`. See https://reactjs.org/link/warning-keys for more information.
+    at WeeklyPlannerView (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/components/calendar/WeeklyPlannerView.tsx:20:3)
+    at div
+    at div
+    at div
+    at div
+    at MainLayout (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/components/layout/MainLayout.tsx:17:30)
+    at Planner (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/pages/planner.tsx:46:7)
+    at Route (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=b94bb76c:323:16)
+    at Switch (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=b94bb76c:379:17)
+    at Router
+    at Provider (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-YNVQRCZ5.js?v=b94bb76c:39:15)
+    at TooltipProvider (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=b94bb76c:2249:5)
+    at QueryClientProvider (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=b94bb76c:2805:3)
+    at App
+
+Check the render method of &#x60;WeeklyPlannerView&#x60;. See https://reactjs.org/link/warning-keys for more information.
+at WeeklyPlannerView (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/components/calendar/WeeklyPlannerView.tsx:20:3)
+at div
+at div
+at div
+at div
+at MainLayout (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/components/layout/MainLayout.tsx:17:30)
+at Planner (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/pages/planner.tsx:46:7)
+at Route (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=b94bb76c:323:16)
+at Switch (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=b94bb76c:379:17)
+at Router
+at Provider (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-YNVQRCZ5.js?v=b94bb76c:39:15)
+at TooltipProvider (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=b94bb76c:2249:5)
+at QueryClientProvider (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=b94bb76c:2805:3)
+at App
+at t.value (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:17465)
+at new t (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:12630)
+at t.value (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:32766)
+at https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:34400
+Event: Sarah Palladino Appointment, Start: 17:00, SlotIndex: 22, TopPosition: 1320px
+Event: David Grossman Appointment, Start: 18:30, SlotIndex: 25, TopPosition: 1500px
+Event: Steven Deluca Appointment, Start: 20:00, SlotIndex: 28, TopPosition: 1680px
+Event: Sarah Palladino Appointment, Start: 17:00, SlotIndex: 22, TopPosition: 1320px
+Event: David Grossman Appointment, Start: 18:30, SlotIndex: 25, TopPosition: 1500px
+Event: Steven Deluca Appointment, Start: 20:00, SlotIndex: 28, TopPosition: 1680px

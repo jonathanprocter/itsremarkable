@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weekly Planner</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 10px;
+            background-color: white;
+            /* reMarkable Paper Pro landscape optimization */
+            width: 297mm; /* A4 landscape width */
+            max-width: 297mm;
+            height: 210mm; /* A4 landscape height */
+            font-size: 11px; /* Slightly larger for landscape */
+        }
+
+```
+    .planner-container {
+        background-color: white;
+        border: 3px solid black;
+        width: 100%;
+        height: calc(100vh - 20px);
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        /* Optimized for reMarkable landscape export */
+        page-break-inside: avoid;
+    }
+
+    .planner-header {
+        text-align: center;
+        padding: 8px;
+        border-bottom: 3px solid black;
+        flex-shrink: 0;
+    }
+
+    .planner-header h1 {
+        margin: 0;
+        font-size: 18px;
+        font-weight: bold;
+        letter-spacing: 1px;
+    }
+
+    .planner-header .week-info {
+        font-size: 13px;
+        margin-top: 2px;
+    }
+
+    .stats-table {
+        width: 100%;
+        border-collapse: collapse;
+        flex-shrink: 0;
+    }
+
+    .stats-table td {
+        border: 2px solid black;
+        padding: 8px;
+        text-align: center;
+        font-weight: bold;
+    }
+
+    .stats-number {
+        font-size: 15px;
+        display: block;
+        margin-bottom: 2px;
+    }
+
+    .stats-label {
+        font-size: 11px;
+        font-weight: normal;
+    }
+
+    .legend {
+        display: flex;
+        align-items: center;
+        gap: 25px;
+        padding: 6px 15px;
+        font-size: 11px;
+        border-bottom: 2px solid black;
+        flex-shrink: 0;
+    }
+
+    .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .legend-color {
+        width: 12px;
+        height: 12px;
+    }
+
+    .schedule-container {
+        flex: 1;
+        overflow: auto;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .main-table {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed;
+        flex: 1;
+    }
+
+    .main-table th,
+    .main-table td {
+        border: 1px solid black;
+        padding: 0;
+        vertical-align: middle;
+        text-align: center;
+    }
+
+    .time-column {
+        width: 70px;
+        font-size: 11px;
+        font-weight: bold;
+        background-color: white;
+        padding: 2px;
+    }
+
+    .day-header {
+        background-color: white;
+        font-weight: bold;
+        font-size: 13px;
+        padding: 8px 4px;
+        border: 1px solid black;
+    }
+
+    .day-cell {
+        width: calc((100% - 70px) / 7);
+        height: 26px;
+        padding: 1px;
+        background-color: white;
+    }
+
+    /* Appointment styles - all have WHITE backgrounds with colored borders */
+    .appointment {
+        font-size: 8px;
+        line-height: 1.2;
+        font-weight: bold;
+        padding: 2px 4px;
+        margin: 0;
+        width: 100%;
+        height: 100%;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        background-color: white;
+        color: black;
+    }
+
+    .appointment-name {
+        font-size: 8px;
+        line-height: 1.1;
+    }
+
+    .appointment-time {
+        font-size: 7px;
+        line-height: 1.0;
+        margin-top: 1px;
+        color: #666;
+    }
+
+    .appointment.simple-practice {
+        border: 1px solid #6495ED;
+        border-left: 4px solid #6495ED;
+    }
+
+    .appointment.google-calendar {
+        border: 2px dashed #32CD32;
+    }
+
+    .appointment.holiday {
+        border: 2px solid #FFD700;
+    }
+
+    .time-slot {
+        height: 26px;
+    }
+
+    /* Top of hour rows have grey background across entire week */
+    .hour-row {
+        background-color: #f5f5f5;
+    }
+
+    .hour-row .time-column,
+    .hour-row .day-cell {
+        background-color: #f5f5f5;
+    }
+
+    /* Top of hour time labels are larger */
+    .hour-row .time-column {
+        font-size: 13px;
+        font-weight: bold;
+    }
+
+    /* Empty cells that are spanned should be hidden */
+    .spanned {
+        display: none;
+    }
+
+    /* reMarkable Paper Pro landscape export optimization */
+    @media print {
+        body {
+            margin: 0;
+            padding: 3mm;
+            font-size: 10px;
+            width: 297mm;
+            height: 210mm;
+        }
+        
+        .planner-container {
+            border: 2px solid black;
+            page-break-inside: avoid;
+            height: calc(210mm - 6mm);
+        }
+        
+        .main-table {
+            font-size: 9px;
+        }
+        
+        .appointment {
+            font-size: 7px;
+            line-height: 1.0;
+        }
+        
+        .appointment-name {
+            font-size: 7px;
+        }
+        
+        .appointment-time {
+            font-size: 6px;
+        }
+        
+        .time-column {
+            font-size: 10px;
+        }
+        
+        .hour-row .time-column {
+            font-size: 12px;
+        }
+    }
+
+    /* Optimize for reMarkable Paper Pro landscape (2264x1680) */
+    @media screen and (min-width: 2000px) and (orientation: landscape) {
+        body {
+            font-size: 12px;
+            padding: 15px;
+        }
+        
+        .appointment {
+            font-size: 9px;
+        }
+        
+        .appointment-name {
+            font-size: 9px;
+        }
+        
+        .appointment-time {
+            font-size: 8px;
+        }
+        
+        .time-column {
+            font-size: 12px;
+        }
+        
+        .hour-row .time-column {
+            font-size: 14px;
+        }
+        
+        .day-header {
+            font-size: 14px;
+        }
+    }
+
+    /* Standard landscape optimization */
+    @media screen and (orientation: landscape) {
+        .schedule-container {
+            max-height: calc(100vh - 180px);
+        }
+    }
+</style>
+```
+
+</head>
+<body>
+    <div class="planner-container">
+        <div class="planner-header">
+            <h1>WEEKLY PLANNER</h1>
+            <div class="week-info">July 7-13 • Week 28</div>
+        </div>
+
+```
+    <table class="stats-table">
+        <tr>
+            <td>
+                <span class="stats-number">33</span>
+                <span class="stats-label">Total Appointments</span>
+            </td>
+            <td>
+                <span class="stats-number">33.8h</span>
+                <span class="stats-label">Scheduled Time</span>
+            </td>
+            <td>
+                <span class="stats-number">4.8h</span>
+                <span class="stats-label">Daily Average</span>
+            </td>
+            <td>
+                <span class="stats-number">134h</span>
+                <span class="stats-label">Available Time</span>
+            </td>
+        </tr>
+    </table>
+
+    <div class="legend">
+        <div class="legend-item">
+            <div class="legend-color" style="background-color: white; border: 1px solid #6495ED; border-left: 3px solid #6495ED;"></div>
+            <span>SimplePractice</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background-color: white; border: 1px dashed #32CD32;"></div>
+            <span>Google Calendar</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background-color: #FFD700; border: 1px solid #FFD700;"></div>
+            <span>Holidays in United States</span>
+        </div>
+    </div>
+
+    <div class="schedule-container">
+        <table class="main-table">
+        <thead>
+            <tr>
+                <th class="time-column">TIME</th>
+                <th class="day-header">MON<br>7</th>
+                <th class="day-header">TUE<br>8</th>
+                <th class="day-header">WED<br>9</th>
+                <th class="day-header">THU<br>10</th>
+                <th class="day-header">FRI<br>11</th>
+                <th class="day-header">SAT<br>12</th>
+                <th class="day-header">SUN<br>13</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="time-slot hour-row">
+                <td class="time-column">06:00</td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+            </tr>
+            <tr class="time-slot">
+                <td class="time-column">06:30</td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+            </tr>
+            <tr class="time-slot hour-row">
+                <td class="time-column">07:00</td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell" rowspan="3">
+                    <div class="appointment simple-practice">
+                        <div class="appointment-name">BETH SHADES APPOINTMENT</div>
+                        <div class="appointment-time">0700 - 0830</div>
+                    </div>
+                </td>
+                <td class="day-cell" rowspan="3">
+                    <div class="appointment simple-practice">
+                        <div class="appointment-name">JOHN READ APPOINTMENT</div>
+                        <div class="appointment-time">0700 - 0830</div>
+                    </div>
+                </td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+            </tr>
+            <tr class="time-slot">
+                <td class="time-column">07:30</td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <!-- THU and FRI cells spanned from above -->
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+            </tr>
+            <tr class="time-slot hour-row">
+                <td class="time-column">08:00</td>
+                <td class="day-cell" rowspan="3">
+                    <div class="appointment simple-practice">
+                        <div class="appointment-name">RACHEL SUPERVISION APPOINTMENT</div>
+                        <div class="appointment-time">0800 - 0930</div>
+                    </div>
+                </td>
+                <td class="day-cell" rowspan="3">
+                    <div class="appointment google-calendar">
+                        <div class="appointment-name">COFFEE WITH WORKS</div>
+                        <div class="appointment-time">0800 - 0930</div>
+                    </div>
+                </td>
+                <td class="day-cell"></td>
+                <!-- THU and FRI cells spanned from above -->
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+            </tr>
+            <tr class="time-slot">
+                <td class="time-column">08:30</td>
+                <!-- MON and TUE cells spanned from above -->
+                <td class="day-cell"></td>
+                <td class="day-cell" rowspan="2">
+                    <div class="appointment simple-practice">
+                        <div class="appointment-name">BETH SOLBERG APPOINTMENT</div>
+                        <div class="appointment-time">0830 - 0930</div>
+                    </div>
+                </td>
+                <td class="day-cell" rowspan="2">
+                    <div class="appointment simple-practice">
+                        <div class="appointment-name">JOHN READ APPOINTMENT</div>
+                        <div class="appointment-time">0830 - 0930</div>
+                    </div>
+                </td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+            </tr>
+            <tr class="time-slot hour-row">
+                <td class="time-column">09:00</td>
+                <!-- MON and TUE cells spanned from above -->
+                <td class="day-cell"></td>
+                <!-- THU and FRI cells spanned from above -->
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+            </tr>
+            <tr class="time-slot">
+                <td class="time-column">09:30</td>
+                <td class="day-cell" rowspan="2">
+                    <div class="appointment simple-practice">
+                        <div class="appointment-name">DEBORAH BROGDON APPOINTMENT</div>
+                        <div class="appointment-time">0930 - 1030</div>
+                    </div>
+                </td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell" rowspan="2">
+                    <div class="appointment simple-practice">
+                        <div class="appointment-name">KRISTY ROCK APPOINTMENT</div>
+                        <div class="appointment-time">0930 - 1030</div>
+                    </div>
+                </td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+            </tr>
+            <tr class="time-slot hour-row">
+                <td class="time-column">10:00</td>
+                <!-- MON cell spanned from above -->
+                <td class="day-cell" rowspan="2">
+                    <div class="appointment google-calendar">
+                        <div class="appointment-name">CALL WITH DAD</div>
+                        <div class="appointment-time">1000 - 1100</div>
+                    </div>
+                </td>
+                <td class="day-cell"></td>
+                <!-- THU cell spanned from above -->
+                <td class="day-cell"></td>
+                <td class="day-cell" rowspan="4">
+                    <div class="appointment simple-practice">
+                        <div class="appointment-name">CASEY BELL APPOINTMENT</div>
+                        <div class="appointment-time">1000 - 1200</div>
+                    </div>
+                </td>
+                <td class="day-cell"></td>
+            </tr>
+            <tr class="time-slot">
+                <td class="time-column">10:30</td>
+                <td class="day-cell" rowspan="2">
+                    <div class="appointment simple-practice">
+                        <div class="appointment-name">NANCY CRISSMAN APPOINTMENT</div>
+                        <div class="appointment-time">1030 - 1130</div>
+                    </div>
+                </td>
+                <!-- TUE cell spanned from above -->
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <!-- SAT cell spanned from above -->
+                <td class="day-cell"></td>
+            </tr>
+            <tr class="time-slot hour-row">
+                <td class="time-column">11:00</td>
+                <!-- MON cell spanned from above -->
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell" rowspan="2">
+                    <div class="appointment simple-practice">
+                        <div class="appointment-name">PAUL BENJAMIN APPOINTMENT</div>
+                        <div class="appointment-time">1100 - 1200</div>
+                    </div>
+                </td>
+                <!-- SAT cell spanned from above -->
+                <td class="day-cell"></td>
+            </tr>
+            <tr class="time-slot">
+                <td class="time-column">11:30</td>
+                <td class="day-cell" rowspan="2">
+                    <div class="appointment simple-practice">
+                        <div class="appointment-name">ANDEREA CAMICAL APPOINTMENT</div>
+                        <div class="appointment-time">1130 - 1230</div>
+                    </div>
+                </td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <!-- FRI cell spanned from above -->
+                <!-- SAT cell spanned from above -->
+                <td class="day-cell"></td>
+            </tr>
+            <tr class="time-slot hour-row">
+                <td class="time-column">12:00</td>
+                <!-- MON cell spanned from above -->
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+            </tr>
+            <tr class="time-slot">
+                <td class="time-column">12:30</td>
+                <td class="day-cell" rowspan="3">
+                    <div class="appointment simple-practice">
+                        <div class="appointment-name">MARYLEENS RANBESMARK APPOINTMENT</div>
+                        <div class="appointment-time">1230 - 1400</div>
+                    </div>
+                </td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+            </tr>
+            <tr class="time-slot hour-row">
+                <td class="time-column">13:00</td>
+                <!-- MON cell spanned from above -->
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell" rowspan="2">
+                    <div class="appointment simple-practice">
+                        <div class="appointment-name">IVA RODRIGUEZ APPOINTMENT</div>
+                        <div class="appointment-time">1300 - 1400</div>
+                    </div>
+                </td>
+                <td class="day-cell" rowspan="2">
+                    <div class="appointment simple-practice">
+                        <div class="appointment-name">NIAMH SILVERMAN APPOINTMENT</div>
+                        <div class="appointment-time">1300 - 1400</div>
+                    </div>
+                </td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+            </tr>
+            <tr class="time-slot">
+                <td class="time-column">13:30</td>
+                <!-- MON cell spanned from above -->
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <!-- THU and FRI cells spanned from above -->
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+            </tr>
+            <tr class="time-slot hour-row">
+                <td class="time-column">14:00</td>
+                <td class="day-cell" rowspan="2">
+                    <div class="appointment simple-practice">
+                        <div class="appointment-name">ANGELA & RUBIES APPOINTMENT</div>
+                        <div class="appointment-time">1400 - 1500</div>
+                    </div>
+                </td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+            </tr>
+            <tr class="time-slot">
+                <td class="time-column">14:30</td>
+                <!-- MON cell spanned from above -->
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell" rowspan="2">
+                    <div class="appointment simple-practice">
+                        <div class="appointment-name">LUKA ANAYA APPOINTMENT</div>
+                        <div class="appointment-time">1430 - 1530</div>
+                    </div>
+                </td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+            </tr>
+            <tr class="time-slot hour-row">
+                <td class="time-column">15:00</td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <!-- THU cell spanned from above -->
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+            </tr>
+            <tr class="time-slot">
+                <td class="time-column">15:30</td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+            </tr>
+            <tr class="time-slot hour-row">
+                <td class="time-column">16:00</td>
+                <td class="day-cell" rowspan="2">
+                    <div class="appointment simple-practice">
+                        <div class="appointment-name">NIAMH SILVERMAN APPOINTMENT</div>
+                        <div class="appointment-time">1600 - 1700</div>
+                    </div>
+                </td>
+                <td class="day-cell" rowspan="2">
+                    <div class="appointment simple-practice">
+                        <div class="appointment-name">ARIANNA BICREMAN APPOINTMENT</div>
+                        <div class="appointment-time">1600 - 1700</div>
+                    </div>
+                </td>
+                <td class="day-cell" rowspan="2">
+                    <div class="appointment simple-practice">
+                        <div class="appointment-name">FREDDY RODRIGUEZ APPOINTMENT</div>
+                        <div class="appointment-time">1600 - 1700</div>
+                    </div>
+                </td>
+                <td class="day-cell" rowspan="2">
+                    <div class="appointment simple-practice">
+                        <div class="appointment-name">FREDDY RODRIGUEZ APPOINTMENT</div>
+                        <div class="appointment-time">1600 - 1700</div>
+                    </div>
+                </td>
+                <td class="day-cell" rowspan="2">
+                    <div class="appointment simple-practice">
+                        <div class="appointment-name">FRANKLIN STOREY APPOINTMENT</div>
+                        <div class="appointment-time">1600 - 1700</div>
+                    </div>
+                </td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+            </tr>
+            <tr class="time-slot">
+                <td class="time-column">16:30</td>
+                <!-- All day cells spanned from above -->
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+            </tr>
+            <tr class="time-slot hour-row">
+                <td class="time-column">17:00</td>
+                <td class="day-cell" rowspan="2">
+                    <div class="appointment simple-practice">
+                        <div class="appointment-name">SARAH PALKADINO APPOINTMENT</div>
+                        <div class="appointment-time">1700 - 1800</div>
+                    </div>
+                </td>
+                <td class="day-cell" rowspan="2">
+                    <div class="appointment simple-practice">
+                        <div class="appointment-name">GAVIN FRENCH APPOINTMENT</div>
+                        <div class="appointment-time">1700 - 1800</div>
+                    </div>
+                </td>
+                <td class="day-cell" rowspan="2">
+                    <div class="appointment simple-practice">
+                        <div class="appointment-name">GAVIN FRESH APPOINTMENT</div>
+                        <div class="appointment-time">1700 - 1800</div>
+                    </div>
+                </td>
+                <td class="day-cell" rowspan="2">
+                    <div class="appointment simple-practice">
+                        <div class="appointment-name">GAVIN FRESH APPOINTMENT</div>
+                        <div class="appointment-time">1700 - 1800</div>
+                    </div>
+                </td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+            </tr>
+            <tr class="time-slot">
+                <td class="time-column">17:30</td>
+                <!-- All day cells except FRI, SAT, SUN spanned from above -->
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+            </tr>
+            <tr class="time-slot hour-row">
+                <td class="time-column">18:00</td>
+                <td class="day-cell" rowspan="4">
+                    <div class="appointment simple-practice">
+                        <div class="appointment-name">DAVID CRISSMAN APPOINTMENT</div>
+                        <div class="appointment-time">1800 - 2000</div>
+                    </div>
+                </td>
+                <td class="day-cell" rowspan="2">
+                    <div class="appointment simple-practice">
+                        <div class="appointment-name">VALENTINES CORBYN APPOINTMENT</div>
+                        <div class="appointment-time">1800 - 1900</div>
+                    </div>
+                </td>
+                <td class="day-cell" rowspan="4">
+                    <div class="appointment simple-practice">
+                        <div class="appointment-name">NICO LEPPINK APPOINTMENT</div>
+                        <div class="appointment-time">1800 - 2000</div>
+                    </div>
+                </td>
+                <td class="day-cell" rowspan="2">
+                    <div class="appointment simple-practice">
+                        <div class="appointment-name">NICO LEPPINK APPOINTMENT</div>
+                        <div class="appointment-time">1800 - 1900</div>
+                    </div>
+                </td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+            </tr>
+            <tr class="time-slot">
+                <td class="time-column">18:30</td>
+                <!-- MON, TUE, WED, THU cells spanned from above -->
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+            </tr>
+            <tr class="time-slot hour-row">
+                <td class="time-column">19:00</td>
+                <!-- MON cell spanned from above -->
+                <td class="day-cell" rowspan="2">
+                    <div class="appointment simple-practice">
+                        <div class="appointment-name">VIVIAN MEADOR APPOINTMENT</div>
+                        <div class="appointment-time">1900 - 2000</div>
+                    </div>
+                </td>
+                <!-- WED cell spanned from above -->
+                <td class="day-cell" rowspan="2">
+                    <div class="appointment simple-practice">
+                        <div class="appointment-name">NICK BARBERA APPOINTMENT</div>
+                        <div class="appointment-time">1900 - 2000</div>
+                    </div>
+                </td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+            </tr>
+            <tr class="time-slot">
+                <td class="time-column">19:30</td>
+                <!-- MON, TUE, WED, THU cells spanned from above -->
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+            </tr>
+            <tr class="time-slot hour-row">
+                <td class="time-column">20:00</td>
+                <td class="day-cell" rowspan="2">
+                    <div class="appointment simple-practice">
+                        <div class="appointment-name">DYLAN SILVA APPOINTMENT</div>
+                        <div class="appointment-time">2000 - 2100</div>
+                    </div>
+                </td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+            </tr>
+            <tr class="time-slot">
+                <td class="time-column">20:30</td>
+                <!-- MON cell spanned from above -->
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+            </tr>
+            <tr class="time-slot hour-row">
+                <td class="time-column">21:00</td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+            </tr>
+            <tr class="time-slot">
+                <td class="time-column">21:30</td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+            </tr>
+            <tr class="time-slot hour-row">
+                <td class="time-column">22:00</td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+            </tr>
+            <tr class="time-slot">
+                <td class="time-column">22:30</td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+            </tr>
+            <tr class="time-slot hour-row">
+                <td class="time-column">23:00</td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+            </tr>
+            <tr class="time-slot">
+                <td class="time-column">23:30</td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+                <td class="day-cell"></td>
+            </tr>
+        </tbody>
+    </table>
+    </div>
+</div>
+```
+
+</body>
+</html>

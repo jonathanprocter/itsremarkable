@@ -1,0 +1,69 @@
+/**
+ * Removes unwanted characters and symbols from a given text string.
+ * This includes emojis, miscellaneous symbols, dingbats, and corrupted symbols.
+ * Spaces are normalized in the process.
+ * 
+ * @param text The input string to be cleaned.
+ * @returns The cleaned text string.
+ */
+export const cleanText = (text: string): string => {
+  if (!text) return '';
+
+  const patterns = [
+    /🔒\s*/g, // Remove lock symbol and following space
+    /[\u{1F500}-\u{1F6FF}]/gu, // Remove emoji symbols
+    /[\u{2600}-\u{26FF}]/gu, // Remove misc symbols
+    /[\u{2700}-\u{27BF}]/gu, // Remove dingbats
+    /[\u{1F300}-\u{1F5FF}]/gu, // Remove more emoji ranges
+    /Ø=ÜÅ/g, // Remove corrupted symbols
+    /Ø=Ý/g, // Remove more corrupted symbols
+    /[!•]/g, // Remove exclamation and bullet points
+    /\s+/g, // Normalize spaces
+  ];
+
+  return patterns.reduce((acc, pattern) => acc.replace(pattern, ''), text).trim();
+};
+
+/**
+ * Cleans the event title by removing unwanted characters and symbols,
+ * including lock emojis, corrupted text patterns, and non-ASCII characters,
+ * while preserving common unicode characters.
+ * 
+ * @param title The event title to be cleaned.
+ * @returns The cleaned event title.
+ */
+export const cleanEventTitle = (title: string): string => {
+  if (!title) return '';
+
+  return title
+    .replace(/🔒\s*/g, '')
+    .replace(/Ø=[\w\s]*/g, '')
+    .replace(/!•/g, '')
+    .replace(/[^\x00-\x7F]/g, (char) => {
+      const code = char.charCodeAt(0);
+      if ((code >= 0x2600 && code <= 0x26FF) ||
+          (code >= 0x1F600 && code <= 0x1F64F) ||
+          (code >= 0x1F300 && code <= 0x1F5FF) ||
+          (code >= 0x1F680 && code <= 0x1F6FF)) {
+        return '';
+      }
+      return char;
+    })
+    .trim();
+};
+
+/**
+ * Cleans all text content within the DOM that does not contain child elements.
+ * This function iterates over all elements, checks for text content without children,
+ * and cleans the text using `cleanText`.
+ */
+export const cleanAllTextContent = (): void => {
+  document.querySelectorAll('*').forEach(element => {
+    if (element.textContent && element.children.length === 0) {
+      const cleanedText = cleanText(element.textContent);
+      if (cleanedText !== element.textContent) {
+        element.textContent = cleanedText;
+      }
+    }
+  });
+};

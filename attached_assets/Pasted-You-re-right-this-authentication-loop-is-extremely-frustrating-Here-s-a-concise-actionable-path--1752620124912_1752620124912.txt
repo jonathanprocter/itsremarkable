@@ -1,0 +1,89 @@
+You’re right—this authentication loop is extremely frustrating. Here’s a **concise, actionable path to truly fix the ongoing Google OAuth and SimplePractice events problems** in your Replit/RemarkablePlannerPro app, based on the most recent errors and your real logs:
+
+### Core Issue:
+- **Google OAuth tokens are not being persisted or refreshed properly**.  
+- **SimplePractice events rely on a valid Google Calendar connection**—401 errors mean authentication is broken or tokens are invalid/stale.
+- **Your callback and event routes are attempting to read tokens that don’t actually exist or have expired/been cleared.**
+
+## Systematic Steps to Permanently Fix
+
+### 1. Double-Check Google Credentials
+
+**Verify ALL of these are 100% correct—no leading/trailing spaces or invisible chars—and match what’s in the Google Cloud Console:**
+- GOOGLE_CLIENT_ID
+- GOOGLE_CLIENT_SECRET
+- Redirect URIs (must exactly match, including `https://` and any trailing slashes)
+
+**In both local .env and deployed Replit environment.**
+
+### 2. Fix the OAuth Callback Logic
+
+You must BOTH store tokens in the user session **AND** verify refresh tokens are kept for future access.
+
+**Node/Express Example:**
+```js
+app.get('/api/auth/google/callback', async (req, res) => {
+  const { tokens } = await oauth2Client.getToken(req.query.code);
+  // Store both tokens, including refresh_token!
+  req.session.tokens = tokens;
+  // Optional: persist to DB as secondary backup
+  res.redirect('/');
+});
+```
+**When making calendar requests:**
+```js
+oauth2Client.setCredentials(req.session.tokens);
+// Refresh expired tokens transparently
+if (oauth2Client.isTokenExpiring()) {
+  const newTokens = await oauth2Client.refreshAccessToken();
+  req.session.tokens = newTokens.credentials;
+}
+```
+**Critical:** If the user is ever authenticated but no refresh_token exists, your ONLY recovery is to start the OAuth flow over from scratch (`access_type: 'offline'` in OAuth URL).
+
+### 3. Debug Token Issues
+
+- Add explicit **logging** after each step of the callback and token application: print out (in dev only) token presence, expiry status, and what’s being stored.
+- If you hit a 401, **clear the session tokens** and force a new OAuth flow.
+
+### 4. Authentication Frontend
+
+Show a clear "Connect with Google" button when `hasValidTokens: false` and direct the user to restart OAuth. **DO NOT attempt to use broken or missing tokens—always fail gracefully!**
+
+### 5. Testing Flow
+
+**Do this in order:**
+1. Wipe out all tokens and sessions (server restart recommended).
+2. Initiate Google OAuth from scratch (ensure consent screen is forced).
+3. Observe callback route carefully—ensure both access_token and refresh_token are set.
+4. Fetch from `/api/calendar/events`—confirm 200 with data or proper token refresh.
+
+### 6. Forcing a Token Refresh/UI Quick Fix
+
+**If you already have refresh tokens but the access token is expired:**  
+- Manually call the backend endpoint that invokes `oauth2Client.refreshAccessToken()` for the current user, update the session, and retry the events API fetch.
+
+## What NOT to Do
+
+- Don’t try to use *partial* tokens (access without refresh, etc.).
+- Don’t “apply environment tokens” if they aren’t working—they must match Google Cloud console exactly and actually belong to the Google account being used.
+- Don’t ignore 401 errors; they ALWAYS mean tokens are bad/expired/invalid.
+
+## If After All This It Still Fails
+
+**Next Troubleshooting Steps:**
+- Double-check if you’re mixing up Google Cloud “test” vs “production” credentials/redirect URIs.
+- Ensure that cookies/sessions are being properly stored and not wiped out or lost due to CORS/errors.
+- Try running the OAuth/Google Cal API sequence in a plain Node.js script locally with the same credentials—not in Replit—to ensure it's not a deployment bug.
+
+### Summary
+
+**You MUST:**
+- Fully verify all client/env credentials.
+- Only use tokens you know are valid.
+- Store/refresh tokens correctly in session.
+- Handle 401 by clearing tokens and forcing a full re-auth flow.
+
+Would you like step-by-step code for your current stack, or help running a debug session in the browser/server console to locate which step is broken right now? If you want, I can also help you draft an “OAuth debug script” tailored to your exact framework. Just let me know what part you want to focus on and I’ll give you tailored code and/or click-by-click tests.
+
+[1] https://replit.com/t/jonathan-procter-phd/repls/RemarkablePlannerPro

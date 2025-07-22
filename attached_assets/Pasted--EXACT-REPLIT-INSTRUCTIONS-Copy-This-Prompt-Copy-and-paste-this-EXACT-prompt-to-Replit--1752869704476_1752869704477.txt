@@ -1,0 +1,161 @@
+# EXACT REPLIT INSTRUCTIONS - Copy This Prompt
+
+Copy and paste this EXACT prompt to Replit:
+
+---
+
+**REPLIT PROMPT:**
+
+"I need you to completely replace my broken PDF export functionality. My current PDF exports have wrong metrics (1722 appointments, negative hours), plain text instead of styled components, and missing strikethrough/badges for cancelled appointments.
+
+Please do these EXACT steps:
+
+1. **Install dependencies** (run in shell):
+```bash
+npm install html2canvas jspdf
+```
+
+2. **Create a new file** called `FixedPDFExport.tsx` in my src/components folder with the complete code provided in the artifacts.
+
+3. **Find and REPLACE** my existing PDF export code. Look for files that might contain PDF generation logic like:
+   - `DailyView.tsx`
+   - `AppointmentStatusView.tsx` 
+   - `WeeklyCalendarGrid.tsx`
+   - Any file with 'PDF', 'export', or 'print' in the name
+   - Any file importing jsPDF or html2canvas
+
+4. **Replace the export button** in my main calendar component with:
+```typescript
+import { FixedExportButton } from './components/FixedPDFExport';
+
+// In your render method, replace the existing export button with:
+<FixedExportButton appointments={yourAppointmentData} />
+```
+
+5. **Fix my appointment data structure** to match this format:
+```typescript
+const appointmentData = [
+  {
+    id: '1',
+    startTime: '07:00',
+    endTime: '08:00', 
+    clientName: 'Richie Hayes',
+    status: 'confirmed' // or 'clinician_canceled' or 'client_canceled'
+  },
+  {
+    id: '2', 
+    startTime: '08:00',
+    endTime: '09:00',
+    clientName: 'John Best',
+    status: 'clinician_canceled'
+  }
+  // ... more appointments
+];
+```
+
+6. **Remove all instances** of:
+   - Repetitive 'SIMPLEPRACTICE' labels in appointment text
+   - Any hardcoded metrics calculations that give negative numbers
+   - Old PDF generation functions that don't use styled React components
+
+7. **Test the export** and verify it shows:
+   - Correct metrics (realistic appointment count, positive hours, sensible percentages)
+   - Styled appointment boxes with borders and backgrounds
+   - 'Clinician Canceled' badges on cancelled appointments
+   - Strikethrough text on cancelled appointments
+   - Clean time grid layout matching the modal design
+
+The key fix is using styled React components for PDF generation instead of plain text rendering. Make sure the new FixedPDFExport component is used instead of any existing PDF code."
+
+---
+
+**ADDITIONAL DEBUGGING STEPS FOR REPLIT:**
+
+After Replit makes the changes, add this to test:
+
+```typescript
+// Add this test function to your main component
+const testPDFData = () => {
+  const testAppointments = [
+    {
+      id: '1',
+      startTime: '07:00', 
+      endTime: '08:00',
+      clientName: 'Richie Hayes',
+      status: 'confirmed'
+    },
+    {
+      id: '2',
+      startTime: '08:00',
+      endTime: '09:00', 
+      clientName: 'John Best',
+      status: 'clinician_canceled'
+    },
+    {
+      id: '3',
+      startTime: '11:00',
+      endTime: '12:00',
+      clientName: 'Sarah Palladino', 
+      status: 'confirmed'
+    },
+    {
+      id: '4',
+      startTime: '13:00',
+      endTime: '14:00',
+      clientName: 'Noah Silverman',
+      status: 'confirmed'
+    },
+    {
+      id: '5', 
+      startTime: '14:00',
+      endTime: '15:00',
+      clientName: 'Zena Frey',
+      status: 'confirmed'
+    },
+    {
+      id: '6',
+      startTime: '16:00',
+      endTime: '17:00', 
+      clientName: 'Trendall Storey',
+      status: 'confirmed'
+    },
+    {
+      id: '7',
+      startTime: '17:00',
+      endTime: '18:00',
+      clientName: 'Michael Bower & Bob Delmond',
+      status: 'confirmed'
+    },
+    {
+      id: '8',
+      startTime: '18:00',
+      endTime: '19:00',
+      clientName: 'Brianna Brickman', 
+      status: 'confirmed'
+    }
+  ];
+
+  console.log('Test data:', testAppointments);
+  return testAppointments;
+};
+
+// Test button
+<button onClick={() => console.log('Data check:', testPDFData())}>
+  Check Data Format
+</button>
+```
+
+**VERIFICATION CHECKLIST:**
+
+After the changes, your PDF should show:
+- ✅ "8 appointments" (not 1722)
+- ✅ "8.0h Scheduled" (not 6503.3h) 
+- ✅ "4.0h Available" (not -6485.8h)
+- ✅ "33% Free Time" (not -37062%)
+- ✅ Styled appointment boxes with borders
+- ✅ "Clinician Canceled" badge on John Best appointment
+- ✅ Strikethrough text on John Best appointment
+- ✅ No repetitive "SIMPLEPRACTICE" labels
+- ✅ Clean time grid from 06:00 to 19:00
+
+If any of these are still wrong, the old code is still being used somewhere and needs to be fully replaced.

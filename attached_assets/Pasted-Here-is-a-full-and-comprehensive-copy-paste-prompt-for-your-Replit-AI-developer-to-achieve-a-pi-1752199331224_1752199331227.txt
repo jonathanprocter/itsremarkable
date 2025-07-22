@@ -1,0 +1,78 @@
+Here is a **full and comprehensive, copy-paste prompt** for your Replit AI/developer to achieve a pixel-perfect daily planner PDF export with all your requested features and polish:
+
+# Pixel-Perfect Daily Planner PDF Export — FINAL SPEC
+
+Please address the following details in the daily PDF export to fully match the dashboard and my requirements:
+
+## 1. HEADER & NAVIGATION
+
+- Place a large, **DAILY PLANNER** title at the top, centered and bold.
+- Just below (or beside, if dashboard shows this), display:  
+  `Monday, July 7, 2025     11 appointments today`
+  - Use proper font weights and alignment to match dashboard.
+- **Legend badges** for "SimplePractice", "Google Calendar", "Holidays in US" must display directly under header, horizontally aligned, with actual dashboard colors, rounded pill shapes, and light font.
+- Above and left-aligned, show a **distinct "Back to week" button**:
+  - _It must be a “pill”/oval style button, not a rectangle:_
+    - Solid border (#222 or dashboard color), border-radius: 999px, padding: 8px 22px, background: #fff, bold button text.
+    - Proper margin and spacing from the header/title.
+    - Button text must say **"Back to week"** (not split or lower-case).
+
+## 2. GRID & LAYOUT
+
+- The time column is right-aligned, vertically centered, and separated from the appointment/event cell area by a **solid, black (or dashboard color) vertical line**—exact style as in the weekly view.
+- Each time row (06:00, 06:30 ...) should be visually aligned and well-spaced, matching row heights/thickness to dashboard.
+- All appointment/event text (title, source, time) must be **fully inside their grid cell**, never on or outside a table/cell border.
+- The event title ("David Grossman", etc.) is the largest, boldest type in the cell; source label ("SIMPLEPRACTICE" or "GOOGLE CALENDAR") appears beneath, followed by the time, all inside the cell.
+
+## 3. EVENT NOTES & ACTION ITEMS
+
+- Only display "Event Notes" and "Action Items" IF there is content for that event.
+- When displayed, the section headers **"Event Notes" and "Action Items"** must be bold, e.g.:
+  ```
+  **Event Notes**
+  - Text here...
+  **Action Items**
+  - Text here...
+  ```
+  (Use font-weight: bold or tag  for headers; the item bullet text is regular weight.)
+- If no event notes/action items for an appointment (e.g., Sherrifa Hoosein), DO NOT render the headers or any blank section.
+
+## 4. SPACING, FONT, AND STYLE
+
+- The font size for event titles should be maximized to fill available vertical space within their cell, but always remain inside the event grid.
+- Visual weight, line height, and grid spacing should precisely match what's seen in the dashboard.
+- All lines, borders, padding, and colors should be pixel-for-pixel identical to dashboard.  
+- NO element (button, legend, event, note) may overflow or overlap any grid/table/cell boundary.
+- The page must export to PDF in **portrait orientation** with minimal top/bottom margin.
+
+## 5. CHECKLIST FOR FINAL EXPORT
+
+- [ ] "Back to week" is a **fully rounded pill/oval button**, visually separated and aligned left
+- [ ] Header/title/date/appointments/legend areas are properly centered and aligned, no overlap or crowding
+- [ ] Legend badges are true dashboard color, pill-style, properly spaced
+- [ ] Solid vertical divider separates time column from event area, matching weekly view
+- [ ] Event/appointment cell contents are large, bold, neatly within their grid, never overlapping lines
+- [ ] “Event Notes” and “Action Items” **only appear if non-empty and always bolded**
+- [ ] No cell background is colored unless dashboard shows it; all appointment cells are white with subtle border if needed
+- [ ] Page layout matches dashboard portrait, with no extra whitespace or crowding
+- [ ] **Final PDF matches dashboard view side-by-side before approving**
+
+**Please execute all the above, test, and provide a comparison screenshot with dashboard AND the new PDF. Iterate until all checks pass.**
+
+For the “Back to week” pill button you may use:
+```css
+.back-to-week-btn {
+  border: 1.5px solid #222;
+  border-radius: 999px;
+  padding: 8px 22px;
+  background: #fff;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+}
+```
+If there are any differences left, please describe precisely what is different.
+
+*This prompt covers ALL the requested visual, functional, and polish requirements for a fully dashboard-matching daily PDF export.*
+
+[1] file:///Users/jonathanprocter/Downloads/pixel-perfect-daily-planner-2025-07-07%20(3).pdf

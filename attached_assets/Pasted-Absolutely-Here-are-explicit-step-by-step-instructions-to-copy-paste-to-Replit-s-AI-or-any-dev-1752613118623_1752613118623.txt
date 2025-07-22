@@ -1,0 +1,84 @@
+Absolutely! Here are **explicit, step-by-step instructions** to copy-paste to Replit's AI or any dev assistant to fully fix your Google OAuth "404 Page Not Found" issue in a Vite + Express/Node.js (TypeScript or JS) monorepo:
+
+**Instructions to fix Google OAuth callback 404 in Vite + Express app:**
+
+**1. Move the OAuth callback to `/api/auth/callback`**
+
+- Ensure the ONLY callback route for OAuth is `/api/auth/callback`, not `/auth/callback`.
+- Remove any duplicate or legacy callback routes (`/auth/callback`, `/api/auth/google/callback`, etc.).
+- The callback handler code (for Express) should look like:
+  ```ts
+  // server/routes.ts or your main Express router file
+  import express from "express";
+  const router = express.Router();
+
+  router.get("/auth/callback", async (req, res) => {
+    // Your token exchange logic here
+  });
+
+  // Export router and be sure it's mounted at "/api"
+  export default router;
+  ```
+
+**2. Mount your API routes under `/api` in your Express app**
+
+- In your main server entry (like `server/index.ts`):
+  ```ts
+  import apiRouter from "./routes";
+  app.use("/api", apiRouter);
+  ```
+
+**3. Update ALL Google OAuth code to use the new path**
+
+- When building the Google authorization URL in your server code, make sure `redirect_uri` is:
+  ```
+  https://.replit.dev/api/auth/callback
+  ```
+  - Not `/auth/callback`!
+- In your Google Cloud Console, set the **Authorized Redirect URI** to:
+  ```
+  https://.replit.dev/api/auth/callback
+  ```
+- Update all code that references the OAuth callback to the new path.
+
+**4. Fix the order of routes in your Express server**
+
+- In your Express/Vite server, **ensure ALL api routes** (`/api/...`) are defined BEFORE your frontend “catch-all” (the one returning `index.html` for unknown routes).
+
+  Typical setup:
+  ```ts
+  // 1. API routes
+  app.use("/api", apiRouter);
+
+  // 2. Catch-all for React app (must be last)
+  app.use("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "../client/dist/index.html"));
+  });
+  ```
+
+**5. Remove any import errors**
+
+- If you're still getting `Cannot find module './audit-system'...`, and you don't use that feature, REMOVE or comment out both the `import` and any code that references it. Don't just create an empty file unless you actually need that feature.
+
+**6. Deploy, then Test**
+
+1. Redeploy your app.
+2. Open a new tab.
+3. Go to  
+   ```
+   https://.replit.dev/api/auth/callback
+   ```
+   - If you see anything except 404 ("Missing code" or similar is OK), the backend route is good.
+   - If 404, your Express API routes or mounts are still not correct.
+
+3. Try login: the Google OAuth dialog should pop up, redirect back to `/api/auth/callback`, and the backend should complete the flow.
+
+**(Optional, for Replit Devs: If you're using a monorepo, ensure all `proxy` and `vite.config.ts` settings forward `/api` to the backend. DO NOT try to serve `/api` routes from the Vite dev server! Let Express handle them.)**
+
+**EXACT SINGLE SENTENCE TO RUN:**
+
+> Move all OAuth callback routes to `/api/auth/callback`, update Google Cloud Console Redirect URI to the same, ensure Express API routes are mounted at `/api` before React catch-all, remove all `/auth/callback` routes and all references to modules that do not exist, then redeploy.
+
+Copy-paste these steps to your AI or development assistant—they will fully resolve your OAuth 404 and audit module import issues! Let me know if you need the full OAuth route code template as well.
+
+[1] https://replit.com/t/jonathan-procter-phd/repls/RemarkablePlannerPro

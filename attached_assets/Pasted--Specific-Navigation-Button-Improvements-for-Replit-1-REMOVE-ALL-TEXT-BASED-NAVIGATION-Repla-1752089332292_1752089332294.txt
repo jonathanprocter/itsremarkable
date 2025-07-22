@@ -1,0 +1,132 @@
+# Specific Navigation Button Improvements for Replit
+
+## 1. REMOVE ALL TEXT-BASED NAVIGATION
+**Replace these text elements:**
+- `"!• Back to Weekly Overview (Page 1)"`
+- `"!• Weekly Overview (Page 1) | Previous Day | Next Day !"`
+- `"Page X of 8 - [Day] Daily Planner"`
+
+## 2. HEADER NAVIGATION BAR
+**Create a header with these specific elements:**
+```html
+<div class="nav-header">
+  <button class="nav-btn weekly-btn">📅 Weekly Overview</button>
+  <div class="page-title">
+    <h2>Monday, July 7, 2025</h2>
+    <span class="appointment-count">11 appointments</span>
+  </div>
+  <div class="legend">
+    <!-- Color-coded legend for SimplePractice, Google Calendar, Holidays -->
+  </div>
+</div>
+```
+
+## 3. FOOTER NAVIGATION BAR
+**Create a footer with these specific buttons:**
+```html
+<div class="nav-footer">
+  <button class="nav-btn prev-btn">← Sunday</button>
+  <button class="nav-btn weekly-btn">📅 Weekly Overview</button>
+  <button class="nav-btn next-btn">Tuesday →</button>
+</div>
+```
+
+## 4. BUTTON STYLING SPECIFICATIONS
+**Apply this exact CSS styling:**
+```css
+.nav-btn {
+  background: #f0f0f0;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav-btn:hover {
+  background: #e0e0e0;
+  border-color: #999;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+```
+
+## 5. BIDIRECTIONAL LINKING FUNCTIONS
+**Implement these specific JavaScript functions:**
+```javascript
+function showWeeklyView() {
+  // Hide all daily views
+  document.querySelectorAll('.daily-view').forEach(view => {
+    view.style.display = 'none';
+  });
+  // Show weekly view
+  document.querySelector('.weekly-view').style.display = 'block';
+  window.location.hash = '#weekly';
+}
+
+function showDay(dayName) {
+  // Hide weekly view
+  document.querySelector('.weekly-view').style.display = 'none';
+  // Hide all daily views
+  document.querySelectorAll('.daily-view').forEach(view => {
+    view.style.display = 'none';
+  });
+  // Show target day
+  document.querySelector(`[data-day="${dayName.toLowerCase()}"]`).style.display = 'block';
+  window.location.hash = `#${dayName.toLowerCase()}`;
+}
+```
+
+## 6. WEEKLY VIEW APPOINTMENT CLICKS
+**Make weekly appointments clickable:**
+```javascript
+// Weekly appointments should navigate to daily view when clicked
+document.querySelectorAll('.weekly-view .appointment').forEach(apt => {
+  apt.addEventListener('click', function() {
+    const dayColumn = this.closest('[data-day]');
+    const dayName = dayColumn.getAttribute('data-day');
+    showDay(dayName);
+  });
+  apt.style.cursor = 'pointer';
+  apt.title = 'Click to view daily schedule';
+});
+```
+
+## 7. DAY-SPECIFIC NAVIGATION
+**For each day, update the navigation buttons:**
+- **Monday**: Previous = Sunday, Next = Tuesday
+- **Tuesday**: Previous = Monday, Next = Wednesday
+- **Wednesday**: Previous = Tuesday, Next = Thursday
+- **Thursday**: Previous = Wednesday, Next = Friday
+- **Friday**: Previous = Thursday, Next = Saturday
+- **Saturday**: Previous = Friday, Next = Sunday
+- **Sunday**: Previous = Saturday, Next = Monday
+
+## 8. REMOVE PAGE NUMBERS
+**Eliminate all references to:**
+- "Page 1 of 8"
+- "Page 2 of 8"
+- etc.
+
+## 9. ACCESSIBILITY IMPROVEMENTS
+**Add these specific attributes:**
+```html
+<button class="nav-btn" aria-label="Navigate to weekly overview" tabindex="0">
+  📅 Weekly Overview
+</button>
+```
+
+## 10. RESPONSIVE BEHAVIOR
+**Ensure buttons work on:**
+- Desktop clicks
+- Touch interactions (reMarkable Paper Pro)
+- Keyboard navigation (Tab key, Enter key)
+
+---
+
+**SUMMARY:** Replace all text-based navigation with styled, interactive buttons that provide seamless navigation between weekly and daily views with proper hover effects, click handlers, and bidirectional linking.

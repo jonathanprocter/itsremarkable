@@ -1,0 +1,64 @@
+/**
+ * Utility to fix navigation and date format issues in a web page.
+ * It removes corrupted navigation elements and corrects specific date formats.
+ * Throttled to run at most every 5 seconds to avoid excessive DOM manipulation.
+ */
+
+// Constants
+const FIX_INTERVAL = 5000; // Only run every 5 seconds
+const DATE_PATTERN = /July 7 - 2025 \(day: 13\)/g;
+const NEW_DATE_FORMAT = 'July 7 - 13, 2025';
+
+// Types
+type ElementSelector = string;
+type TextContentMatcher = (textContent: string) => boolean;
+
+// Last execution timestamp
+let lastFixTime = 0;
+
+/**
+ * Determines if an element's text content matches any of the specified patterns.
+ * @param textContent The text content of the element.
+ * @returns True if the text content matches any pattern, otherwise false.
+ */
+const matchesAnyPattern: TextContentMatcher = (textContent) => [
+  'Ø=',
+  '!•',
+  'Page of 8',
+  '←Back to Weekly Overview',
+].some(pattern => textContent.includes(pattern));
+
+/**
+ * Executes the navigation and date format fixes with throttling.
+ */
+export const simpleNavigationFix = (): void => {
+  const now = Date.now();
+  if (now - lastFixTime < FIX_INTERVAL) return;
+  lastFixTime = now;
+
+  try {
+    // Remove corrupted navigation elements
+    document.querySelectorAll<Element>(ElementSelector('*')).forEach(element => {
+      if (matchesAnyPattern(element.textContent || '')) {
+        element.remove();
+      }
+    });
+
+    // Fix header date format safely
+    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    let node: Node | null;
+    while ((node = walker.nextNode())) {
+      if (node.textContent?.includes('July 7 - 2025 (day: 13)')) {
+        node.textContent = node.textContent.replace(DATE_PATTERN, NEW_DATE_FORMAT);
+      }
+    }
+  } catch (error) {
+    console.error('Navigation fix error:', error);
+  }
+};
+
+// Run the fix when DOM is ready
+if (typeof window !== 'undefined') {
+  const runFix = () => setTimeout(simpleNavigationFix, document.readyState === 'loading' ? 100 : 0);
+  document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', runFix) : runFix();
+}

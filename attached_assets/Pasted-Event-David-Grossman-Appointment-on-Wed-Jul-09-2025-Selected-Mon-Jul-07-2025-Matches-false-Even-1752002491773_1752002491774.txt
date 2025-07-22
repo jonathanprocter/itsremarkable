@@ -1,0 +1,64 @@
+Event: David Grossman Appointment on Wed Jul 09 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: Ruben Spilberg Appointment on Thu Jul 10 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: Kristi Rook Appointment on Thu Jul 10 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: Ava Moskowitz Appointment on Thu Jul 10 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: Luke Knox Appointment on Thu Jul 10 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: Freddy Rodriguez Appointment on Thu Jul 10 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: Nico Luppino Appointment on Thu Jul 10 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: Nick Dabreu Appointment on Thu Jul 10 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: Richie Hayes Appointment on Fri Jul 11 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: John Best Appointment on Fri Jul 11 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: Paul Benjamin Appointment on Fri Jul 11 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: Noah Silverman Appointment on Fri Jul 11 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: Trendall Storey Appointment on Fri Jul 11 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: Calvin Hill Appointment on Sat Jul 12 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 David Grossman Appointment on Mon Jun 23 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Sarah Palladino Appointment on Mon Jun 23 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: Coffee with Nora on Tue Jun 24 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Valentina Gjidoda Appointment on Tue Jun 24 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Vivian Meador Appointment on Tue Jun 24 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Krista Flood Appointment on Wed Jun 25 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Amberly Comeau Appointment on Wed Jun 25 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Caitlin Dunn Appointment on Wed Jun 25 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Noah Silverman Appointment on Wed Jun 25 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Gavin Perna Appointment on Wed Jun 25 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Max Moskowitz Appointment on Wed Jun 25 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 David Grossman Appointment on Wed Jun 25 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Ruben Spilberg Appointment on Thu Jun 26 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Kristi Rook Appointment on Thu Jun 26 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Maryellen Dankenbrink Appointment on Thu Jun 26 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Luke Knox Appointment on Thu Jun 26 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Ava Moskowitz Appointment on Thu Jun 26 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: Call Blake on Thu Jun 26 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Hector Mendez Appointment on Thu Jun 26 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Freddy Rodriguez Appointment on Thu Jun 26 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Sherrifa Hoosein Appointment on Thu Jun 26 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Nico Luppino Appointment on Thu Jun 26 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Jennifer McNally Appointment on Thu Jun 26 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 David Grossman Appointment on Thu Jun 26 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Richie Hayes Appointment on Fri Jun 27 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 John Best Appointment on Fri Jun 27 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Brian Kolsch Appointment on Fri Jun 27 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Noah Silverman Appointment on Fri Jun 27 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Sarah Palladino Appointment on Fri Jun 27 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Trendall Storey Appointment on Fri Jun 27 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Michael Bower & Bob Delmond Appointment on Fri Jun 27 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Brianna Brickman Appointment on Fri Jun 27 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Calvin Hill Appointment on Sat Jun 28 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 David Grossman Appointment on Sat Jun 28 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: David Grossman Appointment on Mon Jul 14 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: Coffee with Nora on Tue Jul 15 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: Call with Blake on Tue Jul 15 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: Vivian Meador Appointment on Tue Jul 15 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: Meera Zucker Appointment on Wed Jul 16 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: Gavin Perna Appointment on Wed Jul 16 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: Max Moskowitz Appointment on Wed Jul 16 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: Owen Lennon Appointment on Wed Jul 16 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: David Grossman Appointment on Wed Jul 16 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: Ruben Spilberg Appointment on Thu Jul 17 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: Kristi Rook Appointment on Thu Jul 17 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: Ava Moskowitz Appointment on Thu Jul 17 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: Freddy Rodriguez Appointment on Thu Jul 17 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: Nico Luppino Appointment on Thu Jul 17 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: Richie Hayes Appointment on Fri Jul 18 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: John Best Appointment on Fri Jul 18 2025, Selected: Mon Jul 07 2025, Matches: false

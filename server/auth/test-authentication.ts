@@ -1,0 +1,120 @@
+import { Request, Response } from 'express';
+
+export default async function handler(req: Request, res: Response) {
+  if (req.method !== 'GET') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  try {
+    console.log('🔍 Testing authentication status...');
+
+    // Check environment variables
+    const hasClientId = !!process.env.GOOGLE_CLIENT_ID;
+    const hasClientSecret = !!process.env.GOOGLE_CLIENT_SECRET;
+    const hasAccessToken = !!process.env.GOOGLE_ACCESS_TOKEN;
+    const hasRefreshToken = !!process.env.GOOGLE_REFRESH_TOKEN;
+
+    // Check session
+    const hasSession = !!(req.session && req.session.user);
+    const sessionUser = req.session?.user;
+    const sessionTokens = {
+      hasAccessToken: !!req.session?.accessToken,
+      hasRefreshToken: !!req.session?.refreshToken
+    };
+
+    // Test Google API if we have tokens
+    let googleApiTest = null;
+    if (hasAccessToken) {
+      try {
+        const testResponse = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
+          headers: {
+            'Authorization': `Bearer ${process.env.GOOGLE_ACCESS_TOKEN}`
+          }
+        });
+
+        if (testResponse.ok) {
+          const userInfo = await testResponse.json();
+          googleApiTest = {
+            success: true,
+            email: userInfo.email,
+            name: userInfo.name
+          };
+        } else {
+          googleApiTest = {
+            success: false,
+            status: testResponse.status,
+            message: 'Token validation failed'
+          };
+        }
+      } catch (error) {
+        googleApiTest = {
+          success: false,
+          error: error.message
+        };
+      }
+    }
+
+    const result = {
+      timestamp: new Date().toISOString(),
+      environment: {
+        hasClientId,
+        hasClientSecret,
+        hasAccessToken,
+        hasRefreshToken,
+        tokenStatus: hasAccessToken && hasRefreshToken ? 'complete' : 'incomplete'
+      },
+      session: {
+        hasSession,
+        user: sessionUser,
+        tokens: sessionTokens,
+        sessionStatus: hasSession ? 'authenticated' : 'not authenticated'
+      },
+      googleApi: googleApiTest,
+      overall: {
+        isFullyAuthenticated: hasSession && hasAccessToken && hasRefreshToken,
+        canMakeApiCalls: googleApiTest?.success || false,
+        issues: []
+      }
+    };
+
+    // Add issues to the result
+    if (!hasSession) {
+      result.overall.issues.push('No authenticated session');
+    }
+    if (!hasAccessToken) {
+      result.overall.issues.push('Missing access token in environment');
+    }
+    if (!hasRefreshToken) {
+      result.overall.issues.push('Missing refresh token in environment');
+    }
+    if (googleApiTest && !googleApiTest.success) {
+      result.overall.issues.push('Google API test failed');
+    }
+
+    // Recommendations
+    const recommendations = [];
+    if (!hasSession) {
+      recommendations.push('User needs to log in via /api/auth/google');
+    }
+    if (hasSession && (!hasAccessToken || !hasRefreshToken)) {
+      recommendations.push('Run token restoration via /api/auth/force-env-tokens');
+    }
+    if (googleApiTest && !googleApiTest.success) {
+      recommendations.push('Refresh tokens via /api/auth/refresh-tokens');
+    }
+
+    result.recommendations = recommendations;
+
+    console.log('🎯 Authentication test completed:', result.overall);
+
+    return res.status(200).json(result);
+
+  } catch (error) {
+    console.error('❌ Authentication test failed:', error);
+    return res.status(500).json({
+      error: 'Authentication test failed',
+      message: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+}

@@ -1,0 +1,188 @@
+{
+  "weekNumber": 28,
+  "startDate": "2025-07-14",
+  "endDate": "2025-07-20",
+  "dates": {
+    "monday": "2025-07-14",
+    "tuesday": "2025-07-15",
+    "wednesday": "2025-07-16",
+    "thursday": "2025-07-17",
+    "friday": "2025-07-18",
+    "saturday": "2025-07-19",
+    "sunday": "2025-07-20"
+  },
+  "days": {
+    "monday": [
+      {
+        "id": "evt_001",
+        "title": "Angelica Ruden Appointment",
+        "startTime": "07:00",
+        "endTime": "08:00",
+        "source": "GOOGLE CALENDAR",
+        "description": "Morning appointment"
+      },
+      {
+        "id": "evt_002",
+        "title": "Dan re: Supervision",
+        "startTime": "08:00",
+        "endTime": "09:00",
+        "source": "GOOGLE CALENDAR",
+        "description": "Supervision meeting",
+        "eventNotes": [
+          "Review quarterly performance metrics",
+          "Discuss team development goals"
+        ],
+        "actionItems": [
+          "Schedule follow-up meeting for next week",
+          "Prepare performance review documents"
+        ]
+      },
+      {
+        "id": "evt_003",
+        "title": "Sherrifa Hoosein Appointment",
+        "startTime": "09:00",
+        "endTime": "10:00",
+        "source": "GOOGLE CALENDAR",
+        "description": "Client appointment"
+      }
+    ],
+    "tuesday": [
+      {
+        "id": "evt_004",
+        "title": "Coffee with Nora",
+        "startTime": "08:00",
+        "endTime": "09:00",
+        "source": "GOOGLE CALENDAR",
+        "description": "Coffee meeting",
+        "eventNotes": [
+          "Fully's Revenue update and LMHC"
+        ],
+        "actionItems": [
+          "See if she's interested in the Commack Office?"
+        ]
+      },
+      {
+        "id": "evt_005",
+        "title": "Call with Blake",
+        "startTime": "10:00",
+        "endTime": "10:50",
+        "source": "GOOGLE CALENDAR",
+        "description": "Phone call",
+        "eventNotes": [
+          "Received the receipt for the Pfizer"
+        ],
+        "actionItems": [
+          "Client follow-up"
+        ]
+      },
+      {
+        "id": "evt_006",
+        "title": "Healthfirst Orientation - Zoom",
+        "startTime": "14:00",
+        "endTime": "15:00",
+        "source": "GOOGLE CALENDAR",
+        "description": "Virtual orientation",
+        "eventNotes": "New employee orientation session",
+        "actionItems": [
+          "Complete onboarding checklist",
+          "Set up access credentials"
+        ]
+      },
+      {
+        "id": "evt_007",
+        "title": "Vivian Meador Appointment",
+        "startTime": "19:00",
+        "endTime": "20:00",
+        "source": "GOOGLE CALENDAR",
+        "description": "Evening appointment",
+        "eventNotes": [
+          "Review notes prior to our session"
+        ],
+        "actionItems": [
+          "Send the Vivian email to let him know about the passing of her brother"
+        ]
+      }
+    ],
+    "wednesday": [
+      {
+        "id": "evt_008",
+        "title": "Meera Zucker",
+        "startTime": "10:00",
+        "endTime": "11:00",
+        "source": "GOOGLE CALENDAR",
+        "description": "Client appointment"
+      },
+      {
+        "id": "evt_009",
+        "title": "Team Meeting",
+        "startTime": "14:00",
+        "endTime": "15:30",
+        "source": "GOOGLE CALENDAR",
+        "description": "Weekly team sync",
+        "eventNotes": [
+          "Discuss project milestones",
+          "Review client feedback from last week",
+          "Plan upcoming deliverables"
+        ],
+        "actionItems": [
+          "Update project timeline",
+          "Assign tasks for next sprint",
+          "Schedule client presentation",
+          "Review budget allocations"
+        ]
+      }
+    ],
+    "thursday": [
+      {
+        "id": "evt_010",
+        "title": "Ruben Spilberg",
+        "startTime": "07:30",
+        "endTime": "08:30",
+        "source": "GOOGLE CALENDAR",
+        "description": "Morning appointment",
+        "eventNotes": "Initial consultation session",
+        "actionItems": "Prepare intake forms"
+      }
+    ],
+    "friday": [
+      {
+        "id": "evt_011",
+        "title": "Richie Hayes",
+        "startTime": "07:00",
+        "endTime": "08:00",
+        "source": "GOOGLE CALENDAR",
+        "description": "Morning appointment"
+      },
+      {
+        "id": "evt_012",
+        "title": "Project Review",
+        "startTime": "15:00",
+        "endTime": "16:30",
+        "source": "GOOGLE CALENDAR",
+        "description": "End of week project review",
+        "eventNotes": [
+          "Review completed tasks",
+          "Assess project timeline",
+          "Identify any blockers"
+        ],
+        "actionItems": [
+          "Update stakeholders on progress",
+          "Plan next week's priorities",
+          "Schedule any necessary follow-ups"
+        ]
+      }
+    ],
+    "saturday": [
+      {
+        "id": "evt_013",
+        "title": "Calvin Hill",
+        "startTime": "10:00",
+        "endTime": "11:00",
+        "source": "GOOGLE CALENDAR",
+        "description": "Weekend appointment"
+      }
+    ],
+    "sunday": []
+  }
+}
+

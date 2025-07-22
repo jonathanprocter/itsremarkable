@@ -1,0 +1,188 @@
+// Replace your ExportToPDF component with this updated version:
+
+import { Button } from '@/components/ui/button';
+
+interface ExportToPDFProps {
+  isGoogleConnected: boolean;
+  onExportCurrentView: (type?: string) => void;
+  onExportWeeklyPackage: () => void;
+  onExportDailyView: () => void;
+  onExportFullMonth: () => void;
+  onExportToGoogleDrive: (type: string) => void;
+}
+
+export const ExportToPDF = ({
+  isGoogleConnected,
+  onExportCurrentView,
+  onExportWeeklyPackage,
+  onExportDailyView,
+  onExportFullMonth,
+  onExportToGoogleDrive
+}: ExportToPDFProps) => {
+  return (
+    <div className="sidebar-section">
+      <h3 className="text-sm font-semibold mb-3 text-gray-900">Export Options</h3>
+      
+      {/* Debug Export Section */}
+      <div className="mb-4">
+        <h4 className="text-xs font-medium text-red-700 mb-2">🐛 Debug Exports</h4>
+        <div className="space-y-1">
+          <Button 
+            variant="outline" 
+            onClick={() => onExportCurrentView('Test Export')}
+            className="w-full text-xs bg-red-50 border-red-200 text-red-700 hover:bg-red-100"
+            size="sm"
+          >
+            🔍 Test Export (Debug)
+          </Button>
+          <Button 
+            variant="outline" 
+            onClick={() => onExportCurrentView('JSON Export')}
+            className="w-full text-xs bg-yellow-50 border-yellow-200 text-yellow-700 hover:bg-yellow-100"
+            size="sm"
+          >
+            📄 JSON Export
+          </Button>
+          <Button 
+            variant="outline" 
+            onClick={() => onExportCurrentView('CSV Export')}
+            className="w-full text-xs bg-green-50 border-green-200 text-green-700 hover:bg-green-100"
+            size="sm"
+          >
+            📊 CSV Export
+          </Button>
+        </div>
+      </div>
+
+      {/* Standard Text Exports */}
+      <div className="mb-4">
+        <h4 className="text-xs font-medium text-gray-700 mb-2">📝 Text Exports</h4>
+        <div className="space-y-1">
+          <Button 
+            variant="outline" 
+            onClick={() => onExportCurrentView('Current View')}
+            className="w-full text-xs"
+            size="sm"
+          >
+            📄 Export Current View
+          </Button>
+          <Button 
+            variant="outline" 
+            onClick={() => onExportCurrentView('Daily View')}
+            className="w-full text-xs"
+            size="sm"
+          >
+            📅 Export Daily View
+          </Button>
+          <Button 
+            variant="outline" 
+            onClick={() => onExportCurrentView('Weekly Package')}
+            className="w-full text-xs"
+            size="sm"
+          >
+            📋 Export Weekly Package
+          </Button>
+        </div>
+      </div>
+
+      {/* reMarkable Pro Optimized Exports */}
+      <div className="mb-4">
+        <h4 className="text-xs font-medium text-gray-700 mb-2">📱 reMarkable Pro</h4>
+        <div className="space-y-1">
+          <Button 
+            variant="outline" 
+            onClick={() => onExportCurrentView('reMarkable Daily')}
+            className="w-full text-xs bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100"
+            size="sm"
+          >
+            📅 Daily (reMarkable)
+          </Button>
+          <Button 
+            variant="outline" 
+            onClick={() => onExportCurrentView('reMarkable Weekly')}
+            className="w-full text-xs bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100"
+            size="sm"
+          >
+            📄 Weekly (reMarkable)
+          </Button>
+          <Button 
+            variant="outline" 
+            onClick={() => onExportCurrentView('reMarkable Monthly')}
+            className="w-full text-xs bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100"
+            size="sm"
+          >
+            📊 Monthly (reMarkable)
+          </Button>
+        </div>
+      </div>
+      
+      {/* Google Drive Export Section */}
+      <div className="mb-4">
+        <h4 className="text-xs font-medium text-gray-700 mb-2">☁️ Google Drive</h4>
+        <div className="space-y-1">
+          <Button 
+            variant="outline" 
+            onClick={() => onExportToGoogleDrive('current')}
+            className="w-full text-xs whitespace-normal leading-tight h-auto py-2"
+            size="sm"
+            disabled={!isGoogleConnected}
+          >
+            {isGoogleConnected ? '☁️ Current to Drive' : (
+              <>
+                Export Current View
+                <br />
+                (Connect Google First)
+              </>
+            )}
+          </Button>
+          <Button 
+            variant="outline" 
+            onClick={() => onExportToGoogleDrive('weekly')}
+            className="w-full text-xs whitespace-normal leading-tight h-auto py-2"
+            size="sm"
+            disabled={!isGoogleConnected}
+          >
+            {isGoogleConnected ? '☁️ Weekly to Drive' : (
+              <>
+                Export Weekly Package
+                <br />
+                (Connect Google First)
+              </>
+            )}
+          </Button>
+        </div>
+      </div>
+
+      {/* Legacy PDF Exports (for compatibility) */}
+      <div>
+        <h4 className="text-xs font-medium text-gray-500 mb-2">📄 Legacy PDF (May Have Issues)</h4>
+        <div className="space-y-1">
+          <Button 
+            variant="outline" 
+            onClick={onExportWeeklyPackage}
+            className="w-full text-xs opacity-60"
+            size="sm"
+          >
+            Legacy Weekly PDF
+          </Button>
+          <Button 
+            variant="outline" 
+            onClick={onExportDailyView}
+            className="w-full text-xs opacity-60"
+            size="sm"
+          >
+            Legacy Daily PDF
+          </Button>
+          <Button 
+            variant="outline" 
+            onClick={onExportFullMonth}
+            className="w-full text-xs opacity-60"
+            size="sm"
+          >
+            Legacy Full Month
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+};

@@ -1,0 +1,70 @@
+Here is a detailed, explicit prompt and a **comprehensive QA checklist** you should give to Replit AI (or any developer) as you finalize your Daily Template PDF export. This will ensure your output is pixel-perfect and production ready—matching your attached HTML in every detail, containing only real appointments, with zero encoding or styling errors.
+
+## 🚨 REPLIT AI QA & FINAL DELIVERY INSTRUCTIONS 🚨
+
+### **CRITICAL QA INSTRUCTIONS**
+
+**Goal:**  
+The exported Daily Template PDF must be an exact, pixel-perfect replica of the attached HTML template (`daily_calendar_replica_1752805954118.html`), with zero “test”/ghost appointments, zero emoji or encoding artifacts, and absolutely faithful section layout and styling.
+
+### **1. PDF vs HTML Fidelity Checklist**
+
+- [ ] **Section Order**: Header, stats bar, legend, time grid, appointments, and footer *in exact order as HTML*.
+- [ ] **Margins and Spacing**: Margins, paddings, and all spacings between elements are visually indistinguishable (±2px tolerance) from the HTML for both reMarkable and US Letter modes.
+- [ ] **Font and Typography**: Fonts (family, size, weight), line heights, colors, bolding, and italics *exactly match* HTML stylings.
+- [ ] **Grid and Time Slots**: Each time slot row/column from 6:00 AM–11:30 PM replicates the HTML’s grid—including row heights, vertical/horizontal borders, alternating backgrounds, and positional accuracy (no shifted or stretched rows).
+- [ ] **Appointment Blocks**:
+  - [ ] All appointment boxes appear **only** in their proper time slot
+  - [ ] No event box ever overlaps with another, and if multiple concurrent events, they display side-by-side without overlapping or overflowing
+  - [ ] Long titles truncate with ellipsis (“…”) as in web view, text never bleeds out of the box
+  - [ ] **NO appointment whose title contains ‘test’, ‘event test’, ‘test-appointment’, or is blank/ghost/non-UI** shows up in the export 
+  - [ ] “Paul Benjamin” and any other ghost event do NOT appear unless they appear in the web UI  
+- [ ] **Emoji/Artifact Removal**:
+  - [ ] All leading emoji/unicode status icons (e.g. SimplePractice padlock) are stripped from event titles—no “Ø=Ý”, symbols, or emoji in any exported appointment
+- [ ] **Legend, Stats, and Footer**: These sections must match the reference HTML in icon style, background color, spacing, and text layout. There should be no spacing, coloring, or order drift.
+- [ ] **Navigation/Footer**: Footer navigation (Previous Day, Weekly Overview, Next Day) is clean, no encoding artifacts (“Ø=ÜÅ”, etc.), and is spaced/styled as in the HTML.
+
+### **2. Implementation Practices & Proof**
+
+- [ ] **Strict Data Filtering**: Implement and log a filter that removes any event that is:
+    - marked as test, ghost, or blank,
+    - not actually shown in the planner UI for the chosen date.
+- [ ] **Robust Emoji/Unicode Cleaning**: Use full-spectrum Unicode filtering so *only* clean, printable patient/event names are exported.
+- [ ] **Absolute Positioning**: **Do not use auto-layout or floating positioning**; all calculations for row, column, and block positions must be based on the reference HTML’s constant measurements.
+- [ ] **Dual Output QA**: Test export for both reMarkable and US Letter—screenshots must show both PDF and HTML side-by-side for *the same date* with all content visually identical.
+- [ ] **Before/After Logging**: Attach a short debug log showing:  
+    - events/appointments processed  
+    - which were filtered out (and why)  
+    - step-by-step transformation of event titles with removed emoji/artifacts.
+
+### **3. Final Visual & Functional QA**
+
+- [ ] **Visual Match**: The exported PDF and the HTML calendar, when compared for the same day, are visually indistinguishable.
+- [ ] **No Extra/Unexpected Data**: No artifact, ghost, or test appointment appears under any scenario.
+- [ ] **Encoding & Language Safety**: No “Ø=Ý” or similar encoding artifacts. All names display as they do in the web interface.
+- [ ] **All Device Modes**: Both device-specific exports (reMarkable, US Letter) are checked.
+- [ ] **Professionalism**: The output would pass as a medical, legal, or educational record—zero UI bugs, spacing errors, or placeholders.
+
+### **4. Commit & Documentation**
+**Commit message:**  
+```
+fix(pdf): Achieve pixel-perfect Daily Template PDF export; strict filtering, robust emoji removal, absolute layout fidelity vs. HTML; dual device QA
+```
+**Documentation:**  
+Update `replit.md` and/or in-code comments to document the filtering strategy, layout constants, and exact pixel QA protocol.
+
+### **5. What To Provide**
+- [ ] The updated export code (htmlTemplateDailyExport.ts, etc.)
+- [ ] Screen captures: exported PDF (both modes) side-by-side with the HTML template for the same date
+- [ ] A summary QA log:  
+    - What was filtered  
+    - What was rendered  
+    - Evidence of emoji/artifact stripping
+
+### **Paste this prompt and attach your HTML** when working with Replit’s AI or your developer.
+
+**Deliverables are only accepted when the checklist is 100% satisfied and the PDF is visually indistinguishable from the HTML reference for any daily view.**
+
+Let me know if you want a **boilerplate code example for the event/title filtering or any additional technical QA technique**!
+
+[1] https://replit.com/@jonathanprocter/RemarkablePlannerPro-1

@@ -1,0 +1,126 @@
+Here’s the updated detailed prompt for Replit:
+
+-----
+
+**TASK: Add Location Indicators to Calendar Appointment Blocks**
+
+## Overview
+
+Add location display functionality to existing appointment blocks in both weekly and daily calendar views. Location assignments will be manual - no automated logic required. **Location data must be stored in the database.**
+
+## Weekly Calendar View Implementation
+
+**Current Structure:**
+
+```
+[Appointment Name]
+[Horizontal Line]
+[Time Range]
+```
+
+**Required New Structure:**
+
+```
+[Appointment Name]
+[Icon] [Location Name]
+[Horizontal Line]
+[Time Range]
+```
+
+**Specifications:**
+
+- Insert location line between appointment name and existing horizontal divider
+- **Styling:** Small font size (smaller than appointment name), slightly muted color, normal font weight
+- **Positioning:** Left-aligned with appointment name
+- **Spacing:** Minimal padding between appointment name and location line
+
+## Daily Calendar View Implementation
+
+**Current Structure:**
+
+```
+🔒 [Appointment Name]
+SIMPLEPRACTICE
+[Time Range]
+```
+
+**Required New Structure:**
+
+```
+🔒 [Appointment Name]
+SIMPLEPRACTICE | [Icon] [Location Name]
+[Time Range]
+```
+
+**Specifications:**
+
+- Modify existing “SIMPLEPRACTICE” line to include location
+- Use vertical bar (|) as separator with single space on each side
+- Maintain existing styling and font size
+
+## Database Requirements
+
+**Add location field to appointment/event table:**
+
+- **Field name:** `location` (or similar)
+- **Data type:** VARCHAR/TEXT (to store location identifier)
+- **Values:** “woodbury”, “rvc”, “telehealth”, or NULL
+- **Default:** NULL (for existing appointments)
+
+**Database schema update needed:**
+
+```sql
+ALTER TABLE appointments ADD COLUMN location VARCHAR(50) DEFAULT NULL;
+```
+
+(Adjust table name and column specifications as needed for your existing schema)
+
+## Location Options & Icons
+
+**Available Locations:**
+
+- 🏢 Woodbury office → Database value: “woodbury” → Display as “🏢 Woodbury”
+- 🏥 RVC office → Database value: “rvc” → Display as “🏥 RVC”
+- 💻 Telehealth appointments → Database value: “telehealth” → Display as “💻 Telehealth”
+
+**Format:** `[emoji][space][location name]` (e.g., “🏢 Woodbury”)
+
+## Backend Logic Requirements
+
+1. **CRUD Operations:** Update appointment creation/editing to include location field
+1. **Data Retrieval:** Modify appointment queries to include location data
+1. **Validation:** Ensure location values are valid (“woodbury”, “rvc”, “telehealth”, or NULL)
+1. **Migration:** Handle existing appointments (location field will be NULL)
+
+## Frontend Logic Requirements
+
+1. **Display Logic:** Map database values to display format:
+- “woodbury” → “🏢 Woodbury”
+- “rvc” → “🏥 RVC”
+- “telehealth” → “💻 Telehealth”
+- NULL → Don’t display location line
+1. **Consistent Rendering:** Same location data displays identically in both views
+
+## Critical Requirements
+
+1. **No automatic assignment** - All locations must be manually assigned per appointment
+1. **No filtering logic** - System should only display manually assigned location data
+1. **Consistent data** - Location assignments should sync between weekly and daily views
+1. **Preserve existing UI** - Do not modify colors, layouts, borders, or any other styling
+1. **Optional field** - Appointments without assigned locations should display normally without location line
+1. **Data persistence** - Location assignments must be saved to database and persist across sessions
+
+## Technical Considerations
+
+- Add location field to appointment data structure/model
+- Update database schema to include location column
+- Ensure location data persists across view changes and page refreshes
+- Location assignment interface/method will be handled separately
+- Handle cases where location field is empty/null (don’t display location line)
+- Maintain backward compatibility with existing appointments
+
+## Expected Output
+
+User should see location information clearly displayed in both calendar views, with all location data properly stored in the database for persistence across sessions.
+
+-----

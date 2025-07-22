@@ -1,0 +1,40 @@
+Based on the screenshots you shared, here are the specific issues with your PDF export:
+
+**Problems Identified:**
+- The daily calendar is split across multiple pages instead of being a single-page day view.
+- There are large sections of unused white space, particularly in the calendar grid and at the bottom of pages.
+- Appointment cards do not align precisely with their scheduled time slots (they appear floating or spaced apart from the corresponding time grid).
+- Some appointment detail boxes overlap the time grid or are visually occluded by a white background/box at the bottom, making late appointments (e.g., after 21:00) hard to read or cut off.
+- Header/stats area is repeated in odd places due to forced page breaks.
+- Some appointments appear on different pages than their respective time slots.
+
+**Refined Instructions to Give Replit’s AI (or Fix in Your Code):**
+
+1. **Force All Content onto a Single Page:**
+   - Set explicit PDF export settings: `page-break: avoid` (if using CSS-in-JS or inline styles for PDF), or configure your PDF generator (e.g., `react-pdf`, Puppeteer, jsPDF) to use a large enough virtual “page” to fit your day view.
+   - Tell the AI: "All daily appointments must fit on a single continuous PDF page. Disable or override any automatic page breaks in the export tool."
+
+2. **Fix Time Slot and Appointment Alignment:**
+   - Update CSS or layout logic so each appointment card starts exactly at the Y-position corresponding to its scheduled time (e.g. 17:00 appointment aligns with 17:00 row).
+   - Tell the AI: "Ensure appointment cards are vertically aligned with their exact time slot on the grid. Their top edge should align directly with the corresponding time row."
+
+3. **Eliminate White Overlays and Unused Space:**
+   - Remove or relocate any fixed-position `div`, `box`, or footer that appears as a white overlay or is positioned at the bottom of the page.
+   - Ensure that all backgrounds of appointment containers are transparent or properly layered behind the text.
+   - Tell the AI: "Remove any bottom overlays or backgrounds that obstruct appointments. All containers and footers must be rendered below event items or be fully transparent."
+
+4. **Prevent Forced Repetition of Headers/Stats:**
+   - Only print the summary/statistics header (date, count, etc.) once at the top.
+   - Tell the AI: "Summary/header boxes should only render once at the document top. Do not repeat these headers or stats if the logic introduces page breaks."
+
+**Sample Prompt for Replit’s AI:**
+> "Refactor the daily calendar PDF export so the entire day appears on a single page, without page breaks or white overlays. Appointments must align exactly with their scheduled time rows in the time grid—no floating or misalignment. Remove or make transparent any absolute or fixed-position bottom overlays/backgrounds so late appointments are never blocked or hidden. Only show the stats/header box once at the very top. If a container’s height is calculated, ensure it expands to fit all content, and avoid hardcoded pixel heights or overflow: hidden settings."
+
+**Suggestions for Testing:**
+- After making these changes, review one day with maximum appointments (early morning to late night) to ensure nothing is blocked off-screen or by overlays.
+- If using `react-pdf`, investigate the `fixed`, `wrap`, and `break` props to ensure all content fits a custom large page.
+- If code creates overlays for design, use conditional logic to turn them off for PDF export or push them to the page background layer.
+
+Let me know your export tool/library and if you want a code snippet or additional technical sample!
+
+[1] file:///Users/jonathanprocter/Downloads/daily-calendar-2025-07-16%20(21).pdf

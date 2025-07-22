@@ -1,0 +1,56 @@
+I am building a Node/Express + React/Vite fullstack app with Google OAuth 2.0 login for Google Calendar integration.
+
+My current system suffers from an endless auth loop, caused by one or more of the following:
+
+The backend's /api/auth/callback does not always receive the Google code parameter, or fails to exchange it for tokens.
+
+The backend fails to save access_token and refresh_token to the user's session (or DB).
+
+The backend does not use the refresh token to get a new access token, so after expiry the user is always kicked back to login.
+
+The backend sometimes uses environment tokens or fallback hacks instead of a real OAuth-based session.
+
+The calendar endpoints return 401 errors due to missing or expired tokens.
+
+I WANT THE AI TO DO THE FOLLOWING:
+
+Review my Express backend OAuth flow.
+
+Ensure /api/auth/callback is registered BEFORE any frontend/static/react routes.
+
+Log incoming query params and show errors if the query does not contain code.
+
+Exchange the Google code for tokens on callback.
+
+Use POST https://oauth2.googleapis.com/token with correct payload.
+
+On success, store both access_token and refresh_token in my user's session or DB.
+
+Modify my protected API endpoints (calendar/events/etc):
+
+Require a valid access_token in session for each request to Google APIs.
+
+If the token is expired, use the refresh_token to get a new one, update the session, and retry the request.
+
+If refresh fails, trigger a re-auth flow ONLY THEN.
+
+Never use fallback or environment tokens, and never present “quick fix” hacks to the UI. Always use the real OAuth flow.
+
+Add debug logging for all auth failures.
+
+Show: (1) callback handler logs, (2) session save/load logs, (3) API request/refresh errors.
+
+Test that after Google login, I can call /api/calendar/events and receive data without reauthenticating, even after several minutes.
+
+Directives:
+
+If session is lost between requests, fix my session middleware (cookie secret, proxy settings, etc.).
+
+If SPA (React/Vite) intercepts /api/auth/callback, ensure backend routing order is correct.
+
+Show code diffs for all affected backend files only—do NOT rearchitect unrelated frontend code.
+
+Output code, not just text explanations—make this a drop-in working solution.
+
+Recap:
+I want Google OAuth login using the official flow, full session-based access/refresh token storage and refresh, and a smooth experience with no hacks, quick fixes, or infinite login loops. Output only the changed backend code if possible.

@@ -1,0 +1,39 @@
+/**
+ * Utility function to perform cleanup tasks in the browser to help manage memory usage.
+ * This includes removing elements marked for cleanup, optionally forcing garbage collection in development mode,
+ * and clearing cached blob URLs.
+ */
+export const performMemoryCleanup = (): void => {
+  try {
+    // Clean up any lingering event listeners
+    document.querySelectorAll('[data-cleanup]').forEach(el => el.remove());
+    
+    // Force garbage collection if available (development only)
+    if (typeof (window as any).gc === 'function' && process.env.NODE_ENV === 'development') {
+      (window as any).gc();
+    }
+    
+    // Clear any cached blob URLs
+    const blobUrls: string[] = (window as any).__blobUrls || [];
+    blobUrls.forEach(url => {
+      try {
+        URL.revokeObjectURL(url);
+      } catch {
+        // Ignore errors during URL revocation
+      }
+    });
+    (window as any).__blobUrls = [];
+    
+    console.log('✅ Memory cleanup completed');
+  } catch (error) {
+    console.warn('Memory cleanup warning:', error);
+  }
+};
+
+// Enhance security and performance by using a more controlled approach to periodically run the cleanup
+if (typeof window !== 'undefined') {
+  const cleanupInterval = 5 * 60 * 1000; // Every 5 minutes
+  window.addEventListener('load', () => {
+    setInterval(performMemoryCleanup, cleanupInterval);
+  });
+}

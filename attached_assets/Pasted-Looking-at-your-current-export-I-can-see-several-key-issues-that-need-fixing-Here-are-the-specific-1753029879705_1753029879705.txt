@@ -1,0 +1,126 @@
+Looking at your current export, I can see several key issues that need fixing. Here are the specific instructions and code for Replit:Here's exactly what you need to provide to Replit to fix the layout:
+
+## **🔥 IMMEDIATE FIXES NEEDED:**
+
+### **1. Replace the Stats Section Completely:**
+```html
+<!-- Find and replace the stats-bar div -->
+<div class="stats-bar">
+    <div class="stat">
+        <div class="stat-number">12</div>
+        <div class="stat-label">Appointments</div>
+    </div>
+    <div class="stat">
+        <div class="stat-number">11.5h</div>
+        <div class="stat-label">Scheduled</div>
+    </div>
+    <div class="stat">
+        <div class="stat-number">12.5h</div>
+        <div class="stat-label">Available</div>
+    </div>
+    <div class="stat">
+        <div class="stat-number">52%</div>
+        <div class="stat-label">Free Time</div>
+    </div>
+</div>
+```
+
+### **2. Add This CSS Override (Critical):**
+```css
+/* Add to the end of your <style> section */
+.time-slot.hour {
+    background-color: #f8f9fa !important;
+}
+
+.time-slot.half-hour {
+    background-color: white !important;
+}
+
+.time-slot-container.hour {
+    background-color: #f8f9fa !important;
+}
+
+.time-slot-container.half-hour {
+    background-color: white !important;
+}
+
+.appointment {
+    position: absolute !important;
+    left: 2px !important;
+    right: 2px !important;
+    z-index: 10 !important;
+}
+```
+
+### **3. Fix the Appointment Count:**
+```html
+<!-- Change this line in the header -->
+<div class="appointment-count">12 appointments</div>
+```
+
+### **4. Debug JavaScript - Add This:**
+```javascript
+// Add this at the very end of your script, before closing </script>
+console.log("DEBUG: Total appointments in array:", appointments.length);
+console.log("DEBUG: Last appointment:", appointments[appointments.length - 1]);
+
+// Force check Amberly exists
+const amberlyExists = appointments.find(apt => apt.name.includes("Amberly"));
+console.log("DEBUG: Amberly Comeau found:", !!amberlyExists);
+
+if (!amberlyExists) {
+    console.error("MISSING: Amberly Comeau appointment!");
+}
+```
+
+### **5. Replit Console Commands:**
+Run these in Replit's console:
+```bash
+# Clear any caches
+rm -rf .replit_cache 2>/dev/null || true
+
+# Force restart
+kill -9 $(pgrep -f "python3") 2>/dev/null || true
+python3 -m http.server 8080 &
+```
+
+### **6. Browser Dev Tools Check:**
+1. Press `F12` to open Developer Tools
+2. Go to Console tab  
+3. Look for these outputs:
+   - `DEBUG: Total appointments in array: 12`
+   - `DEBUG: Amberly Comeau found: true`
+4. If you see `false` or `11`, the data isn't loading correctly
+
+### **7. Verification Test:**
+Add this button temporarily to test:
+```html
+<!-- Add this button after the calendar for testing -->
+<button onclick="testCalendar()" style="margin: 20px; padding: 10px; background: red; color: white;">
+    TEST CALENDAR
+</button>
+
+<script>
+function testCalendar() {
+    console.log("=== CALENDAR TEST ===");
+    console.log("Appointments in data:", appointments.length);
+    console.log("Appointment divs rendered:", document.querySelectorAll('.appointment').length);
+    console.log("Time slots rendered:", document.querySelectorAll('.time-slot').length);
+    console.log("Stats showing:", document.querySelector('.stat-number').textContent);
+    
+    // Check specific appointments
+    appointments.forEach((apt, i) => {
+        console.log(`${i+1}. ${apt.name} (${apt.time})`);
+    });
+}
+</script>
+```
+
+## **🎯 Expected Results After Fixes:**
+- Console shows: `Total appointments: 12`
+- Stats display: `12 | 11.5h | 12.5h | 52%`
+- Amberly Comeau appears at bottom (22:30-23:30)
+- Time slots alternate grey/white
+- David Grossman spans full 90 minutes
+
+**Apply these fixes in order, then test the red button to verify everything loads correctly!**

@@ -1,0 +1,40 @@
+/**
+ * Utility functions for cleaning text and titles for PDF export, focusing on removing emojis,
+ * symbols, and other problematic characters that may cause rendering issues.
+ */
+
+/**
+ * Cleans a given title by removing emojis, symbols, and specific patterns that cause rendering issues in PDFs.
+ * @param title The title string to be cleaned.
+ * @returns The cleaned title string.
+ */
+export const cleanTitleForPDF = (title: string): string => {
+  if (!title) return '';
+
+  const emojiAndSymbolPattern = /[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F700}-\u{1F77F}\u{1F780}-\u{1F7FF}\u{1F800}-\u{1F8FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}🔒\s*]/gu;
+  const corruptedTextPatterns = /Ø=[\w\s]*|!•/g;
+  const appointmentSuffixPattern = /\s+Appointment\s*$/i;
+  const extraWhitespacePattern = /\s+/g;
+
+  return title
+    .replace(emojiAndSymbolPattern, '')
+    .replace(corruptedTextPatterns, '')
+    .replace(appointmentSuffixPattern, '')
+    .replace(extraWhitespacePattern, ' ')
+    .trim();
+};
+
+/**
+ * Cleans a given event title by leveraging the cleanTitleForPDF function to remove unwanted characters.
+ * @param title The event title string to be cleaned.
+ * @returns The cleaned event title string.
+ */
+export const cleanEventTitle = (title: string): string => cleanTitleForPDF(title);
+
+/**
+ * Cleans a given text for PDF export by removing emojis, symbols, and specific patterns that cause rendering issues.
+ * This is essentially an alias for cleanTitleForPDF, indicating its applicability to generic text content.
+ * @param text The text string to be cleaned.
+ * @returns The cleaned text string.
+ */
+export const cleanTextForPDF = (text: string): string => cleanTitleForPDF(text);

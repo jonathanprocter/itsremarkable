@@ -1,0 +1,500 @@
+// =====================================================
+// COMPLETE REPLIT CALENDAR FIXES - COPY THIS TO REPLIT
+// =====================================================
+
+// 1. FIX HEADER DATE FORMAT
+function formatWeekHeader() {
+    // Change from "July 7 - 2025 (day: 13)" to "July 7 - 13, 2025"
+    const headerElement = document.querySelector('.week-header h1');
+    if (headerElement) {
+        headerElement.textContent = "July 7 - 13, 2025";
+    }
+    
+    // Alternative: if you're generating this dynamically
+    return "July 7 - 13, 2025";
+}
+
+// 2. REPLACE ALL TEXT NAVIGATION WITH BUTTONS
+function createNavigationButtons() {
+    // Remove all existing text navigation
+    const textNavs = document.querySelectorAll('.text-nav, .page-nav-text');
+    textNavs.forEach(nav => nav.remove());
+    
+    // Create header navigation for daily pages
+    function createDailyHeader(dayName, date, appointmentCount) {
+        return `
+        <div class="nav-header">
+            <button class="nav-btn weekly-btn" onclick="showWeeklyView()">
+                📅 Weekly Overview
+            </button>
+            <div class="page-title">
+                <h2>${dayName}, ${date}</h2>
+                <span class="appointment-count">${appointmentCount} appointments</span>
+            </div>
+        </div>`;
+    }
+    
+    // Create footer navigation for daily pages
+    function createDailyFooter(prevDay, nextDay) {
+        return `
+        <div class="nav-footer">
+            <button class="nav-btn prev-btn" onclick="showDay('${prevDay}')">
+                ← ${prevDay}
+            </button>
+            <button class="nav-btn weekly-btn" onclick="showWeeklyView()">
+                📅 Weekly Overview
+            </button>
+            <button class="nav-btn next-btn" onclick="showDay('${nextDay}')">
+                ${nextDay} →
+            </button>
+        </div>`;
+    }
+    
+    // Apply to all daily pages
+    const dailyPages = [
+        { day: 'Monday', date: 'July 7, 2025', count: 11, prev: 'Sunday', next: 'Tuesday' },
+        { day: 'Tuesday', date: 'July 8, 2025', count: 5, prev: 'Monday', next: 'Wednesday' },
+        { day: 'Wednesday', date: 'July 9, 2025', count: 6, prev: 'Tuesday', next: 'Thursday' },
+        { day: 'Thursday', date: 'July 10, 2025', count: 10, prev: 'Wednesday', next: 'Friday' },
+        { day: 'Friday', date: 'July 11, 2025', count: 6, prev: 'Thursday', next: 'Saturday' },
+        { day: 'Saturday', date: 'July 12, 2025', count: 2, prev: 'Friday', next: 'Sunday' },
+        { day: 'Sunday', date: 'July 13, 2025', count: 0, prev: 'Saturday', next: 'Monday' }
+    ];
+    
+    dailyPages.forEach(page => {
+        const pageElement = document.querySelector(`[data-day="${page.day.toLowerCase()}"]`);
+        if (pageElement) {
+            // Add header
+            const headerHTML = createDailyHeader(page.day, page.date, page.count);
+            pageElement.insertAdjacentHTML('afterbegin', headerHTML);
+            
+            // Add footer
+            const footerHTML = createDailyFooter(page.prev, page.next);
+            pageElement.insertAdjacentHTML('beforeend', footerHTML);
+        }
+    });
+}
+
+// 3. FIX APPOINTMENT LAYOUT WITH PROPER EVENT NOTES POSITIONING
+function repositionAppointments() {
+    const appointments = document.querySelectorAll('.appointment');
+    
+    appointments.forEach(appointment => {
+        // Restructure appointment HTML to put notes at top
+        const clientName = appointment.querySelector('.client-name')?.textContent;
+        const timeSlot = appointment.querySelector('.time-slot')?.textContent;
+        const source = appointment.querySelector('.source')?.textContent;
+        const eventNotes = appointment.querySelector('.event-notes')?.innerHTML;
+        const actionItems = appointment.querySelector('.action-items')?.innerHTML;
+        
+        if (eventNotes || actionItems) {
+            // Recreate appointment structure with notes at top
+            appointment.innerHTML = `
+                <div class="appointment-header">
+                    <div class="appointment-title">
+                        <span class="client-name">${clientName}</span>
+                        <span class="appointment-time">${timeSlot}</span>
+                    </div>
+                    <div class="appointment-source">${source}</div>
+                </div>
+                
+                ${eventNotes ? `
+                <div class="event-notes">
+                    <strong>Event Notes</strong>
+                    ${eventNotes}
+                </div>` : ''}
+                
+                ${actionItems ? `
+                <div class="action-items">
+                    <strong>Action Items</strong>
+                    ${actionItems}
+                </div>` : ''}
+            `;
+            
+            // Increase appointment height to accommodate notes
+            const baseHeight = 60; // 1 hour = 60px
+            const notesHeight = (eventNotes ? 40 : 0) + (actionItems ? 40 : 0);
+            appointment.style.height = `${baseHeight + notesHeight}px`;
+        }
+    });
+}
+
+// 4. CREATE BIDIRECTIONAL LINKING SYSTEM
+function setupBidirectionalLinks() {
+    // Weekly view appointments click to daily view
+    const weeklyAppointments = document.querySelectorAll('.weekly-view .appointment');
+    weeklyAppointments.forEach(appointment => {
+        appointment.addEventListener('click', function() {
+            const dayColumn = this.closest('[data-day]');
+            const dayName = dayColumn.getAttribute('data-day');
+            showDay(dayName);
+        });
+        
+        // Add hover effect
+        appointment.style.cursor = 'pointer';
+        appointment.title = 'Click to view daily schedule';
+    });
+    
+    // Daily view appointments click back to weekly view (optional)
+    const dailyAppointments = document.querySelectorAll('.daily-view .appointment');
+    dailyAppointments.forEach(appointment => {
+        appointment.addEventListener('dblclick', function() {
+            showWeeklyView();
+        });
+        
+        appointment.title = 'Double-click to return to weekly view';
+    });
+}
+
+// 5. NAVIGATION FUNCTIONS
+function showWeeklyView() {
+    // Hide all daily views
+    document.querySelectorAll('.daily-view').forEach(view => {
+        view.style.display = 'none';
+    });
+    
+    // Show weekly view
+    const weeklyView = document.querySelector('.weekly-view');
+    if (weeklyView) {
+        weeklyView.style.display = 'block';
+    }
+    
+    // Update URL hash
+    window.location.hash = '#weekly';
+}
+
+function showDay(dayName) {
+    // Hide weekly view
+    const weeklyView = document.querySelector('.weekly-view');
+    if (weeklyView) {
+        weeklyView.style.display = 'none';
+    }
+    
+    // Hide all daily views
+    document.querySelectorAll('.daily-view').forEach(view => {
+        view.style.display = 'none';
+    });
+    
+    // Show target day
+    const targetDay = document.querySelector(`[data-day="${dayName.toLowerCase()}"]`);
+    if (targetDay) {
+        targetDay.style.display = 'block';
+    }
+    
+    // Update URL hash
+    window.location.hash = `#${dayName.toLowerCase()}`;
+}
+
+// 6. CSS FIXES FOR PROPER SPACING AND LAYOUT
+const cssFixes = `
+<style>
+/* Navigation Button Styling */
+.nav-btn {
+    background: #f0f0f0;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.nav-btn:hover {
+    background: #e0e0e0;
+    border-color: #999;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.nav-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+/* Header Navigation */
+.nav-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background: #f8f9fa;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.page-title h2 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.appointment-count {
+    font-size: 14px;
+    color: #666;
+    font-weight: normal;
+}
+
+/* Footer Navigation */
+.nav-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background: #f8f9fa;
+    border-top: 2px solid #e0e0e0;
+}
+
+/* Appointment Restructuring */
+.appointment {
+    margin-bottom: 4px;
+    padding: 8px 12px;
+    border: 2px solid #d1d5db;
+    border-radius: 6px;
+    background: #fafbfc;
+    transition: all 0.2s ease;
+}
+
+.appointment:hover {
+    background: #f3f4f6;
+    border-color: #9ca3af;
+    transform: translateX(2px);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+.appointment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 6px;
+}
+
+.client-name {
+    font-weight: 600;
+    font-size: 14px;
+    color: #1f2937;
+}
+
+.appointment-time {
+    font-size: 11px;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.appointment-source {
+    font-size: 10px;
+    color: #9ca3af;
+    font-style: italic;
+    margin-bottom: 8px;
+}
+
+/* Event Notes and Action Items */
+.event-notes, .action-items {
+    margin-bottom: 6px;
+    font-size: 10px;
+    line-height: 1.3;
+}
+
+.event-notes strong, .action-items strong {
+    display: block;
+    font-size: 9px;
+    color: #374151;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 3px;
+}
+
+.event-notes ul, .action-items ul {
+    margin: 0 0 0 12px;
+    padding: 0;
+}
+
+.event-notes li, .action-items li {
+    color: #4b5563;
+    margin-bottom: 2px;
+}
+
+/* Weekly View Appointment Hover */
+.weekly-view .appointment {
+    cursor: pointer;
+}
+
+.weekly-view .appointment:hover::after {
+    content: "Click to view day";
+    position: absolute;
+    bottom: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #333;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    white-space: nowrap;
+    z-index: 1000;
+}
+
+/* Remove all text-based navigation */
+.text-nav, .page-nav-text, 
+[contains="Back to Weekly Overview"],
+[contains="Previous Day"],
+[contains="Next Day"] {
+    display: none !important;
+}
+
+/* Ensure proper spacing for appointments with notes */
+.appointment.has-notes {
+    min-height: 120px; /* Ensure enough space for notes */
+}
+
+.appointment.has-long-notes {
+    min-height: 160px; /* For appointments with both event notes and action items */
+}
+
+/* Weekly header fix */
+.weekly-header h1 {
+    font-size: 24px;
+    font-weight: 600;
+    margin: 0;
+}
+</style>
+`;
+
+// 7. MAIN INITIALIZATION FUNCTION
+function initializeCalendarFixes() {
+    // Add CSS fixes
+    document.head.insertAdjacentHTML('beforeend', cssFixes);
+    
+    // Apply all fixes
+    formatWeekHeader();
+    createNavigationButtons();
+    repositionAppointments();
+    setupBidirectionalLinks();
+    
+    // Handle URL routing
+    function handleRoute() {
+        const hash = window.location.hash.replace('#', '');
+        if (hash === 'weekly' || hash === '') {
+            showWeeklyView();
+        } else {
+            showDay(hash.charAt(0).toUpperCase() + hash.slice(1));
+        }
+    }
+    
+    // Set up routing
+    window.addEventListener('hashchange', handleRoute);
+    window.addEventListener('load', handleRoute);
+    
+    // Mark appointments that have notes for proper spacing
+    document.querySelectorAll('.appointment').forEach(apt => {
+        const hasEventNotes = apt.querySelector('.event-notes');
+        const hasActionItems = apt.querySelector('.action-items');
+        
+        if (hasEventNotes && hasActionItems) {
+            apt.classList.add('has-long-notes');
+        } else if (hasEventNotes || hasActionItems) {
+            apt.classList.add('has-notes');
+        }
+    });
+    
+    console.log('Calendar fixes applied successfully!');
+}
+
+// 8. AUTO-RUN ON PAGE LOAD
+document.addEventListener('DOMContentLoaded', initializeCalendarFixes);
+
+// 9. MANUAL TRIGGER FUNCTION (if needed)
+window.applyCalendarFixes = initializeCalendarFixes;
+
+// =====================================================
+// ADDITIONAL HTML STRUCTURE EXAMPLE
+// =====================================================
+
+// If you need to restructure the HTML, here's the ideal structure:
+
+const idealDailyPageStructure = `
+<div class="daily-view" data-day="monday">
+    <!-- Header Navigation (replaces text nav) -->
+    <div class="nav-header">
+        <button class="nav-btn weekly-btn" onclick="showWeeklyView()">
+            📅 Weekly Overview
+        </button>
+        <div class="page-title">
+            <h2>Monday, July 7, 2025</h2>
+            <span class="appointment-count">11 appointments</span>
+        </div>
+    </div>
+    
+    <!-- Calendar Grid -->
+    <div class="calendar-grid">
+        <!-- Time column stays the same -->
+        <div class="time-column">
+            <!-- time slots -->
+        </div>
+        
+        <!-- Appointments column with repositioned notes -->
+        <div class="appointments-column">
+            <div class="appointment has-long-notes" data-time="08:00">
+                <div class="appointment-header">
+                    <div class="appointment-title">
+                        <span class="client-name">Dan re: Supervision</span>
+                        <span class="appointment-time">08:00-09:00</span>
+                    </div>
+                    <div class="appointment-source">Google Calendar</div>
+                </div>
+                
+                <div class="event-notes">
+                    <strong>Event Notes</strong>
+                    <ul>
+                        <li>I cancelled supervision due to COVID</li>
+                        <li>We didn't schedule a follow-up for this week, and will continue next week during our usual time</li>
+                    </ul>
+                </div>
+                
+                <div class="action-items">
+                    <strong>Action Items</strong>
+                    <ul>
+                        <li>Review his supervision notes from last week</li>
+                        <li>Follow-up to see if there are any pressing issues/questions that I can help him navigate</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- More appointments... -->
+        </div>
+    </div>
+    
+    <!-- Footer Navigation (replaces text nav) -->
+    <div class="nav-footer">
+        <button class="nav-btn prev-btn" onclick="showDay('Sunday')">
+            ← Sunday
+        </button>
+        <button class="nav-btn weekly-btn" onclick="showWeeklyView()">
+            📅 Weekly Overview
+        </button>
+        <button class="nav-btn next-btn" onclick="showDay('Tuesday')">
+            Tuesday →
+        </button>
+    </div>
+</div>
+`;
+
+// =====================================================
+// TESTING FUNCTION
+// =====================================================
+function testAllFunctionality() {
+    console.log('Testing calendar functionality...');
+    
+    // Test navigation
+    showWeeklyView();
+    setTimeout(() => showDay('Monday'), 1000);
+    setTimeout(() => showDay('Tuesday'), 2000);
+    setTimeout(() => showWeeklyView(), 3000);
+    
+    console.log('Navigation test complete!');
+}
+
+// Call this in console to test: testAllFunctionality();

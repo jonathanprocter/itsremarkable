@@ -1,0 +1,147 @@
+Absolutely! Here is a **comprehensive, step-by-step guide** you can give to Replit AI or any dev assistant to guarantee a working, minimal, modern Google OAuth integration for **Calendar (+ subcalendars)** and **Drive (read/write)**—with **NO legacy wrappers or token problems**.
+
+# 🟢 Comprehensive Guide: Minimal, Reliable Google OAuth for Replit AI
+
+## **1. Prep: Google Developer Console**
+
+- Go to [Google Cloud Console](https://console.developers.google.com/).
+- Create a project (or use existing).
+- Go to "APIs & Services" > "Credentials".
+- Click "Create Credentials" > "OAuth client ID".
+- Select "Web application".
+    - Add a name, e.g. "Replit Planner OAuth Client".
+    - Under "Authorized redirect URIs", add:
+        ```
+        https://your-replit-username--replit-app-name.replit.app/auth/callback
+        ```
+      *(Or whatever your deployed callback will be!)*
+- Note your **Client ID** and **Client Secret** (save for step 2).
+
+- Enable:
+  - Google Calendar API
+  - Google Drive API
+
+## **2. .env Setup**
+
+Store these in your `.env` (never commit secrets!):
+
+```
+GOOGLE_CLIENT_ID=xxxx.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=yyyyy
+GOOGLE_REDIRECT_URI=https://your-replit-username--replit-app-name.replit.app/auth/callback
+```
+
+## **3. Scopes (Calendar + Drive)**
+
+```js
+const GOOGLE_SCOPES = [
+  "https://www.googleapis.com/auth/calendar",
+  "https://www.googleapis.com/auth/calendar.events",
+  "https://www.googleapis.com/auth/drive",          // Full Drive access
+  "https://www.googleapis.com/auth/drive.file"      // Read/write user files
+];
+```
+
+## **4. Auth Endpoints (Backend: Express/Node, works in any language)**
+
+**A. Redirect to Google Consent:**
+```js
+app.get("/auth/google", (req, res) => {
+  const url = `https://accounts.google.com/o/oauth2/v2/auth?` +
+    `client_id=${process.env.GOOGLE_CLIENT_ID}` +
+    `&redirect_uri=${encodeURIComponent(process.env.GOOGLE_REDIRECT_URI)}` +
+    `&response_type=code` +
+    `&scope=${encodeURIComponent(GOOGLE_SCOPES.join(' '))}` +
+    `&access_type=offline` +
+    `&prompt=consent`;
+
+  res.redirect(url);
+});
+```
+
+**B. OAuth2 Callback:**
+```js
+app.get("/auth/callback", async (req, res) => {
+  const { code } = req.query;
+
+  const tokenRes = await fetch("https://oauth2.googleapis.com/token", {
+    method: "POST",
+    headers: {"Content-Type": "application/x-www-form-urlencoded"},
+    body: new URLSearchParams({
+      code: code.toString(),
+      client_id: process.env.GOOGLE_CLIENT_ID,
+      client_secret: process.env.GOOGLE_CLIENT_SECRET,
+      redirect_uri: process.env.GOOGLE_REDIRECT_URI,
+      grant_type: "authorization_code"
+    })
+  });
+
+  const data = await tokenRes.json();
+
+  // data: { access_token, refresh_token, scope, expires_in, id_token, ... }
+  req.session.tokens = {
+    access_token: data.access_token,
+    refresh_token: data.refresh_token,
+    expires_at: Date.now() + (data.expires_in * 1000),
+  };
+  res.send("Connected. You may close this window and return to the app.");
+});
+```
+
+## **5. Making API Calls (Calendar/Drive)**
+
+**Always use the most recent `access_token`:**
+```js
+fetch("https://www.googleapis.com/calendar/v3/users/me/calendarList", {
+  headers: { "Authorization": `Bearer ${req.session.tokens.access_token}` }
+})
+```
+**If you get 401:** 
+- Automatically POST to Google with your stored `refresh_token` to get a new `access_token`:
+
+```js
+const refreshRes = await fetch("https://oauth2.googleapis.com/token", {
+  method: "POST",
+  headers: {"Content-Type": "application/x-www-form-urlencoded"},
+  body: new URLSearchParams({
+    client_id: process.env.GOOGLE_CLIENT_ID,
+    client_secret: process.env.GOOGLE_CLIENT_SECRET,
+    refresh_token: req.session.tokens.refresh_token,
+    grant_type: "refresh_token"
+  })
+});
+const refreshData = await refreshRes.json();
+if(refreshData.access_token) req.session.tokens.access_token = refreshData.access_token;
+```
+---
+
+## **6. On Any “invalid_grant” or Expired Token:**
+- Delete all tokens for that session/user.
+- Redirect user back to `/auth/google` for a clean re-consent.
+
+## **7. Do NOT:**
+- Layer in custom token managers, DB rotations, or auditing scripts unless you need cross-session, multi-user persistence (even then, keep the token logic basic).
+- Never use extra Google SDKs unless you want advanced features (basic HTTP works best for simple OAuth).
+
+## **8. (Optional) Super-Quick Frontend “Connect Google” Button**
+
+```html
+
+  Connect Google Account
+
+```
+
+# **Summary for Replit AI:**
+
+- Generate a Google consent URL with all needed calendar/drive scopes, prompt=consent, and access_type=offline.
+- On callback, exchange code for tokens using only one fetch/axios/fetch API POST.
+- Store both tokens. Use access_token for all Google API calls.
+- If you get a 401, use the refresh_token to get a new access_token.
+- If nothing works: delete all tokens and have user reconnect via consent.
+- No extra wrappers or legacy token code. Keep every endpoint as close to above as possible.
+
+**If you past this to the Replit AI agent or paste into your code**, you will have a modern, minimal, rock-solid Google OAuth for Calendar & Drive in under 30 minutes—no more legacy issues, no broken refreshes, and easily extensible for any other Google API.
+
+If you specify your preferred language (Node, Java, Python etc.), I can give you a full codefile template in that language!
+
+[1] https://replit.com/t/jonathan-procter-phd/repls/RemarkablePlannerPro

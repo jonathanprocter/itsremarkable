@@ -1,0 +1,31 @@
+Here is a ready-to-use message you can copy and paste for Replit’s AI or your co-pilot:
+
+---
+Hi! I need help fixing a mismatch between my calendar dashboard and the exported PDF in my RemarkablePlannerPro project.
+
+**Issue:**  
+- The dashboard (live view) correctly shows all appointments and their details, but the PDF export either omits some events/data or formats them incorrectly.
+- For example, [describe specific date or issue if relevant, e.g., "appointments on July 8th" or "notes for specific clients" are missing in the PDF"].
+- See attached screenshots for reference: one of the dashboard and one of the PDF export.
+
+**What I want:**  
+- Ensure that all data visible in the dashboard (appointments, notes, action items, etc.) is fully included in the PDF export for the same period.
+- Match the schedule layout and formatting in the export to look as close to the dashboard as possible (columns, colors, notes, etc.).
+
+**Code areas to check:**  
+- The export logic in `htmlTemplatePDF.ts`, `weeklyPackageExport.ts`, and any relevant utils.
+
+**Please:**  
+- Audit the code to verify all relevant fields/data from the dashboard view are included in the export.
+- Suggest or make changes so the export is always a true snapshot of the dashboard.
+- Let me know if you need the exact screenshots or code snippets.
+
+Thank you!
+
+*Tip: If you have specific pages/screenshots, mention the filenames or attach directly to your support request for faster help!*
+
+[1] https://pplx-res.cloudinary.com/image/private/user_uploads/9626311/4b0b2c83-a4b9-4e9d-a3cd-3149f26f34f5/screenshot.jpg
+[2] https://pplx-res.cloudinary.com/image/private/user_uploads/9626311/cacfffd0-0986-43e0-91bd-f1bed5ace177/screenshot.jpg
+[3] https://pplx-res.cloudinary.com/image/private/user_uploads/9626311/0e847f69-3f9c-4186-b44d-e6d705aea500/screenshot.jpg
+[4] https://pplx-res.cloudinary.com/image/private/user_uploads/9626311/2a0012c2-74a1-45dd-ae27-4c73eaeea057/screenshot.jpg
+[5] https://replit.com/t/jonathan-procter-phd/repls/RemarkablePlannerPro

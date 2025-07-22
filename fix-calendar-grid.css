@@ -1,0 +1,78 @@
+/* FIXED CALENDAR GRID CSS - SINGLE SOURCE OF TRUTH */
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: 100px repeat(7, 1fr);
+    grid-template-rows: 50px repeat(36, 30px);
+    background: white;
+    height: fit-content;
+    width: 100%;
+    overflow: visible;
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-bottom: 2px solid black;
+    border-left: 2px solid black;
+    box-sizing: border-box;
+}
+
+/* CALENDAR CELL BASE STYLING */
+.calendar-cell {
+    background: white;
+    border-right: 1px solid black;
+    border-bottom: 1px solid black;
+    padding: 4px;
+    text-align: center;
+    font-size: 10px;
+    font-weight: bold;
+    min-height: 30px;
+    max-height: 30px;
+    height: 30px;
+    box-sizing: border-box;
+    position: relative;
+    cursor: pointer;
+}
+
+/* HEADER CELLS */
+.calendar-cell.header-cell {
+    background: white;
+    font-weight: bold;
+    font-size: 8px;
+    color: black;
+    text-align: center;
+    border-bottom: 2px solid black;
+    padding: 6px 2px;
+}
+
+/* TIME CELLS */
+.calendar-cell.time-cell {
+    background: white;
+    font-size: 8px;
+    text-align: center;
+    padding: 2px;
+    color: black;
+    border-right: 2px solid black;
+}
+
+/* COLUMN LAYOUT FIXES */
+.calendar-cell:nth-child(8n) {
+    border-right: none;
+}
+
+.calendar-cell:last-child {
+    border-right: none;
+}
+
+/* HOUR/HALF-HOUR STYLING */
+.calendar-cell.hour {
+    border-bottom: 2px solid black;
+    background: #f0f0f0 !important;
+}
+
+.calendar-cell.half-hour {
+    background: #f8f8f8;
+}
+
+.calendar-cell:hover {
+    background: #fafafa;
+}

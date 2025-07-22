@@ -1,0 +1,57 @@
+📡 Events API response: 200 OK
+📦 Raw API response data: 
+(1723) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, …]
+📊 Loaded events from unified API: 
+Object {total: 1723, google: 367, simplepractice: 1356, manual: 0}
+🔄 Fetching events from /api/events...
+📡 Events API response: 200 OK
+📦 Raw API response data: 
+(1723) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, …]
+📊 Loaded events from unified API: 
+Object {total: 1723, google: 367, simplepractice: 1356, manual: 0}
+📊 Event breakdown (Live Sync + DB): 
+Object {total: 1723, manual: 0, google: 367, simplepractice: 1356, sources: {…}}
+📊 Event breakdown (Live Sync + DB): 
+Object {total: 1723, manual: 0, google: 367, simplepractice: 1356, sources: {…}}
+📊 Event breakdown (Live Sync + DB): 
+Object {total: 1723, manual: 0, google: 367, simplepractice: 1356, sources: {…}}
+📊 Event breakdown (Live Sync + DB): 
+Object {total: 1723, manual: 0, google: 367, simplepractice: 1356, sources: {…}}
+📊 Event breakdown (Live Sync + DB): 
+Object {total: 1723, manual: 0, google: 367, simplepractice: 1356, sources: {…}}
+📊 Event breakdown (Live Sync + DB): 
+Object {total: 1723, manual: 0, google: 367, simplepractice: 1356, sources: {…}}
+✅ Calendar sync successful: 
+Object {success: true, message: "Calendar sync completed successfully", events: Array(0), count: 0, timestamp: "2025-07-20T19:44:50.908Z"}
+🔄 Fetching events from /api/events...
+📊 Event breakdown (Live Sync + DB): 
+Object {total: 1723, manual: 0, google: 367, simplepractice: 1356, sources: {…}}
+📊 Event breakdown (Live Sync + DB): 
+Object {total: 1723, manual: 0, google: 367, simplepractice: 1356, sources: {…}}
+📡 Events API response: 200 OK
+📦 Raw API response data: 
+(1723) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, …]
+📊 Loaded events from unified API: 
+Object {total: 1723, google: 367, simplepractice: 1356, manual: 0}
+🔄 Fetching events from /api/events...
+📡 Events API response: 200 OK
+📦 Raw API response data: 
+(1723) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, …]
+📊 Loaded events from unified API: 
+Object {total: 1723, google: 367, simplepractice: 1356, manual: 0}
+🔥 GOOGLE AUTH DEBUG CLICKED
+Current user: 
+Object {id: {…}, email: "jonathan.procter@gmail.com", name: "Jonathan Procter"}
+Access token status: false
+Auth Status Response: 
+Object {authenticated: true, hasValidTokens: true, user: {…}}
+🔍 Full Auth Data: 
+Object {isAuthenticated: undefined, hasTokens: undefined, user: {…}, debug: undefined, recommendations: undefined}
+📊 Event breakdown (Live Sync + DB): 
+Object {total: 1723, manual: 0, google: 367, simplepractice: 1356, sources: {…}}
+📊 Event breakdown (Live Sync + DB): 
+Object {total: 1723, manual: 0, google: 367, simplepractice: 1356, sources: {…}}
+📊 Event breakdown (Live Sync + DB): 
+Object {total: 1723, manual: 0, google: 367, simplepractice: 1356, sources: {…}}
+📊 Event breakdown (Live Sync + DB): 
+Object {total: 1723, manual: 0, google: 367, simplepractice: 1356, sources: {…}}

@@ -1,0 +1,139 @@
+To fix the code so that:
+
+- **Appointments move up to the top of the box (vertically aligned at the top)**
+- **Time-frames of the appointments show appropriately (clearly and consistently)**
+
+you’ll want to adjust both the **HTML structure** (template strings) and the **CSS styles/classes** that control layout and display.
+
+Here’s a targeted review and solution:
+
+### 1. Vertically Align Appointments at the Top
+
+**Problem:**  
+If appointments are not consistently at the top, it’s likely because of extra padding/margin in container elements or alignment issues in CSS.
+
+#### Solution:
+Make sure the appointment wrapper/container uses a top-aligned flex or grid layout.
+
+**Example CSS (add/adjust as needed):**
+```css
+.appointment-box {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* aligns children to top */
+  align-items: stretch;
+  height: 100%; /* or auto if you don't want stretching */
+  padding: 0.5em 1em; /* adjust to your design */
+  box-sizing: border-box;
+}
+```
+
+**HTML Structure – Template String (example change):**
+```js
+return `
+  
+    
+      ${event.title}
+      ${calendarSource}
+    
+    ${hasLocation ? `📍 ${locationInfo}` : ''}
+    ${timeDisplay}
+    ${hasAdditionalContent ? `
+      ${hasEventNotes ? `${eventNotes}` : ''}
+      ${hasActionItems ? `${actionItems}` : ''}
+    ` : ''}
+  
+`;
+```
+
+### 2. Show Timeframes Appropriately
+
+**Problem:**  
+If times are not showing or the format is inconsistent, it’s from how `timeDisplay` is created or styled.
+
+#### Solution:
+- Make sure `formatTime()` returns a clear, consistent string (e.g., "13:00 - 13:50").
+- Always show time in a dedicated spot with proper styling.
+
+**Example of robust formatTime() (already does 24-hour):**
+```js
+function formatTime(date) {
+  return date.toLocaleTimeString('en-US', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false // 24-hour format
+  });
+}
+```
+
+- Place `timeDisplay` in a prominent div with a class, e.g., `.appointment-time`.
+- Make sure in your template that it's always where you want.
+
+**CSS for clarity:**
+```css
+.appointment-time {
+  font-weight: bold;
+  margin: 0.25em 0;
+  color: #2c3e50;
+  font-size: 1.05em;
+}
+```
+
+### 3. Ensure Single-Column Layout When Needed
+
+You already handle the difference between three-column and single-column with classes.
+Just make sure the containers for these layouts use CSS like:
+
+```css
+.single-column {
+  display: flex;
+  flex-direction: column;
+}
+.three-column {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0.5em;
+}
+```
+
+### 4. Final Check
+
+- Confirm you actually **add** the new/updated CSS to your stylesheet OR include it in a `` tag in the HTML template.
+- Make sure the elements have the right classes attached in your template string logic.
+
+## Summary of Changes:
+
+- Add/Update the wrapper class (`appointment-box`) to enforce top-aligned flex or grid.
+- Place the `timeDisplay` element (`.appointment-time`) directly below the title for clarity.
+- Make sure all template strings insert the correct structure and classes.
+- Add CSS to reinforce vertical alignment and clear time display.
+
+### Example: Modified HTML Template for a Single Appointment
+
+```js
+return `
+  
+    ${event.title}
+    ${timeDisplay}
+    ${calendarSource}
+    ${hasLocation ? `📍${locationInfo}` : ''}
+    // Add notes and actions as needed...
+  
+`;
+```
+
+### Example: Ensure CSS
+
+```css
+.appointment-box {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+.appointment-title { font-weight: bold; margin-bottom: 0.1em; }
+.appointment-time { color: #2c3e50; font-size: 1.03em; }
+```
+
+Apply these adjustments, and your appointments will be top-aligned, with clear timeframes! If you want me to generate a fully patched JS/CSS sample for your use, just say so.
+
+[1] https://replit.com/@jonathanprocter/RemarkablePlannerPro-1

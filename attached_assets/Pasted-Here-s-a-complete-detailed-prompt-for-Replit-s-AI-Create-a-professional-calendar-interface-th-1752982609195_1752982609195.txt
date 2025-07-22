@@ -1,0 +1,108 @@
+Here's a complete, detailed prompt for Replit's AI:
+
+```
+Create a professional calendar interface that exactly matches this specification:
+
+## OVERALL LAYOUT & STRUCTURE
+Build a single-page calendar view with these exact components:
+1. Header section with date, stats, and legend (height: 160px)
+2. Time grid section with left time column (80px width) and main calendar area
+3. Footer navigation (height: 60px)
+4. Total viewport: 1200px width, responsive down to 768px
+
+## HEADER SECTION SPECIFICATIONS
+Create header with light blue border (#3B82F6) and rounded corners (12px):
+
+**Date Display:**
+- "Saturday, July 19, 2025" - Font: Inter/SF Pro, 28px, weight: 600, color: #1E293B
+- "1 appointment" subtitle - 16px, weight: 400, color: #64748B, italic
+
+**Stats Grid (4 columns):**
+- Column 1: "1" (32px, bold, #1E293B) + "Appointments" (14px, #64748B)
+- Column 2: "1.0h" (32px, bold, #1E293B) + "Scheduled" (14px, #64748B)  
+- Column 3: "23.0h" (32px, bold, #1E293B) + "Available" (14px, #64748B)
+- Column 4: "96%" (32px, bold, #1E293B) + "Free Time" (14px, #64748B)
+
+**Legend (top-right):**
+- SimplePractice: Blue circle (#3B82F6) + "SimplePractice" (14px)
+- Google Calendar: Orange circle (#FF9500) + "Google Calendar" (14px)
+- Holidays: Green circle (#10B981) + "Holidays in United States" (14px)
+- Vertical spacing: 8px between items
+
+## TIME GRID SPECIFICATIONS
+
+**Time Column (Left):**
+- Width: exactly 80px
+- Background: #F8FAFC
+- Border-right: 1px solid #E2E8F0
+- Time labels: 14px, #64748B, right-aligned, 8px padding-right
+- Times: 06:00, 06:30, 07:00... through 23:00 (30-minute intervals)
+- Each time slot height: 40px
+
+**Main Calendar Area:**
+- Background: white
+- Grid lines: 1px solid #F1F5F9 between each 30-minute slot
+- Hour lines: 2px solid #E2E8F0
+
+## APPOINTMENT BLOCK SPECIFICATIONS
+Create appointment block for 10:00-10:30 slot:
+
+**Dimensions & Position:**
+- Height: 40px (spans 1 time slot)
+- Width: 95% of calendar area width
+- Left margin: 12px from time column
+- Vertical position: aligned with 10:00 time slot
+
+**Styling:**
+- Background: #3B82F6 (SimplePractice blue)
+- Border-left: 4px solid #1E40AF (darker blue)
+- Border-radius: 6px
+- Box-shadow: 0 1px 3px rgba(0,0,0,0.1)
+
+**Text Content:**
+- Title: "Calvin Hill Appointment" - 16px, weight: 600, white
+- Source: "SIMPLEPRACTICE" - 12px, weight: 500, rgba(255,255,255,0.8)
+- Padding: 8px 12px
+
+**Event Details Section:**
+- "Event Notes" header (14px, weight: 600, #1E293B)
+- "He wasn't able to be at this" (14px, #64748B)
+- "Action Items" header (14px, weight: 600, #1E293B)  
+- "I need to see if he's able to find..." (14px, #64748B)
+
+## NAVIGATION FOOTER
+Create bottom navigation bar:
+- Height: 60px
+- Background: #F8FAFC
+- Border-top: 1px solid #E2E8F0
+
+**Navigation Elements:**
+- Left: "← Friday" button (14px, #64748B, hover: #3B82F6)
+- Center: "Weekly Overview" with calendar icon (14px, #64748B)
+- Right: "Sunday →" button (14px, #64748B, hover: #3B82F6)
+- Buttons have 8px padding, 4px border-radius
+
+## RESPONSIVE BEHAVIOR
+- Desktop (1200px+): Full layout as described
+- Tablet (768px-1199px): Stack stats in 2x2 grid, reduce time column to 60px
+- Mobile (< 768px): Single column stats, collapsible time labels
+
+## INTERACTIVE FEATURES
+1. Appointment blocks are clickable and show hover state (slight scale: 1.02)
+2. Time slots highlight on hover (#F8FAFC background)
+3. Smooth transitions: all 0.2s ease-in-out
+4. Calendar navigation updates URL and content
+
+## TECHNICAL REQUIREMENTS
+- Use CSS Grid for time layout
+- Use Flexbox for header stats
+- Implement with semantic HTML5 elements
+- Add proper ARIA labels for accessibility
+- Use CSS custom properties for colors
+- Ensure 60fps smooth scrolling
+- Add loading states for navigation
+
+Generate clean, production-ready code with proper commenting and no placeholder content. Make the design pixel-perfect to this specification.
+```
+
+This prompt provides exact measurements, colors, typography, spacing, and implementation details that should result in a nearly identical recreation of your calendar interface.

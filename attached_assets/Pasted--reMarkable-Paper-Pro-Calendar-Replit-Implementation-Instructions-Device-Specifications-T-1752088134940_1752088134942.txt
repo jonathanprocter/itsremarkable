@@ -1,0 +1,291 @@
+# reMarkable Paper Pro Calendar - Replit Implementation Instructions
+
+## Device Specifications
+- **Target Device**: reMarkable Paper Pro
+- **Landscape Resolution**: 1872 x 1404 pixels (weekly overview)
+- **Portrait Resolution**: 1404 x 1872 pixels (daily planners)
+- **DPI**: 226 DPI
+- **Color**: Grayscale optimized for e-ink display
+
+## Project Structure
+
+### Technology Stack
+- **Frontend**: HTML5, CSS3, JavaScript
+- **Framework**: Vanilla JS or lightweight framework (no heavy dependencies)
+- **Print CSS**: Optimized for PDF export at exact dimensions
+- **Navigation**: SPA (Single Page Application) with hash routing
+
+## Page Layout Requirements
+
+### 1. Weekly Overview Page (Landscape)
+```css
+@page weekly {
+  size: 1872px 1404px;
+  margin: 20px;
+  orientation: landscape;
+}
+
+.weekly-container {
+  width: 1832px;
+  height: 1364px;
+  display: grid;
+  grid-template-columns: 80px repeat(7, 1fr);
+  grid-template-rows: 60px repeat(18, 1fr);
+  font-family: 'Arial', sans-serif;
+}
+```
+
+### 2. Daily Planner Pages (Portrait)
+```css
+@page daily {
+  size: 1404px 1872px;
+  margin: 20px;
+  orientation: portrait;
+}
+
+.daily-container {
+  width: 1364px;
+  height: 1832px;
+  display: grid;
+  grid-template-rows: 80px 1fr 60px;
+}
+```
+
+## Critical Formatting Requirements
+
+### Appointment Sizing Rules
+1. **Time Blocks**: Each 30-minute slot = 2 grid lines
+2. **Appointment Height**: Calculate based on duration
+   ```javascript
+   const appointmentHeight = (duration / 30) * 2; // grid lines
+   ```
+
+3. **Font Scaling**: Auto-scale based on appointment height
+   ```css
+   .appointment {
+     font-size: clamp(8px, 1.2vw, 14px);
+     line-height: 1.2;
+   }
+   ```
+
+### Navigation System
+Replace ALL text navigation with styled buttons:
+
+```html
+<!-- Header Navigation -->
+<div class="nav-header">
+  <button class="nav-btn" onclick="showWeekly()">📅 Weekly</button>
+  <h1 class="page-title">Monday, July 7, 2025</h1>
+</div>
+
+<!-- Footer Navigation -->
+<div class="nav-footer">
+  <button class="nav-btn prev" onclick="previousDay()">← Previous</button>
+  <button class="nav-btn home" onclick="showWeekly()">Weekly Overview</button>
+  <button class="nav-btn next" onclick="nextDay()">Next →</button>
+</div>
+```
+
+### Button Styling
+```css
+.nav-btn {
+  background: #f0f0f0;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.nav-btn:hover {
+  background: #e0e0e0;
+  border-color: #999;
+}
+```
+
+## Appointment Block Structure
+
+### Standard Appointment Format
+```html
+<div class="appointment" data-duration="60" onclick="showDay('monday')">
+  <div class="appointment-header">
+    <span class="client-name">David Grossman</span>
+    <span class="time">18:30-20:00</span>
+  </div>
+  <div class="appointment-source">SimplePractice</div>
+  
+  <!-- Include notes/actions if they exist -->
+  <div class="appointment-notes">
+    <div class="event-notes">
+      <strong>Event Notes</strong>
+      <ul>
+        <li>Client discussion about anxiety management</li>
+      </ul>
+    </div>
+    <div class="action-items">
+      <strong>Action Items</strong>
+      <ul>
+        <li>Follow up on coping strategies</li>
+      </ul>
+    </div>
+  </div>
+</div>
+```
+
+### Appointment Positioning
+```css
+.appointment {
+  grid-row: span var(--duration-lines);
+  padding: 4px 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #f9f9f9;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.appointment:hover {
+  background: #f0f0f0;
+  border-color: #999;
+}
+```
+
+## Data Structure & Content Fixes
+
+### Client Data Corrections
+```javascript
+const appointments = {
+  monday: [
+    {
+      client: "Nico Luppino", // REMOVE emoji completely
+      time: "15:00-16:00",
+      duration: 60,
+      source: "SimplePractice"
+    }
+    // ... other appointments
+  ]
+};
+```
+
+### Time Grid Alignment
+Ensure ALL appointments align to 30-minute intervals:
+```javascript
+function calculateGridPosition(startTime) {
+  const [hour, minute] = startTime.split(':').map(Number);
+  const totalMinutes = (hour - 6) * 60 + minute; // Starting from 6 AM
+  return Math.floor(totalMinutes / 30) + 2; // +2 for header rows
+}
+```
+
+## Bidirectional Linking System
+
+### Weekly to Daily Navigation
+```javascript
+function showDay(dayName) {
+  document.querySelector('.weekly-view').style.display = 'none';
+  document.querySelector(`.daily-view[data-day="${dayName}"]`).style.display = 'block';
+  updateURL(`#/day/${dayName}`);
+}
+```
+
+### Daily to Weekly Navigation
+```javascript
+function showWeekly() {
+  document.querySelectorAll('.daily-view').forEach(view => {
+    view.style.display = 'none';
+  });
+  document.querySelector('.weekly-view').style.display = 'block';
+  updateURL('#/weekly');
+}
+```
+
+### URL Routing
+```javascript
+function handleRouting() {
+  const hash = window.location.hash;
+  if (hash.startsWith('#/day/')) {
+    const day = hash.split('/')[2];
+    showDay(day);
+  } else {
+    showWeekly();
+  }
+}
+
+window.addEventListener('hashchange', handleRouting);
+window.addEventListener('load', handleRouting);
+```
+
+## Export & Print Optimization
+
+### PDF Export Settings
+```css
+@media print {
+  * {
+    -webkit-print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+  
+  .weekly-view {
+    page: weekly;
+    page-break-after: always;
+  }
+  
+  .daily-view {
+    page: daily;
+    page-break-after: always;
+  }
+  
+  .nav-btn {
+    background: #f0f0f0 !important;
+    border: 2px solid #ccc !important;
+  }
+}
+```
+
+## Implementation Checklist
+
+### Phase 1: Structure
+- [ ] Set up HTML structure for weekly + 7 daily views
+- [ ] Implement CSS Grid layouts with exact dimensions
+- [ ] Add responsive font scaling
+
+### Phase 2: Data & Content
+- [ ] Remove ALL text-based navigation
+- [ ] Fix Nico Luppino name (remove emoji)
+- [ ] Implement appointment duration-based sizing
+- [ ] Add Event Notes and Action Items to appointment blocks
+
+### Phase 3: Navigation
+- [ ] Create styled navigation buttons
+- [ ] Implement bidirectional linking
+- [ ] Add URL routing with hash navigation
+- [ ] Test all navigation paths
+
+### Phase 4: Optimization
+- [ ] Optimize for reMarkable Paper Pro dimensions
+- [ ] Test PDF export functionality
+- [ ] Verify all appointments align to time grid
+- [ ] Ensure clean, button-based navigation throughout
+
+## File Structure
+```
+project/
+├── index.html
+├── styles/
+│   ├── main.css
+│   ├── weekly.css
+│   ├── daily.css
+│   └── print.css
+├── scripts/
+│   ├── app.js
+│   ├── navigation.js
+│   └── data.js
+└── README.md
+```
+
+## Final Export Instructions
+1. Use browser's "Print to PDF" with custom paper size: 1872x1404px (landscape) and 1404x1872px (portrait)
+2. Ensure "Print backgrounds" is enabled
+3. Set margins to minimum (0.2in)
+4. Test on reMarkable Paper Pro for optimal viewing

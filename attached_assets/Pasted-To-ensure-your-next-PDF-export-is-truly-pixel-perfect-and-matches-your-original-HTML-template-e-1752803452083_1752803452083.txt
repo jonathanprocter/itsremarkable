@@ -1,0 +1,71 @@
+To ensure your next PDF export is truly **pixel-perfect** and matches your original HTML template (especially for reMarkable Paper Pro and US Letter), here’s exactly what you need to instruct Replit AI (or any developer/agent):
+
+## **Replit AI Instruction Prompt**
+
+```
+The current Daily Template PDF export is improved, but still has issues with layout, alignment, and pixel accuracy. I want to fix the following:
+
+**1. Absolute Template Matching**
+- Use my original HTML template as the authoritative reference (fonts, weights, spacing, background color shading, header placement, legend, stats bar, time grid, and appointments).
+- All distances (padding, cell width, height) must match the HTML/CSS pixel values or explicit pt conversion, not re-calculated or guessed.
+
+**2. Font & Style Fidelity**
+- Ensure all fonts, weights, line heights, colors, and alignments match exactly from the HTML.
+- Use the same font family (or the closest available in jsPDF). If using Google Fonts in HTML, use their PDF-safe analog (Helvetica, Times, Courier, etc.).
+
+**3. Time Slot and Grid Precision**
+- Recreate the time grid exactly as in HTML: Each slot (e.g. every 30 min) gets its dedicated row with no vertical overlap.
+- Appointments must fit fully within these slots—no boxes overlapping outside their allotted rows. If multiple events at the same time, they should either stack side-by-side or be visually separated WITHOUT overlap.
+
+**4. Section Placement**
+- Header must be centered at the top, with proper margin from the edge.
+- Below it, a stats bar or row with all relevant counts (total, Google, SimplePractice, free time, etc.).
+- Main content is the time grid—full width, clear/alternating row backgrounds (if in HTML).
+- Legend and footer at the bottom, with spacing matching the template.
+
+**5. Device Format Responsiveness**
+- Keep strict portrait format: 507×677pt (reMarkable) and 612×792pt (US Letter).
+- All spacing/layout decisions must be explicit—never scale content arbitrarily to fit. Instead, use vertical scrolling or reduce lower-priority elements if not enough space.
+
+**6. Annotation-Friendly**
+- Leave at least 10pt margin on all sides for e-ink annotation.
+- Never render text or elements right to the very paper edge.
+
+**7. Edge Cases**
+- If many events stack in one slot, shrink font *only inside event boxes*, or stack vertically with “…” for overflow.
+- Long appointment titles should truncate with “…” and show the full value as a footnote or tooltip (if supported).
+
+**8. PDF Export Function**
+- Implement this as a function in `client/src/utils/htmlTemplateDailyExport.ts` with a fixed signature and dependencies.
+- Use jsPDF (or pdf-lib if preferred) directly for all layout—no html2canvas, no HTML-to-image, only programmatic PDF building for lossless sharpness.
+
+**9. Final Check**
+- Before returning code, **generate a sample PDF** in both reMarkable and US Letter mode and verify every position visually against the HTML.
+- Adjust as many times as needed to eliminate tiny alignment errors.
+
+**10. QA Checklist (include in your PR):**
+- [ ] Header and footer pixel-perfect
+- [ ] All font sizes, weights, spacing match HTML
+- [ ] Time grid perfectly aligned, alternating shaded rows (if present)
+- [ ] No overlapping appointments
+- [ ] Legend and stats bar properly positioned
+- [ ] Exported file readable on both reMarkable and US Letter with zero cutoff or scaling blur
+
+**Commit message:**
+```
+fix(pdf): Pixel-perfect Daily Template PDF export, strict HTML layout, absolute spacing, and no overlaps for all device modes
+```
+
+---
+
+### **How to Provide This to Replit**
+
+- Copy-paste everything above directly into your Replit “Ask Agent” or PR description.
+- Attach your original HTML template (or paste key excerpts) as a baseline reference.
+- Remind them: “Do NOT use html2canvas or HTML rendering—this must be full programmatic PDF generation.”
+
+---
+
+**If you have your original HTML, attach that as well. If you want, I can also help draft a sample code scaffold for jsPDF with sample slot rendering.** Let me know if you need a visual marked-up screenshot, or if you want explicit style variable recommendations!
+
+[1] https://replit.com/@jonathanprocter/RemarkablePlannerPro-1

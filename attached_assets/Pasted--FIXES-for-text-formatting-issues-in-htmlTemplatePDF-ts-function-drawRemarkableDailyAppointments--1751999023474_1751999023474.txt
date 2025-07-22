@@ -1,0 +1,384 @@
+// FIXES for text formatting issues in htmlTemplatePDF.ts
+
+function drawRemarkableDailyAppointments(pdf: jsPDF, selectedDate: Date, events: CalendarEvent[], gridStartY: number, dayColumnWidth: number, timeSlotHeight: number): void {
+  const { margin, timeColumnWidth } = REMARKABLE_DAILY_CONFIG;
+  
+  // Filter events for the selected day
+  const dayEvents = events.filter(event => {
+    const eventDate = new Date(event.startTime);
+    return eventDate.getFullYear() === selectedDate.getFullYear() &&
+           eventDate.getMonth() === selectedDate.getMonth() &&
+           eventDate.getDate() === selectedDate.getDate();
+  }).sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
+  
+  console.log(`=== RENDERING ${dayEvents.length} EVENTS ===`);
+  
+  dayEvents.forEach((event, index) => {
+    const eventDate = new Date(event.startTime);
+    const endDate = new Date(event.endTime);
+    const startHour = eventDate.getHours();
+    const startMinute = eventDate.getMinutes();
+    const endHour = endDate.getHours();
+    const endMinute = endDate.getMinutes();
+    
+    console.log(`\n--- Event ${index + 1}: "${event.title}" ---`);
+    
+    // Calculate position based on 30-minute slots from 6:00
+    const startMinutesFrom6 = (startHour - 6) * 60 + startMinute;
+    const endMinutesFrom6 = (endHour - 6) * 60 + endMinute;
+    const startSlot = Math.max(0, startMinutesFrom6 / 30);
+    const endSlot = Math.min(35, endMinutesFrom6 / 30);
+    const durationSlots = Math.max(2, endSlot - startSlot);
+    
+    if (startSlot < 0 || startSlot > 35) {
+      console.log('Event outside time range, skipping');
+      return;
+    }
+    
+    // Check if event has notes or action items
+    const hasNotes = !!(event.notes && event.notes.trim());
+    const hasActionItems = !!(event.actionItems && event.actionItems.trim());
+    const needsExpandedLayout = hasNotes || hasActionItems;
+    
+    // Position calculation
+    const eventX = margin + timeColumnWidth + 3;
+    const eventY = gridStartY + (startSlot * timeSlotHeight) + 1;
+    const eventWidth = dayColumnWidth - 6;
+    
+    // Adjust height based on content
+    let eventHeight;
+    if (needsExpandedLayout) {
+      const notesLines = hasNotes ? event.notes!.split('\n').filter(line => line.trim()).length : 0;
+      const actionLines = hasActionItems ? event.actionItems!.split('\n').filter(line => line.trim()).length : 0;
+      const maxContentLines = Math.max(notesLines, actionLines);
+      const minimumHeight = 70 + (maxContentLines * 12); // Increased base height
+      eventHeight = Math.max(minimumHeight, (durationSlots * timeSlotHeight) - 2);
+    } else {
+      eventHeight = Math.max(55, (durationSlots * timeSlotHeight) - 2);
+    }
+    
+    // Determine event type
+    const isSimplePractice = event.source === 'simplepractice' || 
+                           event.title.toLowerCase().includes('appointment') ||
+                           event.calendarId?.includes('simplepractice') ||
+                           event.calendarId === '0np7sib5u30o7oc297j5pb259g';
+    
+    const isHoliday = event.title.toLowerCase().includes('holiday') ||
+                     event.calendarId === 'en.usa#holiday@group.v.calendar.google.com';
+    
+    const isGoogle = event.source === 'google' && !isSimplePractice && !isHoliday;
+    
+    // Draw event background
+    pdf.setFillColor(255, 255, 255);
+    pdf.rect(eventX, eventY, eventWidth, eventHeight, 'F');
+    
+    // Draw borders based on event type
+    if (isSimplePractice) {
+      pdf.setDrawColor(66, 133, 244);
+      pdf.setLineWidth(4);
+      pdf.line(eventX, eventY, eventX, eventY + eventHeight);
+      
+      pdf.setDrawColor(200, 200, 200);
+      pdf.setLineWidth(0.5);
+      pdf.line(eventX + 4, eventY, eventX + eventWidth, eventY);
+      pdf.line(eventX + eventWidth, eventY, eventX + eventWidth, eventY + eventHeight);
+      pdf.line(eventX, eventY + eventHeight, eventX + eventWidth, eventY + eventHeight);
+      
+    } else if (isGoogle) {
+      pdf.setDrawColor(52, 168, 83);
+      pdf.setLineWidth(2);
+      pdf.setLineDash([4, 2]);
+      pdf.rect(eventX, eventY, eventWidth, eventHeight);
+      pdf.setLineDash([]);
+      
+    } else if (isHoliday) {
+      pdf.setFillColor(251, 188, 4);
+      pdf.rect(eventX, eventY, eventWidth, eventHeight, 'F');
+      pdf.setDrawColor(255, 152, 0);
+      pdf.setLineWidth(1);
+      pdf.rect(eventX, eventY, eventWidth, eventHeight);
+      
+    } else {
+      pdf.setDrawColor(156, 163, 175);
+      pdf.setLineWidth(1);
+      pdf.rect(eventX, eventY, eventWidth, eventHeight);
+    }
+    
+    // === IMPROVED TEXT RENDERING ===
+    const padding = isSimplePractice ? 8 : 6;
+    const startX = eventX + padding;
+    const contentWidth = eventWidth - (padding * 2);
+    
+    // CLEAN EVENT TITLE (Fix text formatting issues)
+    let cleanTitle = event.title.replace(/ Appointment$/, '').trim();
+    
+    // Fix common text encoding issues
+    cleanTitle = cleanTitle
+      .replace(/\s+/g, ' ')  // Remove extra spaces
+      .replace(/[^\w\s\-\.,:;!?'"()]/g, '') // Remove problematic characters
+      .trim();
+    
+    console.log(`Original title: "${event.title}"`);
+    console.log(`Clean title: "${cleanTitle}"`);
+    
+    if (needsExpandedLayout) {
+      // === 3-COLUMN LAYOUT ===
+      const col1Width = contentWidth * 0.33;
+      const col2Width = contentWidth * 0.33;
+      const col3Width = contentWidth * 0.33;
+      
+      const col1X = startX;
+      const col2X = startX + col1Width + 8;
+      const col3X = startX + col1Width + col2Width + 16;
+      
+      // Draw column dividers
+      pdf.setDrawColor(220, 220, 220);
+      pdf.setLineWidth(0.5);
+      pdf.line(col2X - 4, eventY + 8, col2X - 4, eventY + eventHeight - 8);
+      pdf.line(col3X - 4, eventY + 8, col3X - 4, eventY + eventHeight - 8);
+      
+      // === COLUMN 1: Event Info ===
+      let col1Y = eventY + 18;
+      
+      // Event title - IMPROVED RENDERING
+      pdf.setFontSize(11);
+      pdf.setFont('helvetica', 'bold');
+      pdf.setTextColor(0, 0, 0);
+      
+      // Better text wrapping
+      const titleWords = cleanTitle.split(' ');
+      const titleLines = [];
+      let currentLine = '';
+      
+      for (const word of titleWords) {
+        const testLine = currentLine ? `${currentLine} ${word}` : word;
+        const textWidth = pdf.getTextWidth(testLine);
+        
+        if (textWidth <= col1Width - 5) {
+          currentLine = testLine;
+        } else {
+          if (currentLine) titleLines.push(currentLine);
+          currentLine = word;
+        }
+      }
+      if (currentLine) titleLines.push(currentLine);
+      
+      // Render title lines
+      for (let i = 0; i < Math.min(titleLines.length, 2); i++) {
+        if (col1Y + 12 <= eventY + eventHeight - 30) {
+          pdf.text(titleLines[i], col1X, col1Y);
+          console.log(`Drew title line ${i + 1}: "${titleLines[i]}"`);
+          col1Y += 12;
+        }
+      }
+      
+      // Source
+      if (col1Y + 10 <= eventY + eventHeight - 20) {
+        pdf.setFontSize(8);
+        pdf.setFont('helvetica', 'normal');
+        pdf.setTextColor(100, 100, 100);
+        
+        let sourceText = '';
+        if (isSimplePractice) sourceText = 'SIMPLEPRACTICE';
+        else if (isGoogle) sourceText = 'GOOGLE CALENDAR';
+        else if (isHoliday) sourceText = 'HOLIDAYS IN UNITED STATES';
+        else sourceText = (event.source || 'MANUAL').toUpperCase();
+        
+        pdf.text(sourceText, col1X, col1Y);
+        col1Y += 12;
+      }
+      
+      // Time
+      if (col1Y + 10 <= eventY + eventHeight - 8) {
+        pdf.setFontSize(9);
+        pdf.setFont('helvetica', 'bold');
+        pdf.setTextColor(0, 0, 0);
+        
+        const startTimeStr = eventDate.toLocaleTimeString('en-US', { 
+          hour: '2-digit', minute: '2-digit', hour12: false 
+        });
+        const endTimeStr = endDate.toLocaleTimeString('en-US', { 
+          hour: '2-digit', minute: '2-digit', hour12: false 
+        });
+        const timeRange = `${startTimeStr}-${endTimeStr}`;
+        
+        pdf.text(timeRange, col1X, col1Y);
+      }
+      
+      // === COLUMN 2: Event Notes ===
+      if (hasNotes) {
+        let col2Y = eventY + 18;
+        
+        // Header
+        pdf.setFontSize(9);
+        pdf.setFont('helvetica', 'bold');
+        pdf.setTextColor(0, 0, 0);
+        pdf.text('Event Notes', col2X, col2Y);
+        col2Y += 14;
+        
+        // Notes content
+        pdf.setFontSize(8);
+        pdf.setFont('helvetica', 'normal');
+        pdf.setTextColor(0, 0, 0);
+        
+        const noteLines = event.notes!.split('\n').filter(line => line.trim());
+        noteLines.forEach(note => {
+          const cleanNote = note.trim().replace(/^[•\s-]+/, '').trim();
+          if (cleanNote && col2Y + 10 <= eventY + eventHeight - 8) {
+            // Bullet point
+            pdf.text('•', col2X, col2Y);
+            
+            // Wrap note text properly
+            const noteWords = cleanNote.split(' ');
+            const wrappedLines = [];
+            let currentNoteLine = '';
+            
+            for (const word of noteWords) {
+              const testLine = currentNoteLine ? `${currentNoteLine} ${word}` : word;
+              const textWidth = pdf.getTextWidth(testLine);
+              
+              if (textWidth <= col2Width - 12) {
+                currentNoteLine = testLine;
+              } else {
+                if (currentNoteLine) wrappedLines.push(currentNoteLine);
+                currentNoteLine = word;
+              }
+            }
+            if (currentNoteLine) wrappedLines.push(currentNoteLine);
+            
+            // Render wrapped lines
+            for (let i = 0; i < Math.min(wrappedLines.length, 2); i++) {
+              if (col2Y + (i * 9) + 9 <= eventY + eventHeight - 8) {
+                pdf.text(wrappedLines[i], col2X + 10, col2Y + (i * 9));
+              }
+            }
+            col2Y += Math.min(wrappedLines.length, 2) * 9 + 3;
+          }
+        });
+      }
+      
+      // === COLUMN 3: Action Items ===
+      if (hasActionItems) {
+        let col3Y = eventY + 18;
+        
+        // Header
+        pdf.setFontSize(9);
+        pdf.setFont('helvetica', 'bold');
+        pdf.setTextColor(0, 0, 0);
+        pdf.text('Action Items', col3X, col3Y);
+        col3Y += 14;
+        
+        // Action items content
+        pdf.setFontSize(8);
+        pdf.setFont('helvetica', 'normal');
+        pdf.setTextColor(0, 0, 0);
+        
+        const actionLines = event.actionItems!.split('\n').filter(line => line.trim());
+        actionLines.forEach(action => {
+          const cleanAction = action.trim().replace(/^[•\s-]+/, '').trim();
+          if (cleanAction && col3Y + 10 <= eventY + eventHeight - 8) {
+            // Bullet point
+            pdf.text('•', col3X, col3Y);
+            
+            // Wrap action text properly
+            const actionWords = cleanAction.split(' ');
+            const wrappedLines = [];
+            let currentActionLine = '';
+            
+            for (const word of actionWords) {
+              const testLine = currentActionLine ? `${currentActionLine} ${word}` : word;
+              const textWidth = pdf.getTextWidth(testLine);
+              
+              if (textWidth <= col3Width - 12) {
+                currentActionLine = testLine;
+              } else {
+                if (currentActionLine) wrappedLines.push(currentActionLine);
+                currentActionLine = word;
+              }
+            }
+            if (currentActionLine) wrappedLines.push(currentActionLine);
+            
+            // Render wrapped lines
+            for (let i = 0; i < Math.min(wrappedLines.length, 2); i++) {
+              if (col3Y + (i * 9) + 9 <= eventY + eventHeight - 8) {
+                pdf.text(wrappedLines[i], col3X + 10, col3Y + (i * 9));
+              }
+            }
+            col3Y += Math.min(wrappedLines.length, 2) * 9 + 3;
+          }
+        });
+      }
+      
+    } else {
+      // === SIMPLE LAYOUT (No notes/action items) ===
+      let currentY = eventY + 18;
+      
+      // Event title - IMPROVED RENDERING
+      pdf.setFontSize(12);
+      pdf.setFont('helvetica', 'bold');
+      pdf.setTextColor(0, 0, 0);
+      
+      // Better text wrapping for simple layout
+      const titleWords = cleanTitle.split(' ');
+      const titleLines = [];
+      let currentLine = '';
+      
+      for (const word of titleWords) {
+        const testLine = currentLine ? `${currentLine} ${word}` : word;
+        const textWidth = pdf.getTextWidth(testLine);
+        
+        if (textWidth <= contentWidth - 5) {
+          currentLine = testLine;
+        } else {
+          if (currentLine) titleLines.push(currentLine);
+          currentLine = word;
+        }
+      }
+      if (currentLine) titleLines.push(currentLine);
+      
+      // Render title lines
+      for (let i = 0; i < Math.min(titleLines.length, 2); i++) {
+        if (currentY + 12 <= eventY + eventHeight - 25) {
+          pdf.text(titleLines[i], startX, currentY);
+          console.log(`Drew simple title line ${i + 1}: "${titleLines[i]}"`);
+          currentY += 12;
+        }
+      }
+      
+      // Source
+      if (currentY + 10 <= eventY + eventHeight - 15) {
+        pdf.setFontSize(8);
+        pdf.setFont('helvetica', 'normal');
+        pdf.setTextColor(100, 100, 100);
+        
+        let sourceText = '';
+        if (isSimplePractice) sourceText = 'SIMPLEPRACTICE';
+        else if (isGoogle) sourceText = 'GOOGLE CALENDAR';
+        else if (isHoliday) sourceText = 'HOLIDAYS IN UNITED STATES';
+        else sourceText = (event.source || 'MANUAL').toUpperCase();
+        
+        pdf.text(sourceText, startX, currentY);
+        currentY += 12;
+      }
+      
+      // Time
+      if (currentY + 10 <= eventY + eventHeight - 5) {
+        pdf.setFontSize(9);
+        pdf.setFont('helvetica', 'bold');
+        pdf.setTextColor(0, 0, 0);
+        
+        const startTimeStr = eventDate.toLocaleTimeString('en-US', { 
+          hour: '2-digit', minute: '2-digit', hour12: false 
+        });
+        const endTimeStr = endDate.toLocaleTimeString('en-US', { 
+          hour: '2-digit', minute: '2-digit', hour12: false 
+        });
+        const timeRange = `${startTimeStr}-${endTimeStr}`;
+        
+        pdf.text(timeRange, startX, currentY);
+      }
+    }
+    
+    console.log(`Finished rendering event ${index + 1}`);
+  });
+}

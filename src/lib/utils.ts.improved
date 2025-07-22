@@ -1,0 +1,40 @@
+// Improved ./src/lib/utils.ts
+
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
+
+/**
+ * Combines class names using clsx and merges Tailwind CSS classes with twMerge for optimized class strings.
+ * This function ensures that class names are deduplicated and merged according to Tailwind's specificity rules.
+ * 
+ * @param inputs - An array of class values (strings, arrays, objects) to be combined and optimized.
+ * @returns A string of optimized and combined class names.
+ */
+export function cn(...inputs: ClassValue[]): string {
+  try {
+    // Ensure inputs are safely processed, avoiding potential security issues with untrusted input.
+    const sanitizedInputs = inputs.map(input => sanitizeClassValue(input));
+    return twMerge(clsx(...sanitizedInputs));
+  } catch (error) {
+    // Log the error for debugging purposes. In a real-world app, consider more sophisticated error handling.
+    console.error("Error combining class names:", error);
+    return '';
+  }
+}
+
+/**
+ * Sanitizes class values to prevent potential security issues, such as XSS attacks.
+ * This is a basic implementation and might need to be extended based on the application's security requirements.
+ * 
+ * @param value - The class value to sanitize.
+ * @returns The sanitized class value.
+ */
+function sanitizeClassValue(value: ClassValue): ClassValue {
+  // Implement a basic sanitation. This should be adapted based on specific security needs.
+  if (typeof value === 'string') {
+    // For simplicity, we're escaping HTML special characters. Consider using a library for more comprehensive sanitation.
+    return value.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+  // For non-string values, return as is. Ensure to review and sanitize based on the type as needed.
+  return value;
+}

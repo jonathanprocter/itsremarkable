@@ -1,0 +1,113 @@
+Here is a comprehensive AI prompt you can copy and use for a pixel-perfect PDF export of your daily calendar view.  
+It is based on your project structure, CSS, sample event data, and component architecture:
+
+**Pixel-Perfect Daily Calendar PDF Export Prompt**
+
+I need to generate a PDF export of my daily calendar view that is visually identical to what users see in my React daily planner.  
+Below is my code structure, CSS, sample event data, and the JSX/HTML layout I expect the PDF to use.
+
+**1. Sample Event JSON:**  
+(Replace this with any real event object you want pixel-perfect. For this example, use Calvin Hill.)
+
+```json
+{
+  "id": "calvin-hill-appt",
+  "title": "Calvin Hill Appointment",
+  "startTime": "2025-07-19T10:00:00",
+  "endTime": "2025-07-19T11:00:00",
+  "source": "simplepractice",
+  "notes": [
+    "Bring insurance paperwork",
+    "Arrive 10 minutes early"
+  ],
+  "actionItems": [
+    "Collect copay",
+    "Update medical record"
+  ]
+}
+```
+
+**2. CSS for Daily View Appointments (from client/src/index.css):**
+
+```css
+.appointment.simplepractice {
+    background: #FFFFFF !important;
+    color: black !important;
+    border: 2px solid #6495ED !important;
+    border-left: 8px solid #6495ED !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+}
+.appointment-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    align-items: start;
+    height: 100%;
+    padding: 4px;
+}
+.appointment-notes .note-item,
+.appointment-actions .action-item {
+    font-size: 12px;
+    line-height: 1.2;
+    margin-bottom: 2px;
+}
+.appointment-notes-header,
+.appointment-actions-header {
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: 3px;
+    text-decoration: underline;
+    margin-left: 0;
+    text-align: left;
+}
+.appointment-left .appointment-time {
+    font-size: 24px !important;
+    font-weight: bold !important;
+    color: #000 !important;
+    opacity: 1 !important;
+}
+.time-slot {
+    min-height: 40px;
+}
+```
+- **Slot height:** 40px per 30-minute row.
+
+**3. Expected JSX/HTML Layout (based on DailyView.tsx):**
+```jsx
+
+  
+    10:00
+    {event.title}
+  
+  
+    Notes
+    {event.notes.map(note => {note})}
+  
+  
+    Action Items
+    {event.actionItems.map(item => {item})}
+  
+
+```
+
+**Requirements for the PDF:**
+- The exported PDF must match the browser’s daily view exactly, including:
+  - Fonts, font sizes, spacing, grid layout, and borders
+  - 8px solid left border (Cornflower blue for SimplePractice events)
+  - 3-column appointment layout with time, notes, action items
+  - Bold, underlined "Notes" and "Action Items" headers
+  - Every note and action item present, wrapping correctly
+  - 24px font for the appointment time, 12px for details
+  - 40px slot height per 30-minute row, event block spans the correct Y-position
+- Do NOT adjust timezones (times are already in local time)
+- Use my CSS/classnames as much as possible for html2canvas + jsPDF rendering
+
+**If you need more examples, or want to see how events are mapped/rendered in DailyView.tsx, let me know!  
+Otherwise, provide a revised HTML/CSS export block or component that will deliver a pixel-perfect daily view in the produced PDF.**
+
+**(Optional: Attach screenshots of browser daily view and PDF output as reference for even better results.)**
+
+Paste this entire prompt, with real event data if needed, into your AI system for the most accurate, non-generic, and “as-designed” fix!
+
+[1] https://replit.com/@jonathanprocter/RemarkablePlannerPro-1#client/src/components/calendar/DailyView.tsx

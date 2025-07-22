@@ -1,0 +1,311 @@
+/* DailySchedulePDF.css */
+
+/* PDF Export Specific Styles */
+.daily-schedule-pdf {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #ffffff;
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  color: #333;
+}
+
+/* Header Styles */
+.schedule-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.header-title h1 {
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0;
+  color: #212529;
+}
+
+.appointment-count {
+  font-size: 14px;
+  color: #6c757d;
+  margin: 4px 0 0 0;
+}
+
+.header-stats {
+  display: flex;
+  gap: 32px;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.stat-number {
+  font-size: 18px;
+  font-weight: 600;
+  color: #212529;
+  line-height: 1.2;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: #6c757d;
+  margin-top: 2px;
+}
+
+/* Legend Styles */
+.legend {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 20px;
+  padding: 12px 0;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #6c757d;
+}
+
+.legend-color {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+}
+
+.legend-color.simplepractice {
+  background: #6c8ebf;
+}
+
+.legend-color.google-calendar {
+  background: #4285f4;
+}
+
+.legend-color.holidays {
+  background: #ff9500;
+}
+
+/* Schedule Grid */
+.schedule-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.time-slot {
+  display: flex;
+  min-height: 40px;
+  background: #ffffff;
+  border-bottom: 1px solid #f1f3f4;
+}
+
+.time-slot:last-child {
+  border-bottom: none;
+}
+
+.time-label {
+  width: 80px;
+  padding: 12px 16px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #6c757d;
+  background: #f8f9fa;
+  border-right: 1px solid #e9ecef;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.appointment-area {
+  flex: 1;
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+}
+
+/* Appointment Box Styles */
+.appointment-box {
+  position: relative;
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 8px;
+  background: #ffffff;
+  border: 1.5px solid #6c8ebf;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.appointment-box.confirmed {
+  background: #f8f9ff;
+  border-color: #6c8ebf;
+}
+
+.appointment-box.clinician-cancelled {
+  background: #e9ecef;
+  border: 1.5px solid #adb5bd;
+  opacity: 0.8;
+}
+
+.appointment-box.client-cancelled {
+  background: #fffbe6;
+  border: 1.5px solid #ffe066;
+  opacity: 0.8;
+}
+
+.appointment-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.appointment-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #212529;
+  line-height: 1.3;
+}
+
+.appointment-time {
+  font-size: 12px;
+  color: #6c757d;
+  font-weight: 500;
+}
+
+/* Badge Styles */
+.badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  line-height: 1;
+}
+
+.badge.clinician-badge {
+  background: #adb5bd;
+  color: #212529;
+}
+
+.badge.client-badge {
+  background: #ffe066;
+  color: #856404;
+}
+
+/* Double Strikethrough Effect */
+.double-strikethrough {
+  position: relative;
+  text-decoration: line-through;
+  text-decoration-color: #dc3545;
+  text-decoration-thickness: 2px;
+}
+
+.double-strikethrough::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: #dc3545;
+  transform: translateY(-1px);
+}
+
+.double-strikethrough::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: #dc3545;
+  transform: translateY(1px);
+}
+
+/* Print Styles */
+@media print {
+  .daily-schedule-pdf {
+    padding: 0;
+    max-width: none;
+    width: 100%;
+    font-size: 12px;
+  }
+  
+  .schedule-header {
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+  }
+  
+  .header-title h1 {
+    font-size: 20px;
+  }
+  
+  .stat-number {
+    font-size: 16px;
+  }
+  
+  .time-slot {
+    min-height: 32px;
+  }
+  
+  .appointment-box {
+    padding: 8px 12px;
+  }
+  
+  .appointment-title {
+    font-size: 13px;
+  }
+  
+  .appointment-time {
+    font-size: 11px;
+  }
+  
+  .badge {
+    font-size: 9px;
+    padding: 1px 4px;
+  }
+}
+
+/* PDF Generation Specific Styles */
+@page {
+  size: A4;
+  margin: 0.5in;
+}
+
+/* Ensure proper rendering in PDF generators */
+.appointment-box,
+.time-slot,
+.schedule-header {
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+/* Responsive adjustments for different PDF sizes */
+@media (max-width: 768px) {
+  .header-stats {
+    gap: 16px;
+  }
+  
+  .stat-number {
+    font-size: 16px;
+  }
+  
+  .legend {
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+}

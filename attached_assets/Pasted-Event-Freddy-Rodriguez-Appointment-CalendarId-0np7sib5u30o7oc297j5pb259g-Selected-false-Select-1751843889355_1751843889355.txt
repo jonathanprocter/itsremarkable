@@ -1,0 +1,197 @@
+Event: Freddy Rodriguez Appointment, CalendarId: 0np7sib5u30o7oc297j5pb259g, Selected: false, SelectedCalendars: 
+Array []
+length: 0
+[[Prototype]]: Array(0)
+at: ƒ at()
+concat: ƒ concat()
+length: 1
+name: "concat"
+[[Prototype]]: ƒ ()
+constructor: ƒ Array()
+from: ƒ from()
+fromAsync: ƒ fromAsync()
+isArray: ƒ isArray()
+length: 1
+name: "Array"
+of: ƒ of()
+prototype: Array(0)
+Symbol(Symbol.species): undefined
+[[Prototype]]: ƒ ()
+copyWithin: ƒ copyWithin()
+length: 2
+name: "copyWithin"
+[[Prototype]]: ƒ ()
+entries: ƒ entries()
+length: 0
+name: "entries"
+[[Prototype]]: ƒ ()
+every: ƒ every()
+length: 1
+name: "every"
+[[Prototype]]: ƒ ()
+fill: ƒ fill()
+length: 1
+name: "fill"
+[[Prototype]]: ƒ ()
+filter: ƒ filter()
+length: 1
+name: "filter"
+[[Prototype]]: ƒ ()
+find: ƒ find()
+length: 1
+name: "find"
+[[Prototype]]: ƒ ()
+findIndex: ƒ findIndex()
+findLast: ƒ findLast()
+length: 1
+name: "findLast"
+[[Prototype]]: ƒ ()
+findLastIndex: ƒ findLastIndex()
+length: 1
+name: "findLastIndex"
+[[Prototype]]: ƒ ()
+flat: ƒ flat()
+flatMap: ƒ flatMap()
+length: 1
+name: "flatMap"
+[[Prototype]]: ƒ ()
+forEach: ƒ forEach()
+length: 1
+name: "forEach"
+[[Prototype]]: ƒ ()
+includes: ƒ includes()
+length: 1
+name: "includes"
+[[Prototype]]: ƒ ()
+indexOf: ƒ indexOf()
+join: ƒ join()
+keys: ƒ keys()
+length: 0
+name: "keys"
+[[Prototype]]: ƒ ()
+lastIndexOf: ƒ lastIndexOf()
+length: 0
+map: ƒ map()
+pop: ƒ pop()
+length: 0
+name: "pop"
+[[Prototype]]: ƒ ()
+push: ƒ push()
+length: 1
+name: "push"
+[[Prototype]]: ƒ ()
+reduce: ƒ reduce()
+reduceRight: ƒ reduceRight()
+length: 1
+name: "reduceRight"
+[[Prototype]]: ƒ ()
+reverse: ƒ reverse()
+shift: ƒ shift()
+length: 0
+name: "shift"
+[[Prototype]]: ƒ ()
+slice: ƒ slice()
+some: ƒ some()
+length: 1
+name: "some"
+[[Prototype]]: ƒ ()
+sort: ƒ sort()
+splice: ƒ splice()
+toLocaleString: ƒ toLocaleString()
+toReversed: ƒ toReversed()
+length: 0
+name: "toReversed"
+[[Prototype]]: ƒ ()
+toSorted: ƒ toSorted()
+length: 1
+name: "toSorted"
+[[Prototype]]: ƒ ()
+toSpliced: ƒ toSpliced()
+length: 2
+name: "toSpliced"
+[[Prototype]]: ƒ ()
+toString: ƒ toString()
+length: 0
+name: "toString"
+[[Prototype]]: ƒ ()
+unshift: ƒ unshift()
+length: 1
+name: "unshift"
+[[Prototype]]: ƒ ()
+values: ƒ values()
+length: 0
+name: "values"
+[[Prototype]]: ƒ ()
+with: ƒ with()
+length: 2
+name: "with"
+[[Prototype]]: ƒ ()
+Symbol(Symbol.iterator): undefined
+Symbol(Symbol.unscopables): undefined
+[[Prototype]]: Object
+constructor: ƒ Array()
+hasOwnProperty: ƒ hasOwnProperty()
+isPrototypeOf: ƒ isPrototypeOf()
+length: 1
+name: "isPrototypeOf"
+[[Prototype]]: ƒ ()
+propertyIsEnumerable: ƒ propertyIsEnumerable()
+toLocaleString: ƒ toLocaleString()
+toString: ƒ toString()
+length: 0
+name: "toString"
+[[Prototype]]: ƒ ()
+valueOf: ƒ valueOf()
+__defineGetter__: ƒ __defineGetter__()
+__defineSetter__: ƒ __defineSetter__()
+__lookupGetter__: ƒ __lookupGetter__()
+__lookupSetter__: ƒ __lookupSetter__()
+__proto__: Array(0)
+at: ƒ at()
+concat: ƒ concat()
+constructor: ƒ Array()
+copyWithin: ƒ copyWithin()
+entries: ƒ entries()
+every: ƒ every()
+fill: ƒ fill()
+filter: ƒ filter()
+find: ƒ find()
+findIndex: ƒ findIndex()
+findLast: ƒ findLast()
+findLastIndex: ƒ findLastIndex()
+flat: ƒ flat()
+flatMap: ƒ flatMap()
+forEach: ƒ forEach()
+includes: ƒ includes()
+indexOf: ƒ indexOf()
+join: ƒ join()
+keys: ƒ keys()
+lastIndexOf: ƒ lastIndexOf()
+length: 0
+map: ƒ map()
+pop: ƒ pop()
+push: ƒ push()
+reduce: ƒ reduce()
+reduceRight: ƒ reduceRight()
+reverse: ƒ reverse()
+shift: ƒ shift()
+slice: ƒ slice()
+some: ƒ some()
+sort: ƒ sort()
+splice: ƒ splice()
+toLocaleString: ƒ toLocaleString()
+toReversed: ƒ toReversed()
+toSorted: ƒ toSorted()
+toSpliced: ƒ toSpliced()
+toString: ƒ toString()
+unshift: ƒ unshift()
+values: ƒ values()
+with: ƒ with()
+Symbol(Symbol.iterator): undefined
+Symbol(Symbol.unscopables): undefined
+[[Prototype]]: Object
+get __proto__: ƒ get __proto__()
+set __proto__: ƒ set __proto__()
+length: 1
+name: "set __proto__"
+[[Prototype]]: ƒ ()

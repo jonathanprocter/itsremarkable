@@ -1,0 +1,245 @@
+# ===== DEPLOYMENT CHECKLIST & CLEANUP GUIDE =====
+
+# 1. CLEAN UP ENVIRONMENT VARIABLES (CRITICAL!)
+echo "🧹 Cleaning up environment variables..."
+
+# In Replit Secrets, REMOVE these entries:
+# - GOOGLE_REFRESH_TOKEN (if set to 'dev-refresh' or any placeholder)
+# - GOOGLE_ACCESS_TOKEN (if set to 'dev-access' or any placeholder)
+# - Any other dev/test OAuth tokens
+
+# Keep ONLY these in your Replit Secrets:
+# GOOGLE_CLIENT_ID=your_real_client_id_from_google_console
+# GOOGLE_CLIENT_SECRET=your_real_client_secret_from_google_console
+# BASE_URL=https://your-app-name.replit.dev
+
+# 2. VERIFY GOOGLE CLOUD CONSOLE SETTINGS
+echo "🔧 Verify Google Cloud Console settings..."
+
+# Go to: https://console.cloud.google.com/apis/credentials
+# For your OAuth 2.0 Client ID, ensure:
+# - Authorized redirect URIs includes: https://your-app.replit.dev/auth/google/callback
+# - Authorized JavaScript origins includes: https://your-app.replit.dev
+
+# Enable these APIs in Google Cloud Console:
+# - Google Calendar API
+# - Google+ API (for user info)
+
+# 3. CLEAR EXISTING USER TOKEN FILES
+echo "🗑️ Clearing existing token files..."
+
+# Remove any existing token files with dev/invalid data
+rm -f ./data/user_tokens_*.json
+mkdir -p ./data
+
+# 4. UPDATE PACKAGE.JSON DEPENDENCIES
+echo "📦 Updating dependencies..."
+
+# Add to package.json if not present:
+cat > package.json << 'EOF'
+{
+  "dependencies": {
+    "googleapis": "^128.0.0",
+    "google-auth-library": "^9.0.0",
+    "express": "^4.18.0",
+    "express-session": "^1.17.3"
+  }
+}
+EOF
+
+npm install
+
+# 5. CREATE DATA DIRECTORY FOR TOKEN STORAGE
+mkdir -p ./data
+echo "✅ Data directory created for token storage"
+
+# 6. UPDATE YOUR MAIN SERVER FILE
+echo "🔧 Updating server file..."
+
+# Replace your existing OAuth/calendar code with the new GoogleOAuthManager class
+# Make sure to:
+# - Import the GoogleOAuthManager
+# - Replace all existing OAuth routes
+# - Remove any dev token fallbacks
+# - Use only the new authentication flow
+
+# 7. FRONTEND UPDATES
+echo "🎨 Frontend updates needed..."
+
+# Add this HTML to your frontend:
+cat > auth-button.html << 'EOF'
+<!-- Add this button to your dashboard/main page -->
+<div id="auth-section">
+  <button id="connect-google" onclick="connectGoogle()" style="display:none;">
+    🔗 Connect Google Calendar
+  </button>
+  <div id="auth-status">Checking authentication...</div>
+</div>
+
+<script>
+// Check auth status on page load
+document.addEventListener('DOMContentLoaded', checkAuthStatus);
+
+async function checkAuthStatus() {
+  try {
+    const response = await fetch('/api/auth/status');
+    const { isAuthenticated, hasValidTokens } = await response.json();
+    
+    const statusDiv = document.getElementById('auth-status');
+    const connectBtn = document.getElementById('connect-google');
+    
+    if (!isAuthenticated || !hasValidTokens) {
+      statusDiv.textContent = 'Google Calendar not connected';
+      connectBtn.style.display = 'block';
+    } else {
+      statusDiv.textContent = 'Google Calendar connected ✅';
+      connectBtn.style.display = 'none';
+      syncCalendar();
+    }
+  } catch (error) {
+    console.error('Auth status check failed:', error);
+    document.getElementById('auth-status').textContent = 'Authentication check failed';
+    document.getElementById('connect-google').style.display = 'block';
+  }
+}
+
+function connectGoogle() {
+  window.location.href = '/auth/google';
+}
+
+async function syncCalendar() {
+  try {
+    const response = await fetch('/api/calendar/sync');
+    
+    if (response.status === 401) {
+      const { requireReauth } = await response.json();
+      if (requireReauth) {
+        document.getElementById('auth-status').textContent = 'Please reconnect Google Calendar';
+        document.getElementById('connect-google').style.display = 'block';
+        return;
+      }
+    }
+    
+    const { events, count } = await response.json();
+    console.log(`✅ Synced ${count} calendar events`);
+    
+    // Display events in your UI
+    displayCalendarEvents(events);
+    
+  } catch (error) {
+    console.error('Calendar sync failed:', error);
+  }
+}
+
+function displayCalendarEvents(events) {
+  // Implement your event display logic here
+  console.log('Calendar events:', events);
+}
+</script>
+EOF
+
+# 8. TESTING STEPS
+echo "🧪 Testing steps..."
+
+cat << 'EOF'
+TESTING CHECKLIST:
+1. Deploy your app to Replit
+2. Open your app URL
+3. Click "Connect Google Calendar" button
+4. Complete OAuth consent (you should see Google's permission screen)
+5. After consent, check browser network tab - you should see successful token exchange
+6. Verify no 'invalid_grant' errors in logs
+7. Test calendar sync endpoint
+8. Test that refresh tokens work (wait for access token to expire, or force refresh)
+
+DEBUGGING:
+- Check Replit logs for "✅ Successfully obtained OAuth tokens"
+- Verify tokens are saved in /data/user_tokens_*.json files
+- No "dev-refresh" or "dev-access" tokens should appear anywhere
+- Calendar API calls should succeed without 'invalid_grant' errors
+EOF
+
+# 9. PRODUCTION DEPLOYMENT SCRIPT
+echo "🚀 Creating production deployment script..."
+
+cat > deploy.sh << 'EOF'
+#!/bin/bash
+echo "🚀 Deploying OAuth Calendar Fix..."
+
+# 1. Backup current state
+cp -r . ../backup-$(date +%Y%m%d_%H%M%S) 2>/dev/null || true
+
+# 2. Install dependencies
+npm install
+
+# 3. Clear any dev tokens/cache
+rm -f ./data/user_tokens_*.json
+mkdir -p ./data
+
+# 4. Restart application
+echo "🔄 Restarting application..."
+# kill -9 $(lsof -ti:3000) 2>/dev/null || true
+# npm start &
+
+echo "✅ Deployment complete!"
+echo "📋 Next steps:"
+echo "1. Test OAuth flow: /auth/google"
+echo "2. Check auth status: /api/auth/status" 
+echo "3. Test calendar sync: /api/calendar/sync"
+echo "4. Monitor logs for any 'invalid_grant' errors"
+EOF
+
+chmod +x deploy.sh
+
+# 10. ENVIRONMENT VALIDATION SCRIPT
+cat > validate-env.js << 'EOF'
+// Run this to validate your environment setup
+const requiredVars = [
+  'GOOGLE_CLIENT_ID',
+  'GOOGLE_CLIENT_SECRET'
+];
+
+const invalidVars = [
+  'GOOGLE_REFRESH_TOKEN',
+  'GOOGLE_ACCESS_TOKEN'
+];
+
+console.log('🔍 Validating environment variables...');
+
+let valid = true;
+
+// Check required variables
+requiredVars.forEach(varName => {
+  if (!process.env[varName]) {
+    console.error(`❌ Missing required variable: ${varName}`);
+    valid = false;
+  } else if (process.env[varName].includes('dev') || process.env[varName].includes('test')) {
+    console.error(`❌ ${varName} appears to be a dev/test value: ${process.env[varName]}`);
+    valid = false;
+  } else {
+    console.log(`✅ ${varName} is set`);
+  }
+});
+
+// Check for invalid dev variables
+invalidVars.forEach(varName => {
+  if (process.env[varName]) {
+    console.error(`❌ Remove dev variable: ${varName}=${process.env[varName]}`);
+    valid = false;
+  }
+});
+
+if (valid) {
+  console.log('✅ Environment validation passed!');
+  process.exit(0);
+} else {
+  console.log('❌ Environment validation failed!');
+  process.exit(1);
+}
+EOF
+
+echo "✅ Deployment checklist and cleanup guide created!"
+echo "📋 Run these commands in order:"
+echo "1. node validate-env.js  # Check your environment"
+echo "2. ./deploy.sh          # Deploy the fixes"
+echo "3. Test OAuth flow at your-app.replit.dev/auth/google"

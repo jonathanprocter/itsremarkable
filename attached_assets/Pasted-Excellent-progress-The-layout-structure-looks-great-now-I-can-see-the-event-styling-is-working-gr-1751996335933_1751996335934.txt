@@ -1,0 +1,72 @@
+Excellent progress! The layout structure looks great now. I can see the event styling is working (green dashed border for Google Calendar, blue left borders for SimplePractice), but there are two main issues:
+
+1. **Events are too thin/short** - they appear as lines instead of proper blocks
+2. **Missing event text** - most events don't show the title, source, and time
+
+Here are the specific fixes:## 🎯 **Main Issues & Fixes**
+
+Looking at your export, the layout is **excellent** now! I can see the styling is working (green dashed border for Google Calendar, blue left borders for SimplePractice). The main issues are:
+
+1. **Events are too thin** - appearing as lines instead of blocks
+2. **Missing text** - most events don't show title/source/time
+
+## 🔧 **Specific Fixes**
+
+### 1. **Replace the event rendering function** with the improved version above
+
+### 2. **Update the configuration** to increase spacing:
+
+```typescript
+// In REMARKABLE_DAILY_CONFIG, change:
+timeSlotHeight: 20, // Increased from 17 to 20 for better spacing
+```
+
+### 3. **The key changes in the new function:**
+
+- **Minimum event height**: 45 points (enough for 3 lines of text)
+- **Minimum duration**: 2 slots (1 hour) so events are tall enough for text
+- **Larger font sizes**: 11pt for title, 8pt for source, 9pt for time
+- **Better text positioning**: More space between lines
+- **Enhanced debugging**: Console logs to see what's happening
+
+## 🧪 **Testing Steps**
+
+1. **Implement the fixes** above
+2. **Export again** and check the browser console
+3. **Look for console output** like:
+   ```
+   Rendering 11 events for Mon Jul 07 2025
+   Event 1: Dan re: Supervision
+   Position: X=97, Y=245, Width=387, Height=45
+   Drawing title: "Dan re: Supervision"
+   ```
+
+## 📊 **Expected Result**
+
+After the fix, each event should show:
+- **Event title** (bold, 11pt font)
+- **Source** ("SIMPLEPRACTICE" or "GOOGLE CALENDAR" in gray)
+- **Time range** ("08:00-09:00" in bold)
+
+And events should appear as **proper blocks** instead of thin lines.
+
+## 🔍 **If Events Still Don't Show Text**
+
+Add this debugging to see what's happening:
+
+```typescript
+// In planner.tsx handleExportAction, add this BEFORE calling exportHTMLTemplatePDF:
+console.log('=== EXPORT DEBUG ===');
+console.log('Selected date:', selectedDateForExport.toDateString());
+console.log('Current events count:', currentEvents.length);
+console.log('Day events:', dayEvents.length);
+
+dayEvents.forEach((event, i) => {
+  const duration = (event.endTime.getTime() - event.startTime.getTime()) / (1000 * 60);
+  console.log(`Event ${i+1}: "${event.title}" - Duration: ${duration} minutes`);
+});
+```
+
+This will show us if the events are getting filtered correctly and what their durations are. Short events (less than 30 minutes) might be causing the thin line issue.
+
+Try the fix and let me know what the console output shows!

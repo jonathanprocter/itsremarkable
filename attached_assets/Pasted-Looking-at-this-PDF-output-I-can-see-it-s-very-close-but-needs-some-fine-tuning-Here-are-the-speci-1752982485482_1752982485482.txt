@@ -1,0 +1,80 @@
+Looking at this PDF output, I can see it's very close but needs some fine-tuning. Here are the specific instructions you can give to Replit's AI to achieve 100% accuracy:
+
+## 🎯 **Specific Instructions for Replit AI:**
+
+### **Issue 1: Missing Time Display**
+"The event is missing the time display in the first column. Add `10:00-11:00` below the 'SIMPLEPRACTICE' text in the left column."
+
+### **Issue 2: Text Truncation**
+"The Event Notes and Action Items text is being cut off. Increase the event height to at least 100px minimum and ensure all text is fully visible:
+- Event Notes: 'He wasn't able to be at this morning's appointment due to work.'
+- Action Items: 'I need to see if he's able to find another fixed time, given his schedule with the LIRR.'"
+
+### **Issue 3: Font Size & Readability**
+"Increase font sizes for better readability:
+- Event title: 13px (currently too small)
+- Time display: 12px 
+- Section headers ('Event Notes', 'Action Items'): 10px
+- Body text: 9px with line-height: 1.4"
+
+### **Issue 4: Column Proportions**
+"Adjust the 3-column grid layout:
+- Left column: 30% (title, source, time)
+- Middle column: 35% (Event Notes) 
+- Right column: 35% (Action Items)
+Change from `grid-template-columns: 1fr 1fr 1fr` to `grid-template-columns: 3fr 3.5fr 3.5fr`"
+
+### **Issue 5: Better Text Wrapping**
+"Ensure long text wraps properly within columns by adding:
+- `word-wrap: break-word`
+- `white-space: normal` 
+- `overflow-wrap: break-word`"
+
+### **Issue 6: Improved Spacing**
+"Optimize spacing:
+- Event padding: 12px all around
+- Gap between columns: 16px
+- Margin between text elements: 6px
+- Line height for bullet points: 1.5"
+
+### **Issue 7: Content Positioning**
+"Make sure the time display appears directly under 'SIMPLEPRACTICE' in the left column with proper hierarchy:
+```
+Calvin Hill Appointment
+SIMPLEPRACTICE  
+10:00-11:00
+```"
+
+## 📋 **Complete Instruction Set for Replit AI:**
+
+```
+"Fix the PDF calendar export to match the browser view exactly:
+
+1. In the left column, add the time '10:00-11:00' below 'SIMPLEPRACTICE'
+2. Increase minimum event height to 100px to prevent text cutoff
+3. Change grid columns from '1fr 1fr 1fr' to '3fr 3.5fr 3.5fr' for better proportions
+4. Increase font sizes: title=13px, time=12px, headers=10px, body=9px
+5. Add proper text wrapping: word-wrap: break-word, white-space: normal
+6. Ensure full text is visible:
+   - Event Notes: 'He wasn't able to be at this morning's appointment due to work.'
+   - Action Items: 'I need to see if he's able to find another fixed time, given his schedule with the LIRR.'
+7. Improve spacing: 12px padding, 16px column gap, 6px text margins
+8. Add line-height: 1.4 for better readability
+9. Make sure no text is truncated or cut off
+10. The final result should show complete, readable text in all three columns"
+```
+
+## 🔧 **Alternative Approach:**
+
+If you want to give Replit AI the exact code fix, you could say:
+
+```
+"Update the renderPerfectEvent function with these exact changes:
+- Change height calculation to: Math.max(100, (durationMinutes / 30) * 30)
+- Change grid-template-columns to: '3fr 3.5fr 3.5fr'  
+- Add the time display in left column
+- Increase font sizes and add proper text wrapping
+- Ensure the full Event Notes and Action Items text is visible without truncation"
+```
+
+This should get you that final 5-10% improvement to achieve pixel-perfect matching!

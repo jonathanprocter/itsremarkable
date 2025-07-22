@@ -1,0 +1,68 @@
+Here is an explicit AI prompt you can send to Claude or any AI code assistant to fix your PDF export so it matches your browser daily view perfectly:
+
+---
+**AI Prompt:**
+
+I need you to review and fix my PDF export for the daily calendar view in my React web app. My goals are:
+
+**A. Parity with browser daily view:**  
+  - Event appointments (like Calvin Hill at 10:00 AM) must appear at the correct time.
+  - All event metadata (Notes, Action Items, etc.) must render fully, styled just as in the browser.
+  - Event blocks use a white background, colored left border (per source), and dark text.
+  - Layout, margins, font sizes, and padding must match the browser daily view exactly.
+
+**B. Specific Issues to Fix:**  
+  1. My PDF export previously showed Calvin’s appointment at 6:00 AM instead of 10:00 AM — **timezone conversion must NOT adjust if my data is already in the correct local time (Eastern).**
+  2. Events in the PDF should display white backgrounds, a 4px solid colored left border, proper dark text, and **all notes and action items visible in their sections**, matching the browser layout.
+  3. The event block should **span the right time slot heights (e.g., 40px per 30 min slot)** and be properly aligned in the day grid.
+
+**C. Supplemental Information:**  
+- Here is a sample event object:
+```json
+{
+  "id": "calvin-hill-appt",
+  "title": "Calvin Hill Appointment",
+  "startTime": "2025-07-19T10:00:00",
+  "endTime": "2025-07-19T11:00:00",
+  "source": "simplepractice",
+  "notes": ["Bring insurance paperwork", "Arrive 10 minutes early"],
+  "actionItems": ["Collect copay", "Update medical record"]
+}
+```
+- Event card CSS (in browser):
+```css
+.event-card {
+  background: #fff;
+  border-left: 4px solid #3b82f6;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.07);
+  border-radius: 8px;
+  color: #1f2937;
+  padding: 14px 16px;
+  margin-bottom: 8px;
+}
+.event-title { font-size: 16px; font-weight: 700; }
+.event-time { font-size: 13px; color: #6b7280; margin: 6px 0 0 0; }
+.event-notes, .event-actions { font-size: 12px; color: #374151; margin-top: 8px; }
+.event-notes ul, .event-actions ul { padding-left: 16px; margin: 0;}
+```
+- My slot height in browser is 40px per 30-minute row.
+
+**D. Current codebase:**
+- Uses React, functional components, and Tailwind for layout.
+- My PDF export is built with html2canvas + jsPDF from a custom HTML template.
+
+**E. Required Outcome:**  
+**Revise my exportIsolatedCalendarPDF code so:**
+- It uses my sample event data, layout, and CSS above in its HTML/CSS staging.
+- Timezone conversion is bypassed (parsed dates used as-is).
+- Events are rendered absolutely positioned over the time grid using correct top/height (based on start/end time and slot height), so an event from 10:00–11:00 covers the correct area.
+- Event metadata (notes, action items) are included in their own sections, styled per my CSS.
+- Font family, color, and spacing match my `.event-card` in browser.
+
+**If you need to, ask me for missing details before suggesting code.**
+
+**Copy and send the above prompt to Claude or your AI assistant.**  
+It contains all info needed for them to deliver a direct, prescriptive (and not generic) fix for pixel-perfect daily calendar PDF export!
+
+[1] https://replit.com/@jonathanprocter/RemarkablePlannerPro-1

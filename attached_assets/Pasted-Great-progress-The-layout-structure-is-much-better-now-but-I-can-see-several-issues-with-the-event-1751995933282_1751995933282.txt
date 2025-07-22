@@ -1,0 +1,75 @@
+Great progress! The layout structure is much better now, but I can see several issues with the event rendering:
+
+1. **Events are compressed to the right side** instead of spanning the full column width
+2. **Missing event styling** (borders, backgrounds)
+3. **Event content format** doesn't match the target layout
+4. **Event positioning** seems off
+
+Here are the specific fixes needed:## 🔧 **Quick Implementation Steps**
+
+### 1. **Replace the event rendering functions** in `htmlTemplatePDF.ts` with the corrected versions above
+
+### 2. **Add debugging to see what's happening** with your events:
+
+```typescript
+// Add this to your handleExportAction function BEFORE calling exportHTMLTemplatePDF:
+console.log('=== EVENT DEBUG ===');
+dayEvents.forEach(event => {
+  console.log({
+    title: event.title,
+    source: event.source,
+    calendarId: event.calendarId,
+    startTime: event.startTime.toLocaleString()
+  });
+});
+```
+
+### 3. **Check your event source detection**
+
+Looking at your current output, it seems like events aren't getting the proper styling. This suggests the event type detection might be wrong. Make sure your events have the correct `source` and `calendarId` properties.
+
+**For SimplePractice events** (should have blue left border):
+- `event.source === 'simplepractice'` OR
+- `event.title.includes('Appointment')` OR  
+- `event.calendarId === '0np7sib5u30o7oc297j5pb259g'`
+
+**For Google Calendar events** (should have dashed green border):
+- `event.source === 'google'` AND not SimplePractice
+
+## 🎯 **Expected Changes After Fix**
+
+1. **Events will span full column width** instead of being compressed
+2. **SimplePractice events** will show **thick blue left border**
+3. **Google Calendar events** will show **dashed green border all around**
+4. **Each event** will show **3 lines**:
+   - **Event Title** (bold, larger)
+   - **SOURCE NAME** (smaller, gray, all caps)
+   - **HH:MM-HH:MM** (bold time range)
+
+## 🧪 **Testing Steps**
+
+1. **Implement the fixes** above
+2. **Export a daily view** 
+3. **Check the browser console** for the debug output
+4. **Verify event styling**:
+   - Do SimplePractice appointments have blue left borders?
+   - Do Google Calendar events have dashed green borders?
+   - Does each event show title + source + time?
+
+## 🔍 **If Events Still Look Wrong**
+
+Add this temporary debugging to your event data:
+
+```typescript
+// In planner.tsx, in handleExportAction function:
+console.log('Current events for export:', currentEvents.map(e => ({
+  title: e.title,
+  source: e.source,
+  calendarId: e.calendarId,
+  hasAppointmentInTitle: e.title.toLowerCase().includes('appointment')
+})));
+```
+
+This will show us exactly what data is being passed to the PDF generator, so we can fix the event type detection if needed.
+
+Try implementing these fixes and let me know what the console output shows - that will help us pinpoint exactly what's happening with the event rendering!

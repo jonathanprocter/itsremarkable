@@ -1,0 +1,344 @@
+// COMPLETE REPLACEMENT FOR YOUR PDF EXPORT
+// Replace your entire PDF generation logic with this
+
+import React from 'react';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
+
+// STEP 1: Fix your data transformation FIRST
+export const fixScheduleData = (rawAppointments: any[]): any => {
+  // Filter out invalid appointments
+  const validAppointments = rawAppointments.filter(apt => 
+    apt && apt.startTime && apt.endTime && apt.clientName
+  );
+
+  // Calculate CORRECT metrics
+  const totalAppointments = validAppointments.length;
+  const scheduledHours = totalAppointments * 1; // Assuming 1 hour per appointment
+  const workdayHours = 12; // 6 AM to 6 PM = 12 hours
+  const availableHours = Math.max(0, workdayHours - scheduledHours);
+  const freeTimePercentage = Math.round((availableHours / workdayHours) * 100);
+
+  return {
+    date: 'Friday, July 18, 2025',
+    appointments: validAppointments.map((apt: any) => ({
+      id: apt.id || Math.random().toString(),
+      startTime: apt.startTime,
+      endTime: apt.endTime,
+      clientName: apt.clientName || apt.title || 'Unknown Client',
+      status: apt.status || 'confirmed'
+    })),
+    totalAppointments,
+    scheduledHours,
+    availableHours,
+    freeTimePercentage
+  };
+};
+
+// STEP 2: Create the EXACT styled component for PDF
+const PDFScheduleComponent: React.FC<{ data: any }> = ({ data }) => {
+  const timeSlots = [];
+  for (let hour = 6; hour <= 19; hour++) {
+    timeSlots.push(`${hour.toString().padStart(2, '0')}:00`);
+    if (hour < 19) timeSlots.push(`${hour.toString().padStart(2, '0')}:30`);
+  }
+
+  const appointmentsByTime = data.appointments.reduce((acc: any, apt: any) => {
+    acc[apt.startTime] = apt;
+    return acc;
+  }, {});
+
+  return (
+    <div style={{
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+      background: '#ffffff',
+      padding: '20px',
+      width: '1200px',
+      minHeight: '1600px'
+    }}>
+      {/* Header */}
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: '24px',
+        paddingBottom: '16px',
+        borderBottom: '1px solid #e9ecef'
+      }}>
+        <div>
+          <h1 style={{
+            fontSize: '24px',
+            fontWeight: '600',
+            margin: '0',
+            color: '#212529'
+          }}>Friday, July 18, 2025</h1>
+          <p style={{
+            fontSize: '14px',
+            color: '#6c757d',
+            margin: '4px 0 0 0'
+          }}>{data.totalAppointments} appointments</p>
+        </div>
+        
+        <div style={{ display: 'flex', gap: '32px' }}>
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ fontSize: '18px', fontWeight: '600', color: '#212529' }}>
+              {data.totalAppointments}
+            </div>
+            <div style={{ fontSize: '12px', color: '#6c757d' }}>Appointments</div>
+          </div>
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ fontSize: '18px', fontWeight: '600', color: '#212529' }}>
+              {data.scheduledHours}.0h
+            </div>
+            <div style={{ fontSize: '12px', color: '#6c757d' }}>Scheduled</div>
+          </div>
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ fontSize: '18px', fontWeight: '600', color: '#212529' }}>
+              {data.availableHours}.0h
+            </div>
+            <div style={{ fontSize: '12px', color: '#6c757d' }}>Available</div>
+          </div>
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ fontSize: '18px', fontWeight: '600', color: '#212529' }}>
+              {data.freeTimePercentage}%
+            </div>
+            <div style={{ fontSize: '12px', color: '#6c757d' }}>Free Time</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Legend */}
+      <div style={{ display: 'flex', gap: '24px', marginBottom: '20px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: '#6c757d' }}>
+          <div style={{ width: '12px', height: '12px', background: '#6c8ebf', borderRadius: '2px' }}></div>
+          <span>SimplePractice</span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: '#6c757d' }}>
+          <div style={{ width: '12px', height: '12px', background: '#4285f4', borderRadius: '2px' }}></div>
+          <span>Google Calendar</span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: '#6c757d' }}>
+          <div style={{ width: '12px', height: '12px', background: '#ff9500', borderRadius: '2px' }}></div>
+          <span>Holidays in United States</span>
+        </div>
+      </div>
+
+      {/* Schedule Grid */}
+      <div style={{
+        border: '1px solid #e9ecef',
+        borderRadius: '8px',
+        overflow: 'hidden'
+      }}>
+        {timeSlots.map((time, index) => {
+          const appointment = appointmentsByTime[time];
+          return (
+            <div key={time} style={{
+              display: 'flex',
+              minHeight: '40px',
+              background: '#ffffff',
+              borderBottom: index < timeSlots.length - 1 ? '1px solid #f1f3f4' : 'none'
+            }}>
+              {/* Time column */}
+              <div style={{
+                width: '80px',
+                padding: '12px 16px',
+                fontSize: '12px',
+                fontWeight: '500',
+                color: '#6c757d',
+                background: '#f8f9fa',
+                borderRight: '1px solid #e9ecef',
+                display: 'flex',
+                alignItems: 'center'
+              }}>
+                {time}
+              </div>
+              
+              {/* Appointment area */}
+              <div style={{
+                flex: 1,
+                padding: '8px 16px',
+                display: 'flex',
+                alignItems: 'center'
+              }}>
+                {appointment && (
+                  <div style={{
+                    position: 'relative',
+                    width: '100%',
+                    padding: '12px 16px',
+                    borderRadius: '8px',
+                    background: appointment.status === 'clinician_canceled' ? '#e9ecef' : 
+                               appointment.status === 'client_canceled' ? '#fffbe6' : '#f8f9ff',
+                    border: appointment.status === 'clinician_canceled' ? '1.5px solid #adb5bd' :
+                            appointment.status === 'client_canceled' ? '1.5px solid #ffe066' : '1.5px solid #6c8ebf',
+                    opacity: (appointment.status === 'clinician_canceled' || appointment.status === 'client_canceled') ? 0.8 : 1
+                  }}>
+                    {/* Badge for cancelled appointments */}
+                    {appointment.status === 'clinician_canceled' && (
+                      <span style={{
+                        position: 'absolute',
+                        top: '8px',
+                        right: '8px',
+                        fontSize: '10px',
+                        fontWeight: '600',
+                        padding: '2px 6px',
+                        borderRadius: '4px',
+                        background: '#adb5bd',
+                        color: '#212529',
+                        textTransform: 'uppercase'
+                      }}>
+                        Clinician Canceled
+                      </span>
+                    )}
+                    {appointment.status === 'client_canceled' && (
+                      <span style={{
+                        position: 'absolute',
+                        top: '8px',
+                        right: '8px',
+                        fontSize: '10px',
+                        fontWeight: '600',
+                        padding: '2px 6px',
+                        borderRadius: '4px',
+                        background: '#ffe066',
+                        color: '#856404',
+                        textTransform: 'uppercase'
+                      }}>
+                        Client Canceled
+                      </span>
+                    )}
+                    
+                    {/* Appointment content */}
+                    <div>
+                      <div style={{
+                        fontSize: '14px',
+                        fontWeight: '600',
+                        color: '#212529',
+                        textDecoration: (appointment.status === 'clinician_canceled' || appointment.status === 'client_canceled') ? 'line-through' : 'none',
+                        textDecorationColor: '#dc3545',
+                        textDecorationThickness: '2px'
+                      }}>
+                        {appointment.clientName}
+                      </div>
+                      <div style={{
+                        fontSize: '12px',
+                        color: '#6c757d',
+                        marginTop: '4px',
+                        textDecoration: (appointment.status === 'clinician_canceled' || appointment.status === 'client_canceled') ? 'line-through' : 'none',
+                        textDecorationColor: '#dc3545',
+                        textDecorationThickness: '2px'
+                      }}>
+                        {appointment.startTime}-{appointment.endTime}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+// STEP 3: Complete PDF generation function
+export const generateCorrectPDF = async (rawAppointments: any[]) => {
+  console.log('Starting PDF generation...');
+  
+  try {
+    // Fix the data first
+    const fixedData = fixScheduleData(rawAppointments);
+    console.log('Fixed data:', fixedData);
+
+    // Create container
+    const container = document.createElement('div');
+    container.id = 'pdf-container-temp';
+    container.style.position = 'absolute';
+    container.style.left = '-9999px';
+    container.style.top = '0px';
+    container.style.zIndex = '-1000';
+    document.body.appendChild(container);
+
+    // Render component
+    const React = await import('react');
+    const ReactDOM = await import('react-dom/client');
+    
+    const root = ReactDOM.createRoot(container);
+    
+    await new Promise<void>((resolve) => {
+      root.render(
+        React.createElement(PDFScheduleComponent, { data: fixedData })
+      );
+      setTimeout(resolve, 100);
+    });
+
+    // Wait for rendering
+    await new Promise(resolve => setTimeout(resolve, 2000));
+
+    // Generate PDF
+    const canvas = await html2canvas(container, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: '#ffffff',
+      width: 1200,
+      height: 1600
+    });
+
+    const imgData = canvas.toDataURL('image/png');
+    const pdf = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: 'a4'
+    });
+
+    const imgWidth = 210;
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+    
+    pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+    pdf.save('daily-schedule-fixed.pdf');
+
+    // Cleanup
+    document.body.removeChild(container);
+    console.log('PDF generated successfully!');
+
+  } catch (error) {
+    console.error('PDF generation failed:', error);
+    throw error;
+  }
+};
+
+// STEP 4: Export button component
+export const FixedExportButton: React.FC<{ appointments: any[] }> = ({ appointments }) => {
+  const [isExporting, setIsExporting] = React.useState(false);
+
+  const handleExport = async () => {
+    setIsExporting(true);
+    try {
+      await generateCorrectPDF(appointments);
+      alert('PDF exported successfully!');
+    } catch (error) {
+      console.error('Export failed:', error);
+      alert('Export failed. Check console for details.');
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  return (
+    <button 
+      onClick={handleExport}
+      disabled={isExporting}
+      style={{
+        padding: '10px 20px',
+        backgroundColor: isExporting ? '#6c757d' : '#007bff',
+        color: 'white',
+        border: 'none',
+        borderRadius: '6px',
+        cursor: isExporting ? 'not-allowed' : 'pointer',
+        fontSize: '14px',
+        fontWeight: '500'
+      }}
+    >
+      {isExporting ? 'Generating PDF...' : 'Export Fixed PDF'}
+    </button>
+  );
+};

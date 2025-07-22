@@ -1,0 +1,155 @@
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { CheckCircle, XCircle, Calendar, RefreshCw } from 'lucide-react';
+
+interface Calendar {
+  id: string;
+  name: string;
+  color: string;
+}
+
+interface GoogleCalendarIntegrationProps {
+  isConnected: boolean;
+  calendars?: Calendar[];
+  isLoading?: boolean;
+  onSelectAll: () => void;
+  onDeselectAll: () => void;
+  onReconnect?: () => void;
+  onRefreshCalendars?: () => void;
+}
+
+export const GoogleCalendarIntegration = ({
+  isConnected,
+  calendars = [],
+  isLoading = false,
+  onSelectAll,
+  onDeselectAll,
+  onReconnect,
+  onRefreshCalendars
+}: GoogleCalendarIntegrationProps) => {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-sm flex items-center gap-2">
+          <Calendar className="w-4 h-4" />
+          Calendar Integration
+          {isConnected ? (
+            <CheckCircle className="w-4 h-4 text-green-500" />
+          ) : (
+            <XCircle className="w-4 h-4 text-red-500" />
+          )}
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        {/* Connection Status */}
+        <div className="flex items-center justify-between">
+          <span className="text-xs text-gray-600">Status:</span>
+          <Badge variant={isConnected ? "default" : "destructive"}>
+            {isConnected ? "Connected" : "Disconnected"}
+          </Badge>
+        </div>
+
+        {/* Calendar List */}
+        {isConnected && (
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-medium text-gray-700">
+                Calendars ({Array.isArray(calendars) ? calendars.length : 0})
+              </span>
+              {onRefreshCalendars && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={onRefreshCalendars}
+                  disabled={isLoading}
+                  className="h-6 w-6 p-0"
+                >
+                  <RefreshCw className={`w-3 h-3 ${isLoading ? 'animate-spin' : ''}`} />
+                </Button>
+              )}
+            </div>
+
+            {Array.isArray(calendars) && calendars.length > 0 ? (
+              <div className="max-h-32 overflow-y-auto space-y-1">
+                {calendars.map((calendar) => (
+                  <div key={calendar.id} className="flex items-center gap-2 text-xs">
+                    <div 
+                      className="w-3 h-3 rounded-full border"
+                      style={{ backgroundColor: calendar.color || '#4285f4' }}
+                    />
+                    <span className="truncate text-gray-700" title={calendar.name}>
+                      {calendar.name || 'Unnamed Calendar'}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-xs text-gray-500 italic">
+                {isLoading ? 'Loading calendars...' : 'No calendars found'}
+              </p>
+            )}
+          </div>
+        )}
+
+        {/* Action Buttons */}
+        <div className="space-y-2">
+          {isConnected ? (
+            <>
+              <Button 
+                onClick={onSelectAll}
+                className="w-full"
+                size="sm"
+                variant="outline"
+              >
+                Select All
+              </Button>
+              <Button 
+                onClick={onDeselectAll}
+                className="w-full"
+                size="sm"
+                variant="outline"
+              >
+                Deselect All
+              </Button>
+              {onReconnect && (
+                <Button 
+                  onClick={onReconnect}
+                  className="w-full"
+                  size="sm"
+                  variant="secondary"
+                >
+                  Reconnect
+                </Button>
+              )}
+            </>
+          ) : (
+            <>
+              <Button 
+                onClick={() => {
+                  // Initiating Google OAuth
+                  window.location.href = '/api/auth/google';
+                }}
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                size="sm"
+              >
+                Connect Google Calendar
+              </Button>
+              <div className="text-xs text-gray-500 text-center">
+                Click above to authenticate with Google
+              </div>
+            </>
+          )}
+        </div>
+
+        {/* Debug Info */}
+        {isConnected && (
+          <div className="text-xs text-gray-500 pt-2 border-t">
+            <div>Events loading: {isLoading ? 'Yes' : 'No'}</div>
+            <div>Last sync: {new Date().toLocaleTimeString()}</div>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+};

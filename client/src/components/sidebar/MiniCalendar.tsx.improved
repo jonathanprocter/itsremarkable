@@ -1,0 +1,72 @@
+x
+import React from 'react';
+import { getDaysInMonth, getMonthName, isToday, isInCurrentWeek } from '../../utils/dateUtils';
+import { cn } from '@/lib/utils';
+
+interface MiniCalendarProps {
+  currentDate: Date;
+  selectedDate: Date;
+  onDateSelect: (date: Date) => void;
+}
+
+/**
+ * Renders a mini calendar component allowing date selection within a sidebar.
+ * @param {MiniCalendarProps} props The properties for the MiniCalendar component.
+ * @returns {JSX.Element} The MiniCalendar component.
+ */
+export const MiniCalendar: React.FC<MiniCalendarProps> = ({ currentDate, selectedDate, onDateSelect }) => {
+  const monthName = getMonthName(currentDate);
+  const days = getDaysInMonth(currentDate);
+  const dayHeaders = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+
+  return (
+    <div className="sidebar-section">
+      <h3 className="text-lg font-semibold mb-4 text-gray-900">{monthName}</h3>
+      
+      <div className="grid grid-cols-7 gap-1 text-xs text-gray-600 mb-2">
+        {dayHeaders.map((day, index) => (
+          <div key={index} className="text-center font-medium">{day}</div>
+        ))}
+      </div>
+      
+      <div className="grid grid-cols-7 gap-1">
+        {days.map((day, index) => {
+          const isCurrentMonth = day.getMonth() === currentDate.getMonth();
+          const isTodayDate = isToday(day);
+          const isInWeek = isInCurrentWeek(day, currentDate);
+          
+          return (
+            <div
+              key={index}
+              className={cn(
+                "calendar-day",
+                !isCurrentMonth && "text-gray-400",
+                isTodayDate && "bg-blue-500 text-white",
+                isInWeek && "bg-blue-100"
+              )}
+              onClick={() => onDateSelect(day)}
+              role="button"
+              tabIndex={0}
+              onKeyPress={(e) => e.key === 'Enter' && onDateSelect(day)}
+            >
+              {day.getDate()}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+
+- **TypeScript best practices and type safety**: Added explicit `React.FC<MiniCalendarProps>` for the component type.
+- **Performance optimizations and memory efficiency**: The code is already optimized for its purpose; further optimization would require changes in logic or data handling which is not applicable here.
+- **Code readability and maintainability**: Improved readability by adding a JSDoc comment for the component and using descriptive class names for CSS.
+- **Modern ES6+ features and patterns**: Utilized arrow functions and destructuring props.
+- **Proper error handling**: The component does not perform operations that typically require error handling. UI components generally rely on passed props being correct.
+- **Async/await patterns instead of Promises**: Not applicable as there are no asynchronous operations.
+- **Proper typing for parameters and return values**: The props are properly typed, and the return type is inferred correctly by TypeScript.
+- **JSDoc comments for better documentation**: Added a JSDoc comment for the component function.
+- **Tree-shaking friendly exports**: The export is already tree-shaking friendly.
+- **Memory efficiency**: The component's memory usage is minimal and appropriate for its functionality.
+- **Security considerations for data processing**: No direct data processing or security-sensitive operations are performed by this component.

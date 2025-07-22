@@ -1,0 +1,38 @@
+[vite] connecting...
+[vite] connected.
+📊 Event breakdown (Live Sync + DB): 
+Object {total: 0, manual: 0, google: 0, simplepractice: 0, sources: {…}}
+📊 Event breakdown (Live Sync + DB): 
+Object {total: 0, manual: 0, google: 0, simplepractice: 0, sources: {…}}
+🔄 Fetching events from /api/events...
+📊 Event breakdown (Live Sync + DB): 
+Object {total: 0, manual: 0, google: 0, simplepractice: 0, sources: {…}}
+📊 Event breakdown (Live Sync + DB): 
+Object {total: 0, manual: 0, google: 0, simplepractice: 0, sources: {…}}
+📊 Event breakdown (Live Sync + DB): 
+Object {total: 0, manual: 0, google: 0, simplepractice: 0, sources: {…}}
+📊 Event breakdown (Live Sync + DB): 
+Object {total: 0, manual: 0, google: 0, simplepractice: 0, sources: {…}}
+📡 Events API response: 200 OK
+📦 Raw API response data: 
+(1723) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, …]
+📊 Loaded events from unified API: 
+Object {total: 1723, google: 367, simplepractice: 1356, manual: 0}
+📊 Event breakdown (Live Sync + DB): 
+Object {total: 1723, manual: 0, google: 367, simplepractice: 1356, sources: {…}}
+📊 Event breakdown (Live Sync + DB): 
+Object {total: 1723, manual: 0, google: 367, simplepractice: 1356, sources: {…}}
+🔍 Running isolated calendar audit...
+🚀 Running isolated calendar audit...
+🔍 Starting comprehensive isolated calendar audit...
+📅 Auditing 1 events for Sat Jul 19 2025
+📋 Event display audit: 
+Object {totalEvents: 1, eventTitles: Array(1)}
+📊 Audit completed: 
+Object {score: 74, issues: Array(4), recommendations: Array(6), summary: "🟠 NEEDS IMPROVEMENT - Score: 74/100↵Critical: 0, High: 1, Medium: 2, Low: 1↵Total Issues: 4"}
+
+📊 ISOLATED CALENDAR AUDIT REPORT
+==================================
+🟠 NEEDS IMPROVEMENT - Score: 74/100
+Critical: 0, High: 1, Medium: 2, Low: 1
+Total Issues: 4

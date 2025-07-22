@@ -1,0 +1,76 @@
+Here’s a **detailed, code-level prompt** you can give your AI (or developer) to get an **EXACT export replica** of your dashboard:
+
+**Goal:**  
+I need the PDF export to be a **pixel-perfect, field-perfect replica** of my dashboard weekly/daily calendar view. The export should include every appointment, block, note, and UI detail on the dashboard—visually and structurally.
+
+**Code-level Guidance:**
+
+1. **Unify the Data Source**
+   - Refactor so that both the dashboard view and the PDF export use the **same data model/object**—with no additional preprocessing for the PDF export except for presentation formatting.
+   - Ensure all subfields (notes, action items, category/tags, time markers, calendar colors) are included in the data passed to the PDF export routine.
+
+2. **Export Function Refactoring**
+   - In `htmlTemplatePDF.ts` and `weeklyPackageExport.ts`, guarantee that every item/field/element rendered to the dashboard is programmatically rendered to the PDF, in the same order and hierarchical structure.
+   - Loop over the **identical appointment/event array** as the dashboard, applying all conditional rendering (e.g., for color, icons, notes, multi-line blocks).
+
+3. **Grid and Layout Mirror**
+   - Construct the PDF page with:
+     - The **exact same time grid** (rows/columns, down to 30-minute or 1-hour lines as shown in the dashboard).
+     - Appointment blocks of the **exact same duration and positioning** on the grid.
+     - Day/week columns identical to the dashboard's order and sizing.
+     - Use matching fonts, font sizes, line spacing, and border thickness as closely as PDF technology allows.
+   - For each appointment, replicate all:
+     - Background colors
+     - Borders, including color-coded for event source
+     - Text formatting (bold, italics, newlines, etc.)
+     - Placement/alignment of notes or action items under/inside the event
+
+4. **Replicate UI Structure**
+   - If the dashboard renders certain things visually (like free time blocks, empty slots, or shaded areas), the export should **draw those too**.
+   - If there are colored labels for "SimplePractice" vs. "Google Calendar," those should appear, even if via a color rectangle or label in the PDF block.
+
+5. **Notes, Event Details, and Annotations**
+   - Include ALL notes, action items, and secondary fields (not just the event title/time).
+   - Preserve multiline notes, bullets, and any formatting.
+   - Ensure any hover, tooltip, or expandable UI content that’s visible by default in the dashboard is included in the export.
+
+6. **Sync Table Headers, Footers, and Sidebars**
+   - Replicate any headers, stats summaries, and legends ("SimplePractice", "Google Calendar", etc.) exactly as seen on the dashboard.
+
+7. **No “Summarizing” or Data Skipping**
+   - Remove any logic that aggregates, truncates, or omits items just for PDF brevity—export exactly what’s shown on the dashboard, nothing less (and nothing extra).
+
+**Testing Instructions:**
+
+- Test using at least one **complex week** and one with few events. Export side-by-side dashboard and PDF, and **diff them visually**.
+- Report or flag any:
+  - Missing events
+  - Missing notes/action items
+  - Grid/time misalignments
+  - Incorrect/missing colors or labels
+  - Font size or spacing differences
+- Keep iterating until the PDF and dashboard are indistinguishable (barring technical PDF font/graphic limits).
+
+**Code Audit Checklist:**
+- [ ] Data passed to PDF is **identical** to dashboard props/state
+- [ ] Every dashboard `render` (or React/TSX component) for events/notes is matched in PDF drawing code
+- [ ] All color/style schemes are defined in a shared config/util to avoid drift
+- [ ] Fallback rendering for unsupported PDF fonts (closest match)
+
+**Sample Prompt for your AI assistant:**
+
+---
+Please make the PDF export a direct, pixel-perfect and data-perfect replica of the dashboard for the week view (see current example export and dashboard).  
+- Unify data sources  
+- Replicate the grid, columns, and appointment rendering routines  
+- Ensure all notes, event details, and UI-level elements are present  
+- Fix any code that preprocesses, summarizes, or omits data for the PDF  
+- Match styles and layout as tightly as jsPDF/HTML2Canvas can allow  
+- Test and diff the result visually with the dashboard until 100% match is achieved.  
+---
+
+Paste this into your AI prompt or give to your dev, and you’ll be set for fully accurate, high-fidelity exports!
+
+[1] https://pplx-res.cloudinary.com/image/private/user_uploads/9626311/7ccadf6d-142f-47da-a162-4474086d1925/screenshot.jpg
+[2] https://pplx-res.cloudinary.com/image/private/user_uploads/9626311/82dfd6b5-4333-479e-b9be-a63481846c64/screenshot.jpg
+[3] file:///Users/jonathanprocter/Downloads/weekly-package-Jul%207-to-Jul%2013-2025%20(25).pdf

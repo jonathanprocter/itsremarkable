@@ -1,0 +1,311 @@
+# templatetags/appointment_filters.py
+from django import template
+from datetime import timedelta
+from appointments.models import AppointmentStatus
+
+register = template.Library()
+
+@register.filter
+def status_color(status):
+    """Return Bootstrap color class for appointment status"""
+    color_map = {
+        AppointmentStatus.SCHEDULED: 'primary',
+        AppointmentStatus.CONFIRMED: 'success',
+        AppointmentStatus.COMPLETED: 'success',
+        AppointmentStatus.CANCELLED: 'warning',
+        AppointmentStatus.NO_SHOW: 'danger',
+        AppointmentStatus.CLINICIAN_CANCELED: 'secondary',
+    }
+    return color_map.get(status, 'secondary')
+
+@register.filter
+def add_time(datetime_obj, minutes):
+    """Add minutes to a datetime object"""
+    if datetime_obj and minutes:
+        return datetime_obj + timedelta(minutes=minutes)
+    return datetime_obj
+
+@register.filter
+def get_time_slots():
+    """Generate time slots for calendar view"""
+    slots = []
+    start_hour = 6  # 6 AM
+    end_hour = 18   # 6 PM
+    
+    for hour in range(start_hour, end_hour + 1):
+        for minute in [0, 30]:
+            time_str = f"{hour:02d}:{minute:02d}"
+            slots.append(time_str)
+    
+    return slots
+
+# settings.py additions
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'appointments',  # Your appointment app
+]
+
+MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+
+# For production, add these security settings
+SECURE_SSL_REDIRECT = True
+SECURE_HSTS_SECONDS = 31536000
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_BROWSER_XSS_FILTER = True
+X_FRAME_OPTIONS = 'DENY'
+
+# admin.py
+from django.contrib import admin
+from django.utils.html import format_html
+from .models import Appointment, Patient, StatusChangeLog
+
+@admin.register(Patient)
+class PatientAdmin(admin.ModelAdmin):
+    list_display = ('first_name', 'last_name', 'email', 'phone')
+    search_fields = ('first_name', 'last_name', 'email')
+    ordering = ('last_name', 'first_name')
+
+@admin.register(Appointment)
+class AppointmentAdmin(admin.ModelAdmin):
+    list_display = ('patient', 'appointment_date', 'clinician', 'status_badge', 'duration_minutes')
+    list_filter = ('status', 'appointment_date', 'clinician')
+    search_fields = ('patient__first_name', 'patient__last_name', 'clinician__first_name', 'clinician__last_name')
+    date_hierarchy = 'appointment_date'
+    ordering = ('-appointment_date',)
+    
+    def status_badge(self, obj):
+        color_map = {
+            'scheduled': '#007bff',
+            'confirmed': '#28a745',
+            'completed': '#28a745',
+            'cancelled': '#ffc107',
+            'no_show': '#dc3545',
+            'clinician_canceled': '#6c757d',
+        }
+        color = color_map.get(obj.status, '#6c757d')
+        return format_html(
+            '<span style="background-color: {}; color: white; padding: 2px 8px; border-radius: 4px; font-size: 12px;">{}</span>',
+            color,
+            obj.get_status_display()
+        )
+    status_badge.short_description = 'Status'
+    
+    fieldsets = (
+        (None, {
+            'fields': ('patient', 'clinician', 'appointment_date', 'duration_minutes')
+        }),
+        ('Status Information', {
+            'fields': ('status', 'cancellation_reason', 'notes')
+        }),
+        ('Tracking', {
+            'fields': ('status_changed_by', 'status_changed_at'),
+            'classes': ('collapse',)
+        }),
+    )
+
+@admin.register(StatusChangeLog)
+class StatusChangeLogAdmin(admin.ModelAdmin):
+    list_display = ('appointment', 'old_status', 'new_status', 'changed_by', 'changed_at')
+    list_filter = ('old_status', 'new_status', 'changed_at')
+    search_fields = ('appointment__patient__first_name', 'appointment__patient__last_name', 'changed_by__username')
+    date_hierarchy = 'changed_at'
+    readonly_fields = ('appointment', 'old_status', 'new_status', 'changed_by', 'changed_at')
+    
+    def has_add_permission(self, request):
+        return False
+
+# signals.py
+from django.db.models.signals import post_save, pre_save
+from django.dispatch import receiver
+from django.contrib.auth.models import User
+from .models import Appointment, AppointmentStatus
+from .utils import send_status_notification
+
+@receiver(pre_save, sender=Appointment)
+def track_status_change(sender, instance, **kwargs):
+    """Track when appointment status changes"""
+    if instance.pk:
+        try:
+            old_instance = Appointment.objects.get(pk=instance.pk)
+            instance._old_status = old_instance.status
+        except Appointment.DoesNotExist:
+            instance._old_status = None
+    else:
+        instance._old_status = None
+
+@receiver(post_save, sender=Appointment)
+def handle_status_change(sender, instance, created, **kwargs):
+    """Handle actions when appointment status changes"""
+    if not created and hasattr(instance, '_old_status'):
+        old_status = instance._old_status
+        new_status = instance.status
+        
+        if old_status != new_status:
+            # Send notifications
+            send_status_notification(instance, old_status, new_status, instance.status_changed_by)
+            
+            # Auto-actions based on status
+            if new_status == AppointmentStatus.NO_SHOW:
+                # Could trigger automatic rebooking workflow
+                pass
+            elif new_status == AppointmentStatus.CANCELLED:
+                # Could trigger cancellation confirmation email
+                pass
+
+# api_views.py (for mobile app or external integrations)
+from rest_framework import viewsets, status
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from django.shortcuts import get_object_or_404
+from .models import Appointment, AppointmentStatus
+from .serializers import AppointmentSerializer
+
+class AppointmentViewSet(viewsets.ModelViewSet):
+    serializer_class = AppointmentSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        return Appointment.objects.filter(clinician=self.request.user)
+    
+    @action(detail=True, methods=['post'])
+    def update_status(self, request, pk=None):
+        """Update appointment status via API"""
+        appointment = get_object_or_404(Appointment, pk=pk, clinician=request.user)
+        
+        new_status = request.data.get('status')
+        reason = request.data.get('reason', '')
+        
+        if new_status not in [choice[0] for choice in AppointmentStatus.choices]:
+            return Response(
+                {'error': 'Invalid status'}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        old_status = appointment.status
+        appointment.status = new_status
+        appointment.status_changed_by = request.user
+        appointment.status_changed_at = timezone.now()
+        
+        if reason:
+            appointment.cancellation_reason = reason
+        
+        appointment.save()
+        
+        return Response({
+            'message': 'Status updated successfully',
+            'old_status': old_status,
+            'new_status': new_status,
+            'appointment': AppointmentSerializer(appointment).data
+        })
+
+# serializers.py
+from rest_framework import serializers
+from .models import Appointment, Patient
+
+class PatientSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Patient
+        fields = ['id', 'first_name', 'last_name', 'email', 'phone']
+
+class AppointmentSerializer(serializers.ModelSerializer):
+    patient = PatientSerializer(read_only=True)
+    status_display = serializers.CharField(source='get_status_display', read_only=True)
+    css_class = serializers.CharField(source='get_css_class', read_only=True)
+    
+    class Meta:
+        model = Appointment
+        fields = [
+            'id', 'patient', 'appointment_date', 'duration_minutes', 
+            'status', 'status_display', 'css_class', 'notes', 
+            'cancellation_reason', 'created_at', 'updated_at'
+        ]
+        read_only_fields = ['created_at', 'updated_at']
+
+# tests.py
+from django.test import TestCase, Client
+from django.contrib.auth.models import User
+from django.utils import timezone
+from datetime import timedelta
+from .models import Appointment, Patient, AppointmentStatus
+import json
+
+class AppointmentStatusTest(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.user = User.objects.create_user(
+            username='testdoctor',
+            password='testpass123'
+        )
+        self.patient = Patient.objects.create(
+            first_name='John',
+            last_name='Doe',
+            email='john.doe@example.com',
+            phone='555-0123',
+            date_of_birth='1990-01-01'
+        )
+        self.appointment = Appointment.objects.create(
+            patient=self.patient,
+            clinician=self.user,
+            appointment_date=timezone.now() + timedelta(days=1),
+            duration_minutes=60
+        )
+        
+    def test_appointment_status_update(self):
+        """Test updating appointment status"""
+        self.client.login(username='testdoctor', password='testpass123')
+        
+        response = self.client.post(
+            f'/appointment/{self.appointment.id}/update-status/',
+            json.dumps({
+                'status': AppointmentStatus.NO_SHOW,
+                'reason': 'Patient did not show up'
+            }),
+            content_type='application/json'
+        )
+        
+        self.assertEqual(response.status_code, 200)
+        
+        # Refresh appointment from database
+        self.appointment.refresh_from_db()
+        self.assertEqual(self.appointment.status, AppointmentStatus.NO_SHOW)
+        self.assertEqual(self.appointment.cancellation_reason, 'Patient did not show up')
+    
+    def test_css_class_mapping(self):
+        """Test that correct CSS classes are returned for different statuses"""
+        test_cases = [
+            (AppointmentStatus.SCHEDULED, 'appointment'),
+            (AppointmentStatus.CANCELLED, 'appointment no-show'),
+            (AppointmentStatus.NO_SHOW, 'appointment cancelled-red'),
+            (AppointmentStatus.CLINICIAN_CANCELED, 'appointment cancelled-minimal'),
+        ]
+        
+        for status, expected_class in test_cases:
+            self.appointment.status = status
+            self.appointment.save()
+            self.assertEqual(self.appointment.get_css_class(), expected_class)
+
+# requirements.txt
+Django>=4.2.0
+django-filter>=23.0
+djangorestframework>=3.14.0
+celery>=5.3.0  # for background tasks
+redis>=4.5.0   # for caching and task queue
+psycopg2-binary>=2.9.0  # for PostgreSQL
+python-decouple>=3.8  # for environment variables
+gunicorn>=21.2.0  # for production server

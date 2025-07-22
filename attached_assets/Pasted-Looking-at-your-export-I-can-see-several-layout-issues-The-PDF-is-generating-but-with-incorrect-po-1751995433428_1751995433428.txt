@@ -1,0 +1,87 @@
+Looking at your export, I can see several layout issues. The PDF is generating but with incorrect positioning and sizing. Here are the specific fixes needed:## 🔧 **Implementation Instructions**
+
+Replace the existing functions in your `htmlTemplatePDF.ts` file with the corrected versions above. The main issues were:
+
+### **1. Units Problem** ❌→✅
+- **Issue**: Mixed mm and points causing layout confusion
+- **Fix**: Convert everything to points (179mm = 507pt, 239mm = 677pt)
+
+### **2. PDF Creation** ❌→✅
+```typescript
+// CHANGE THIS in exportHTMLTemplatePDF function:
+if (isDailyView) {
+  pdf = new jsPDF({
+    orientation: 'portrait',
+    unit: 'pt',  // ← Change from 'mm' to 'pt'
+    format: [507, 677]  // ← Use point values
+  });
+}
+```
+
+### **3. Event Detection** ❌→✅
+The green dashed border on "Dan re: Supervision" suggests it's being treated as Google Calendar. Add better event type detection:
+
+```typescript
+// Add this helper to determine event source correctly:
+function getEventType(event: CalendarEvent) {
+  // Check SimplePractice first
+  if (event.source === 'simplepractice' || 
+      event.title.toLowerCase().includes('appointment') ||
+      event.calendarId?.includes('simplepractice')) {
+    return 'simplepractice';
+  }
+  
+  // Check holidays
+  if (event.title.toLowerCase().includes('holiday') ||
+      event.calendarId === 'en.usa#holiday@group.v.calendar.google.com') {
+    return 'holiday';
+  }
+  
+  // Default to Google Calendar for other Google events
+  if (event.source === 'google') {
+    return 'google';
+  }
+  
+  return 'manual';
+}
+```
+
+### **4. Debug Your Event Data**
+Add this to see what's happening with your events:
+
+```typescript
+// In handleExportAction function, add debugging:
+console.log('=== EVENT DEBUGGING ===');
+dayEvents.forEach(event => {
+  console.log({
+    title: event.title,
+    source: event.source,
+    calendarId: event.calendarId,
+    startTime: event.startTime.toLocaleString(),
+    shouldBeSimplePractice: event.source === 'simplepractice' || 
+                           event.title.toLowerCase().includes('appointment')
+  });
+});
+```
+
+### **5. Quick Test**
+After implementing the fixes:
+
+1. **Export a daily view**
+2. **Check the console** for event debugging info
+3. **Verify the PDF dimensions** are correct (should fill the page properly)
+4. **Check event borders**:
+   - SimplePractice appointments = Blue left border
+   - Google Calendar events = Green dashed border
+   - Holidays = Yellow background
+
+## 🎯 **Expected Result**
+With these fixes, your export should show:
+- ✅ Full page layout with proper margins
+- ✅ "DAILY PLANNER" header with date
+- ✅ Stats section with 4 columns (appointments, scheduled, available, free time)
+- ✅ Legend with all 3 event types
+- ✅ Time grid from 6:00 to 23:30
+- ✅ Events with correct styling based on source
+
+Try the export again and let me know if you still see layout issues! The key change is using **points instead of millimeters** for consistent PDF generation.

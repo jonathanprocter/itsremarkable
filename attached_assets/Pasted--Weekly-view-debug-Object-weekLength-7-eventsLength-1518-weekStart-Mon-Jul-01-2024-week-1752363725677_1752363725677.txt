@@ -1,0 +1,87 @@
+📅 Weekly view debug: 
+Object {weekLength: 7, eventsLength: 1518, weekStart: "Mon Jul 01 2024", weekEnd: "Sun Jul 07 2024"}
+🚀 Starting comprehensive PDF export audit
+🔍 Extracting dashboard metrics...
+📊 Event breakdown: 
+Object {total: 1518, simplepractice: 0, google: 1518, manual: 0}
+📅 Your appointments date range: 
+Object {earliest: "Tue Dec 31 2024", latest: "Wed Dec 31 2025", sampleDates: Array(5), currentlyViewing: "Mon Jul 01 2024"}
+🔍 SimplePractice Status: 
+Object {isLoading: false, hasError: true, error: "Failed to fetch SimplePractice events", eventsFound: 0, calendarsFound: 0}
+📅 Weekly view debug: 
+Object {weekLength: 7, eventsLength: 1518, weekStart: "Mon Jul 01 2024", weekEnd: "Sun Jul 07 2024"}
+🔍 Extracting PDF metrics...
+🔍 Comparing metrics...
+🔍 Found 0 inconsistencies
+✅ Comprehensive audit completed
+📊 Pixel Perfect Score: 100%
+🔍 Found 0 inconsistencies
+🎯 Comprehensive Audit Results: 
+Object {pixelPerfectScore: 100, inconsistencies: Array(0), recommendations: Array(3), dashboardMetrics: {…}, pdfMetrics: {…}, …}
+📤 Audit results exported to localStorage
+📊 Event breakdown: 
+Object {total: 1518, simplepractice: 0, google: 1518, manual: 0}
+📅 Your appointments date range: 
+Object {earliest: "Tue Dec 31 2024", latest: "Wed Dec 31 2025", sampleDates: Array(5), currentlyViewing: "Mon Jul 01 2024"}
+🔍 SimplePractice Status: 
+Object {isLoading: false, hasError: true, error: "Failed to fetch SimplePractice events", eventsFound: 0, calendarsFound: 0}
+📅 Weekly view debug: 
+Object {weekLength: 7, eventsLength: 1518, weekStart: "Mon Jul 01 2024", weekEnd: "Sun Jul 07 2024"}
+🔍 Running 100% pixel-perfect audit...
+📏 Extracting exact dashboard measurements...
+📊 Event breakdown: 
+Object {total: 1518, simplepractice: 0, google: 1518, manual: 0}
+📅 Your appointments date range: 
+Object {earliest: "Tue Dec 31 2024", latest: "Wed Dec 31 2025", sampleDates: Array(5), currentlyViewing: "Mon Jul 01 2024"}
+🔍 SimplePractice Status: 
+Object {isLoading: false, hasError: true, error: "Failed to fetch SimplePractice events", eventsFound: 0, calendarsFound: 0}
+📅 Weekly view debug: 
+Object {weekLength: 7, eventsLength: 1518, weekStart: "Mon Jul 01 2024", weekEnd: "Sun Jul 07 2024"}
+Audit failed: 
+Error {}
+message: "Dashboard elements not found for measurement extraction"
+stack: "Error: Dashboard elements not found for measurement extraction↵ at PixelPerfectAuditSystem.extractDashboardMeasurements (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/utils/pixelPerfectAuditSystem.ts:19:13)↵ at PixelPerfectAuditSystem.runPixelPerfectAudit (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/utils/pixelPerfectAuditSystem.ts:87:18)↵ at handleRunAudit (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/pages/planner.tsx:249:58)↵ at HTMLUnknownElement.callCallback2 (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=243ff4c6:3674:22)↵ at Object.invokeGuardedCallbackDev (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=243ff4c6:3699:24)↵ at invokeGuardedCallback (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=243ff4c6:3733:39)↵ at invokeGuardedCallbackAndCatchFirstError (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=243ff4c6:3736:33)↵ at executeDispatch (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=243ff4c6:7014:11)↵ at processDispatchQueueItemsInOrder (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=243ff4c6:7034:15)↵ at processDispatchQueue (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=243ff4c6:7043:13)"
+get stack: ƒ ()
+set stack: ƒ ()
+[[Prototype]]: Object
+
+📊 Event breakdown: 
+Object {total: 1518, simplepractice: 0, google: 1518, manual: 0}
+📅 Your appointments date range: 
+Object {earliest: "Tue Dec 31 2024", latest: "Wed Dec 31 2025", sampleDates: Array(5), currentlyViewing: "Mon Jul 01 2024"}
+🔍 SimplePractice Status: 
+Object {isLoading: false, hasError: true, error: "Failed to fetch SimplePractice events", eventsFound: 0, calendarsFound: 0}
+📅 Weekly view debug: 
+Object {weekLength: 7, eventsLength: 1518, weekStart: "Mon Jul 01 2024", weekEnd: "Sun Jul 07 2024"}
+📊 Event breakdown: 
+Object {total: 1518, simplepractice: 0, google: 1518, manual: 0}
+📅 Your appointments date range: 
+Object {earliest: "Tue Dec 31 2024", latest: "Wed Dec 31 2025", sampleDates: Array(5), currentlyViewing: "Mon Jul 01 2024"}
+🔍 SimplePractice Status: 
+Object {isLoading: false, hasError: true, error: "Failed to fetch SimplePractice events", eventsFound: 0, calendarsFound: 0}
+📅 Weekly view debug: 
+Object {weekLength: 7, eventsLength: 1518, weekStart: "Mon Jul 01 2024", weekEnd: "Sun Jul 07 2024"}
+📊 Event breakdown: 
+Object {total: 1518, simplepractice: 0, google: 1518, manual: 0}
+📅 Your appointments date range: 
+Object {earliest: "Tue Dec 31 2024", latest: "Wed Dec 31 2025", sampleDates: Array(5), currentlyViewing: "Mon Jul 01 2024"}
+🔍 SimplePractice Status: 
+Object {isLoading: false, hasError: true, error: "Failed to fetch SimplePractice events", eventsFound: 0, calendarsFound: 0}
+📅 Weekly view debug: 
+Object {weekLength: 7, eventsLength: 1518, weekStart: "Mon Jul 01 2024", weekEnd: "Sun Jul 07 2024"}
+📊 Event breakdown: 
+Object {total: 1518, simplepractice: 0, google: 1518, manual: 0}
+📅 Your appointments date range: 
+Object {earliest: "Tue Dec 31 2024", latest: "Wed Dec 31 2025", sampleDates: Array(5), currentlyViewing: "Mon Jul 01 2024"}
+🔍 SimplePractice Status: 
+Object {isLoading: false, hasError: true, error: "Failed to fetch SimplePractice events", eventsFound: 0, calendarsFound: 0}
+📅 Weekly view debug: 
+Object {weekLength: 7, eventsLength: 1518, weekStart: "Mon Jul 01 2024", weekEnd: "Sun Jul 07 2024"}
+📊 Event breakdown: 
+Object {total: 1518, simplepractice: 0, google: 1518, manual: 0}
+📅 Your appointments date range: 
+Object {earliest: "Tue Dec 31 2024", latest: "Wed Dec 31 2025", sampleDates: Array(5), currentlyViewing: "Mon Jul 01 2024"}
+🔍 SimplePractice Status: 
+Object {isLoading: false, hasError: true, error: "Failed to fetch SimplePractice events", eventsFound: 0, calendarsFound: 0}
+📅 Weekly view debug: 
+Object {weekLength: 7, eventsLength: 1518, weekStart: "Mon Jul 01 2024", weekEnd: "Sun Jul 07 2024"}

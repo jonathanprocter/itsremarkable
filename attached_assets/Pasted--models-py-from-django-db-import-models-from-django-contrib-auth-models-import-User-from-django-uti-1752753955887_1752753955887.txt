@@ -1,0 +1,304 @@
+# models.py
+from django.db import models
+from django.contrib.auth.models import User
+from django.utils import timezone
+
+class AppointmentStatus(models.TextChoices):
+    SCHEDULED = 'scheduled', 'Scheduled'
+    CANCELLED = 'cancelled', 'Cancelled'
+    NO_SHOW = 'no_show', 'No Show'
+    CLINICIAN_CANCELED = 'clinician_canceled', 'Clinician Canceled'
+    COMPLETED = 'completed', 'Completed'
+    CONFIRMED = 'confirmed', 'Confirmed'
+
+class Patient(models.Model):
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    email = models.EmailField()
+    phone = models.CharField(max_length=20)
+    date_of_birth = models.DateField()
+    
+    def __str__(self):
+        return f"{self.first_name} {self.last_name}"
+
+class Appointment(models.Model):
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
+    clinician = models.ForeignKey(User, on_delete=models.CASCADE)
+    appointment_date = models.DateTimeField()
+    duration_minutes = models.IntegerField(default=60)
+    status = models.CharField(
+        max_length=20,
+        choices=AppointmentStatus.choices,
+        default=AppointmentStatus.SCHEDULED
+    )
+    notes = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    status_changed_by = models.ForeignKey(
+        User, 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True,
+        related_name='status_changes'
+    )
+    status_changed_at = models.DateTimeField(null=True, blank=True)
+    cancellation_reason = models.TextField(blank=True)
+    
+    class Meta:
+        ordering = ['appointment_date']
+    
+    def __str__(self):
+        return f"{self.patient} - {self.appointment_date.strftime('%Y-%m-%d %H:%M')} - {self.status}"
+    
+    def get_css_class(self):
+        """Return the CSS class for appointment status styling"""
+        status_classes = {
+            AppointmentStatus.SCHEDULED: 'appointment',
+            AppointmentStatus.CONFIRMED: 'appointment',
+            AppointmentStatus.COMPLETED: 'appointment completed',
+            AppointmentStatus.CANCELLED: 'appointment no-show',  # Amber styling
+            AppointmentStatus.NO_SHOW: 'appointment cancelled-red',  # Red styling
+            AppointmentStatus.CLINICIAN_CANCELED: 'appointment cancelled-minimal',  # Gray styling
+        }
+        return status_classes.get(self.status, 'appointment')
+    
+    def get_status_display_name(self):
+        """Return the display name for the status badge"""
+        display_names = {
+            AppointmentStatus.CANCELLED: 'CANCELLED',
+            AppointmentStatus.NO_SHOW: 'NO SHOW',
+            AppointmentStatus.CLINICIAN_CANCELED: 'Clinician Canceled',
+        }
+        return display_names.get(self.status, self.get_status_display())
+
+# views.py
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.utils import timezone
+from django.urls import reverse
+import json
+from datetime import datetime, timedelta
+
+@login_required
+def calendar_view(request):
+    """Display the calendar with appointments"""
+    # Get date from request or use today
+    date_str = request.GET.get('date')
+    if date_str:
+        selected_date = datetime.strptime(date_str, '%Y-%m-%d').date()
+    else:
+        selected_date = timezone.now().date()
+    
+    # Get appointments for the selected date
+    appointments = Appointment.objects.filter(
+        appointment_date__date=selected_date,
+        clinician=request.user
+    ).order_by('appointment_date')
+    
+    # Calculate stats
+    total_appointments = appointments.count()
+    scheduled_hours = sum(apt.duration_minutes for apt in appointments) / 60
+    
+    # Available hours calculation (assuming 8 AM to 6 PM = 10 hours)
+    total_work_hours = 10
+    available_hours = total_work_hours - scheduled_hours
+    free_time_percentage = (available_hours / total_work_hours) * 100 if total_work_hours > 0 else 0
+    
+    context = {
+        'selected_date': selected_date,
+        'appointments': appointments,
+        'total_appointments': total_appointments,
+        'scheduled_hours': scheduled_hours,
+        'available_hours': available_hours,
+        'free_time_percentage': round(free_time_percentage),
+        'appointment_statuses': AppointmentStatus.choices,
+    }
+    
+    return render(request, 'appointments/calendar.html', context)
+
+@login_required
+@csrf_exempt
+def update_appointment_status(request, appointment_id):
+    """Update appointment status via AJAX"""
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Method not allowed'}, status=405)
+    
+    try:
+        data = json.loads(request.body)
+        new_status = data.get('status')
+        reason = data.get('reason', '')
+        
+        # Validate status
+        if new_status not in [choice[0] for choice in AppointmentStatus.choices]:
+            return JsonResponse({'error': 'Invalid status'}, status=400)
+        
+        appointment = get_object_or_404(Appointment, id=appointment_id)
+        
+        # Check permissions (only clinician or staff can update)
+        if appointment.clinician != request.user and not request.user.is_staff:
+            return JsonResponse({'error': 'Permission denied'}, status=403)
+        
+        # Update appointment
+        old_status = appointment.status
+        appointment.status = new_status
+        appointment.status_changed_by = request.user
+        appointment.status_changed_at = timezone.now()
+        
+        if reason:
+            appointment.cancellation_reason = reason
+        
+        appointment.save()
+        
+        # Create status change log
+        StatusChangeLog.objects.create(
+            appointment=appointment,
+            old_status=old_status,
+            new_status=new_status,
+            changed_by=request.user,
+            reason=reason
+        )
+        
+        return JsonResponse({
+            'success': True,
+            'new_status': appointment.get_status_display(),
+            'css_class': appointment.get_css_class(),
+            'status_display_name': appointment.get_status_display_name()
+        })
+        
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+@login_required
+def appointment_detail(request, appointment_id):
+    """Display appointment details and allow status updates"""
+    appointment = get_object_or_404(Appointment, id=appointment_id)
+    
+    # Check permissions
+    if appointment.clinician != request.user and not request.user.is_staff:
+        messages.error(request, "You don't have permission to view this appointment.")
+        return redirect('calendar_view')
+    
+    # Get status change history
+    status_history = StatusChangeLog.objects.filter(
+        appointment=appointment
+    ).order_by('-changed_at')
+    
+    context = {
+        'appointment': appointment,
+        'status_history': status_history,
+        'appointment_statuses': AppointmentStatus.choices,
+    }
+    
+    return render(request, 'appointments/appointment_detail.html', context)
+
+# Additional model for tracking status changes
+class StatusChangeLog(models.Model):
+    appointment = models.ForeignKey(Appointment, on_delete=models.CASCADE)
+    old_status = models.CharField(max_length=20, choices=AppointmentStatus.choices)
+    new_status = models.CharField(max_length=20, choices=AppointmentStatus.choices)
+    changed_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    changed_at = models.DateTimeField(auto_now_add=True)
+    reason = models.TextField(blank=True)
+    
+    class Meta:
+        ordering = ['-changed_at']
+    
+    def __str__(self):
+        return f"{self.appointment} - {self.old_status} → {self.new_status}"
+
+# forms.py
+from django import forms
+
+class AppointmentStatusForm(forms.ModelForm):
+    reason = forms.CharField(
+        widget=forms.Textarea(attrs={'rows': 3, 'placeholder': 'Reason for status change (optional)'}),
+        required=False
+    )
+    
+    class Meta:
+        model = Appointment
+        fields = ['status', 'reason']
+        widgets = {
+            'status': forms.Select(attrs={'class': 'form-control'})
+        }
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['status'].widget.attrs.update({'class': 'form-control'})
+
+# urls.py
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('calendar/', views.calendar_view, name='calendar_view'),
+    path('appointment/<int:appointment_id>/', views.appointment_detail, name='appointment_detail'),
+    path('appointment/<int:appointment_id>/update-status/', views.update_appointment_status, name='update_appointment_status'),
+]
+
+# utils.py
+def get_appointment_stats(appointments):
+    """Calculate appointment statistics"""
+    stats = {
+        'total': appointments.count(),
+        'scheduled': appointments.filter(status=AppointmentStatus.SCHEDULED).count(),
+        'confirmed': appointments.filter(status=AppointmentStatus.CONFIRMED).count(),
+        'completed': appointments.filter(status=AppointmentStatus.COMPLETED).count(),
+        'cancelled': appointments.filter(status=AppointmentStatus.CANCELLED).count(),
+        'no_show': appointments.filter(status=AppointmentStatus.NO_SHOW).count(),
+        'clinician_canceled': appointments.filter(status=AppointmentStatus.CLINICIAN_CANCELED).count(),
+    }
+    return stats
+
+def send_status_notification(appointment, old_status, new_status, changed_by):
+    """Send notifications when appointment status changes"""
+    # Implementation depends on your notification system
+    # Could be email, SMS, push notifications, etc.
+    pass
+
+# management/commands/mark_no_shows.py
+from django.core.management.base import BaseCommand
+from django.utils import timezone
+from datetime import timedelta
+from appointments.models import Appointment, AppointmentStatus
+
+class Command(BaseCommand):
+    help = 'Mark appointments as no-show if they are past due and still scheduled'
+    
+    def add_arguments(self, parser):
+        parser.add_argument(
+            '--grace-period',
+            type=int,
+            default=15,
+            help='Grace period in minutes after appointment time'
+        )
+    
+    def handle(self, *args, **options):
+        grace_period = options['grace_period']
+        cutoff_time = timezone.now() - timedelta(minutes=grace_period)
+        
+        # Find appointments that should be marked as no-show
+        appointments_to_mark = Appointment.objects.filter(
+            appointment_date__lt=cutoff_time,
+            status__in=[AppointmentStatus.SCHEDULED, AppointmentStatus.CONFIRMED]
+        )
+        
+        marked_count = 0
+        for appointment in appointments_to_mark:
+            appointment.status = AppointmentStatus.NO_SHOW
+            appointment.status_changed_at = timezone.now()
+            appointment.save()
+            marked_count += 1
+            
+            self.stdout.write(
+                self.style.SUCCESS(
+                    f'Marked as no-show: {appointment.patient} - {appointment.appointment_date}'
+                )
+            )
+        
+        self.stdout.write(
+            self.style.SUCCESS(f'Successfully marked {marked_count} appointments as no-show')
+        )

@@ -1,0 +1,44 @@
+📊 Loaded events from unified API: 
+Object {total: 1723, google: 367, simplepractice: 1356, manual: 0}
+📊 Event breakdown (Live Sync + DB): 
+Object {total: 1723, manual: 0, google: 367, simplepractice: 1356, sources: {…}}
+📊 Event breakdown (Live Sync + DB): 
+Object {total: 1723, manual: 0, google: 367, simplepractice: 1356, sources: {…}}
+🚀 Starting PDF export: perfect-daily
+📅 Selected date: Fri Jul 18 2025
+📊 Total events: 1723
+🎯 PERFECT DAILY CALENDAR PDF EXPORT STARTING...
+📅 Selected date: Fri Jul 18 2025
+📊 Available events: 1723
+🎯 Creating perfect daily calendar PDF that matches application interface exactly...
+📅 Processing 8 events for Fri Jul 18 2025
+🔍 Searching for daily calendar container...
+⚠️ Primary selectors failed, trying fallback selectors...
+✅ Found fallback container with selector: #root > div
+📍 Found daily calendar container: 
+Object {tagName: "DIV", className: "", id: "", scrollWidth: 968, scrollHeight: 0}
+📊 Event breakdown (Live Sync + DB): 
+Object {total: 1723, manual: 0, google: 367, simplepractice: 1356, sources: {…}}
+📊 Event breakdown (Live Sync + DB): 
+Object {total: 1723, manual: 0, google: 367, simplepractice: 1356, sources: {…}}
+📸 Capturing daily calendar interface...
+#1 0ms Starting document clone with size 968x565 scrolled to 0,0
+#1 513ms Document cloned, using foreign object rendering
+#1 513ms EXPERIMENTAL ForeignObject renderer initialized (968x0 at 0,0) with scale 2
+#1 516ms Finished rendering
+📐 Captured canvas: 1936x0
+❌ Error exporting perfect daily calendar PDF: 
+Error {}
+
+❌ Export failed: 
+Error {}
+
+Error details: Incomplete or corrupt PNG file
+📊 Event breakdown (Live Sync + DB): 
+Object {total: 1723, manual: 0, google: 367, simplepractice: 1356, sources: {…}}
+📊 Event breakdown (Live Sync + DB): 
+Object {total: 1723, manual: 0, google: 367, simplepractice: 1356, sources: {…}}
+📊 Event breakdown (Live Sync + DB): 
+Object {total: 1723, manual: 0, google: 367, simplepractice: 1356, sources: {…}}
+📊 Event breakdown (Live Sync + DB): 
+Object {total: 1723, manual: 0, google: 367, simplepractice: 1356, sources: {…}}
