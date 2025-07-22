@@ -56,6 +56,19 @@ The application uses three main entities:
 
 ## Recent Changes (July 22, 2025)
 
+### ✅ PYMYPDF BIDIRECTIONAL LINKING SYSTEM IMPLEMENTATION (95% COMPLETE)
+- **BACKEND API INTEGRATION**: Added `/api/export/pymypdf-bidirectional` endpoint in server/routes.ts to execute existing PyMyPDF template
+- **EXISTING TEMPLATE UTILIZATION**: Modified `pymypdf_bidirectional_export.py` to use existing template structure with fallback implementation
+- **PAYLOAD OPTIMIZATION**: 
+  - Increased Express server JSON payload limit from 102KB to 50MB to handle large event datasets
+  - Added client-side event filtering to send only current week events (reducing from 1757 to ~50 events)
+- **PYTHON SCRIPT ENHANCEMENT**: 
+  - Enhanced existing template with proper error handling and fallback to text-based export when PyMyPDF unavailable
+  - Maintains existing template structure for 8-page bidirectional PDF (1 weekly + 7 daily pages)
+  - Includes navigation references and proper event distribution across pages
+- **FRONTEND INTEGRATION**: Frontend already properly wired with purple "Bidirectional Weekly Package" button calling PyMyPDF backend
+- **STATUS**: Ready for testing - system now processes manageable payload sizes with existing template structure
+
 ### ✅ ENHANCED BIDIRECTIONAL PDF LINKING SYSTEM (100% COMPLETE)
 - **SINGLE LINKED PDF**: Implemented enhanced bidirectional weekly package export creating one PDF with clickable navigation:
   - **Page 1**: Weekly overview with clickable links to each daily page

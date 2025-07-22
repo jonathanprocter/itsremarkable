@@ -16,10 +16,24 @@ export const exportLinkedWeeklyPackage = async (
   try {
     console.log('🔗 PYMYPDF BIDIRECTIONAL WEEKLY PACKAGE EXPORT STARTING');
     console.log(`📅 Week: ${weekStartDate.toDateString()} - ${weekEndDate.toDateString()}`);
-    console.log(`📊 Events: ${events.length}`);
+    console.log(`📊 Total Events: ${events.length}`);
+
+    // Filter events to only include those in the current week to reduce payload size
+    const weekStart = new Date(weekStartDate);
+    weekStart.setHours(0, 0, 0, 0);
+    const weekEnd = new Date(weekEndDate);
+    weekEnd.setHours(23, 59, 59, 999);
+    
+    const weekEvents = events.filter(event => {
+      if (!event.date) return false;
+      const eventDate = new Date(event.date);
+      return eventDate >= weekStart && eventDate <= weekEnd;
+    });
+
+    console.log(`📊 Week Events: ${weekEvents.length} (filtered from ${events.length})`);
 
     // Prepare data for Python PyMyPDF script
-    const eventsJson = JSON.stringify(events);
+    const eventsJson = JSON.stringify(weekEvents);
     const weekStartISO = weekStartDate.toISOString();
     const weekEndISO = weekEndDate.toISOString();
 
