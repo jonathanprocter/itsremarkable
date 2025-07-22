@@ -271,13 +271,6 @@ async function generateWeeklyOverviewPage(
         // Link the event block to its daily page
         pdf.link(eventX + 1, eventY + 1, eventWidth - 2, eventHeight - 2, { pageNumber: adjustedDay + 2 });
 
-        // Store coordinates for linking from daily pages
-        eventMap[event.id] = {
-          x: eventX + 1,
-          y: eventY + 1,
-          width: eventWidth - 2,
-          height: eventHeight - 2
-        };
       }
     }
   });
@@ -289,6 +282,7 @@ async function generateWeeklyOverviewPage(
 
 
   return eventMap;
+
 }
 
 /**
