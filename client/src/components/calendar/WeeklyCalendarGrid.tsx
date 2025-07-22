@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { generateTimeSlots, getEventDurationInSlots, isEventInTimeSlot } from '../../utils/timeSlots';
 import { formatDateShort } from '../../utils/dateUtils';
 import { cleanEventTitle } from '../../utils/textCleaner';
@@ -24,6 +25,8 @@ export const WeeklyCalendarGrid = ({
   onEventMove
 }: WeeklyCalendarGridProps) => {
   const timeSlots = generateTimeSlots();
+  const [draggedEventId, setDraggedEventId] = useState<string | null>(null);
+  const [dropZone, setDropZone] = useState<{date: Date, time: string} | null>(null);
 
   const handleDragStart = (e: React.DragEvent, event: CalendarEvent) => {
     // Ensure dates are properly parsed
@@ -35,16 +38,41 @@ export const WeeklyCalendarGrid = ({
       return;
     }
 
+    // Set visual state
+    setDraggedEventId(event.id);
+
+    // Set drag data
     e.dataTransfer.setData('text/plain', JSON.stringify({
       eventId: event.id,
       originalStartTime: startTime.toISOString(),
       originalEndTime: endTime.toISOString(),
       duration: endTime.getTime() - startTime.getTime()
     }));
+
+    // Set drag effect
+    e.dataTransfer.effectAllowed = 'move';
+    
+    // Add some visual feedback
+    e.dataTransfer.setDragImage(e.currentTarget as HTMLElement, 10, 10);
   };
 
-  const handleDragOver = (e: React.DragEvent) => {
+  const handleDragOver = (e: React.DragEvent, date: Date, timeSlot: { hour: number; minute: number }) => {
     e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    
+    // Set drop zone for visual feedback
+    setDropZone({ date, time: `${timeSlot.hour.toString().padStart(2, '0')}:${timeSlot.minute.toString().padStart(2, '0')}` });
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    // Clear drop zone when leaving
+    setDropZone(null);
+  };
+
+  const handleDragEnd = (e: React.DragEvent) => {
+    // Clear drag state
+    setDraggedEventId(null);
+    setDropZone(null);
   };
 
   const handleDrop = (e: React.DragEvent, date: Date, timeSlot: { hour: number; minute: number }) => {
@@ -61,6 +89,10 @@ export const WeeklyCalendarGrid = ({
       onEventMove(dragData.eventId, newStartTime, newEndTime);
     } catch (error) {
       console.error('Error handling drop:', error);
+    } finally {
+      // Clear drag state
+      setDraggedEventId(null);
+      setDropZone(null);
     }
   };
 
@@ -296,10 +328,14 @@ export const WeeklyCalendarGrid = ({
                 className={cn(
                   "calendar-cell",
                   timeSlot.minute === 0 ? "hour" : "half-hour",
-                  slotIndex === 0 ? "first-time-slot" : ""
+                  slotIndex === 0 ? "first-time-slot" : "",
+                  dropZone && dropZone.date.toDateString() === day.date.toDateString() && 
+                  dropZone.time === `${timeSlot.hour.toString().padStart(2, '0')}:${timeSlot.minute.toString().padStart(2, '0')}` ? 
+                  "drop-zone-active" : ""
                 )}
                 onClick={() => onTimeSlotClick(day.date, timeSlot.time)}
-                onDragOver={handleDragOver}
+                onDragOver={(e) => handleDragOver(e, day.date, timeSlot)}
+                onDragLeave={handleDragLeave}
                 onDrop={(e) => handleDrop(e, day.date, timeSlot)}
               >
                 {slotEvents.map((event, eventIndex) => {
@@ -350,7 +386,9 @@ export const WeeklyCalendarGrid = ({
                       className={cn(
                         "event-in-grid appointment",
                         eventSourceClass,
-                        statusClass
+                        statusClass,
+                        draggedEventId === event.id ? "dragging" : "",
+                        "cursor-move hover:shadow-lg transition-shadow"
                       )}
                       style={{
                         ...getEventStyle(event),
@@ -364,8 +402,9 @@ export const WeeklyCalendarGrid = ({
                         maxHeight: `${appointmentHeight}px`,
                         marginBottom: '2px' // Add 2px margin from bottom grid line
                       }}
-                      draggable={event.source === 'google'}
+                      draggable={true}
                       onDragStart={(e) => handleDragStart(e, event)}
+                      onDragEnd={handleDragEnd}
                       onClick={(e) => {
                         e.stopPropagation();
                         onEventClick(event);
