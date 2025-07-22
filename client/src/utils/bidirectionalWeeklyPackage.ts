@@ -1,6 +1,5 @@
 import jsPDF from 'jspdf';
 import { CalendarEvent } from '../types/calendar';
-import { exportDynamicDailyPlannerPDF } from './dynamicDailyPlannerPDF';
 import { format, addDays } from 'date-fns';
 
 // US Letter dimensions for reMarkable compatibility
@@ -156,6 +155,9 @@ async function generateWeeklyOverviewPage(
     pdf.setTextColor(0, 0, 0);
     pdf.text(daysOfWeek[day], dayX + actualDayWidth / 2, gridStartY + 15, { align: 'center' });
     pdf.text(currentDate.getDate().toString(), dayX + actualDayWidth / 2, gridStartY + 27, { align: 'center' });
+
+    // Link entire header area to corresponding daily page
+    pdf.link(dayX, gridStartY, actualDayWidth, 30, { pageNumber: day + 2 });
   }
 
   // Draw time grid
@@ -242,6 +244,9 @@ async function generateWeeklyOverviewPage(
 
         pdf.text(cleanTitle, eventX + 3, eventY + 12);
         pdf.text(dailyPageRef, eventX + 3, eventY + 24);
+
+        // Link the event block to its daily page
+        pdf.link(eventX + 1, eventY + 1, eventWidth - 2, eventHeight - 2, { pageNumber: adjustedDay + 2 });
       }
     }
   });
@@ -249,7 +254,20 @@ async function generateWeeklyOverviewPage(
   // Footer with navigation
   pdf.setFont('helvetica', 'normal');
   pdf.setFontSize(10);
-  pdf.text('Navigation: Pages 2-8 contain detailed daily views', config.width / 2, config.height - 20, { align: 'center' });
+  pdf.text('Navigation: Pages 2-8 contain detailed daily views', config.width / 2, config.height - 35, { align: 'center' });
+
+  // Simple day buttons for quick access
+  const navDays = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const btnWidth = 40;
+  const startX = config.width / 2 - (btnWidth * 7 + 6 * 5) / 2;
+  const btnY = config.height - 25;
+
+  for (let i = 0; i < 7; i++) {
+    const x = startX + i * (btnWidth + 5);
+    pdf.rect(x, btnY, btnWidth, 15, 'S');
+    pdf.text(navDays[i], x + btnWidth / 2, btnY + 10, { align: 'center' });
+    pdf.link(x, btnY, btnWidth, 15, { pageNumber: i + 2 });
+  }
 }
 
 /**
@@ -298,6 +316,8 @@ async function generateDailyPage(
   pdf.setFont('helvetica', 'normal');
   pdf.setFontSize(10);
   pdf.text('← Back to Weekly (Page 1)', config.width / 2, navY, { align: 'center' });
+  // Link back to weekly overview
+  pdf.link(config.width / 2 - buttonWidth / 2, navY - 10, buttonWidth, buttonHeight, { pageNumber: 1 });
 
   // Previous/Next day navigation
   const prevDay = dayIndex > 0 ? `← ${format(addDays(weekStartDate, dayIndex - 1), 'EEE')} (Page ${dayIndex + 1})` : '';
@@ -305,9 +325,11 @@ async function generateDailyPage(
 
   if (prevDay) {
     pdf.text(prevDay, 50, navY);
+    pdf.link(50, navY - 10, buttonWidth, buttonHeight, { pageNumber: dayIndex + 1 });
   }
   if (nextDay) {
     pdf.text(nextDay, config.width - 50, navY, { align: 'right' });
+    pdf.link(config.width - 50 - buttonWidth, navY - 10, buttonWidth, buttonHeight, { pageNumber: dayIndex + 3 });
   }
 
   // Time grid
