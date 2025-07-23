@@ -33,7 +33,7 @@ def create_bidirectional_linked_pdf(events_data, week_start_str, week_end_str):
     Creates a single PDF with bidirectional navigation using available libraries
     
     Args:
-        events_data: JSON string containing calendar events
+        events_data: JSON string, file path, or events list containing calendar events
         week_start_str: ISO date string for week start
         week_end_str: ISO date string for week end
     
@@ -42,8 +42,20 @@ def create_bidirectional_linked_pdf(events_data, week_start_str, week_end_str):
     """
     
     try:
-        # Parse input data
-        events = json.loads(events_data) if isinstance(events_data, str) else events_data
+        # Parse input data - handle file path or direct JSON
+        if isinstance(events_data, str):
+            if events_data.startswith('/tmp/events_') and events_data.endswith('.json'):
+                # It's a file path
+                with open(events_data, 'r') as f:
+                    events = json.load(f)
+                # Clean up temp file
+                import os
+                os.unlink(events_data)
+            else:
+                # It's a JSON string
+                events = json.loads(events_data)
+        else:
+            events = events_data
         week_start = datetime.fromisoformat(week_start_str.replace('Z', '+00:00'))
         week_end = datetime.fromisoformat(week_end_str.replace('Z', '+00:00'))
         

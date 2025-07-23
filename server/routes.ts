@@ -714,9 +714,13 @@ export function registerRoutes(app: Express) {
       const { promisify } = await import('util');
       const execAsync = promisify(exec);
       
-      // Prepare command arguments using the existing PyMyPDF template
-      const eventsArg = typeof events === 'string' ? events : JSON.stringify(events);
-      const pythonCommand = `python3 pymypdf_bidirectional_export.py "${eventsArg}" "${weekStart}" "${weekEnd}"`;
+      // Write events to a temporary file to avoid shell escaping issues
+      const fs = await import('fs');
+      const tempEventsFile = `/tmp/events_${Date.now()}.json`;
+      const eventsData = typeof events === 'string' ? events : JSON.stringify(events);
+      fs.default.writeFileSync(tempEventsFile, eventsData);
+      
+      const pythonCommand = `python3 pymypdf_bidirectional_export.py "${tempEventsFile}" "${weekStart}" "${weekEnd}"`;
       
       console.log(`🔧 Executing existing PyMyPDF template: ${pythonCommand.substring(0, 100)}...`);
       
@@ -756,6 +760,14 @@ export function registerRoutes(app: Express) {
       
       if (!fs.default.existsSync(filePath)) {
         return res.status(404).json({ error: 'File not found' });
+      }
+      
+      // Set proper content type for downloads
+      const ext = path.default.extname(filename).toLowerCase();
+      if (ext === '.pdf') {
+        res.setHeader('Content-Type', 'application/pdf');
+      } else if (ext === '.txt') {
+        res.setHeader('Content-Type', 'text/plain');
       }
       
       res.download(filePath, filename, (err) => {

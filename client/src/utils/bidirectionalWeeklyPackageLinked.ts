@@ -57,8 +57,11 @@ export const exportLinkedWeeklyPackage = async (
     const result = await response.json();
     const filename = result.filename;
 
-    // Download the generated PDF
-    const downloadResponse = await fetch(`/api/download/${filename}`);
+    // Download the generated file (PDF or TXT)
+    const downloadUrl = `/api/download/${encodeURIComponent(filename)}`;
+    console.log(`📥 Downloading file: ${downloadUrl}`);
+    
+    const downloadResponse = await fetch(downloadUrl);
     if (downloadResponse.ok) {
       const blob = await downloadResponse.blob();
       const url = window.URL.createObjectURL(blob);
@@ -69,6 +72,10 @@ export const exportLinkedWeeklyPackage = async (
       a.click();
       document.body.removeChild(a);
       window.URL.revokeObjectURL(url);
+      console.log(`✅ Successfully downloaded: ${filename}`);
+    } else {
+      console.error(`❌ Download failed: ${downloadResponse.statusText}`);
+      throw new Error(`Download failed: ${downloadResponse.statusText}`);
     }
 
     console.log('✅ PYMYPDF BIDIRECTIONAL WEEKLY PACKAGE EXPORT COMPLETE');
