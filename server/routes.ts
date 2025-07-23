@@ -746,15 +746,15 @@ export function registerRoutes(app: Express) {
   });
 
   // PDF download endpoint
-  app.get('/api/download/:filename', (req, res) => {
+  app.get('/api/download/:filename', async (req, res) => {
     try {
       const filename = req.params.filename;
-      const fs = require('fs');
-      const path = require('path');
+      const fs = await import('fs');
+      const path = await import('path');
       
-      const filePath = path.join(process.cwd(), filename);
+      const filePath = path.default.join(process.cwd(), filename);
       
-      if (!fs.existsSync(filePath)) {
+      if (!fs.default.existsSync(filePath)) {
         return res.status(404).json({ error: 'File not found' });
       }
       
@@ -766,7 +766,7 @@ export function registerRoutes(app: Express) {
           // Clean up file after download
           setTimeout(() => {
             try {
-              fs.unlinkSync(filePath);
+              fs.default.unlinkSync(filePath);
               console.log(`🗑️ Cleaned up downloaded file: ${filename}`);
             } catch (cleanupError) {
               console.error('File cleanup error:', cleanupError);

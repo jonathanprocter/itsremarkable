@@ -4,7 +4,7 @@ hidden = [".config", ".git", "generated-icon.png", "node_modules", "dist"]
 
 [nix]
 channel = "stable-24_05"
-packages = ["freetype", "gh", "glibcLocales", "gumbo", "harfbuzz", "jbig2dec", "libjpeg_turbo", "mupdf", "nano", "openjpeg", "swig", "unzip", "xcbuild"]
+packages = ["freetype", "gh", "glibcLocales", "gumbo", "harfbuzz", "jbig2dec", "libjpeg_turbo", "mupdf", "nano", "openjpeg", "swig", "unzip", "xcbuild", "python311Packages.pymupdf", "python311Packages.reportlab"]
 
 [deployment]
 deploymentTarget = "autoscale"
