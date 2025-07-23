@@ -27,40 +27,106 @@ export async function forceGoogleCalendarSync(req: any, res: any) {
   console.log("🔄 Starting force Google Calendar sync...");
 
   try {
-    // Get user authentication - try session first, then environment
+    // Check for valid tokens first
     const sessionUser = req.session?.passport?.user;
     const envAccessToken = process.env.GOOGLE_ACCESS_TOKEN;
     const envRefreshToken = process.env.GOOGLE_REFRESH_TOKEN;
     
-    let accessToken = null;
-    let refreshToken = null;
-    let userEmail = "user@example.com";
-    
-    if (sessionUser && sessionUser.accessToken) {
-      console.log("✅ Using session authentication:", sessionUser.email);
-      accessToken = sessionUser.accessToken;
-      refreshToken = sessionUser.refreshToken;
-      userEmail = sessionUser.email;
-    } else if (envAccessToken) {
-      console.log("✅ Using environment token authentication");
-      accessToken = envAccessToken;
-      refreshToken = envRefreshToken;
-      userEmail = "jonathan.procter@gmail.com"; // Default from environment
-    } else {
-      console.log("❌ No authentication tokens found");
+    // Validate that we have proper tokens
+    if (!sessionUser?.accessToken && !envAccessToken) {
+      console.log("❌ No access tokens available");
       return res.status(401).json({
         error: "Not authenticated",
         message: "Please authenticate with Google first",
-        oauthUrl: "/api/auth/google"
+        oauthUrl: "/api/auth/google",
+        needsReauth: true
       });
     }
 
-    // Create OAuth client with available tokens
-    const oauth2Client = createOAuth2Client();
-    oauth2Client.setCredentials({
-      access_token: accessToken,
-      refresh_token: refreshToken,
+    if (!sessionUser?.refreshToken && !envRefreshToken) {
+      console.log("❌ No refresh tokens available");
+      return res.status(401).json({
+        error: "No refresh token available",
+        message: "Please re-authenticate with Google to get a new refresh token",
+        oauthUrl: "/api/auth/google",
+        needsReauth: true
+      });
+    }
+
+    let accessToken = sessionUser?.accessToken || envAccessToken;
+    let refreshToken = sessionUser?.refreshToken || envRefreshToken;
+    let userEmail = sessionUser?.email || "jonathan.procter@gmail.com";
+
+    console.log("✅ Using tokens:", {
+      source: sessionUser?.accessToken ? 'session' : 'environment',
+      email: userEmail,
+      hasAccessToken: !!accessToken,
+      hasRefreshToken: !!refreshToken
     });
+
+    // Create OAuth client
+    const oauth2Client = createOAuth2Client();
+    
+    // Test if tokens are valid by making a simple request first
+    try {
+      oauth2Client.setCredentials({
+        access_token: accessToken,
+        refresh_token: refreshToken,
+      });
+
+      // Test token validity with a simple API call
+      const testCalendar = google.calendar({ version: "v3", auth: oauth2Client });
+      
+      // Try to list calendars as a token test
+      await testCalendar.calendarList.list({ maxResults: 1 });
+      console.log("✅ Tokens are valid, proceeding with sync");
+      
+    } catch (tokenError) {
+      console.log("⚠️ Token validation failed:", tokenError.message);
+      
+      if (tokenError.message?.includes('invalid_grant') || tokenError.code === 401) {
+        console.log("🔄 Attempting token refresh...");
+        
+        try {
+          const { credentials } = await oauth2Client.refreshAccessToken();
+          
+          // Update tokens
+          accessToken = credentials.access_token;
+          if (credentials.refresh_token) {
+            refreshToken = credentials.refresh_token;
+          }
+          
+          // Update session if using session tokens
+          if (sessionUser) {
+            sessionUser.accessToken = accessToken;
+            if (credentials.refresh_token) {
+              sessionUser.refreshToken = credentials.refresh_token;
+            }
+          }
+          
+          // Update environment variables
+          process.env.GOOGLE_ACCESS_TOKEN = accessToken;
+          if (credentials.refresh_token) {
+            process.env.GOOGLE_REFRESH_TOKEN = credentials.refresh_token;
+          }
+          
+          console.log("✅ Token refresh successful");
+          
+        } catch (refreshError) {
+          console.error("❌ Token refresh failed:", refreshError.message);
+          
+          return res.status(401).json({
+            error: "Authentication failed",
+            message: "Google tokens have expired and cannot be refreshed. Please re-authenticate.",
+            oauthUrl: "/api/auth/google",
+            needsReauth: true,
+            details: "Refresh token is invalid or expired"
+          });
+        }
+      } else {
+        throw tokenError; // Re-throw if it's not a token issue
+      }
+    }
 
     // Step 1: Get all calendars including subcalendars
     console.log("📅 Fetching all calendars...");
@@ -197,49 +263,26 @@ export async function forceGoogleCalendarSync(req: any, res: any) {
   } catch (error) {
     console.error("❌ Force Google Calendar sync failed:", error);
 
-    // Handle token refresh if needed
-    if (error.message?.includes("invalid_grant") || error.message?.includes("unauthorized")) {
-      console.log("🔄 Attempting token refresh...");
+    // Handle authentication errors
+    if (error.message?.includes("invalid_grant") || 
+        error.message?.includes("unauthorized") || 
+        error.code === 401 || 
+        error.status === 401) {
       
-      try {
-        const oauth2Client = createOAuth2Client();
-        oauth2Client.setCredentials({
-          access_token: req.session?.passport?.user?.accessToken,
-          refresh_token: req.session?.passport?.user?.refreshToken,
-        });
-
-        const { credentials } = await oauth2Client.refreshAccessToken();
-        
-        // Update session with new tokens
-        if (req.session?.passport?.user) {
-          req.session.passport.user.accessToken = credentials.access_token;
-          if (credentials.refresh_token) {
-            req.session.passport.user.refreshToken = credentials.refresh_token;
-          }
-        }
-
-        console.log("✅ Token refresh successful, please retry sync");
-        
-        return res.json({
-          success: false,
-          message: "Tokens refreshed successfully",
-          error: "Token refresh required",
-          recommendations: [
-            "OAuth tokens have been refreshed",
-            "Please try the sync operation again",
-            "The system should now work with updated tokens"
-          ]
-        });
-
-      } catch (refreshError) {
-        console.error("❌ Token refresh failed:", refreshError);
-        return res.status(401).json({
-          success: false,
-          error: "Authentication failed",
-          message: "Please re-authenticate with Google",
-          oauthUrl: "/api/auth/google"
-        });
-      }
+      console.error("❌ Authentication error detected:", error.message);
+      
+      return res.status(401).json({
+        success: false,
+        error: "Authentication failed",
+        message: "Google OAuth tokens have expired or are invalid. Please re-authenticate.",
+        oauthUrl: "/api/auth/google",
+        needsReauth: true,
+        recommendations: [
+          "Click the Google OAuth link to re-authenticate",
+          "This will generate fresh access and refresh tokens",
+          "The calendar sync should work after re-authentication"
+        ]
+      });
     }
 
     return res.status(500).json({

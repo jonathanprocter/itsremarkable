@@ -313,18 +313,51 @@ export default function Planner() {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to sync calendar events');
+        const errorData = await response.json().catch(() => ({}));
+        
+        if (response.status === 401 || errorData.needsReauth) {
+          throw new Error(`Authentication required: ${errorData.message || 'Please re-authenticate with Google'}`);
+        }
+        
+        throw new Error(errorData.message || 'Failed to sync calendar events');
       }
 
       return response.json();
     },
     onSuccess: (data) => {
       console.log('✅ Calendar sync successful:', data);
+      toast({
+        title: "Sync Successful",
+        description: `Synced ${data.events || 0} calendar events`,
+      });
       // Refetch events after successful sync
       refetchEvents();
     },
     onError: (error) => {
       console.error('❌ Calendar sync failed:', error);
+      
+      if (error.message?.includes('Authentication required')) {
+        toast({
+          title: "Authentication Required",
+          description: "Google OAuth tokens have expired. Please re-authenticate.",
+          variant: "destructive",
+          action: (
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => window.location.href = '/api/auth/google'}
+            >
+              Re-authenticate
+            </Button>
+          )
+        });
+      } else {
+        toast({
+          title: "Sync Failed",
+          description: error.message || "Failed to sync calendar events",
+          variant: "destructive"
+        });
+      }
     }
   });
 
@@ -1762,6 +1795,17 @@ export default function Planner() {
                     size="sm"
                   >
                     Refresh Events
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    onClick={() => {
+                      console.log('🔄 Redirecting to Google OAuth...');
+                      window.location.href = '/api/auth/google';
+                    }}
+                    className="w-full bg-red-50 hover:bg-red-100 border-red-300 text-red-700"
+                    size="sm"
+                  >
+                    🔐 Re-authenticate Google
                   </Button>
                   <Button 
                     variant="outline" 
