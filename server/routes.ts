@@ -31,7 +31,7 @@ export function registerRoutes(app: Express) {
     try {
       const userId = req.user?.id || req.session?.userId || "1";
       const status = getComprehensiveAuthStatus(req);
-      
+
       res.json({
         authenticated: status.authenticated,
         hasValidTokens: status.hasValidTokens,
@@ -51,14 +51,14 @@ export function registerRoutes(app: Express) {
   app.get('/api/calendar/sync', async (req, res) => {
     try {
       const userId = req.user?.id || req.session?.userId || "1";
-      
+
       if (!userId) {
         return res.status(401).json({ error: 'Authentication required' });
       }
 
       // Use environment tokens for calendar access
       const accessToken = process.env.GOOGLE_ACCESS_TOKEN;
-      
+
       if (!accessToken) {
         return res.status(401).json({ 
           error: 'Authentication required',
@@ -81,13 +81,13 @@ export function registerRoutes(app: Express) {
   app.get('/api/events', async (req, res) => {
     try {
       let userId = req.user?.id || req.session?.userId || 1;
-      
+
       // Handle userId parsing more safely - check for object type
       if (typeof userId === 'object' && userId !== null) {
         // If userId is an object, try to extract the id property
         userId = userId.id || 1;
       }
-      
+
       if (typeof userId === 'string') {
         const parsed = parseInt(userId);
         if (isNaN(parsed)) {
@@ -97,21 +97,21 @@ export function registerRoutes(app: Express) {
           userId = parsed;
         }
       }
-      
+
       // Ensure userId is a valid number
       if (typeof userId !== 'number' || isNaN(userId)) {
         console.log(`⚠️ UserId is not a valid number: ${userId}, using fallback userId 1`);
         userId = 1;
       }
-      
+
       console.log(`📊 Events endpoint called with userId: ${userId} (type: ${typeof userId})`);
-      
+
       // Import storage to get real events
       const { storage } = await import('./storage');
-      
+
       // Get real events from database
       const events = await storage.getEvents(userId);
-      
+
       // Format events for frontend
       const formattedEvents = events.map(event => ({
         id: event.id.toString(),
@@ -130,9 +130,9 @@ export function registerRoutes(app: Express) {
         calendarId: event.calendarId || '',
         userId: userId
       }));
-      
+
       console.log(`📊 Loaded events from unified API: {"total":${formattedEvents.length},"google":${formattedEvents.filter(e => e.source === 'google').length},"simplepractice":${formattedEvents.filter(e => e.source === 'simplepractice').length},"manual":${formattedEvents.filter(e => e.source === 'manual').length}}`);
-      
+
       res.json(formattedEvents);
     } catch (error) {
       console.error('[ERROR] Events endpoint error:', error);
@@ -148,7 +148,7 @@ export function registerRoutes(app: Express) {
 
       // Use the same authentication logic as other endpoints - be more permissive for development
       const userId = req.user?.id || req.session?.userId || req.session?.passport?.user?.id || "1";
-      
+
       console.log(`[DEBUG] Update event authentication check:`, {
         hasReqUser: !!req.user,
         reqUserId: req.user?.id,
@@ -156,7 +156,7 @@ export function registerRoutes(app: Express) {
         passportUser: req.session?.passport?.user?.id,
         finalUserId: userId
       });
-      
+
       // For development, always allow with fallback userId
       if (!userId) {
         console.log('[ERROR] Could not determine user ID for event update');
@@ -176,7 +176,7 @@ export function registerRoutes(app: Express) {
           return res.status(400).json({ error: "Invalid startTime format" });
         }
       }
-      
+
       if (updates.endTime) {
         if (typeof updates.endTime === "string") {
           updates.endTime = new Date(updates.endTime);
@@ -187,10 +187,10 @@ export function registerRoutes(app: Express) {
       }
 
       const userIdNumber = parseInt(userId) || 1;
-      
+
       // First, get the current event to check its source and calendar info
       let currentEvent = await storage.getEventBySourceId(userIdNumber, eventId);
-      
+
       // If not found by sourceId, try by numeric ID for manual events
       if (!currentEvent) {
         const numericId = parseInt(eventId);
@@ -208,10 +208,10 @@ export function registerRoutes(app: Express) {
       if (currentEvent.source === 'google' && currentEvent.calendarId) {
         try {
           console.log(`🔄 Attempting to update Google Calendar event ${eventId} in calendar ${currentEvent.calendarId}`);
-          
+
           // Import the Google Calendar update function
           const { updateGoogleCalendarEvent } = await import('./oauth-comprehensive-fix');
-          
+
           // Prepare the updated event data
           const eventDataToUpdate = {
             title: updates.title || currentEvent.title,
@@ -220,14 +220,14 @@ export function registerRoutes(app: Express) {
             startTime: updates.startTime || currentEvent.startTime,
             endTime: updates.endTime || currentEvent.endTime
           };
-          
+
           // Update in Google Calendar
           await updateGoogleCalendarEvent(
             currentEvent.calendarId,
             eventId, // This should be the Google Calendar event ID
             eventDataToUpdate
           );
-          
+
           console.log(`✅ Successfully updated Google Calendar event ${eventId}`);
         } catch (googleError) {
           console.error(`❌ Failed to update Google Calendar event ${eventId}:`, googleError);
@@ -235,10 +235,10 @@ export function registerRoutes(app: Express) {
           console.log('⚠️ Continuing with local database update despite Google Calendar error');
         }
       }
-      
+
       // Update in local database
       console.log(`[DEBUG] Updating event - ID: ${eventId}, currentEvent.sourceId: ${currentEvent.sourceId}, currentEvent.id: ${currentEvent.id}`);
-      
+
       let event;
       // Always try to update by sourceId first if it exists and matches the eventId
       if (currentEvent.sourceId && currentEvent.sourceId === eventId) {
@@ -254,7 +254,7 @@ export function registerRoutes(app: Express) {
         console.log(`[ERROR] Failed to update event in database - eventId: ${eventId}, internalId: ${currentEvent.id}`);
         return res.status(500).json({ error: "Failed to update local event" });
       }
-      
+
       console.log(`[SUCCESS] Updated event successfully:`, {
         eventId: eventId,
         internalId: event.id,
@@ -278,16 +278,16 @@ export function registerRoutes(app: Express) {
     try {
       const eventId = req.params.id;
       const userId = req.user?.id || req.session?.userId || req.session?.passport?.user?.id || "1";
-      
+
       console.log(`[DEBUG] Delete event request for eventId: ${eventId}, userId: ${userId}`);
-      
+
       if (!userId) {
         console.log('[ERROR] Could not determine user ID for event deletion');
         return res.status(401).json({ error: "Not authenticated" });
       }
 
       const userIdNumber = parseInt(userId) || 1;
-      
+
       // Try to delete by sourceId first (for Google Calendar events)
       let success = await storage.deleteEventBySourceId(userIdNumber, eventId);
 
@@ -325,7 +325,7 @@ export function registerRoutes(app: Express) {
   app.get('/api/auth/test', async (req, res) => {
     try {
       const userId = req.user?.id || req.session?.userId || "1";
-      
+
       if (userId) {
         res.json({
           authenticated: true,
@@ -352,7 +352,7 @@ export function registerRoutes(app: Express) {
       const user = req.user || req.session?.passport?.user;
       const envAccessToken = process.env.GOOGLE_ACCESS_TOKEN;
       const envRefreshToken = process.env.GOOGLE_REFRESH_TOKEN;
-      
+
       const isAuthenticated = !!user;
       const userHasTokens = user?.accessToken && user?.refreshToken && 
                            !user.accessToken.startsWith('dev-') && 
@@ -360,9 +360,9 @@ export function registerRoutes(app: Express) {
       const envHasTokens = !!envAccessToken && !!envRefreshToken && 
                           !envAccessToken.startsWith('dev-') && 
                           !envRefreshToken.startsWith('dev-');
-      
+
       const hasValidTokens = userHasTokens || envHasTokens;
-      
+
       console.log('🔍 Auth Status Check:', {
         hasUser: !!user,
         userEmail: user?.email,
@@ -370,7 +370,7 @@ export function registerRoutes(app: Express) {
         envHasTokens,
         finalValidTokens: hasValidTokens
       });
-      
+
       res.json({
         authenticated: isAuthenticated,
         hasValidTokens: hasValidTokens,
@@ -407,7 +407,7 @@ export function registerRoutes(app: Express) {
           passport: req.session.passport
         } : null
       };
-      
+
       res.json(authStatus);
     } catch (error) {
       console.error('[ERROR] Auth debug error:', error);
@@ -419,7 +419,7 @@ export function registerRoutes(app: Express) {
   app.get('/api/calendar/sync', async (req, res) => {
     try {
       const userId = req.user?.id || req.session?.userId || "1";
-      
+
       if (!userId) {
         return res.status(401).json({ 
           error: 'Authentication required',
@@ -430,7 +430,7 @@ export function registerRoutes(app: Express) {
 
       // Use environment tokens for calendar access
       const accessToken = process.env.GOOGLE_ACCESS_TOKEN;
-      
+
       if (!accessToken) {
         return res.status(401).json({ 
           error: 'Authentication required',
@@ -455,10 +455,10 @@ export function registerRoutes(app: Express) {
   app.get('/api/sync/test', async (req, res) => {
     try {
       console.log('🧪 Testing sync capabilities...');
-      
+
       const sessionUser = req.session?.passport?.user;
       const envAccessToken = process.env.GOOGLE_ACCESS_TOKEN;
-      
+
       const syncStatus = {
         hasSessionTokens: !!(sessionUser && sessionUser.accessToken),
         hasEnvironmentTokens: !!envAccessToken,
@@ -466,9 +466,9 @@ export function registerRoutes(app: Express) {
         canSync: !!(sessionUser?.accessToken || envAccessToken),
         timestamp: new Date().toISOString()
       };
-      
+
       console.log('🔍 Sync test results:', syncStatus);
-      
+
       res.json({
         success: true,
         syncCapability: syncStatus,
@@ -476,7 +476,7 @@ export function registerRoutes(app: Express) {
           'Sync should work - try POST /api/sync/calendar' : 
           'Authentication required - visit /api/auth/google'
       });
-      
+
     } catch (error) {
       console.error('[ERROR] Sync test error:', error);
       res.status(500).json({ error: error.message });
@@ -487,13 +487,13 @@ export function registerRoutes(app: Express) {
   app.post('/api/sync/calendar', async (req, res) => {
     try {
       const userId = req.user?.id || req.session?.userId || "1";
-      
+
       console.log('🔄 Starting comprehensive Google Calendar sync...');
-      
+
       // Check if we have valid tokens
       const sessionUser = req.session?.passport?.user;
       const envAccessToken = process.env.GOOGLE_ACCESS_TOKEN;
-      
+
       if (!sessionUser && !envAccessToken) {
         console.log('❌ No authentication tokens available for sync');
         return res.status(401).json({ 
@@ -503,14 +503,14 @@ export function registerRoutes(app: Express) {
           authUrl: '/api/auth/google'
         });
       }
-      
+
       // Use the force sync function
       const { forceGoogleCalendarSync } = await import('./force-google-sync');
-      
+
       // Create a mock response object for the force sync function
       let syncResult = null;
       let syncError = null;
-      
+
       const mockRes = {
         json: (data) => { syncResult = data; },
         status: (code) => ({ 
@@ -520,15 +520,15 @@ export function registerRoutes(app: Express) {
           }
         })
       };
-      
+
       // Call the force sync function
       await forceGoogleCalendarSync(req, mockRes);
-      
+
       if (syncError) {
         console.error('❌ Sync failed:', syncError);
         return res.status(syncError.statusCode || 500).json(syncError);
       }
-      
+
       if (syncResult && syncResult.success) {
         console.log('✅ Sync completed successfully:', syncResult.summary);
         return res.json({
@@ -541,7 +541,7 @@ export function registerRoutes(app: Express) {
           details: syncResult.summary
         });
       }
-      
+
       // Fallback response
       res.json({ 
         success: true, 
@@ -565,7 +565,7 @@ export function registerRoutes(app: Express) {
   app.post('/api/auth/deployment-fix', async (req, res) => {
     try {
       const userId = req.user?.id || req.session?.userId || "1";
-      
+
       // Return success for deployment fix
       res.json({ 
         success: true, 
@@ -586,7 +586,7 @@ export function registerRoutes(app: Express) {
     try {
       const { generateOAuthUrl } = await import('./oauth-comprehensive-fix');
       const authUrl = generateOAuthUrl();
-      
+
       res.redirect(authUrl);
     } catch (error) {
       console.error('[ERROR] Google OAuth error:', error);
@@ -598,24 +598,24 @@ export function registerRoutes(app: Express) {
   app.get('/api/auth/google/callback', async (req, res) => {
     try {
       const { code } = req.query;
-      
+
       if (!code) {
         console.error('[ERROR] Authorization code missing');
         return res.redirect('/?auth=error&reason=no_code');
       }
-      
+
       const { handleComprehensiveOAuthCallback } = await import('./oauth-comprehensive-fix');
       const user = await handleComprehensiveOAuthCallback(code as string);
-      
+
       // Store user in session
       req.user = user;
       req.session.passport = {
         user: user
       };
       req.session.userId = user.id;
-      
+
       console.log('✅ OAuth callback successful, user stored in session:', user.email);
-      
+
       // Redirect to success page
       res.redirect('/?auth=success');
     } catch (error) {
@@ -628,7 +628,7 @@ export function registerRoutes(app: Express) {
   app.post('/api/auth/refresh', async (req, res) => {
     try {
       const userId = req.user?.id || req.session?.userId || "1";
-      
+
       if (req.user) {
         await comprehensiveTokenRefresh(req.user);
         res.json({ success: true, message: 'Tokens refreshed successfully' });
@@ -641,7 +641,7 @@ export function registerRoutes(app: Express) {
       }
     } catch (error) {
       console.error('[ERROR] Token refresh error:', error);
-      
+
       if (error.message.includes('AUTHENTICATION_REQUIRED') || 
           error.message.includes('REAUTHENTICATION_REQUIRED')) {
         return res.status(401).json({ 
@@ -659,14 +659,14 @@ export function registerRoutes(app: Express) {
   app.post('/api/auth/refresh-config', async (req, res) => {
     try {
       console.log('🔄 Refreshing OAuth configuration...');
-      
+
       // Log current environment variables (masked)
       const clientId = process.env.GOOGLE_CLIENT_ID?.trim();
       const clientSecret = process.env.GOOGLE_CLIENT_SECRET?.trim();
-      
+
       console.log('📋 Client ID:', clientId ? `${clientId.substring(0, 20)}...` : 'NOT SET');
       console.log('📋 Client Secret:', clientSecret ? 'SET' : 'NOT SET');
-      
+
       if (!clientId || !clientSecret) {
         return res.status(400).json({ 
           success: false,
@@ -674,13 +674,13 @@ export function registerRoutes(app: Express) {
           details: 'GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET must be set in environment variables'
         });
       }
-      
+
       // Test creating OAuth client
       const { createComprehensiveOAuth2Client } = await import('./oauth-comprehensive-fix');
       const testClient = createComprehensiveOAuth2Client();
-      
+
       console.log('✅ OAuth configuration refreshed successfully');
-      
+
       res.json({
         success: true,
         message: 'OAuth configuration refreshed successfully',
@@ -702,9 +702,9 @@ export function registerRoutes(app: Express) {
   app.post('/api/export/pymypdf-bidirectional', async (req, res) => {
     try {
       console.log('🐍 PyMyPDF bidirectional export request received');
-      
+
       const { events, weekStart, weekEnd } = req.body;
-      
+
       if (!events || !weekStart || !weekEnd) {
         return res.status(400).json({ error: 'Missing required parameters: events, weekStart, weekEnd' });
       }
@@ -713,32 +713,32 @@ export function registerRoutes(app: Express) {
       const { exec } = await import('child_process');
       const { promisify } = await import('util');
       const execAsync = promisify(exec);
-      
+
       // Write events to a temporary file to avoid shell escaping issues
       const fs = await import('fs');
       const tempEventsFile = `/tmp/events_${Date.now()}.json`;
       const eventsData = typeof events === 'string' ? events : JSON.stringify(events);
       fs.default.writeFileSync(tempEventsFile, eventsData);
-      
+
       const pythonCommand = `python3 pymypdf_bidirectional_export.py "${tempEventsFile}" "${weekStart}" "${weekEnd}"`;
-      
+
       console.log(`🔧 Executing existing PyMyPDF template: ${pythonCommand.substring(0, 100)}...`);
-      
+
       // Execute Python script
       const { stdout, stderr } = await execAsync(pythonCommand);
-      
+
       if (stderr) {
         console.error('⚠️ Python script stderr:', stderr);
       }
-      
+
       // Extract actual filename from Python script output
       const outputLines = stdout.trim().split('\n');
       let actualFilename = '';
-      
+
       // Find the line that contains a filename (and ONLY a filename)
       for (const line of outputLines) {
         const trimmedLine = line.trim();
-        
+
         // Check if this line looks like a filename: ends with .txt/.pdf, no spaces, no emoji
         if ((trimmedLine.endsWith('.txt') || trimmedLine.endsWith('.pdf')) && 
             !trimmedLine.includes(' ') && 
@@ -753,7 +753,7 @@ export function registerRoutes(app: Express) {
           break;
         }
       }
-      
+
       // Fallback: if no clean filename found, extract from the last line
       if (!actualFilename) {
         const lastLine = outputLines[outputLines.length - 1].trim();
@@ -765,15 +765,15 @@ export function registerRoutes(app: Express) {
           actualFilename = lastLine; // Last resort
         }
       }
-      
+
       console.log(`✅ PyMyPDF export completed: ${actualFilename}`);
-      
+
       res.json({ 
         success: true, 
         filename: actualFilename,
         message: 'Bidirectional PDF created successfully with PyMyPDF'
       });
-      
+
     } catch (error) {
       console.error('❌ PyMyPDF export failed:', error);
       res.status(500).json({ 
@@ -789,13 +789,13 @@ export function registerRoutes(app: Express) {
       const filename = req.params.filename;
       const fs = await import('fs');
       const path = await import('path');
-      
+
       const filePath = path.default.join(process.cwd(), filename);
-      
+
       if (!fs.default.existsSync(filePath)) {
         return res.status(404).json({ error: 'File not found' });
       }
-      
+
       // Set proper content type for downloads
       const ext = path.default.extname(filename).toLowerCase();
       if (ext === '.pdf') {
@@ -803,7 +803,7 @@ export function registerRoutes(app: Express) {
       } else if (ext === '.txt') {
         res.setHeader('Content-Type', 'text/plain');
       }
-      
+
       res.download(filePath, filename, (err) => {
         if (err) {
           console.error('Download error:', err);
@@ -820,12 +820,21 @@ export function registerRoutes(app: Express) {
           }, 5000); // Delete after 5 seconds
         }
       });
-      
+
     } catch (error) {
       console.error('Download endpoint error:', error);
       res.status(500).json({ error: 'Download failed' });
     }
   });
+
+function getRedirectURI() {
+  // Get current domain for redirect URI
+  const baseURL = process.env.REPLIT_DOMAINS
+    ? `https://${process.env.REPLIT_DOMAINS.split(",")[0]}`
+    : "https://474155cb-26cc-45e2-9759-28eaffdac638-00-20mxsrmp7mzl4.worf.replit.dev";
+
+  return `${baseURL}/api/auth/google/callback`;
+}
 
   const httpServer = createServer(app);
   return httpServer;
