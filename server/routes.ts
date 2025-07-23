@@ -731,12 +731,46 @@ export function registerRoutes(app: Express) {
         console.error('⚠️ Python script stderr:', stderr);
       }
       
-      const filename = stdout.trim();
-      console.log(`✅ PyMyPDF export completed: ${filename}`);
+      // Extract actual filename from Python script output
+      const outputLines = stdout.trim().split('\n');
+      let actualFilename = '';
+      
+      // Find the line that contains a filename (and ONLY a filename)
+      for (const line of outputLines) {
+        const trimmedLine = line.trim();
+        
+        // Check if this line looks like a filename: ends with .txt/.pdf, no spaces, no emoji
+        if ((trimmedLine.endsWith('.txt') || trimmedLine.endsWith('.pdf')) && 
+            !trimmedLine.includes(' ') && 
+            !trimmedLine.includes('✅') && 
+            !trimmedLine.includes('🔗') && 
+            !trimmedLine.includes('📊') &&
+            !trimmedLine.includes('Creating') &&
+            !trimmedLine.includes('Processing') &&
+            !trimmedLine.includes('Successfully') &&
+            !trimmedLine.includes('Generated')) {
+          actualFilename = trimmedLine;
+          break;
+        }
+      }
+      
+      // Fallback: if no clean filename found, extract from the last line
+      if (!actualFilename) {
+        const lastLine = outputLines[outputLines.length - 1].trim();
+        // Extract anything that looks like a filename from the last line
+        const filenameMatch = lastLine.match(/([a-zA-Z0-9_\-]+\.(?:txt|pdf))/);
+        if (filenameMatch) {
+          actualFilename = filenameMatch[1];
+        } else {
+          actualFilename = lastLine; // Last resort
+        }
+      }
+      
+      console.log(`✅ PyMyPDF export completed: ${actualFilename}`);
       
       res.json({ 
         success: true, 
-        filename: filename,
+        filename: actualFilename,
         message: 'Bidirectional PDF created successfully with PyMyPDF'
       });
       

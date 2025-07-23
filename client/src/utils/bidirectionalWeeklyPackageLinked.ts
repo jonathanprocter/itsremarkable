@@ -32,8 +32,7 @@ export const exportLinkedWeeklyPackage = async (
 
     console.log(`📊 Week Events: ${weekEvents.length} (filtered from ${events.length})`);
 
-    // Prepare data for Python PyMyPDF script
-    const eventsJson = JSON.stringify(weekEvents);
+    // Prepare data for Python PyMyPDF script - send events as array, not stringified
     const weekStartISO = weekStartDate.toISOString();
     const weekEndISO = weekEndDate.toISOString();
 
@@ -44,7 +43,7 @@ export const exportLinkedWeeklyPackage = async (
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        events: eventsJson,
+        events: weekEvents,  // Send as array, not pre-stringified
         weekStart: weekStartISO,
         weekEnd: weekEndISO
       })
@@ -57,8 +56,8 @@ export const exportLinkedWeeklyPackage = async (
     const result = await response.json();
     const filename = result.filename;
 
-    // Download the generated file (PDF or TXT)
-    const downloadUrl = `/api/download/${encodeURIComponent(filename)}`;
+    // Download the generated file (PDF or TXT) - use simple filename, not encoded
+    const downloadUrl = `/api/download/${filename}`;
     console.log(`📥 Downloading file: ${downloadUrl}`);
     
     const downloadResponse = await fetch(downloadUrl);
