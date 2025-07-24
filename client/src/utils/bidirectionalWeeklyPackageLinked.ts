@@ -1,11 +1,13 @@
 import { CalendarEvent } from "../types/calendar";
+import { exportBidirectionalWeeklyPackage } from './bidirectionalLinkedPDFExport';
 
 /**
- * PYMYPDF BIDIRECTIONALLY LINKED WEEKLY PACKAGE EXPORT
- * Creates a single PDF with clickable navigation using PyMyPDF backend:
- * - Page 1: Weekly overview with links to each daily page
+ * ENHANCED BIDIRECTIONALLY LINKED WEEKLY PACKAGE EXPORT
+ * Creates a single PDF with proper clickable navigation using the advanced system:
+ * - Page 1: Weekly overview with clickable links to each daily page
  * - Pages 2-8: Daily views with navigation back to weekly and between days
  * - All navigation is clickable and functional within the PDF
+ * - Uses the enhanced bidirectional system with proper link implementation
  */
 
 export const exportLinkedWeeklyPackage = async (
@@ -14,13 +16,11 @@ export const exportLinkedWeeklyPackage = async (
   events: CalendarEvent[],
 ): Promise<string> => {
   try {
-    console.log("🔗 PYMYPDF BIDIRECTIONAL WEEKLY PACKAGE EXPORT STARTING");
-    console.log(
-      `📅 Week: ${weekStartDate.toDateString()} - ${weekEndDate.toDateString()}`,
-    );
-    console.log(`📊 Total Events: ${events.length}`);
+    console.log("🔗 ENHANCED BIDIRECTIONAL WEEKLY PACKAGE EXPORT STARTING...");
+    console.log(`📅 Week range: ${weekStartDate.toDateString()} to ${weekEndDate.toDateString()}`);
+    console.log(`📊 Events count: ${events.length}`);
 
-    // Filter events to only include those in the current week to reduce payload size
+    // Filter events to only include those in the current week
     const weekStart = new Date(weekStartDate);
     weekStart.setHours(0, 0, 0, 0);
     const weekEnd = new Date(weekEndDate);
@@ -32,66 +32,19 @@ export const exportLinkedWeeklyPackage = async (
       return eventDate >= weekStart && eventDate <= weekEnd;
     });
 
-    console.log(
-      `📊 Week Events: ${weekEvents.length} (filtered from ${events.length})`,
-    );
+    console.log(`📊 Week Events: ${weekEvents.length} (filtered from ${events.length})`);
 
-    // Prepare data for Python PyMyPDF script - send events as array, not stringified
-    const weekStartISO = weekStartDate.toISOString();
-    const weekEndISO = weekEndDate.toISOString();
+    // Use the enhanced bidirectional linked PDF export system
+    const filename = await exportBidirectionalWeeklyPackage(weekEvents, weekStartDate);
 
-    // Call Python script via backend endpoint
-    const response = await fetch("/api/export/pymypdf-bidirectional", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        events: weekEvents, // Send as array, not pre-stringified
-        weekStart: weekStartISO,
-        weekEnd: weekEndISO,
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error(`PyMyPDF export failed: ${response.statusText}`);
-    }
-
-    const result = await response.json();
-    const filename = result.filename;
-
-    // Download the generated file (PDF or TXT) - use simple filename, not encoded
-    const downloadUrl = `/api/download/${filename}`;
-    console.log(`📥 Downloading file: ${downloadUrl}`);
-
-    const downloadResponse = await fetch(downloadUrl);
-    if (downloadResponse.ok) {
-      const blob = await downloadResponse.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      window.URL.revokeObjectURL(url);
-      console.log(`✅ Successfully downloaded: ${filename}`);
-    } else {
-      console.error(`❌ Download failed: ${downloadResponse.statusText}`);
-      throw new Error(`Download failed: ${downloadResponse.statusText}`);
-    }
-
-    console.log("✅ PYMYPDF BIDIRECTIONAL WEEKLY PACKAGE EXPORT COMPLETE");
-    console.log(`📄 Single PDF file: ${filename}`);
+    console.log("✅ ENHANCED BIDIRECTIONAL WEEKLY PACKAGE EXPORT COMPLETE");
+    console.log(`📄 Single PDF file with navigation: ${filename}`);
     console.log("🔗 Includes clickable navigation between all 8 pages");
-    console.log("📱 Weekly overview + 7 daily pages with full navigation");
+    console.log("📱 Weekly overview + 7 daily pages with full bidirectional links");
 
     return filename;
   } catch (error) {
-    console.error(
-      "❌ PYMYPDF BIDIRECTIONAL WEEKLY PACKAGE EXPORT ERROR:",
-      error,
-    );
+    console.error("❌ ENHANCED BIDIRECTIONAL WEEKLY PACKAGE EXPORT ERROR:", error);
     throw error;
   }
 };
