@@ -4,6 +4,8 @@ import { apiRequest } from '@/lib/queryClient';
 import { CalendarEvent, CalendarDay, ViewMode, CalendarState } from '@/types/calendar';
 import { WeeklyCalendarGrid } from '@/components/calendar/WeeklyCalendarGrid';
 import { DailyView } from '@/components/calendar/DailyView';
+import { MonthlyView } from '@/components/calendar/MonthlyView';
+import { YearlyView } from '@/components/calendar/YearlyView';
 import { CalendarLegend } from '@/components/calendar/CalendarLegend';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -1251,6 +1253,12 @@ export default function Planner() {
     setSelectedDate(newDate);
   };
 
+  const navigateYear = (direction: 'prev' | 'next') => {
+    const newDate = new Date(selectedDate);
+    newDate.setFullYear(newDate.getFullYear() + (direction === 'next' ? 1 : -1));
+    setSelectedDate(newDate);
+  };
+
   // Debug function for column width issues
   const debugColumnWidths = () => {
     console.log('=== COLUMN WIDTH DEBUG ===');
@@ -1450,7 +1458,9 @@ export default function Planner() {
           <div className="flex items-center gap-4">
             <h1 className="text-3xl font-bold">reMarkable Pro Digital Planner</h1>
             <Badge variant="outline" className="text-sm">
-              {viewMode === 'weekly' ? 'Weekly View' : 'Daily View'}
+              {viewMode === 'weekly' ? 'Weekly View' : 
+               viewMode === 'daily' ? 'Daily View' : 
+               viewMode === 'monthly' ? 'Monthly View' : 'Yearly View'}
             </Badge>
           </div>
 
@@ -1486,6 +1496,22 @@ export default function Planner() {
               <FileText className="h-4 w-4 mr-2" />
               Daily
             </Button>
+            <Button
+              variant={viewMode === 'monthly' ? 'default' : 'outline'}
+              onClick={() => setViewMode('monthly')}
+              size="sm"
+            >
+              <Calendar className="h-4 w-4 mr-2" />
+              Monthly
+            </Button>
+            <Button
+              variant={viewMode === 'yearly' ? 'default' : 'outline'}
+              onClick={() => setViewMode('yearly')}
+              size="sm"
+            >
+              <Calendar className="h-4 w-4 mr-2" />
+              Yearly
+            </Button>
           </div>
         </div>
 
@@ -1494,14 +1520,24 @@ export default function Planner() {
           <div className="flex items-center gap-2">
             <Button
               variant="outline"
-              onClick={() => viewMode === 'weekly' ? navigateWeek('prev') : navigateDay('prev')}
+              onClick={() => {
+                if (viewMode === 'weekly') navigateWeek('prev');
+                else if (viewMode === 'daily') navigateDay('prev');
+                else if (viewMode === 'monthly') navigateMonth('prev');
+                else if (viewMode === 'yearly') navigateYear('prev');
+              }}
               size="sm"
             >
               ← Previous
             </Button>
             <Button
               variant="outline"
-              onClick={() => viewMode === 'weekly' ? navigateWeek('next') : navigateDay('next')}
+              onClick={() => {
+                if (viewMode === 'weekly') navigateWeek('next');
+                else if (viewMode === 'daily') navigateDay('next');
+                else if (viewMode === 'monthly') navigateMonth('next');
+                else if (viewMode === 'yearly') navigateYear('next');
+              }}
               size="sm"
             >
               Next →
@@ -1558,7 +1594,11 @@ export default function Planner() {
           <div className="text-lg font-semibold">
             {viewMode === 'weekly' 
               ? `Week of ${currentWeek[0]?.date.toLocaleDateString()} - ${currentWeek[6]?.date.toLocaleDateString()}`
-              : selectedDate.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
+              : viewMode === 'daily'
+              ? selectedDate.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
+              : viewMode === 'monthly'
+              ? selectedDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long' })
+              : selectedDate.getFullYear()
             }
           </div>
         </div>
@@ -1591,7 +1631,7 @@ export default function Planner() {
                         onEventClick={handleEventClick}
                         onEventMove={handleEventMove}
                       />
-                    ) : (
+                    ) : viewMode === 'daily' ? (
                       <DailyView
                         selectedDate={selectedDate}
                         events={(() => {
@@ -1636,6 +1676,31 @@ export default function Planner() {
                         }}
                         onDeleteEvent={(eventId) => {
                           deleteEventMutation.mutate(eventId);
+                        }}
+                      />
+                    ) : viewMode === 'monthly' ? (
+                      <MonthlyView
+                        currentDate={selectedDate}
+                        events={filteredEvents}
+                        onDateSelect={(date) => {
+                          setSelectedDate(date);
+                          setViewMode('daily');
+                        }}
+                        onMonthChange={(date) => setSelectedDate(date)}
+                        onEventClick={handleEventClick}
+                      />
+                    ) : (
+                      <YearlyView
+                        currentDate={selectedDate}
+                        events={filteredEvents}
+                        onDateSelect={(date) => {
+                          setSelectedDate(date);
+                          setViewMode('daily');
+                        }}
+                        onYearChange={(date) => setSelectedDate(date)}
+                        onMonthSelect={(date) => {
+                          setSelectedDate(date);
+                          setViewMode('monthly');
                         }}
                       />
                     )}

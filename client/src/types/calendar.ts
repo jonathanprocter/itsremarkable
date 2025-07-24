@@ -44,7 +44,7 @@ export interface CalendarWeek {
   days: CalendarDay[];
 }
 
-export type ViewMode = 'weekly' | 'daily';
+export type ViewMode = 'weekly' | 'daily' | 'monthly' | 'yearly';
 
 export interface CalendarState {
   currentDate: Date;
