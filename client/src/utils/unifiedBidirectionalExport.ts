@@ -6,10 +6,16 @@ import { exportBrowserReplicaPDF } from './browserReplicaPDF';
 
 /**
  * UNIFIED BIDIRECTIONAL WEEKLY PACKAGE EXPORT
- * Uses existing perfected templates by calling them directly:
- * - Page 1: exportCurrentWeeklyView() for landscape weekly view
- * - Pages 2-8: exportBrowserReplicaPDF() for each day's portrait view
- * - Combines outputs into single bidirectional PDF with navigation
+ * Creates a single PDF with bidirectional navigation using existing templates.
+ * 
+ * NOTE: The current implementation calls existing templates sequentially,
+ * creating separate PDFs. This is NOT truly bidirectionally linked.
+ * 
+ * For true bidirectional linking, this would need to:
+ * 1. Create a single jsPDF document
+ * 2. Capture content from existing templates using html2canvas
+ * 3. Add all pages to the same PDF
+ * 4. Add clickable navigation links using pdf.link()
  */
 
 class UnifiedBidirectionalExporter {
@@ -28,11 +34,13 @@ class UnifiedBidirectionalExporter {
   }
 
   /**
-   * Main export function - Uses existing perfected templates
+   * Current implementation - Uses existing templates but creates separate PDFs
+   * NOT truly bidirectionally linked - just sequential exports
    */
   async export(): Promise<string> {
     try {
       console.log('🔗 UNIFIED BIDIRECTIONAL EXPORT STARTING...');
+      console.log('⚠️ WARNING: This creates separate PDFs, not a single bidirectional PDF');
       console.log('📊 Using existing perfected templates: Current Weekly View + EXACT HTML Browser Export');
       
       // Step 1: Export Page 1 using existing Current Weekly View template
@@ -61,10 +69,9 @@ class UnifiedBidirectionalExporter {
       const filename = `unified-bidirectional-weekly-package-${this.weekStart.toISOString().split('T')[0]}.pdf`;
 
       console.log('✅ UNIFIED BIDIRECTIONAL EXPORT COMPLETE');
-      console.log(`📄 Generated: ${filename}`);
-      console.log('🔗 8 pages with bidirectional navigation:');
-      console.log('  📄 Page 1: Current Weekly View (landscape)');
-      console.log('  📄 Pages 2-8: EXACT HTML Browser Export for each day (portrait)');
+      console.log(`📄 Generated: ${filename} (Note: Creates 8 separate PDFs)`);
+      console.log('❌ NOT truly bidirectional - creates separate PDFs instead of single linked PDF');
+      console.log('🔗 For true bidirectional linking, use existing bidirectionalLinkedPDFExport.ts');
       console.log('📊 Uses existing perfected templates - no custom implementation');
 
       return filename;
