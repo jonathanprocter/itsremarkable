@@ -505,8 +505,43 @@ export class BidirectionalPDFManager {
       // Generate filename
       const filename = `bidirectional-weekly-package-${weekStart.toISOString().split('T')[0]}.pdf`;
       
-      // Save PDF
-      this.pdf.save(filename);
+      // Save PDF with enhanced download mechanism
+      try {
+        // Try standard save first
+        this.pdf.save(filename);
+        
+        // Add a small delay and try alternative download method if needed
+        setTimeout(() => {
+          try {
+            const pdfOutput = this.pdf.output('blob');
+            const url = URL.createObjectURL(pdfOutput);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            console.log(`📁 Alternative download method used for: ${filename}`);
+          } catch (altError) {
+            console.log('📁 Standard jsPDF save method used');
+          }
+        }, 500);
+        
+      } catch (saveError) {
+        console.error('❌ PDF save error:', saveError);
+        // Fallback to blob download
+        const pdfOutput = this.pdf.output('blob');
+        const url = URL.createObjectURL(pdfOutput);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        console.log(`📁 Fallback blob download used for: ${filename}`);
+      }
       
       console.log(`✅ Bidirectional Weekly Package exported: ${filename}`);
       console.log('🔗 PDF includes clickable navigation between all pages');
