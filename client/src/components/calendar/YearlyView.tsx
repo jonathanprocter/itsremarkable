@@ -147,8 +147,8 @@ export const YearlyView = ({
 
             {/* Day Headers */}
             <div className="grid grid-cols-7 gap-1 mb-2">
-              {dayHeaders.map((header) => (
-                <div key={header} className="text-xs text-center font-medium text-gray-500 p-1">
+              {dayHeaders.map((header, index) => (
+                <div key={`month-${monthData.month}-header-${index}`} className="text-xs text-center font-medium text-gray-500 p-1">
                   {header}
                 </div>
               ))}
@@ -158,7 +158,7 @@ export const YearlyView = ({
             <div className="grid grid-cols-7 gap-1">
               {generateMonthGrid(monthData).map((day, index) => {
                 if (day === null) {
-                  return <div key={index} className="p-1 h-8"></div>;
+                  return <div key={`month-${monthData.month}-empty-${index}`} className="p-1 h-8"></div>;
                 }
 
                 const hasEvents = monthData.events[day.toString()]?.length > 0;
@@ -168,7 +168,7 @@ export const YearlyView = ({
 
                 return (
                   <div
-                    key={index}
+                    key={`month-${monthData.month}-day-${day}`}
                     className={cn(
                       "relative p-1 h-8 text-xs text-center cursor-pointer border border-gray-200 transition-colors hover:bg-gray-100",
                       todayClass && "bg-blue-100 border-blue-400 text-blue-800 font-bold",
@@ -187,16 +187,16 @@ export const YearlyView = ({
                         {eventCount > 0 && eventCount <= 3 && (
                           [...Array(Math.min(eventCount, 3))].map((_, i) => (
                             <div
-                              key={i}
+                              key={`month-${monthData.month}-day-${day}-dot-${i}`}
                               className="w-1 h-1 bg-blue-500 rounded-full"
                             />
                           ))
                         )}
                         {eventCount > 3 && (
                           <>
-                            <div className="w-1 h-1 bg-blue-500 rounded-full" />
-                            <div className="w-1 h-1 bg-blue-500 rounded-full" />
-                            <div className="w-1 h-1 bg-blue-500 rounded-full" />
+                            <div key={`month-${monthData.month}-day-${day}-dot-1`} className="w-1 h-1 bg-blue-500 rounded-full" />
+                            <div key={`month-${monthData.month}-day-${day}-dot-2`} className="w-1 h-1 bg-blue-500 rounded-full" />
+                            <div key={`month-${monthData.month}-day-${day}-dot-3`} className="w-1 h-1 bg-blue-500 rounded-full" />
                           </>
                         )}
                       </div>
