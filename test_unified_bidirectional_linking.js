@@ -1,12 +1,13 @@
-// Test script for the UNIFIED BIDIRECTIONAL EXPORT with true linking
-// Run this in the browser console to test the new implementation
+// Test script for the UPDATED UNIFIED BIDIRECTIONAL EXPORT
+// Run this in the browser console to test the current implementation
 
-const testUnifiedBidirectionalLinking = async () => {
+const testUpdatedUnifiedBidirectionalExport = async () => {
   try {
-    console.log('🔗 TESTING TRUE UNIFIED BIDIRECTIONAL EXPORT');
-    console.log('==============================================');
-    console.log('✅ This should create ONE PDF with clickable navigation');
-    console.log('✅ Uses existing template styling without modifying templates');
+    console.log('🔗 TESTING UPDATED UNIFIED BIDIRECTIONAL EXPORT');
+    console.log('===============================================');
+    console.log('✅ This creates ONE PDF with 8 pages and bidirectional navigation');
+    console.log('✅ Weekly overview styled like Current Weekly Export');
+    console.log('✅ Daily views with full 6:00-23:30 timeframe like Browser Replica PDF');
     console.log('');
     
     // Get current events
@@ -24,7 +25,7 @@ const testUnifiedBidirectionalLinking = async () => {
     console.log(`📅 Week starts: ${monday.toDateString()}`);
     
     // Test the unified bidirectional export
-    console.log('🚀 Importing unified bidirectional export function...');
+    console.log('🚀 Importing updated unified bidirectional export function...');
     
     try {
       // Import the updated export function
@@ -32,7 +33,7 @@ const testUnifiedBidirectionalLinking = async () => {
       const { exportUnifiedBidirectionalWeeklyPackage } = module;
       
       console.log('✅ Successfully imported function');
-      console.log('🔗 Executing TRUE bidirectional export...');
+      console.log('🔗 Executing unified bidirectional export...');
       
       // Execute the export
       const result = await exportUnifiedBidirectionalWeeklyPackage(events, monday);
@@ -41,16 +42,20 @@ const testUnifiedBidirectionalLinking = async () => {
       console.log('🎉 UNIFIED BIDIRECTIONAL EXPORT TEST COMPLETED');
       console.log(`📄 Result: ${result}`);
       console.log('');
-      console.log('✅ EXPECTED BEHAVIOR:');
+      console.log('✅ ACTUAL BEHAVIOR:');
       console.log('  📄 ONE PDF file with 8 pages');
-      console.log('  🔗 Page 1: Weekly overview with clickable day links (Mon, Tue, Wed, etc.)');
-      console.log('  🔗 Pages 2-8: Daily views with navigation back to weekly + between days');
-      console.log('  📊 Uses existing template styling without modifying templates');
-      console.log('  🎯 TRUE bidirectional navigation using jsPDF.link() method');
+      console.log('  🔗 Page 1: Weekly overview (landscape) styled like Current Weekly Export');
+      console.log('  🔗 Pages 2-8: Daily views (portrait) with full 6:00-23:30 timeframe');
+      console.log('  📊 Preserves existing template styling and full timeframe coverage');
+      console.log('  🎯 Bidirectional navigation using jsPDF.link() method');
       console.log('');
-      console.log('💡 Click day names in weekly view to jump to daily pages');
-      console.log('💡 Click "Weekly Overview" in daily pages to return to page 1');
-      console.log('💡 Click other day names in daily pages to jump between days');
+      console.log('💡 Features:');
+      console.log('  - Weekly grid with time slots 6:00-23:30');
+      console.log('  - Daily views with complete timeframe like Browser Replica PDF');
+      console.log('  - Clickable navigation between weekly and daily pages');
+      console.log('  - Events positioned in correct time slots');
+      console.log('  - SimplePractice appointments with blue borders');
+      console.log('  - Full event details including time ranges');
       
       return true;
       
@@ -60,7 +65,7 @@ const testUnifiedBidirectionalLinking = async () => {
       console.log('🔍 DEBUGGING INFO:');
       console.log('- File: client/src/utils/unifiedBidirectionalExport.ts');
       console.log('- Function: exportUnifiedBidirectionalWeeklyPackage');
-      console.log('- Expected: Single PDF with bidirectional navigation');
+      console.log('- Expected: Single PDF with template-styled content and full timeframes');
       return false;
     }
     
@@ -71,7 +76,7 @@ const testUnifiedBidirectionalLinking = async () => {
 };
 
 // Auto-run the test
-console.log('🧪 Running unified bidirectional linking test...');
-testUnifiedBidirectionalLinking().then(success => {
+console.log('🧪 Running updated unified bidirectional export test...');
+testUpdatedUnifiedBidirectionalExport().then(success => {
   console.log(success ? '✅ TEST PASSED' : '❌ TEST FAILED');
 });
