@@ -169,24 +169,8 @@ export const exportUnifiedBidirectionalWeeklyPackage = async (
       // Add new page in portrait mode
       masterPDF.addPage([612, 792], 'portrait');
       
-      // Apply EXACT browser replica template
+      // Apply EXACT browser replica template WITHOUT any modifications
       await applyBrowserReplicaTemplate(masterPDF, currentDate, events);
-      
-      // Add navigation links
-      masterPDF.rect(50, 100, 120, 30);
-      masterPDF.text('Weekly Overview', 55, 120);
-      masterPDF.link(50, 100, 120, 30, { pageNumber: 1 });
-      
-      // Day navigation
-      for (let navDayIndex = 0; navDayIndex < 7; navDayIndex++) {
-        if (navDayIndex !== dayIndex) {
-          const navX = 200 + (navDayIndex * 50);
-          masterPDF.rect(navX, 100, 45, 20);
-          masterPDF.setFontSize(10);
-          masterPDF.text(dayNames[navDayIndex], navX + 5, 115);
-          masterPDF.link(navX, 100, 45, 20, { pageNumber: navDayIndex + 2 });
-        }
-      }
       
       console.log(`✅ Added ${dayName} page using EXACT template`);
       currentDate.setDate(currentDate.getDate() + 1);
@@ -233,7 +217,7 @@ export const exportUnifiedBidirectionalWeeklyPackage = async (
       
       // Bottom navigation buttons
       // Based on the HTML layout with bottom-nav div
-      const bottomY = 1150; // Near bottom of page
+      const bottomY = 740; // Near bottom of US Letter portrait page (792pt height)
       
       // Previous day button (left button in bottom nav)
       if (dayIndex > 0) {
