@@ -793,32 +793,31 @@ export default function Planner() {
           break;
 
         case 'bidirectional-weekly-package':
-          console.log('🔗 UNIFIED BIDIRECTIONAL WEEKLY PACKAGE EXPORT STARTING...');
+          console.log('🎯 UNIFIED BIDIRECTIONAL EXPORT STARTING...');
           try {
             const { exportUnifiedBidirectionalWeeklyPackage } = await import('../utils/unifiedBidirectionalExport');
             
             const weekStart = currentWeek[0]?.date || new Date();
-            const weekEnd = currentWeek[6]?.date || new Date();
-            console.log(`📅 Week range: ${weekStart.toDateString()} to ${weekEnd.toDateString()}`);
+            console.log(`📅 Week starting: ${weekStart.toDateString()}`);
             console.log(`📊 Events count: ${allEvents.length}`);
-            console.log('📊 Using existing templates: Current Weekly View + EXACT HTML Browser Export');
+            console.log('🎯 Creating single 8-page PDF with EXACT template rendering logic');
             
             const filename = await exportUnifiedBidirectionalWeeklyPackage(allEvents, weekStart);
             
-            console.log('✅ Unified bidirectional weekly package export completed');
+            console.log('✅ Unified bidirectional PDF created successfully');
             console.log(`📄 Generated: ${filename}`);
-            console.log('🔗 8 pages using existing perfected templates with bidirectional navigation');
+            console.log('🔗 Single 8-page PDF with bidirectional navigation');
             
             toast({
               title: "Export Complete",
-              description: `Unified weekly package saved as ${filename}`,
+              description: `Unified bidirectional PDF saved as ${filename}`,
               variant: "default"
             });
           } catch (error) {
-            console.error('❌ Unified bidirectional weekly package export failed:', error);
+            console.error('❌ Unified bidirectional export failed:', error);
             toast({
               title: "Export Failed",
-              description: "Failed to create unified bidirectional weekly package. Check console for details.",
+              description: "Failed to create unified PDF. Check console for details.",
               variant: "destructive"
             });
             throw error;

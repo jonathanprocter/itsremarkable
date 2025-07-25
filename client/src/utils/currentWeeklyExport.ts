@@ -29,7 +29,7 @@ export interface CurrentWeeklyExportConfig {
 }
 
 // Optimized configuration for complete time range display
-const CURRENT_WEEKLY_CONFIG: CurrentWeeklyExportConfig = {
+export const CURRENT_WEEKLY_CONFIG: CurrentWeeklyExportConfig = {
   pageWidth: 792, // 11" landscape
   pageHeight: 612, // 8.5" landscape
   margins: 16, // Perfect centering
@@ -107,7 +107,7 @@ export const exportCurrentWeeklyView = (
   pdf.save(`weekly-planner-${weekStartStr}-to-${weekEndStr}.pdf`);
 };
 
-const drawCurrentWeeklyHeader = (pdf: jsPDF, weekStart: Date, weekEnd: Date): void => {
+export const drawCurrentWeeklyHeader = (pdf: jsPDF, weekStart: Date, weekEnd: Date): void => {
   const { margins, fonts } = CURRENT_WEEKLY_CONFIG;
   
   // Title
@@ -134,7 +134,7 @@ const drawCurrentWeeklyHeader = (pdf: jsPDF, weekStart: Date, weekEnd: Date): vo
 };
 
 // Draw complete grid with all time slots
-const drawCurrentWeeklyGrid = (pdf: jsPDF, events: CalendarEvent[], weekStart: Date): void => {
+export const drawCurrentWeeklyGrid = (pdf: jsPDF, events: CalendarEvent[], weekStart: Date): void => {
   const {
     margins,
     timeColumnWidth,
