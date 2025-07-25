@@ -222,32 +222,52 @@ export const exportUnifiedBidirectionalWeeklyPackage = async (
       const dayIndex = pageNum - 2;
       
       // Top "Weekly Overview" button in nav-header
-      // This button is at the top left of the page
-      masterPDF.link(20, 20, 140, 32, {
+      // Match the exact position from scaledDailyTemplate.ts
+      // margin = 25, navY = margin + 40 = 65
+      // buttonX = margin + 20 = 45
+      // buttonWidth = 80 (60 + 20)
+      // buttonHeight = 14
+      masterPDF.link(45, 65, 80, 14, {
         pageNumber: 1 // Back to weekly overview
       });
       
-      // Bottom navigation buttons
-      // Based on the HTML layout with bottom-nav div
-      const bottomY = 740; // Near bottom of US Letter portrait page (792pt height)
+      // Bottom navigation links
+      // From scaledDailyTemplate.ts: footerY = pageHeight - margin - 30 = 792 - 25 - 30 = 737
+      // Navigation text is at footerY + 15 = 752
+      // navSpacing = 100, text is centered
+      const footerTextY = 752;
       
-      // Previous day button (left button in bottom nav)
+      // Calculate positions based on number of navigation items
+      let navTexts = [];
+      if (dayIndex > 0) navTexts.push('prev');
+      navTexts.push('weekly');
+      if (dayIndex < 6) navTexts.push('next');
+      
+      const navSpacing = 100;
+      const navStartX = 306 - ((navTexts.length - 1) * navSpacing / 2); // 306 is pageWidth/2
+      
+      // Previous day button
       if (dayIndex > 0) {
         const prevPage = pageNum - 1;
-        masterPDF.link(20, bottomY, 120, 32, {
+        const prevX = navStartX - 50; // Center around text position
+        masterPDF.link(prevX, footerTextY - 10, 100, 20, {
           pageNumber: prevPage
         });
       }
       
-      // Center "Weekly Overview" in bottom nav
-      masterPDF.link(236, bottomY, 160, 32, {
+      // Center "Weekly Overview"
+      const weeklyIndex = navTexts.indexOf('weekly');
+      const weeklyX = navStartX + (weeklyIndex * navSpacing) - 50;
+      masterPDF.link(weeklyX, footerTextY - 10, 100, 20, {
         pageNumber: 1 // Back to weekly overview
       });
       
-      // Next day button (right button in bottom nav)
+      // Next day button
       if (dayIndex < 6) {
         const nextPage = pageNum + 1;
-        masterPDF.link(472, bottomY, 120, 32, {
+        const nextIndex = navTexts.indexOf('next');
+        const nextX = navStartX + (nextIndex * navSpacing) - 50;
+        masterPDF.link(nextX, footerTextY - 10, 100, 20, {
           pageNumber: nextPage
         });
       }
