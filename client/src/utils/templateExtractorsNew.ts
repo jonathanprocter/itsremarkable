@@ -15,6 +15,8 @@ import { CalendarEvent } from '../types/calendar';
 import { drawCurrentWeeklyHeader, drawCurrentWeeklyGrid } from './currentWeeklyExport';
 // Import the EXACT HTML daily export drawing functions
 import { drawDailyHeader, drawDailyGrid, drawDailyFooter } from './htmlTemplatePDF';
+// Import the scaled daily template for unified export
+import { drawScaledDailyTemplate } from './scaledDailyTemplate';
 
 export const applyCurrentWeeklyTemplate = (
   pdf: jsPDF,
@@ -52,14 +54,17 @@ export const applyHTMLDailyTemplate = (
   pageNumber: number,
   dayOfWeek: number
 ): void => {
-  console.log('📄 Applying EXACT HTML Daily Export template logic...');
+  console.log('📄 Applying scaled daily template for unified export...');
   
-  // Apply the EXACT daily template rendering using imported functions
-  drawDailyHeader(pdf, selectedDate, events, pageNumber, dayOfWeek);
-  drawDailyGrid(pdf, selectedDate, events);
-  drawDailyFooter(pdf, selectedDate, pageNumber, dayOfWeek);
+  // Get current page dimensions
+  const pageWidth = pdf.internal.pageSize.getWidth();
+  const pageHeight = pdf.internal.pageSize.getHeight();
+  console.log(`📐 Current page dimensions: ${pageWidth}x${pageHeight}`);
   
-  console.log('✅ Applied EXACT HTML Daily Export template logic');
+  // Use the scaled template that's designed for standard US Letter (612x792)
+  drawScaledDailyTemplate(pdf, selectedDate, events, pageNumber, dayOfWeek);
+  
+  console.log('✅ Applied scaled daily template');
 };
 
 /**
