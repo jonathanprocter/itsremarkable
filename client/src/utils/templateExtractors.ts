@@ -592,8 +592,17 @@ export const applyBrowserReplicaTemplate = async (
   
   // Filter events for the selected date
   const dayEvents = events.filter(event => {
-    const eventDate = new Date(event.startTime);
-    return eventDate.toDateString() === selectedDate.toDateString();
+    try {
+      const eventDate = event.startTime instanceof Date ? event.startTime : new Date(event.startTime);
+      if (isNaN(eventDate.getTime())) {
+        console.warn('Invalid startTime for event:', event.title);
+        return false;
+      }
+      return eventDate.toDateString() === selectedDate.toDateString();
+    } catch (error) {
+      console.warn('Error filtering event:', event.title, error);
+      return false;
+    }
   });
   
   const dayName = selectedDate.toLocaleDateString('en-US', { weekday: 'long' });
@@ -606,10 +615,19 @@ export const applyBrowserReplicaTemplate = async (
   // Calculate statistics (from browserReplicaPDF)
   const totalAppointments = dayEvents.length;
   const scheduledHours = dayEvents.reduce((sum, event) => {
-    const start = new Date(event.startTime);
-    const end = new Date(event.endTime);
-    const duration = (end.getTime() - start.getTime()) / (1000 * 60 * 60);
-    return sum + duration;
+    try {
+      const start = event.startTime instanceof Date ? event.startTime : new Date(event.startTime);
+      const end = event.endTime instanceof Date ? event.endTime : new Date(event.endTime);
+      if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+        console.warn('Invalid date for event:', event.title);
+        return sum;
+      }
+      const duration = (end.getTime() - start.getTime()) / (1000 * 60 * 60);
+      return sum + duration;
+    } catch (error) {
+      console.warn('Error calculating duration for event:', event.title, error);
+      return sum;
+    }
   }, 0);
   const workdayHours = 17.5; // 6 AM to 11:30 PM
   const availableHours = Math.max(0, workdayHours - scheduledHours);
@@ -696,54 +714,64 @@ export const applyBrowserReplicaTemplate = async (
   
   // Draw appointments
   dayEvents.forEach(event => {
-    const eventStart = new Date(event.startTime);
-    const eventEnd = new Date(event.endTime);
-    const startHour = eventStart.getHours();
-    const startMinute = eventStart.getMinutes();
-    const durationMinutes = (eventEnd.getTime() - eventStart.getTime()) / (1000 * 60);
-    
-    // Calculate position
-    const minutesSince6am = (startHour - 6) * 60 + startMinute;
-    const slotIndex = Math.floor(minutesSince6am / 30);
-    const yPos = gridStartY + slotIndex * slotHeight;
-    const height = Math.max(slotHeight, (durationMinutes / 30) * slotHeight);
-    
-    // Draw appointment box
-    const appointmentX = 20 + timeColumnWidth + 10;
-    const appointmentWidth = appointmentColumnWidth - 20;
-    
-    // Different styles based on source
-    if (event.source === 'simplepractice') {
-      pdf.setFillColor(255, 255, 255);
-      pdf.setDrawColor(99, 102, 241);
-      pdf.setLineWidth(1);
-      pdf.rect(appointmentX, yPos + 2, appointmentWidth, height - 4, 'FD');
+    try {
+      const eventStart = event.startTime instanceof Date ? event.startTime : new Date(event.startTime);
+      const eventEnd = event.endTime instanceof Date ? event.endTime : new Date(event.endTime);
       
-      // Thick left border
-      pdf.setFillColor(99, 102, 241);
-      pdf.rect(appointmentX, yPos + 2, 4, height - 4, 'F');
-    } else if (event.source === 'google') {
-      pdf.setFillColor(255, 255, 255);
-      pdf.setDrawColor(34, 197, 94);
-      pdf.setLineWidth(1);
-      pdf.setLineDash([2, 2]);
-      pdf.rect(appointmentX, yPos + 2, appointmentWidth, height - 4, 'FD');
-      pdf.setLineDash([]);
+      if (isNaN(eventStart.getTime()) || isNaN(eventEnd.getTime())) {
+        console.warn('Invalid date for event:', event.title);
+        return;
+      }
+      
+      const startHour = eventStart.getHours();
+      const startMinute = eventStart.getMinutes();
+      const durationMinutes = (eventEnd.getTime() - eventStart.getTime()) / (1000 * 60);
+      
+      // Calculate position
+      const minutesSince6am = (startHour - 6) * 60 + startMinute;
+      const slotIndex = Math.floor(minutesSince6am / 30);
+      const yPos = gridStartY + slotIndex * slotHeight;
+      const height = Math.max(slotHeight, (durationMinutes / 30) * slotHeight);
+      
+      // Draw appointment box
+      const appointmentX = 20 + timeColumnWidth + 10;
+      const appointmentWidth = appointmentColumnWidth - 20;
+      
+      // Different styles based on source
+      if (event.source === 'simplepractice') {
+        pdf.setFillColor(255, 255, 255);
+        pdf.setDrawColor(99, 102, 241);
+        pdf.setLineWidth(1);
+        pdf.rect(appointmentX, yPos + 2, appointmentWidth, height - 4, 'FD');
+        
+        // Thick left border
+        pdf.setFillColor(99, 102, 241);
+        pdf.rect(appointmentX, yPos + 2, 4, height - 4, 'F');
+      } else if (event.source === 'google') {
+        pdf.setFillColor(255, 255, 255);
+        pdf.setDrawColor(34, 197, 94);
+        pdf.setLineWidth(1);
+        pdf.setLineDash([2, 2]);
+        pdf.rect(appointmentX, yPos + 2, appointmentWidth, height - 4, 'FD');
+        pdf.setLineDash([]);
+      }
+      
+      // Event text
+      pdf.setFont('helvetica', 'bold');
+      pdf.setFontSize(10);
+      pdf.setTextColor(30, 41, 59);
+      const cleanTitle = event.title.replace(/🔒/g, '').replace(' Appointment', '').trim();
+      pdf.text(cleanTitle, appointmentX + 10, yPos + 15);
+      
+      // Time
+      pdf.setFont('helvetica', 'normal');
+      pdf.setFontSize(8);
+      pdf.setTextColor(100, 116, 139);
+      const timeStr = `${eventStart.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })} - ${eventEnd.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}`;
+      pdf.text(timeStr, appointmentX + 10, yPos + 25);
+    } catch (error) {
+      console.error('Error drawing appointment:', event.title, error);
     }
-    
-    // Event text
-    pdf.setFont('helvetica', 'bold');
-    pdf.setFontSize(10);
-    pdf.setTextColor(30, 41, 59);
-    const cleanTitle = event.title.replace(/🔒/g, '').replace(' Appointment', '').trim();
-    pdf.text(cleanTitle, appointmentX + 10, yPos + 15);
-    
-    // Time
-    pdf.setFont('helvetica', 'normal');
-    pdf.setFontSize(8);
-    pdf.setTextColor(100, 116, 139);
-    const timeStr = `${eventStart.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })} - ${eventEnd.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}`;
-    pdf.text(timeStr, appointmentX + 10, yPos + 25);
   });
   
   console.log('✅ Applied EXACT Browser Replica PDF template logic');
