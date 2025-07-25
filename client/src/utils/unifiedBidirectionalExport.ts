@@ -63,7 +63,7 @@ class UnifiedBidirectionalExporter {
         const dayName = days[i];
         const targetPage = i + 2; // Daily pages start at page 2
         
-        this.pdf.setTextColor(...this.linkColor);
+        this.pdf.setTextColor(this.linkColor[0], this.linkColor[1], this.linkColor[2]);
         this.pdf.text(dayName, x, pageHeight - 15);
         
         // Add clickable link
@@ -84,7 +84,7 @@ class UnifiedBidirectionalExporter {
       this.pdf.text(`${dayName} ${dateStr} - `, 20, pageHeight - 15);
       
       // Link back to weekly overview
-      this.pdf.setTextColor(...this.linkColor);
+      this.pdf.setTextColor(this.linkColor[0], this.linkColor[1], this.linkColor[2]);
       this.pdf.text('Weekly Overview', 120, pageHeight - 15);
       this.pdf.link(120, pageHeight - 25, this.pdf.getTextWidth('Weekly Overview'), 12, {
         pageNumber: 1
@@ -99,7 +99,7 @@ class UnifiedBidirectionalExporter {
         const targetPage = i + 2;
         
         if (targetPage !== pageNumber) {
-          this.pdf.setTextColor(...this.linkColor);
+          this.pdf.setTextColor(this.linkColor[0], this.linkColor[1], this.linkColor[2]);
           this.pdf.text(dayName, x, pageHeight - 15);
           
           const textWidth = this.pdf.getTextWidth(dayName);
