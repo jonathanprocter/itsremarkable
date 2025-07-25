@@ -11,6 +11,9 @@ import { CalendarEvent } from '../types/calendar';
  * Apply EXACT Current Weekly Export template to an existing PDF page
  * Extracts the core rendering logic from currentWeeklyExport.ts
  */
+// Import the EXACT drawing functions from currentWeeklyExport.ts
+import { drawCurrentWeeklyHeader, drawCurrentWeeklyGrid } from './currentWeeklyExport';
+
 export const applyCurrentWeeklyTemplate = (
   pdf: jsPDF,
   events: CalendarEvent[],
@@ -19,18 +22,19 @@ export const applyCurrentWeeklyTemplate = (
 ): void => {
   console.log('📄 Applying EXACT Current Weekly Export template...');
   
-  // This function replicates the EXACT drawing logic from currentWeeklyExport.ts
-  // but applies it to an existing PDF page instead of creating a new one
+  // Normalize dates exactly like the original
+  const normalizedWeekStart = new Date(weekStart);
+  normalizedWeekStart.setHours(0, 0, 0, 0);
   
-  // The exact rendering logic from currentWeeklyExport.ts would go here
-  // For now, we'll draw a simple representation
-  pdf.setFillColor(240, 240, 240);
-  pdf.rect(0, 0, 841.89, 595.28, 'F');
+  const normalizedWeekEnd = new Date(weekEnd);
+  normalizedWeekEnd.setHours(23, 59, 59, 999);
   
-  pdf.setFont('helvetica', 'bold');
-  pdf.setFontSize(24);
-  pdf.setTextColor(0, 0, 0);
-  pdf.text('Weekly Overview', 420, 40, { align: 'center' });
+  // Apply EXACT template rendering from currentWeeklyExport.ts
+  pdf.setFont('helvetica');
+  
+  // Use EXACT drawing functions from currentWeeklyExport
+  drawCurrentWeeklyHeader(pdf, normalizedWeekStart, normalizedWeekEnd);
+  drawCurrentWeeklyGrid(pdf, events, normalizedWeekStart);
   
   console.log('✅ Applied EXACT Current Weekly Export template');
 };
@@ -641,6 +645,7 @@ export const applyBrowserReplicaTemplate = async (
       month: 'long', 
       day: 'numeric' 
     });
+    const pageWidth = pdf.internal.pageSize.getWidth();
     pdf.text(`${dayName}, ${dateString}`, pageWidth / 2, 100, { align: 'center' });
     
     pdf.setFont('helvetica', 'normal');
