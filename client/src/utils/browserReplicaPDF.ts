@@ -526,7 +526,7 @@ export async function exportBrowserReplicaPDF(events: CalendarEvent[], selectedD
 
       const canvas = await html2canvas(container, {
         width: 1200,
-        height: 2400,
+        height: 1800,
         scale: 1.0,
         useCORS: true,
         allowTaint: false,

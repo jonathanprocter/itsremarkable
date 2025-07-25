@@ -123,10 +123,12 @@ export const exportUnifiedBidirectionalWeeklyPackage = async (
   weekStart: Date
 ): Promise<string> => {
   console.log('🎯 USING EXACT TEMPLATE RENDERING FUNCTIONS...');
+  console.log('📊 Events to process:', events.length);
+  console.log('📅 Week start:', weekStart);
   
   try {
     // Import the EXACT template functions
-    const { applyCurrentWeeklyTemplate, applyBrowserReplicaTemplate } = await import('./templateExtractors');
+    const { applyCurrentWeeklyTemplate, applyBrowserReplicaTemplate } = await import('./templateExtractorsNew');
     
     // Setup week dates
     const normalizedWeekStart = new Date(weekStart);
@@ -144,6 +146,7 @@ export const exportUnifiedBidirectionalWeeklyPackage = async (
 
     console.log('📄 Step 1: Using EXACT exportCurrentWeeklyView rendering...');
     applyCurrentWeeklyTemplate(masterPDF, events, normalizedWeekStart, normalizedWeekEnd);
+    console.log('✅ Weekly template applied successfully');
     
     // Add clickable links to weekly page
     const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
@@ -170,9 +173,14 @@ export const exportUnifiedBidirectionalWeeklyPackage = async (
       masterPDF.addPage([612, 792], 'portrait');
       
       // Apply EXACT browser replica template WITHOUT any modifications
-      await applyBrowserReplicaTemplate(masterPDF, currentDate, events);
+      try {
+        await applyBrowserReplicaTemplate(masterPDF, currentDate, events);
+        console.log(`✅ Added ${dayName} page using EXACT template`);
+      } catch (pageError) {
+        console.error(`❌ Error adding ${dayName} page:`, pageError);
+        throw pageError;
+      }
       
-      console.log(`✅ Added ${dayName} page using EXACT template`);
       currentDate.setDate(currentDate.getDate() + 1);
     }
 

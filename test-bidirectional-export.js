@@ -1,55 +1,43 @@
-// Test script for bidirectional weekly package export
-// Run this in the browser console to test the export functionality
+// Test bidirectional export after height fix
+console.log('🧪 Testing bidirectional export after height fix...');
 
-console.log('🔗 Testing Bidirectional Weekly Package Export');
+// Find Export Options card
+const exportCard = Array.from(document.querySelectorAll('.text-sm')).find(el => 
+  el.textContent === 'Export Options'
+);
 
-// Simulate clicking the export button
-async function testBidirectionalExport() {
-  try {
-    // Get current week dates (July 21-27, 2025)
-    const today = new Date('2025-07-21');
-    const weekStart = new Date(today);
-    weekStart.setDate(today.getDate() - today.getDay() + 1); // Monday
+if (exportCard) {
+  const exportSection = exportCard.closest('.space-y-2');
+  const buttons = exportSection?.querySelectorAll('button') || [];
+  
+  // Find bidirectional button
+  const bidirectionalBtn = Array.from(buttons).find(btn => 
+    btn.textContent.includes('Bidirectional Weekly Package')
+  );
+  
+  if (bidirectionalBtn) {
+    console.log('✅ Found Bidirectional Weekly Package button');
+    console.log('🖱️ Clicking button...');
     
-    const weekEnd = new Date(weekStart);
-    weekEnd.setDate(weekStart.getDate() + 6); // Sunday
+    // Monitor console for errors
+    const originalError = console.error;
+    console.error = function(...args) {
+      originalError.apply(console, args);
+      console.log('❌ EXPORT ERROR DETECTED:', args);
+    };
     
-    console.log(`📅 Week range: ${weekStart.toDateString()} to ${weekEnd.toDateString()}`);
+    // Click the button
+    bidirectionalBtn.click();
+    console.log('✅ Button clicked! Check for PDF download...');
     
-    // Mock events data (simplified for testing)
-    const mockEvents = [
-      {
-        id: '1',
-        title: 'Test Appointment',
-        startTime: new Date('2025-07-21T10:00:00'),
-        endTime: new Date('2025-07-21T11:00:00'),
-        source: 'simplepractice'
-      },
-      {
-        id: '2', 
-        title: 'Google Meeting',
-        startTime: new Date('2025-07-22T14:00:00'),
-        endTime: new Date('2025-07-22T15:00:00'),
-        source: 'google'
-      }
-    ];
-    
-    console.log(`📊 Test events: ${mockEvents.length}`);
-    
-    // Import and call the export function
-    const { exportLinkedWeeklyPackage } = await import('./client/src/utils/bidirectionalWeeklyPackageLinked.ts');
-    
-    console.log('🚀 Starting bidirectional export test...');
-    await exportLinkedWeeklyPackage(weekStart, weekEnd, mockEvents);
-    
-    console.log('✅ Bidirectional export test completed successfully!');
-    
-  } catch (error) {
-    console.error('❌ Bidirectional export test failed:', error);
-    console.error('Error details:', error.message);
-    console.error('Stack trace:', error.stack);
+    // Monitor for a few seconds
+    setTimeout(() => {
+      console.log('📊 Export test complete');
+      console.error = originalError;
+    }, 3000);
+  } else {
+    console.log('❌ Could not find Bidirectional Weekly Package button');
   }
+} else {
+  console.log('❌ Could not find Export Options card');
 }
-
-// Auto-run the test
-testBidirectionalExport();

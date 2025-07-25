@@ -1,67 +1,71 @@
-// Test script for unified bidirectional export
-// Run this in the browser console after navigating to the planner page
+// Test unified bidirectional export with reduced height
+console.log('🧪 Testing unified bidirectional export with reduced grid height...');
 
-(async () => {
-  console.log('🎯 Testing Unified Bidirectional Export...');
+// Find the export button
+const exportBtn = Array.from(document.querySelectorAll('button')).find(btn => 
+  btn.textContent.includes('Bidirectional Weekly Package')
+);
+
+if (exportBtn) {
+  console.log('✅ Found Bidirectional Weekly Package button');
   
-  // Find the export button
-  const exportButtons = Array.from(document.querySelectorAll('button'));
-  const bidirectionalButton = exportButtons.find(btn => 
-    btn.textContent.includes('Bidirectional Weekly Package')
-  );
+  // Monitor for errors and logs
+  let exportLogs = [];
+  let exportErrors = [];
   
-  if (!bidirectionalButton) {
-    console.error('❌ Could not find Bidirectional Weekly Package button');
-    return;
-  }
-  
-  console.log('✅ Found bidirectional export button');
-  console.log('📄 Clicking button to trigger unified export...');
-  
-  // Monitor console for export logs
   const originalLog = console.log;
-  const logs = [];
-  console.log = (...args) => {
-    logs.push(args.join(' '));
+  const originalError = console.error;
+  
+  console.log = function(...args) {
     originalLog.apply(console, args);
+    const msg = args.join(' ');
+    if (msg.includes('export') || msg.includes('EXACT') || msg.includes('PDF') || msg.includes('Template')) {
+      exportLogs.push(msg);
+    }
   };
   
-  // Click the button
-  bidirectionalButton.click();
+  console.error = function(...args) {
+    originalError.apply(console, args);
+    exportErrors.push(args.join(' '));
+  };
   
-  // Wait for export to complete
-  await new Promise(resolve => setTimeout(resolve, 5000));
+  // Add error listeners
+  window.addEventListener('error', (e) => {
+    exportErrors.push(`Window error: ${e.message}`);
+  });
   
-  // Restore console.log
-  console.log = originalLog;
+  window.addEventListener('unhandledrejection', (e) => {
+    exportErrors.push(`Unhandled rejection: ${e.reason}`);
+  });
   
-  // Check results
-  const exportStarted = logs.some(log => log.includes('UNIFIED BIDIRECTIONAL EXPORT STARTING'));
-  const templateExtractorUsed = logs.some(log => log.includes('Applying EXACT Current Weekly Export template'));
-  const browserReplicaUsed = logs.some(log => log.includes('Applying EXACT Browser Replica PDF template'));
-  const exportCompleted = logs.some(log => log.includes('Unified bidirectional PDF created successfully'));
+  console.log('🖱️ Clicking export button...');
+  exportBtn.click();
   
-  console.log('📊 Export Test Results:');
-  console.log(`  - Export Started: ${exportStarted ? '✅' : '❌'}`);
-  console.log(`  - Weekly Template Used: ${templateExtractorUsed ? '✅' : '❌'}`);
-  console.log(`  - Daily Template Used: ${browserReplicaUsed ? '✅' : '❌'}`);
-  console.log(`  - Export Completed: ${exportCompleted ? '✅' : '❌'}`);
+  // Wait and check results
+  setTimeout(() => {
+    console.log('\n📊 Export test results:');
+    console.log(`✅ Captured ${exportLogs.length} export logs`);
+    console.log(`❌ Captured ${exportErrors.length} errors`);
+    
+    if (exportErrors.length > 0) {
+      console.error('\n❌ Errors found:');
+      exportErrors.forEach((err, i) => console.error(`${i+1}. ${err}`));
+    }
+    
+    if (exportLogs.length > 0) {
+      console.log('\n📝 Export logs:');
+      exportLogs.forEach((log, i) => console.log(`${i+1}. ${log}`));
+    }
+    
+    // Restore console
+    console.log = originalLog;
+    console.error = originalError;
+  }, 3000);
   
-  if (exportStarted && exportCompleted) {
-    console.log('✅ UNIFIED EXPORT TEST PASSED');
-    console.log('📄 Check your downloads for the unified PDF file');
-  } else {
-    console.log('❌ UNIFIED EXPORT TEST FAILED');
-    console.log('🔍 Check console for error messages');
-  }
+} else {
+  console.log('❌ Bidirectional Weekly Package button not found');
   
-  // Show relevant logs
-  console.log('\n📋 Export Logs:');
-  logs.filter(log => 
-    log.includes('UNIFIED') || 
-    log.includes('EXACT') || 
-    log.includes('template') ||
-    log.includes('error') ||
-    log.includes('Error')
-  ).forEach(log => console.log(`  - ${log}`));
-})();
+  // Check if we're in the right view
+  const title = document.querySelector('h2')?.textContent;
+  console.log('📍 Current view:', title);
+}
