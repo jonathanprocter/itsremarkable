@@ -1334,7 +1334,15 @@ function drawDailyAppointments(pdf: jsPDF, selectedDate: Date, events: CalendarE
     if (slotIndex === -1) return;
 
     // Calculate event height
-    const duration = (event.endTime.getTime() - event.startTime.getTime()) / (1000 * 60);
+    const startTime = event.startTime instanceof Date ? event.startTime : new Date(event.startTime);
+    const endTime = event.endTime instanceof Date ? event.endTime : new Date(event.endTime);
+    
+    if (isNaN(startTime.getTime()) || isNaN(endTime.getTime())) {
+      console.warn('Invalid date for event:', event.title);
+      return;
+    }
+    
+    const duration = (endTime.getTime() - startTime.getTime()) / (1000 * 60);
     const heightInSlots = Math.max(1, Math.ceil(duration / 30));
 
     // Position calculation
@@ -1450,7 +1458,15 @@ function drawAppointments(pdf: jsPDF, weekStartDate: Date, events: CalendarEvent
     if (slotIndex === -1) return;
 
     // Calculate event height based on duration
-    const duration = (event.endTime.getTime() - event.startTime.getTime()) / (1000 * 60);
+    const eventStartTime = event.startTime instanceof Date ? event.startTime : new Date(event.startTime);
+    const eventEndTime = event.endTime instanceof Date ? event.endTime : new Date(event.endTime);
+    
+    if (isNaN(eventStartTime.getTime()) || isNaN(eventEndTime.getTime())) {
+      console.warn('Invalid date for event:', event.title);
+      return;
+    }
+    
+    const duration = (eventEndTime.getTime() - eventStartTime.getTime()) / (1000 * 60);
     const heightInSlots = Math.max(1, Math.ceil(duration / 30));
 
     // Position calculation using proper time slot system
@@ -1533,8 +1549,11 @@ function drawAppointments(pdf: jsPDF, weekStartDate: Date, events: CalendarEvent
       pdf.setTextColor(60, 60, 60);
 
       // Format time range
-      const startTime = formatTime(event.startTime);
-      const endTime = formatTime(event.endTime);
+      const eventStartTime = event.startTime instanceof Date ? event.startTime : new Date(event.startTime);
+      const eventEndTime = event.endTime instanceof Date ? event.endTime : new Date(event.endTime);
+      
+      const startTime = formatTime(eventStartTime);
+      const endTime = formatTime(eventEndTime);
       const timeRange = `${startTime} - ${endTime}`;
 
       // Position time range below name
