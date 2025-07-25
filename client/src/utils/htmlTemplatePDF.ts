@@ -1353,8 +1353,7 @@ function drawDailyAppointments(pdf: jsPDF, selectedDate: Date, events: CalendarE
 
       // Blue left border
       pdf.setDrawColor(...HTML_TEMPLATE_CONFIG.colors.simplePracticeBlue);
-      pdf.```text
-setLineWidth(4);
+      pdf.setLineWidth(4);
       pdf.line(x, y, x, y + height);
 
       // Border around event
