@@ -2,6 +2,7 @@ import jsPDF from 'jspdf';
 import { CalendarEvent } from '../types/calendar';
 import { exportCurrentWeeklyView } from './currentWeeklyExport';
 import { exportBrowserReplicaPDF } from './browserReplicaPDF';
+import { exportHTMLTemplatePDF } from './htmlTemplatePDF';
 
 /**
  * TRUE UNIFIED BIDIRECTIONAL WEEKLY PACKAGE EXPORT
@@ -128,7 +129,7 @@ export const exportUnifiedBidirectionalWeeklyPackage = async (
   
   try {
     // Import the EXACT template functions
-    const { applyCurrentWeeklyTemplate, applyBrowserReplicaTemplate } = await import('./templateExtractorsNew');
+    const { applyCurrentWeeklyTemplate, applyHTMLDailyTemplate } = await import('./templateExtractorsNew');
     
     // Setup week dates
     const normalizedWeekStart = new Date(weekStart);
@@ -172,10 +173,13 @@ export const exportUnifiedBidirectionalWeeklyPackage = async (
       // Add new page in portrait mode
       masterPDF.addPage([612, 792], 'portrait');
       
-      // Apply EXACT browser replica template WITHOUT any modifications
+      // Apply EXACT HTML daily export template WITHOUT any modifications
       try {
-        await applyBrowserReplicaTemplate(masterPDF, currentDate, events);
-        console.log(`✅ Added ${dayName} page using EXACT template`);
+        console.log(`📄 Applying EXACT HTML Daily Export template logic...`);
+        const pageNumber = dayIndex + 2; // Page 2-8 for daily pages
+        const dayOfWeek = dayIndex + 1; // 1-7 for Monday-Sunday
+        applyHTMLDailyTemplate(masterPDF, currentDate, events, pageNumber, dayOfWeek);
+        console.log(`✅ Added ${dayName} page using EXACT HTML Daily Export template`);
       } catch (pageError) {
         console.error(`❌ Error adding ${dayName} page:`, pageError);
         throw pageError;

@@ -13,6 +13,8 @@ import { CalendarEvent } from '../types/calendar';
  */
 // Import the EXACT drawing functions from currentWeeklyExport.ts
 import { drawCurrentWeeklyHeader, drawCurrentWeeklyGrid } from './currentWeeklyExport';
+// Import the EXACT HTML daily export drawing functions
+import { drawDailyHeader, drawDailyGrid, drawDailyFooter } from './htmlTemplatePDF';
 
 export const applyCurrentWeeklyTemplate = (
   pdf: jsPDF,
@@ -37,6 +39,27 @@ export const applyCurrentWeeklyTemplate = (
   drawCurrentWeeklyGrid(pdf, events, normalizedWeekStart);
   
   console.log('✅ Applied EXACT Current Weekly Export template');
+};
+
+/**
+ * Apply EXACT HTML Daily Export template to an existing PDF page
+ * Uses the EXACT htmlTemplatePDF.ts daily rendering logic
+ */
+export const applyHTMLDailyTemplate = (
+  pdf: jsPDF,
+  selectedDate: Date,
+  events: CalendarEvent[],
+  pageNumber: number,
+  dayOfWeek: number
+): void => {
+  console.log('📄 Applying EXACT HTML Daily Export template logic...');
+  
+  // Apply the EXACT daily template rendering using imported functions
+  drawDailyHeader(pdf, selectedDate, events, pageNumber, dayOfWeek);
+  drawDailyGrid(pdf, selectedDate, events);
+  drawDailyFooter(pdf, selectedDate, pageNumber, dayOfWeek);
+  
+  console.log('✅ Applied EXACT HTML Daily Export template logic');
 };
 
 /**
