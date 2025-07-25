@@ -197,20 +197,20 @@ export const exportUnifiedBidirectionalWeeklyPackage = async (
     // Add clickable links to weekly page day headers
     // These are the EXACT positions of the day headers in the current weekly template
     const dayHeaderY = 44; // Y position of day headers
-    const dayColumnWidth = 100; // Width of each day column
-    const timeColumnWidth = 60; // Width of time column
-    const startX = 16 + timeColumnWidth; // Starting X position after time column
+    const navDayColumnWidth = 100; // Width of each day column (renamed to avoid duplicate)
+    const navTimeColumnWidth = 60; // Width of time column (renamed to avoid duplicate)
+    const navStartX = 16 + navTimeColumnWidth; // Starting X position after time column
     
     // Go back to page 1 and add clickable areas to day headers
     masterPDF.setPage(1);
     
     // Add clickable links for each day header (MON, TUE, WED, etc.)
     for (let i = 0; i < 7; i++) {
-      const dayX = startX + (i * dayColumnWidth);
+      const dayX = navStartX + (i * navDayColumnWidth);
       const targetPage = i + 2; // Pages 2-8 for Monday-Sunday
       
       // Make the entire day header cell clickable
-      masterPDF.link(dayX, dayHeaderY - 20, dayColumnWidth, 40, {
+      masterPDF.link(dayX, dayHeaderY - 20, navDayColumnWidth, 40, {
         pageNumber: targetPage
       });
       
