@@ -56,6 +56,22 @@ function getEventTypeInfo(event: CalendarEvent): EventTypeInfo {
   };
 }
 
+// Helper to convert color array to individual values for jsPDF
+const setColor = (pdf: jsPDF, colorArray: number[], method: 'fill' | 'draw' | 'text') => {
+  const [r, g, b] = colorArray;
+  switch (method) {
+    case 'fill':
+      pdf.setFillColor(r, g, b);
+      break;
+    case 'draw':
+      pdf.setDrawColor(r, g, b);
+      break;
+    case 'text':
+      pdf.setTextColor(r, g, b);
+      break;
+  }
+};
+
 // Time slots from 06:00 to 23:30
 const TIME_SLOTS = [
   '06:00', '06:30', '07:00', '07:30', '08:00', '08:30', '09:00', '09:30',
@@ -144,13 +160,13 @@ export const drawScaledDailyTemplate = (
   
   // === HEADER SECTION ===
   // Background
-  pdf.setFillColor(...config.colors.lightGray);
+  setColor(pdf, config.colors.lightGray, 'fill');
   pdf.rect(margin, margin, pageWidth - (margin * 2), config.headerHeight, 'F');
   
   // Title
   pdf.setFont('helvetica', 'bold');
   pdf.setFontSize(config.fonts.title);
-  pdf.setTextColor(...config.colors.black);
+  setColor(pdf, config.colors.black, 'text');
   const dayName = selectedDate.toLocaleDateString('en-US', { weekday: 'long' });
   const dateStr = selectedDate.toLocaleDateString('en-US', { 
     year: 'numeric', 
@@ -165,12 +181,12 @@ export const drawScaledDailyTemplate = (
   const buttonHeight = 14;
   
   // Weekly Overview button
-  pdf.setFillColor(...config.colors.white);
-  pdf.setDrawColor(...config.colors.mediumGray);
+  setColor(pdf, config.colors.white, 'fill');
+  setColor(pdf, config.colors.mediumGray, 'draw');
   pdf.setLineWidth(1);
   pdf.rect(margin + 20, navY, buttonWidth + 20, buttonHeight, 'FD');
   pdf.setFontSize(7);
-  pdf.setTextColor(...config.colors.black);
+  setColor(pdf, config.colors.black, 'text');
   pdf.text('Weekly Overview', margin + 30, navY + 9);
   
   // === STATS SECTION ===
@@ -194,7 +210,7 @@ export const drawScaledDailyTemplate = (
   const freeTimePercentage = totalHours > 0 ? Math.round((availableHours / 17.5) * 100) : 100;
   
   // Stats background
-  pdf.setFillColor(...config.colors.lightGray);
+  setColor(pdf, config.colors.lightGray, 'fill');
   pdf.rect(margin, statsY, contentWidth, config.statsHeight, 'F');
   
   // Draw stats
@@ -211,24 +227,24 @@ export const drawScaledDailyTemplate = (
     
     if (index > 0) {
       pdf.setLineWidth(0.5);
-      pdf.setDrawColor(...config.colors.mediumGray);
+      setColor(pdf, config.colors.mediumGray, 'draw');
       pdf.line(x, statsY + 8, x, statsY + config.statsHeight - 8);
     }
     
     pdf.setFont('helvetica', 'bold');
     pdf.setFontSize(config.fonts.stats);
-    pdf.setTextColor(...config.colors.black);
+    setColor(pdf, config.colors.black, 'text');
     pdf.text(stat.value, x + cardWidth / 2, statsY + 15, { align: 'center' });
     
     pdf.setFont('helvetica', 'normal');
     pdf.setFontSize(8);
-    pdf.setTextColor(...config.colors.darkGray);
+    setColor(pdf, config.colors.darkGray, 'text');
     pdf.text(stat.label, x + cardWidth / 2, statsY + 25, { align: 'center' });
   });
   
   // === LEGEND SECTION ===
   const legendY = statsY + config.statsHeight;
-  pdf.setFillColor(...config.colors.white);
+  setColor(pdf, config.colors.white, 'fill');
   pdf.rect(margin, legendY, contentWidth, config.legendHeight, 'F');
   
   const legendItems = [
@@ -242,13 +258,13 @@ export const drawScaledDailyTemplate = (
     const x = margin + (index * legendItemWidth) + legendItemWidth / 2;
     
     // Color box
-    pdf.setFillColor(...item.color);
+    setColor(pdf, item.color, 'fill');
     pdf.rect(x - 40, legendY + 7, 10, 10, 'F');
     
     // Label
     pdf.setFont('helvetica', 'normal');
     pdf.setFontSize(8);
-    pdf.setTextColor(...config.colors.black);
+    setColor(pdf, config.colors.black, 'text');
     pdf.text(item.label, x - 25, legendY + 13);
   });
   
@@ -259,7 +275,7 @@ export const drawScaledDailyTemplate = (
   const timeSlotHeight = config.timeSlotHeight;
   
   // Grid background
-  pdf.setFillColor(...config.colors.white);
+  setColor(pdf, config.colors.white, 'fill');
   pdf.rect(margin, gridStartY, contentWidth, timeSlotHeight * TIME_SLOTS.length, 'F');
   
   // Time slots
@@ -269,25 +285,25 @@ export const drawScaledDailyTemplate = (
     
     // Alternating backgrounds
     if (index % 2 === 0) {
-      pdf.setFillColor(...config.colors.lightGray);
+      setColor(pdf, config.colors.lightGray, 'fill');
       pdf.rect(margin + timeColumnWidth, y, dayColumnWidth, timeSlotHeight, 'F');
     }
     
     // Time label
     pdf.setFont('helvetica', isHour ? 'bold' : 'normal');
     pdf.setFontSize(isHour ? config.fonts.timeSlot : config.fonts.timeSlotHalf);
-    pdf.setTextColor(...config.colors.darkGray);
+    setColor(pdf, config.colors.darkGray, 'text');
     pdf.text(time, margin + timeColumnWidth - 5, y + timeSlotHeight / 2 + 3, { align: 'right' });
     
     // Horizontal line
     pdf.setLineWidth(isHour ? 1 : 0.5);
-    pdf.setDrawColor(...(isHour ? config.colors.mediumGray : config.colors.lightGray));
+    setColor(pdf, isHour ? config.colors.mediumGray : config.colors.lightGray, 'draw');
     pdf.line(margin, y, margin + contentWidth, y);
   });
   
   // Vertical lines
   pdf.setLineWidth(1);
-  pdf.setDrawColor(...config.colors.mediumGray);
+  setColor(pdf, config.colors.mediumGray, 'draw');
   pdf.line(margin + timeColumnWidth, gridStartY, margin + timeColumnWidth, gridStartY + timeSlotHeight * TIME_SLOTS.length);
   
   // === APPOINTMENTS ===
@@ -317,56 +333,148 @@ export const drawScaledDailyTemplate = (
     const eventType = getEventTypeInfo(event);
     
     // Event background
-    pdf.setFillColor(...config.colors.white);
+    setColor(pdf, config.colors.white, 'fill');
     pdf.rect(x, y, width, height, 'F');
     
     // Event border
     if (eventType.isSimplePractice) {
       pdf.setLineWidth(2);
-      pdf.setDrawColor(...config.colors.simplePracticeBlue);
+      setColor(pdf, config.colors.simplePracticeBlue, 'draw');
       pdf.line(x, y, x, y + height); // Left border only
       pdf.setLineWidth(0.5);
       pdf.rect(x, y, width, height);
     } else if (eventType.isGoogle) {
       pdf.setLineWidth(1);
-      pdf.setDrawColor(...config.colors.googleGreen);
-      pdf.setLineDash([2, 2]);
+      setColor(pdf, config.colors.googleGreen, 'draw');
+      // Note: jsPDF doesn't support setLineDash in some versions, so we'll use solid line
       pdf.rect(x, y, width, height);
-      pdf.setLineDash([]);
     } else if (eventType.isHoliday) {
       pdf.setLineWidth(1);
-      pdf.setDrawColor(...config.colors.holidayYellow);
-      pdf.setFillColor(...config.colors.holidayYellow);
+      setColor(pdf, config.colors.holidayYellow, 'draw');
+      setColor(pdf, config.colors.holidayYellow, 'fill');
       pdf.rect(x, y, width, height, 'FD');
     }
     
-    // Event text
-    const textX = x + 5;
-    let textY = y + 12;
+    // Check if event has notes or action items
+    const hasNotes = event.notes && event.notes.trim().length > 0;
+    const hasActionItems = event.actionItems && event.actionItems.trim().length > 0;
+    const use3ColumnLayout = hasNotes || hasActionItems;
     
-    // Title
-    pdf.setFont('helvetica', 'bold');
-    pdf.setFontSize(config.fonts.eventTitle);
-    pdf.setTextColor(...config.colors.black);
-    const title = event.title.replace(' Appointment', '').replace('🔒 ', '');
-    const titleLines = pdf.splitTextToSize(title, width - 10);
-    titleLines.forEach((line: string) => {
-      pdf.text(line, textX, textY);
-      textY += 10;
-    });
-    
-    // Time
-    pdf.setFont('helvetica', 'normal');
-    pdf.setFontSize(config.fonts.eventTime);
-    pdf.setTextColor(...config.colors.darkGray);
-    pdf.text(`${formatTime(startTime)} - ${formatTime(endTime)}`, textX, textY);
+    if (use3ColumnLayout && height >= 50) {
+      // 3-column layout for events with notes/action items
+      const columnWidth = width / 3;
+      
+      // Left column - Event info
+      const leftX = x + 5;
+      let leftY = y + 10;
+      
+      // Title
+      pdf.setFont('helvetica', 'bold');
+      pdf.setFontSize(config.fonts.eventTitle);
+      setColor(pdf, config.colors.black, 'text');
+      const title = event.title.replace(' Appointment', '').replace('🔒 ', '');
+      const titleLines = pdf.splitTextToSize(title, columnWidth - 10);
+      titleLines.forEach((line: string) => {
+        pdf.text(line, leftX, leftY);
+        leftY += 8;
+      });
+      
+      // Source
+      leftY += 2;
+      pdf.setFont('helvetica', 'normal');
+      pdf.setFontSize(6);
+      setColor(pdf, config.colors.darkGray, 'text');
+      pdf.text(eventType.sourceText, leftX, leftY);
+      
+      // Time
+      leftY += 8;
+      pdf.setFontSize(config.fonts.eventTime);
+      pdf.text(`${formatTime(startTime)} - ${formatTime(endTime)}`, leftX, leftY);
+      
+      // Column dividers
+      pdf.setLineWidth(0.5);
+      setColor(pdf, config.colors.lightGray, 'draw');
+      pdf.line(x + columnWidth, y + 5, x + columnWidth, y + height - 5);
+      pdf.line(x + columnWidth * 2, y + 5, x + columnWidth * 2, y + height - 5);
+      
+      // Center column - Event Notes
+      if (hasNotes) {
+        const centerX = x + columnWidth + 5;
+        let centerY = y + 10;
+        
+        // Header
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(6);
+        setColor(pdf, config.colors.black, 'text');
+        pdf.text('Event Notes', centerX, centerY);
+        
+        // Notes content
+        centerY += 8;
+        pdf.setFont('helvetica', 'normal');
+        pdf.setFontSize(5);
+        const notes = (event.notes || '').split('\n').filter(n => n.trim());
+        notes.forEach((note: string) => {
+          const noteLines = pdf.splitTextToSize(`• ${note.trim()}`, columnWidth - 10);
+          noteLines.forEach((line: string) => {
+            pdf.text(line, centerX, centerY);
+            centerY += 5;
+          });
+        });
+      }
+      
+      // Right column - Action Items
+      if (hasActionItems) {
+        const rightX = x + columnWidth * 2 + 5;
+        let rightY = y + 10;
+        
+        // Header
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(6);
+        setColor(pdf, config.colors.black, 'text');
+        pdf.text('Action Items', rightX, rightY);
+        
+        // Action items content
+        rightY += 8;
+        pdf.setFont('helvetica', 'normal');
+        pdf.setFontSize(5);
+        const actions = (event.actionItems || '').split('\n').filter(a => a.trim());
+        actions.forEach((action: string) => {
+          const actionLines = pdf.splitTextToSize(`• ${action.trim()}`, columnWidth - 10);
+          actionLines.forEach((line: string) => {
+            pdf.text(line, rightX, rightY);
+            rightY += 5;
+          });
+        });
+      }
+    } else {
+      // Simple layout for events without notes/action items
+      const textX = x + 5;
+      let textY = y + 12;
+      
+      // Title
+      pdf.setFont('helvetica', 'bold');
+      pdf.setFontSize(config.fonts.eventTitle);
+      setColor(pdf, config.colors.black, 'text');
+      const title = event.title.replace(' Appointment', '').replace('🔒 ', '');
+      const titleLines = pdf.splitTextToSize(title, width - 10);
+      titleLines.forEach((line: string) => {
+        pdf.text(line, textX, textY);
+        textY += 10;
+      });
+      
+      // Time
+      pdf.setFont('helvetica', 'normal');
+      pdf.setFontSize(config.fonts.eventTime);
+      setColor(pdf, config.colors.darkGray, 'text');
+      pdf.text(`${formatTime(startTime)} - ${formatTime(endTime)}`, textX, textY);
+    }
   });
   
   // === FOOTER ===
   const footerY = pageHeight - margin - 30;
   pdf.setFont('helvetica', 'normal');
   pdf.setFontSize(8);
-  pdf.setTextColor(...config.colors.darkGray);
+  setColor(pdf, config.colors.darkGray, 'text');
   
   // Page number
   pdf.text(`Page ${pageNumber} of 8`, pageWidth / 2, footerY, { align: 'center' });
