@@ -341,7 +341,15 @@ export function drawDailyHeader(pdf: jsPDF, selectedDate: Date, events: Calendar
   // Calculate stats
   const totalEvents = dayEvents.length;
   const totalHours = dayEvents.reduce((sum, e) => {
-    const duration = (e.endTime.getTime() - e.startTime.getTime()) / (1000 * 60 * 60);
+    const startTime = e.startTime instanceof Date ? e.startTime : new Date(e.startTime);
+    const endTime = e.endTime instanceof Date ? e.endTime : new Date(e.endTime);
+    
+    if (isNaN(startTime.getTime()) || isNaN(endTime.getTime())) {
+      console.warn('Invalid date for event in stats calculation:', e.title);
+      return sum;
+    }
+    
+    const duration = (endTime.getTime() - startTime.getTime()) / (1000 * 60 * 60);
     return sum + duration;
   }, 0);
   const availableHours = 17.5 - totalHours; // Business hours 6am-11:30pm
@@ -559,7 +567,15 @@ function drawHeader(pdf: jsPDF, weekStartDate: Date, weekEndDate: Date, events: 
   // Calculate weekly stats
   const totalEvents = events.length;
   const totalHours = events.reduce((sum, e) => {
-    const duration = (e.endTime.getTime() - e.startTime.getTime()) / (1000 * 60 * 60);
+    const startTime = e.startTime instanceof Date ? e.startTime : new Date(e.startTime);
+    const endTime = e.endTime instanceof Date ? e.endTime : new Date(e.endTime);
+    
+    if (isNaN(startTime.getTime()) || isNaN(endTime.getTime())) {
+      console.warn('Invalid date for event in weekly stats calculation:', e.title);
+      return sum;
+    }
+    
+    const duration = (endTime.getTime() - startTime.getTime()) / (1000 * 60 * 60);
     return sum + duration;
   }, 0);
   const dailyAverage = totalHours / 7;
