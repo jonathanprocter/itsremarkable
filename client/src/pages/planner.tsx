@@ -48,6 +48,7 @@ import { runAuthenticationFix } from '@/utils/authenticationFix';
 import { runSimpleAuthFix, testAuthenticationStatus, forceCalendarSync } from '@/utils/simpleAuthFix';
 import { AppointmentStatusView, AppointmentStats } from '@/components/calendar/AppointmentStatusView';
 import { AppointmentStatusModal } from '@/components/calendar/AppointmentStatusModal';
+import { SmartSchedulingPanel } from '@/components/smartCalendar/SmartSchedulingPanel';
 
 export default function Planner() {
   const { user, isLoading: userLoading, refetch: refetchAuth } = useAuthenticatedUser();
@@ -1612,11 +1613,37 @@ export default function Planner() {
             <Card>
               <CardContent className="p-6">
                 <Tabs defaultValue="calendar" className="w-full">
-                  <TabsList className="grid w-full grid-cols-3">
+                  <TabsList className="grid w-full grid-cols-4">
                     <TabsTrigger value="calendar">Calendar</TabsTrigger>
+                    <TabsTrigger value="smart">Smart Scheduling</TabsTrigger>
                     <TabsTrigger value="appointments">Appointments</TabsTrigger>
                     <TabsTrigger value="export">Export</TabsTrigger>
                   </TabsList>
+
+                  <TabsContent value="smart" className="mt-6">
+                    <SmartSchedulingPanel
+                      currentDate={selectedDate}
+                      events={filteredEvents}
+                      onScheduleAppointment={(appointmentData) => {
+                        console.log('Scheduling appointment:', appointmentData);
+                        // Handle appointment scheduling with template data
+                        const startTime = new Date(selectedDate);
+                        startTime.setHours(9, 0, 0, 0); // Default to 9 AM
+                        const endTime = new Date(startTime);
+                        endTime.setMinutes(endTime.getMinutes() + (appointmentData.duration || 60));
+
+                        const newEvent = {
+                          title: appointmentData.name || 'New Appointment',
+                          startTime,
+                          endTime,
+                          source: 'manual',
+                          description: appointmentData.description || '',
+                          location: appointmentData.location || ''
+                        };
+                        createEventMutation.mutate(newEvent);
+                      }}
+                    />
+                  </TabsContent>
 
                   <TabsContent value="calendar" className="mt-6">
                     {isLoading ? (

@@ -316,6 +316,215 @@ export function registerRoutes(app: Express) {
     }
   });
 
+  // CLIENT MANAGEMENT ROUTES
+  
+  // Get all clients for user
+  app.get('/api/clients', async (req, res) => {
+    try {
+      const userId = parseInt(req.user?.id || req.session?.userId || "1");
+      const clients = await storage.getClients(userId);
+      res.json(clients);
+    } catch (error) {
+      console.error('Get clients error:', error);
+      res.status(500).json({ error: 'Failed to fetch clients' });
+    }
+  });
+
+  // Get specific client
+  app.get('/api/clients/:id', async (req, res) => {
+    try {
+      const userId = parseInt(req.user?.id || req.session?.userId || "1");
+      const clientId = parseInt(req.params.id);
+      const client = await storage.getClient(userId, clientId);
+      
+      if (!client) {
+        return res.status(404).json({ error: 'Client not found' });
+      }
+      
+      res.json(client);
+    } catch (error) {
+      console.error('Get client error:', error);
+      res.status(500).json({ error: 'Failed to fetch client' });
+    }
+  });
+
+  // Create new client
+  app.post('/api/clients', async (req, res) => {
+    try {
+      const userId = parseInt(req.user?.id || req.session?.userId || "1");
+      const clientData = { ...req.body, userId };
+      const client = await storage.createClient(clientData);
+      res.status(201).json(client);
+    } catch (error) {
+      console.error('Create client error:', error);
+      res.status(500).json({ error: 'Failed to create client' });
+    }
+  });
+
+  // Update client
+  app.put('/api/clients/:id', async (req, res) => {
+    try {
+      const clientId = parseInt(req.params.id);
+      const client = await storage.updateClient(clientId, req.body);
+      
+      if (!client) {
+        return res.status(404).json({ error: 'Client not found' });
+      }
+      
+      res.json(client);
+    } catch (error) {
+      console.error('Update client error:', error);
+      res.status(500).json({ error: 'Failed to update client' });
+    }
+  });
+
+  // Search clients
+  app.get('/api/clients/search/:query', async (req, res) => {
+    try {
+      const userId = parseInt(req.user?.id || req.session?.userId || "1");
+      const query = req.params.query;
+      const clients = await storage.searchClients(userId, query);
+      res.json(clients);
+    } catch (error) {
+      console.error('Search clients error:', error);
+      res.status(500).json({ error: 'Failed to search clients' });
+    }
+  });
+
+  // CONFLICT DETECTION ROUTES
+  
+  // Detect schedule conflicts for a new appointment
+  app.post('/api/conflicts/detect', async (req, res) => {
+    try {
+      const userId = parseInt(req.user?.id || req.session?.userId || "1");
+      const { startTime, endTime, eventId } = req.body;
+      
+      const conflicts = await storage.detectScheduleConflicts(
+        userId,
+        new Date(startTime),
+        new Date(endTime),
+        eventId ? parseInt(eventId) : undefined
+      );
+      
+      res.json(conflicts);
+    } catch (error) {
+      console.error('Detect conflicts error:', error);
+      res.status(500).json({ error: 'Failed to detect conflicts' });
+    }
+  });
+
+  // Get all schedule conflicts
+  app.get('/api/conflicts', async (req, res) => {
+    try {
+      const userId = parseInt(req.user?.id || req.session?.userId || "1");
+      const resolved = req.query.resolved === 'true';
+      const conflicts = await storage.getScheduleConflicts(userId, resolved);
+      res.json(conflicts);
+    } catch (error) {
+      console.error('Get conflicts error:', error);
+      res.status(500).json({ error: 'Failed to fetch conflicts' });
+    }
+  });
+
+  // Resolve a conflict
+  app.put('/api/conflicts/:id/resolve', async (req, res) => {
+    try {
+      const conflictId = parseInt(req.params.id);
+      await storage.resolveConflict(conflictId);
+      res.json({ success: true });
+    } catch (error) {
+      console.error('Resolve conflict error:', error);
+      res.status(500).json({ error: 'Failed to resolve conflict' });
+    }
+  });
+
+  // SESSION NOTES ROUTES
+  
+  // Get session notes
+  app.get('/api/session-notes', async (req, res) => {
+    try {
+      const userId = parseInt(req.user?.id || req.session?.userId || "1");
+      const clientId = req.query.clientId ? parseInt(req.query.clientId as string) : undefined;
+      const notes = await storage.getSessionNotes(userId, clientId);
+      res.json(notes);
+    } catch (error) {
+      console.error('Get session notes error:', error);
+      res.status(500).json({ error: 'Failed to fetch session notes' });
+    }
+  });
+
+  // Create session note
+  app.post('/api/session-notes', async (req, res) => {
+    try {
+      const userId = parseInt(req.user?.id || req.session?.userId || "1");
+      const noteData = { ...req.body, userId };
+      const note = await storage.createSessionNote(noteData);
+      res.status(201).json(note);
+    } catch (error) {
+      console.error('Create session note error:', error);
+      res.status(500).json({ error: 'Failed to create session note' });
+    }
+  });
+
+  // REVENUE TRACKING ROUTES
+  
+  // Get revenue analytics
+  app.get('/api/revenue/analytics', async (req, res) => {
+    try {
+      const userId = parseInt(req.user?.id || req.session?.userId || "1");
+      const startDate = new Date(req.query.startDate as string);
+      const endDate = new Date(req.query.endDate as string);
+      
+      const analytics = await storage.getRevenueAnalytics(userId, startDate, endDate);
+      res.json(analytics);
+    } catch (error) {
+      console.error('Get revenue analytics error:', error);
+      res.status(500).json({ error: 'Failed to fetch revenue analytics' });
+    }
+  });
+
+  // Get revenue records
+  app.get('/api/revenue', async (req, res) => {
+    try {
+      const userId = parseInt(req.user?.id || req.session?.userId || "1");
+      const startDate = req.query.startDate ? new Date(req.query.startDate as string) : undefined;
+      const endDate = req.query.endDate ? new Date(req.query.endDate as string) : undefined;
+      
+      const records = await storage.getRevenueRecords(userId, startDate, endDate);
+      res.json(records);
+    } catch (error) {
+      console.error('Get revenue records error:', error);
+      res.status(500).json({ error: 'Failed to fetch revenue records' });
+    }
+  });
+
+  // APPOINTMENT TEMPLATES ROUTES
+  
+  // Get appointment templates
+  app.get('/api/templates', async (req, res) => {
+    try {
+      const userId = parseInt(req.user?.id || req.session?.userId || "1");
+      const templates = await storage.getAppointmentTemplates(userId);
+      res.json(templates);
+    } catch (error) {
+      console.error('Get templates error:', error);
+      res.status(500).json({ error: 'Failed to fetch templates' });
+    }
+  });
+
+  // Create appointment template
+  app.post('/api/templates', async (req, res) => {
+    try {
+      const userId = parseInt(req.user?.id || req.session?.userId || "1");
+      const templateData = { ...req.body, userId };
+      const template = await storage.createAppointmentTemplate(templateData);
+      res.status(201).json(template);
+    } catch (error) {
+      console.error('Create template error:', error);
+      res.status(500).json({ error: 'Failed to create template' });
+    }
+  });
+
   // Basic health check
   app.get('/api/health', (req, res) => {
     res.json({ status: 'ok', timestamp: new Date().toISOString() });

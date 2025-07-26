@@ -66,12 +66,164 @@ export const statusChangeLogs = pgTable("status_change_logs", {
   changedAt: timestamp("changed_at").defaultNow(),
 });
 
+// Client Management System
+export const clients = pgTable("clients", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id),
+  name: text("name").notNull(),
+  email: text("email"),
+  phone: text("phone"),
+  address: text("address"),
+  dateOfBirth: timestamp("date_of_birth"),
+  emergencyContact: text("emergency_contact"),
+  notes: text("notes"),
+  tags: text("tags").array(),
+  status: text("status").default("active"), // 'active', 'inactive', 'archived'
+  preferredLocation: text("preferred_location"), // 'woodbury', 'rvc', 'telehealth'
+  sessionRate: integer("session_rate"), // in cents
+  insurance: text("insurance"),
+  totalSessions: integer("total_sessions").default(0),
+  totalRevenue: integer("total_revenue").default(0), // in cents
+  lastAppointment: timestamp("last_appointment"),
+  nextAppointment: timestamp("next_appointment"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Session Notes and Client History
+export const sessionNotes = pgTable("session_notes", {
+  id: serial("id").primaryKey(),
+  eventId: integer("event_id").references(() => events.id),
+  clientId: integer("client_id").references(() => clients.id),
+  userId: integer("user_id").references(() => users.id),
+  sessionType: text("session_type"), // 'initial', 'follow_up', 'check_in', 'emergency'
+  progress: text("progress"),
+  goals: text("goals"),
+  homework: text("homework"),
+  nextSteps: text("next_steps"),
+  riskAssessment: text("risk_assessment"),
+  sessionNotes: text("session_notes"),
+  confidentialNotes: text("confidential_notes"),
+  duration: integer("duration"), // in minutes
+  sessionValue: integer("session_value"), // in cents
+  followUpDate: timestamp("follow_up_date"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Conflict Detection and Smart Scheduling
+export const scheduleConflicts = pgTable("schedule_conflicts", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id),
+  primaryEventId: integer("primary_event_id").references(() => events.id),
+  conflictingEventId: integer("conflicting_event_id").references(() => events.id),
+  conflictType: text("conflict_type").notNull(), // 'overlap', 'travel_time', 'double_booking', 'break_violation'
+  severity: text("severity").default("medium"), // 'low', 'medium', 'high', 'critical'
+  suggestedResolution: text("suggested_resolution"),
+  autoResolved: boolean("auto_resolved").default(false),
+  acknowledged: boolean("acknowledged").default(false),
+  resolvedAt: timestamp("resolved_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Travel Time and Location Management
+export const locationSettings = pgTable("location_settings", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id),
+  locationName: text("location_name").notNull(),
+  address: text("address"),
+  travelTimeMinutes: integer("travel_time_minutes").default(0),
+  isDefault: boolean("is_default").default(false),
+  coordinates: text("coordinates"), // lat,lng format
+  bufferTimeMinutes: integer("buffer_time_minutes").default(15),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Revenue and Analytics Tracking
+export const revenueTracking = pgTable("revenue_tracking", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id),
+  eventId: integer("event_id").references(() => events.id),
+  clientId: integer("client_id").references(() => clients.id),
+  sessionDate: timestamp("session_date").notNull(),
+  sessionType: text("session_type"),
+  plannedRevenue: integer("planned_revenue"), // in cents
+  actualRevenue: integer("actual_revenue"), // in cents
+  paymentStatus: text("payment_status").default("pending"), // 'pending', 'paid', 'overdue', 'cancelled'
+  paymentMethod: text("payment_method"), // 'insurance', 'self_pay', 'sliding_scale'
+  insuranceClaim: text("insurance_claim"),
+  notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Template Management for Quick Actions
+export const appointmentTemplates = pgTable("appointment_templates", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id),
+  name: text("name").notNull(),
+  title: text("title"),
+  description: text("description"),
+  duration: integer("duration").default(60), // in minutes
+  location: text("location"),
+  sessionType: text("session_type"),
+  defaultRate: integer("default_rate"), // in cents
+  preparationNotes: text("preparation_notes"),
+  followUpNotes: text("follow_up_notes"),
+  isActive: boolean("is_active").default(true),
+  usageCount: integer("usage_count").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
   password: true,
   email: true,
   name: true,
 });
+
+export const insertClientSchema = createInsertSchema(clients).omit({
+  id: true,
+  totalSessions: true,
+  totalRevenue: true,
+  lastAppointment: true,
+  nextAppointment: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertSessionNoteSchema = createInsertSchema(sessionNotes).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertAppointmentTemplateSchema = createInsertSchema(appointmentTemplates).omit({
+  id: true,
+  usageCount: true,
+  createdAt: true,
+});
+
+export const insertLocationSettingSchema = createInsertSchema(locationSettings).omit({
+  id: true,
+  createdAt: true,
+});
+
+// Type exports for all new schemas
+export type Client = typeof clients.$inferSelect;
+export type InsertClient = z.infer<typeof insertClientSchema>;
+
+export type SessionNote = typeof sessionNotes.$inferSelect;
+export type InsertSessionNote = z.infer<typeof insertSessionNoteSchema>;
+
+export type ScheduleConflict = typeof scheduleConflicts.$inferSelect;
+
+export type LocationSetting = typeof locationSettings.$inferSelect;
+export type InsertLocationSetting = z.infer<typeof insertLocationSettingSchema>;
+
+export type RevenueRecord = typeof revenueTracking.$inferSelect;
+
+export type AppointmentTemplate = typeof appointmentTemplates.$inferSelect;
+export type InsertAppointmentTemplate = z.infer<typeof insertAppointmentTemplateSchema>;
 
 export const insertEventSchema = createInsertSchema(events).omit({
   id: true,
