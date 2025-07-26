@@ -1,11 +1,12 @@
+
 # Google OAuth Setup Instructions
 
 ## Current Issue
 OAuth redirect URI mismatch error - Google Cloud Console needs to be updated with current domain.
 
 ## Current Domain Information
-- **Current Domain**: `474155cb-26cc-45e2-9759-28eaffdac638-00-20mxsrmp7mzl4.worf.replit.dev`
-- **Required Redirect URI**: `https://474155cb-26cc-45e2-9759-28eaffdac638-00-20mxsrmp7mzl4.worf.replit.dev/api/auth/google/callback`
+- **Current Domain**: `5a6f843f-53cb-48cf-8afc-05f223a337ff-00-3gvxznlnxvdl8.riker.replit.dev`
+- **Required Redirect URI**: `https://5a6f843f-53cb-48cf-8afc-05f223a337ff-00-3gvxznlnxvdl8.riker.replit.dev/api/auth/google/callback`
 
 ## Steps to Fix OAuth Configuration
 
@@ -19,7 +20,7 @@ OAuth redirect URI mismatch error - Google Cloud Console needs to be updated wit
 2. Click on the client ID to edit it
 3. In the "Authorized redirect URIs" section, add:
    ```
-   https://474155cb-26cc-45e2-9759-28eaffdac638-00-20mxsrmp7mzl4.worf.replit.dev/api/auth/google/callback
+   https://5a6f843f-53cb-48cf-8afc-05f223a337ff-00-3gvxznlnxvdl8.riker.replit.dev/api/auth/google/callback
    ```
 
 ### 3. Required OAuth Scopes
@@ -34,7 +35,7 @@ Ensure the following scopes are configured:
 ### 4. Authorized Origins
 Add this to authorized JavaScript origins:
 ```
-https://474155cb-26cc-45e2-9759-28eaffdac638-00-20mxsrmp7mzl4.worf.replit.dev
+https://5a6f843f-53cb-48cf-8afc-05f223a337ff-00-3gvxznlnxvdl8.riker.replit.dev
 ```
 
 ## Testing After Configuration

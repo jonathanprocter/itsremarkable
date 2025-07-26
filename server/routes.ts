@@ -831,7 +831,7 @@ function getRedirectURI() {
   // Get current domain for redirect URI
   const baseURL = process.env.REPLIT_DOMAINS
     ? `https://${process.env.REPLIT_DOMAINS.split(",")[0]}`
-    : "https://474155cb-26cc-45e2-9759-28eaffdac638-00-20mxsrmp7mzl4.worf.replit.dev";
+    : "https://5a6f843f-53cb-48cf-8afc-05f223a337ff-00-3gvxznlnxvdl8.riker.replit.dev";
 
   return `${baseURL}/api/auth/google/callback`;
 }

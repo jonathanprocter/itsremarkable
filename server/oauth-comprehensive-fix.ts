@@ -1,11 +1,23 @@
 import { google } from 'googleapis';
 import { OAuth2Client } from 'google-auth-library';
 
+// Get current domain dynamically
+function getCurrentDomain() {
+  // Try to get domain from environment or use current Replit domain
+  const replitDomains = process.env.REPLIT_DOMAINS;
+  if (replitDomains) {
+    return `https://${replitDomains.split(',')[0]}`;
+  }
+  
+  // Fallback to current known domain
+  return 'https://5a6f843f-53cb-48cf-8afc-05f223a337ff-00-3gvxznlnxvdl8.riker.replit.dev';
+}
+
 // Comprehensive OAuth Configuration
 const OAUTH_CONFIG = {
   clientId: process.env.GOOGLE_CLIENT_ID?.trim(),
   clientSecret: process.env.GOOGLE_CLIENT_SECRET?.trim(),
-  redirectUri: `${process.env.REPLIT_DOMAINS ? `https://${process.env.REPLIT_DOMAINS.split(',')[0]}` : 'http://localhost:5000'}/api/auth/google/callback`,
+  redirectUri: `${getCurrentDomain()}/api/auth/google/callback`,
   scopes: [
     'https://www.googleapis.com/auth/calendar.readonly',
     'https://www.googleapis.com/auth/calendar.events',
