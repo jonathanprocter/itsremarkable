@@ -1616,64 +1616,71 @@ export default function Planner() {
             <Card>
               <CardContent className="p-6">
                 <Tabs defaultValue="calendar" className="w-full">
-                  <TabsList className="grid w-full grid-cols-7">
+                  <TabsList className="grid w-full grid-cols-4">
                     <TabsTrigger value="calendar">Calendar</TabsTrigger>
-                    <TabsTrigger value="smart">Smart Scheduling</TabsTrigger>
-                    <TabsTrigger value="productivity">Productivity Hub</TabsTrigger>
-                    <TabsTrigger value="automation">Automation</TabsTrigger>
+                    <TabsTrigger value="productivity">Productivity</TabsTrigger>
                     <TabsTrigger value="appointments">Appointments</TabsTrigger>
-                    <TabsTrigger value="integrations">Integrations</TabsTrigger>
                     <TabsTrigger value="export">Export</TabsTrigger>
                   </TabsList>
 
-                  <TabsContent value="smart" className="mt-6">
-                    <SmartSchedulingPanel
-                      currentDate={selectedDate}
-                      events={filteredEvents}
-                      onScheduleAppointment={(appointmentData) => {
-                        console.log('Scheduling appointment:', appointmentData);
-                        // Handle appointment scheduling with template data
-                        const startTime = new Date(selectedDate);
-                        startTime.setHours(9, 0, 0, 0); // Default to 9 AM
-                        const endTime = new Date(startTime);
-                        endTime.setMinutes(endTime.getMinutes() + (appointmentData.duration || 60));
-
-                        const newEvent = {
-                          title: appointmentData.name || 'New Appointment',
-                          startTime,
-                          endTime,
-                          source: 'manual',
-                          description: appointmentData.description || '',
-                          location: appointmentData.location || ''
-                        };
-                        createEventMutation.mutate(newEvent);
-                      }}
-                    />
-                  </TabsContent>
-
                   <TabsContent value="productivity" className="mt-6">
-                    <ProductivityHub 
-                      events={filteredEvents}
-                      selectedDate={selectedDate}
-                    />
-                  </TabsContent>
+                    <Tabs defaultValue="hub" className="w-full">
+                      <TabsList className="grid w-full grid-cols-4">
+                        <TabsTrigger value="hub">Overview</TabsTrigger>
+                        <TabsTrigger value="smart">Smart Scheduling</TabsTrigger>
+                        <TabsTrigger value="automation">Automation</TabsTrigger>
+                        <TabsTrigger value="integrations">Integrations</TabsTrigger>
+                      </TabsList>
 
-                  <TabsContent value="automation" className="mt-6">
-                    <TaskAutomation 
-                      events={filteredEvents}
-                    />
-                  </TabsContent>
+                      <TabsContent value="hub" className="mt-4">
+                        <ProductivityHub 
+                          events={filteredEvents}
+                          selectedDate={selectedDate}
+                        />
+                      </TabsContent>
 
-                  <TabsContent value="integrations" className="mt-6">
-                    <CrossPlatformSync 
-                      onSyncComplete={() => {
-                        queryClient.invalidateQueries({ queryKey: ['/api/events'] });
-                        toast({
-                          title: "Sync Complete",
-                          description: "Calendar data has been updated successfully",
-                        });
-                      }}
-                    />
+                      <TabsContent value="smart" className="mt-4">
+                        <SmartSchedulingPanel
+                          currentDate={selectedDate}
+                          events={filteredEvents}
+                          onScheduleAppointment={(appointmentData) => {
+                            console.log('Scheduling appointment:', appointmentData);
+                            const startTime = new Date(selectedDate);
+                            startTime.setHours(9, 0, 0, 0);
+                            const endTime = new Date(startTime);
+                            endTime.setMinutes(endTime.getMinutes() + (appointmentData.duration || 60));
+
+                            const newEvent = {
+                              title: appointmentData.name || 'New Appointment',
+                              startTime,
+                              endTime,
+                              source: 'manual' as const,
+                              description: appointmentData.description || '',
+                              location: appointmentData.location || ''
+                            };
+                            createEventMutation.mutate(newEvent);
+                          }}
+                        />
+                      </TabsContent>
+
+                      <TabsContent value="automation" className="mt-4">
+                        <TaskAutomation 
+                          events={filteredEvents}
+                        />
+                      </TabsContent>
+
+                      <TabsContent value="integrations" className="mt-4">
+                        <CrossPlatformSync 
+                          onSyncComplete={() => {
+                            queryClient.invalidateQueries({ queryKey: ['/api/events'] });
+                            toast({
+                              title: "Sync Complete",
+                              description: "Calendar data has been updated successfully",
+                            });
+                          }}
+                        />
+                      </TabsContent>
+                    </Tabs>
                   </TabsContent>
 
                   <TabsContent value="calendar" className="mt-6">
