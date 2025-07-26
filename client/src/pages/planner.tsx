@@ -49,6 +49,9 @@ import { runSimpleAuthFix, testAuthenticationStatus, forceCalendarSync } from '@
 import { AppointmentStatusView, AppointmentStats } from '@/components/calendar/AppointmentStatusView';
 import { AppointmentStatusModal } from '@/components/calendar/AppointmentStatusModal';
 import { SmartSchedulingPanel } from '@/components/smartCalendar/SmartSchedulingPanel';
+import { ProductivityHub } from '@/components/productivity/ProductivityHub';
+import { TaskAutomation } from '@/components/workflow/TaskAutomation';
+import { CrossPlatformSync } from '@/components/integrations/CrossPlatformSync';
 
 export default function Planner() {
   const { user, isLoading: userLoading, refetch: refetchAuth } = useAuthenticatedUser();
@@ -1613,10 +1616,13 @@ export default function Planner() {
             <Card>
               <CardContent className="p-6">
                 <Tabs defaultValue="calendar" className="w-full">
-                  <TabsList className="grid w-full grid-cols-4">
+                  <TabsList className="grid w-full grid-cols-7">
                     <TabsTrigger value="calendar">Calendar</TabsTrigger>
                     <TabsTrigger value="smart">Smart Scheduling</TabsTrigger>
+                    <TabsTrigger value="productivity">Productivity Hub</TabsTrigger>
+                    <TabsTrigger value="automation">Automation</TabsTrigger>
                     <TabsTrigger value="appointments">Appointments</TabsTrigger>
+                    <TabsTrigger value="integrations">Integrations</TabsTrigger>
                     <TabsTrigger value="export">Export</TabsTrigger>
                   </TabsList>
 
@@ -1641,6 +1647,31 @@ export default function Planner() {
                           location: appointmentData.location || ''
                         };
                         createEventMutation.mutate(newEvent);
+                      }}
+                    />
+                  </TabsContent>
+
+                  <TabsContent value="productivity" className="mt-6">
+                    <ProductivityHub 
+                      events={filteredEvents}
+                      selectedDate={selectedDate}
+                    />
+                  </TabsContent>
+
+                  <TabsContent value="automation" className="mt-6">
+                    <TaskAutomation 
+                      events={filteredEvents}
+                    />
+                  </TabsContent>
+
+                  <TabsContent value="integrations" className="mt-6">
+                    <CrossPlatformSync 
+                      onSyncComplete={() => {
+                        queryClient.invalidateQueries({ queryKey: ['/api/events'] });
+                        toast({
+                          title: "Sync Complete",
+                          description: "Calendar data has been updated successfully",
+                        });
                       }}
                     />
                   </TabsContent>
