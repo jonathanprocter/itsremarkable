@@ -52,6 +52,7 @@ import { SmartSchedulingPanel } from '@/components/smartCalendar/SmartScheduling
 import { ProductivityHub } from '@/components/productivity/ProductivityHub';
 import { TaskAutomation } from '@/components/workflow/TaskAutomation';
 import { CrossPlatformSync } from '@/components/integrations/CrossPlatformSync';
+import { useTabTransitions } from '@/hooks/useTabTransitions';
 
 export default function Planner() {
   const { user, isLoading: userLoading, refetch: refetchAuth } = useAuthenticatedUser();
@@ -213,6 +214,13 @@ export default function Planner() {
     simplepractice: true,
     google: true,
     personal: true
+  });
+
+  // Enhanced tab transitions with micro-interactions
+  const { handleTabChange, isTransitioning } = useTabTransitions({
+    enableSoundEffects: true,
+    enableHapticFeedback: true,
+    transitionDuration: 400
   });
 
   // Initialize week
@@ -1617,19 +1625,67 @@ export default function Planner() {
               <CardContent className="p-6">
                 <Tabs defaultValue="calendar" className="w-full">
                   <TabsList className="grid w-full grid-cols-4">
-                    <TabsTrigger value="calendar">Calendar</TabsTrigger>
-                    <TabsTrigger value="productivity">Productivity</TabsTrigger>
-                    <TabsTrigger value="appointments">Appointments</TabsTrigger>
-                    <TabsTrigger value="export">Export</TabsTrigger>
+                    <TabsTrigger 
+                      value="calendar"
+                      onClick={(e) => handleTabChange('calendar', e)}
+                      className={isTransitioning ? 'pointer-events-none' : ''}
+                    >
+                      Calendar
+                    </TabsTrigger>
+                    <TabsTrigger 
+                      value="productivity"
+                      onClick={(e) => handleTabChange('productivity', e)}
+                      className={isTransitioning ? 'pointer-events-none' : ''}
+                    >
+                      Productivity
+                    </TabsTrigger>
+                    <TabsTrigger 
+                      value="appointments"
+                      onClick={(e) => handleTabChange('appointments', e)}
+                      className={isTransitioning ? 'pointer-events-none' : ''}
+                    >
+                      Appointments
+                    </TabsTrigger>
+                    <TabsTrigger 
+                      value="export"
+                      onClick={(e) => handleTabChange('export', e)}
+                      className={isTransitioning ? 'pointer-events-none' : ''}
+                    >
+                      Export
+                    </TabsTrigger>
                   </TabsList>
 
                   <TabsContent value="productivity" className="mt-6">
                     <Tabs defaultValue="hub" className="w-full">
                       <TabsList className="grid w-full grid-cols-4">
-                        <TabsTrigger value="hub">Overview</TabsTrigger>
-                        <TabsTrigger value="smart">Smart Scheduling</TabsTrigger>
-                        <TabsTrigger value="automation">Automation</TabsTrigger>
-                        <TabsTrigger value="integrations">Integrations</TabsTrigger>
+                        <TabsTrigger 
+                          value="hub"
+                          onClick={(e) => handleTabChange('productivity-hub', e)}
+                          className={isTransitioning ? 'pointer-events-none' : ''}
+                        >
+                          Overview
+                        </TabsTrigger>
+                        <TabsTrigger 
+                          value="smart"
+                          onClick={(e) => handleTabChange('productivity-smart', e)}
+                          className={isTransitioning ? 'pointer-events-none' : ''}
+                        >
+                          Smart Scheduling
+                        </TabsTrigger>
+                        <TabsTrigger 
+                          value="automation"
+                          onClick={(e) => handleTabChange('productivity-automation', e)}
+                          className={isTransitioning ? 'pointer-events-none' : ''}
+                        >
+                          Automation
+                        </TabsTrigger>
+                        <TabsTrigger 
+                          value="integrations"
+                          onClick={(e) => handleTabChange('productivity-integrations', e)}
+                          className={isTransitioning ? 'pointer-events-none' : ''}
+                        >
+                          Integrations
+                        </TabsTrigger>
                       </TabsList>
 
                       <TabsContent value="hub" className="mt-4">
