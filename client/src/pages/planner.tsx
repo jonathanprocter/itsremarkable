@@ -52,6 +52,10 @@ import { SmartSchedulingPanel } from '@/components/smartCalendar/SmartScheduling
 import { ProductivityHub } from '@/components/productivity/ProductivityHub';
 import { TaskAutomation } from '@/components/workflow/TaskAutomation';
 import { CrossPlatformSync } from '@/components/integrations/CrossPlatformSync';
+import NotionIntegration from '@/components/integrations/NotionIntegration';
+import SlackIntegration from '@/components/integrations/SlackIntegration';
+import AdvancedWorkflowAutomation from '@/components/workflow/AdvancedWorkflowAutomation';
+import SmartWorkflowEngine from '@/components/workflow/SmartWorkflowEngine';
 import { useTabTransitions } from '@/hooks/useTabTransitions';
 
 export default function Planner() {
@@ -1720,21 +1724,65 @@ export default function Planner() {
                       </TabsContent>
 
                       <TabsContent value="automation" className="mt-4">
-                        <TaskAutomation 
-                          events={filteredEvents}
-                        />
+                        <Tabs defaultValue="basic" className="w-full">
+                          <TabsList className="grid w-full grid-cols-3">
+                            <TabsTrigger value="basic">Basic Automation</TabsTrigger>
+                            <TabsTrigger value="workflows">Advanced Workflows</TabsTrigger>
+                            <TabsTrigger value="ai-engine">AI Engine</TabsTrigger>
+                          </TabsList>
+                          
+                          <TabsContent value="basic" className="mt-4">
+                            <TaskAutomation 
+                              events={filteredEvents}
+                            />
+                          </TabsContent>
+                          
+                          <TabsContent value="workflows" className="mt-4">
+                            <AdvancedWorkflowAutomation />
+                          </TabsContent>
+                          
+                          <TabsContent value="ai-engine" className="mt-4">
+                            <SmartWorkflowEngine />
+                          </TabsContent>
+                        </Tabs>
                       </TabsContent>
 
                       <TabsContent value="integrations" className="mt-4">
-                        <CrossPlatformSync 
-                          onSyncComplete={() => {
-                            queryClient.invalidateQueries({ queryKey: ['/api/events'] });
-                            toast({
-                              title: "Sync Complete",
-                              description: "Calendar data has been updated successfully",
-                            });
-                          }}
-                        />
+                        <Tabs defaultValue="overview" className="w-full">
+                          <TabsList className="grid w-full grid-cols-4">
+                            <TabsTrigger value="overview">Overview</TabsTrigger>
+                            <TabsTrigger value="notion">Notion</TabsTrigger>
+                            <TabsTrigger value="slack">Slack</TabsTrigger>
+                            <TabsTrigger value="workflows">Advanced</TabsTrigger>
+                          </TabsList>
+                          
+                          <TabsContent value="overview" className="mt-4">
+                            <CrossPlatformSync 
+                              onSyncComplete={() => {
+                                queryClient.invalidateQueries({ queryKey: ['/api/events'] });
+                                toast({
+                                  title: "Sync Complete",
+                                  description: "Calendar data has been updated successfully",
+                                });
+                              }}
+                            />
+                          </TabsContent>
+                          
+                          <TabsContent value="notion" className="mt-4">
+                            <NotionIntegration />
+                          </TabsContent>
+                          
+                          <TabsContent value="slack" className="mt-4">
+                            <SlackIntegration />
+                          </TabsContent>
+                          
+                          <TabsContent value="workflows" className="mt-4">
+                            <div className="space-y-6">
+                              <AdvancedWorkflowAutomation />
+                              <SmartWorkflowEngine />
+                            </div>
+                          </TabsContent>
+                        </Tabs>
                       </TabsContent>
                     </Tabs>
                   </TabsContent>
