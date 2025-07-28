@@ -6,6 +6,62 @@ import { storage } from './storage';
 
 import { addMinimalOAuthRoutes } from './minimal-oauth';
 
+// Add missing function for Google Calendar testing
+async function testGoogleCalendarAccess(accessToken: string) {
+  try {
+    const { google } = await import('googleapis');
+    const oauth2Client = new google.auth.OAuth2();
+    oauth2Client.setCredentials({ access_token: accessToken });
+    
+    const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
+    const response = await calendar.calendarList.list({ maxResults: 10 });
+    
+    return response.data.items || [];
+  } catch (error) {
+    console.error('Google Calendar test error:', error);
+    return [];
+  }
+}
+
+// Add missing comprehensive token refresh function
+async function comprehensiveTokenRefresh(user: any) {
+  try {
+    console.log('🔄 Attempting token refresh...');
+    
+    if (!user || !user.refreshToken) {
+      throw new Error('AUTHENTICATION_REQUIRED');
+    }
+    
+    const { google } = await import('googleapis');
+    const oauth2Client = new google.auth.OAuth2(
+      process.env.GOOGLE_CLIENT_ID,
+      process.env.GOOGLE_CLIENT_SECRET
+    );
+    
+    oauth2Client.setCredentials({
+      refresh_token: user.refreshToken
+    });
+    
+    const { credentials } = await oauth2Client.refreshAccessToken();
+    
+    if (credentials.access_token) {
+      user.accessToken = credentials.access_token;
+      process.env.GOOGLE_ACCESS_TOKEN = credentials.access_token;
+    }
+    
+    if (credentials.refresh_token) {
+      user.refreshToken = credentials.refresh_token;
+      process.env.GOOGLE_REFRESH_TOKEN = credentials.refresh_token;
+    }
+    
+    console.log('✅ Token refresh successful');
+    return user;
+  } catch (error) {
+    console.error('❌ Token refresh failed:', error);
+    throw new Error('REAUTHENTICATION_REQUIRED');
+  }
+}
+
 export function registerRoutes(app: Express) {
   console.log('[INFO] Creating routes...');
 
@@ -570,7 +626,7 @@ export function registerRoutes(app: Express) {
   });
 
   // Auth debug endpoint
-  app.get('/api/auth/debug', requireGoogleAuth, (req, res) => {
+  app.get('/api/auth/debug', (req, res) => {
     const debugInfo = {
       authenticated: !!req.user,
       hasValidTokens: !!(req.user?.googleAccessToken && req.user?.googleRefreshToken),
