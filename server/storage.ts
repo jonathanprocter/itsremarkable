@@ -39,18 +39,30 @@ export interface IStorage {
   
   // Client management
   getClients(userId: number): Promise<Client[]>;
-  getClient(userId: number, clientId: number): Promise<Client | undefined>;
+  getClient(clientId: number, userId: number): Promise<Client | undefined>;
   createClient(client: InsertClient): Promise<Client>;
-  updateClient(clientId: number, updates: Partial<Client>): Promise<Client | null>;
+  updateClient(clientId: number, userId: number, updates: Partial<Client>): Promise<Client | null>;
   deleteClient(clientId: number): Promise<void>;
   searchClients(userId: number, query: string): Promise<Client[]>;
   getClientsByTag(userId: number, tag: string): Promise<Client[]>;
   
   // Session notes
-  getSessionNotes(userId: number, clientId?: number): Promise<SessionNote[]>;
+  getSessionNotes(clientId: number, userId: number): Promise<SessionNote[]>;
   getSessionNote(userId: number, noteId: number): Promise<SessionNote | undefined>;
   createSessionNote(note: InsertSessionNote): Promise<SessionNote>;
   updateSessionNote(noteId: number, updates: Partial<SessionNote>): Promise<SessionNote | null>;
+  
+  // Session materials
+  getSessionMaterials(clientId: number, userId: number): Promise<any[]>;
+  createSessionMaterial(material: any): Promise<any>;
+  
+  // AI case conceptualization
+  getAIConceptualization(clientId: number, userId: number): Promise<any | null>;
+  saveAIConceptualization(conceptualization: any): Promise<any>;
+  
+  // Client notes
+  getClientNotes(clientId: number, userId: number): Promise<any[]>;
+  createClientNote(note: any): Promise<any>;
   
   // Conflict detection
   detectScheduleConflicts(userId: number, startTime: Date, endTime: Date, eventId?: number): Promise<ScheduleConflict[]>;
@@ -255,7 +267,7 @@ export class DatabaseStorage implements IStorage {
     return await db.select().from(clients).where(eq(clients.userId, userId));
   }
 
-  async getClient(userId: number, clientId: number): Promise<Client | undefined> {
+  async getClient(clientId: number, userId: number): Promise<Client | undefined> {
     const [client] = await db
       .select()
       .from(clients)
@@ -271,11 +283,11 @@ export class DatabaseStorage implements IStorage {
     return newClient;
   }
 
-  async updateClient(clientId: number, updates: Partial<Client>): Promise<Client | null> {
+  async updateClient(clientId: number, userId: number, updates: Partial<Client>): Promise<Client | null> {
     const [client] = await db
       .update(clients)
       .set({ ...updates, updatedAt: new Date() })
-      .where(eq(clients.id, clientId))
+      .where(and(eq(clients.id, clientId), eq(clients.userId, userId)))
       .returning();
     return client || null;
   }
@@ -313,14 +325,12 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Session notes methods
-  async getSessionNotes(userId: number, clientId?: number): Promise<SessionNote[]> {
-    let query = db.select().from(sessionNotes).where(eq(sessionNotes.userId, userId));
-    
-    if (clientId) {
-      query = query.where(eq(sessionNotes.clientId, clientId));
-    }
-    
-    return await query.orderBy(desc(sessionNotes.createdAt));
+  async getSessionNotes(clientId: number, userId: number): Promise<SessionNote[]> {
+    return await db
+      .select()
+      .from(sessionNotes)
+      .where(and(eq(sessionNotes.userId, userId), eq(sessionNotes.clientId, clientId)))
+      .orderBy(desc(sessionNotes.createdAt));
   }
 
   async getSessionNote(userId: number, noteId: number): Promise<SessionNote | undefined> {
@@ -523,6 +533,79 @@ export class DatabaseStorage implements IStorage {
       .update(appointmentTemplates)
       .set({ isActive: false })
       .where(eq(appointmentTemplates.id, templateId));
+  }
+
+  // Session materials methods
+  async getSessionMaterials(clientId: number, userId: number): Promise<any[]> {
+    const result = await db.execute(sql`
+      SELECT * FROM session_materials 
+      WHERE client_id = ${clientId} AND user_id = ${userId}
+      ORDER BY uploaded_at DESC
+    `);
+    return result.rows as any[];
+  }
+
+  async createSessionMaterial(material: any): Promise<any> {
+    const result = await db.execute(sql`
+      INSERT INTO session_materials (
+        client_id, user_id, material_type, file_name, file_path, 
+        file_size, content_text, tags
+      ) VALUES (
+        ${material.clientId}, ${material.userId}, ${material.materialType},
+        ${material.fileName}, ${material.filePath}, ${material.fileSize},
+        ${material.contentText || null}, ${material.tags || null}
+      ) RETURNING *
+    `);
+    return result.rows[0];
+  }
+
+  // AI case conceptualization methods
+  async getAIConceptualization(clientId: number, userId: number): Promise<any | null> {
+    const result = await db.execute(sql`
+      SELECT * FROM ai_conceptualizations 
+      WHERE client_id = ${clientId} AND user_id = ${userId}
+      ORDER BY last_updated DESC LIMIT 1
+    `);
+    return result.rows[0] || null;
+  }
+
+  async saveAIConceptualization(conceptualization: any): Promise<any> {
+    const result = await db.execute(sql`
+      INSERT INTO ai_conceptualizations (
+        client_id, user_id, conceptualization_text, key_themes,
+        recommendations, risk_factors, strengths, treatment_goals, confidence_score
+      ) VALUES (
+        ${conceptualization.clientId}, ${conceptualization.userId},
+        ${conceptualization.conceptualizationText},
+        ${conceptualization.keyThemes}, ${conceptualization.recommendations},
+        ${conceptualization.riskFactors}, ${conceptualization.strengths},
+        ${conceptualization.treatmentGoals}, ${conceptualization.confidenceScore || 0}
+      ) RETURNING *
+    `);
+    return result.rows[0];
+  }
+
+  // Client notes methods
+  async getClientNotes(clientId: number, userId: number): Promise<any[]> {
+    const result = await db.execute(sql`
+      SELECT * FROM client_notes 
+      WHERE client_id = ${clientId} AND user_id = ${userId}
+      ORDER BY created_at DESC
+    `);
+    return result.rows as any[];
+  }
+
+  async createClientNote(note: any): Promise<any> {
+    const result = await db.execute(sql`
+      INSERT INTO client_notes (
+        client_id, user_id, note_type, title, content, is_confidential, tags
+      ) VALUES (
+        ${note.clientId}, ${note.userId}, ${note.noteType || 'general'},
+        ${note.title || null}, ${note.content}, ${note.isConfidential || false},
+        ${note.tags || null}
+      ) RETURNING *
+    `);
+    return result.rows[0];
   }
 
   async deleteEventBySourceId(userId: number, sourceId: string): Promise<boolean> {

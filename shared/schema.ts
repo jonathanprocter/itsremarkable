@@ -69,7 +69,7 @@ export const statusChangeLogs = pgTable("status_change_logs", {
 // Client Management System
 export const clients = pgTable("clients", {
   id: serial("id").primaryKey(),
-  userId: integer("user_id").references(() => users.id),
+  userId: integer("user_id").references(() => users.id).notNull(),
   name: text("name").notNull(),
   email: text("email"),
   phone: text("phone"),
@@ -79,7 +79,7 @@ export const clients = pgTable("clients", {
   notes: text("notes"),
   tags: text("tags").array(),
   status: text("status").default("active"), // 'active', 'inactive', 'archived'
-  preferredLocation: text("preferred_location"), // 'woodbury', 'rvc', 'telehealth'
+  preferredLocation: text("preferred_location"),
   sessionRate: integer("session_rate"), // in cents
   insurance: text("insurance"),
   totalSessions: integer("total_sessions").default(0),
@@ -90,13 +90,12 @@ export const clients = pgTable("clients", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-// Session Notes and Client History
 export const sessionNotes = pgTable("session_notes", {
   id: serial("id").primaryKey(),
   eventId: integer("event_id").references(() => events.id),
-  clientId: integer("client_id").references(() => clients.id),
-  userId: integer("user_id").references(() => users.id),
-  sessionType: text("session_type"), // 'initial', 'follow_up', 'check_in', 'emergency'
+  clientId: integer("client_id").references(() => clients.id).notNull(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  sessionType: text("session_type"),
   progress: text("progress"),
   goals: text("goals"),
   homework: text("homework"),
@@ -111,7 +110,7 @@ export const sessionNotes = pgTable("session_notes", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-// Conflict Detection and Smart Scheduling
+// Schedule Conflicts Management
 export const scheduleConflicts = pgTable("schedule_conflicts", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").references(() => users.id),

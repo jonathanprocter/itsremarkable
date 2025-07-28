@@ -3,6 +3,7 @@ import passport from 'passport';
 import { createServer } from 'http';
 import { Express } from 'express';
 import { storage } from './storage';
+import clientRoutes from './clientRoutes';
 
 import { addMinimalOAuthRoutes } from './minimal-oauth';
 
@@ -67,6 +68,9 @@ export function registerRoutes(app: Express) {
 
   // Add minimal OAuth routes
   addMinimalOAuthRoutes(app);
+
+  // Add client database routes
+  app.use('/api', clientRoutes);
 
   // Calendar sync endpoint
   app.get('/api/calendar/sync', async (req, res) => {

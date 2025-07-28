@@ -53,6 +53,7 @@ import { ProductivityHub } from '@/components/productivity/ProductivityHub';
 import { TaskAutomation } from '@/components/workflow/TaskAutomation';
 import { CrossPlatformSync } from '@/components/integrations/CrossPlatformSync';
 import NotionIntegration from '@/components/integrations/NotionIntegration';
+import { SimpleClientDatabase } from '@/components/clients/SimpleClientDatabase';
 
 import AdvancedWorkflowAutomation from '@/components/workflow/AdvancedWorkflowAutomation';
 import SmartWorkflowEngine from '@/components/workflow/SmartWorkflowEngine';
@@ -1648,13 +1649,20 @@ export default function Planner() {
             <Card>
               <CardContent className="p-6">
                 <Tabs defaultValue="calendar" className="w-full">
-                  <TabsList className="grid w-full grid-cols-4">
+                  <TabsList className="grid w-full grid-cols-5">
                     <TabsTrigger 
                       value="calendar"
                       onClick={(e) => handleTabChange('calendar', e)}
                       className={isTransitioning ? 'pointer-events-none' : ''}
                     >
                       Calendar
+                    </TabsTrigger>
+                    <TabsTrigger 
+                      value="clients"
+                      onClick={(e) => handleTabChange('clients', e)}
+                      className={isTransitioning ? 'pointer-events-none' : ''}
+                    >
+                      Clients
                     </TabsTrigger>
                     <TabsTrigger 
                       value="productivity"
@@ -1892,6 +1900,10 @@ export default function Planner() {
                         }}
                       />
                     )}
+                  </TabsContent>
+
+                  <TabsContent value="clients" className="mt-6">
+                    <SimpleClientDatabase />
                   </TabsContent>
 
                   <TabsContent value="appointments" className="mt-6">
