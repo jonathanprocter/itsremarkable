@@ -6,8 +6,7 @@ import { setupVite, serveStatic, log } from "./vite";
 import { pool } from "./db";
 import ConnectPgSimple from "connect-pg-simple";
 import http from "http";
-import { configureGoogleStrategy, configurePassportSerialization } from "./oauth-fix";
-import { configure403FixStrategy, test403Fix } from "./oauth-403-fix";
+import { initializeMinimalOAuth, addMinimalOAuthRoutes } from "./minimal-oauth";
 
 const app = express();
 
@@ -63,17 +62,11 @@ app.use(session({
   }
 }));
 
-// Configure Passport
+// Configure Passport (minimal setup)
 app.use(passport.initialize());
-app.use(passport.session());
 
-// Configure Google OAuth strategy
-configureGoogleStrategy();
-configurePassportSerialization();
-
-// Configure 403 fix strategy
-configure403FixStrategy();
-test403Fix();
+// Initialize minimal OAuth
+initializeMinimalOAuth();
 
 app.use((req, res, next) => {
   const start = Date.now();
