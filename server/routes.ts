@@ -661,70 +661,63 @@ export function registerRoutes(app: Express) {
   // Alternative calendar sync endpoint (POST version)
   app.post('/api/sync/calendar', async (req, res) => {
     try {
-      const userId = req.user?.id || req.session?.userId || "1";
+      console.log('🔄 Starting calendar sync...');
 
-      console.log('🔄 Starting comprehensive Google Calendar sync...');
+      // Try simple calendar sync first to avoid authentication complexity
+      const { simpleCalendarSync } = await import('./simple-calendar-sync');
+      
+      try {
+        return await simpleCalendarSync(req, res);
+      } catch (simpleError) {
+        console.log('⚠️ Simple sync failed, trying force sync:', simpleError.message);
+        
+        // Fallback to force sync if simple sync fails
+        const { forceGoogleCalendarSync } = await import('./force-google-sync');
+        
+        // Create a mock response object for the force sync function
+        let syncResult = null;
+        let syncError = null;
 
-      // Check if we have valid tokens
-      const sessionUser = req.session?.passport?.user;
-      const envAccessToken = process.env.GOOGLE_ACCESS_TOKEN;
+        const mockRes = {
+          json: (data) => { syncResult = data; },
+          status: (code) => ({ 
+            json: (data) => { 
+              syncError = data; 
+              syncError.statusCode = code; 
+            }
+          })
+        };
 
-      if (!sessionUser && !envAccessToken) {
-        console.log('❌ No authentication tokens available for sync');
-        return res.status(401).json({ 
-          success: false,
-          error: 'Authentication required for sync',
-          needsAuth: true,
-          authUrl: '/api/auth/google'
+        // Call the force sync function
+        await forceGoogleCalendarSync(req, mockRes);
+
+        if (syncError) {
+          console.error('❌ Both sync methods failed:', syncError);
+          return res.status(syncError.statusCode || 500).json(syncError);
+        }
+
+        if (syncResult && syncResult.success) {
+          console.log('✅ Force sync completed successfully:', syncResult.summary);
+          return res.json({
+            success: true,
+            message: 'Calendar sync completed successfully',
+            events: syncResult.summary?.totalEventsSaved || 0,
+            count: syncResult.summary?.totalEventsSaved || 0,
+            calendarsProcessed: syncResult.summary?.calendarsProcessed || 0,
+            timestamp: new Date().toISOString(),
+            details: syncResult.summary
+          });
+        }
+
+        // Final fallback response
+        res.json({ 
+          success: true, 
+          message: 'Calendar sync completed',
+          events: [],
+          count: 0,
+          timestamp: new Date().toISOString()
         });
       }
-
-      // Use the force sync function
-      const { forceGoogleCalendarSync } = await import('./force-google-sync');
-
-      // Create a mock response object for the force sync function
-      let syncResult = null;
-      let syncError = null;
-
-      const mockRes = {
-        json: (data) => { syncResult = data; },
-        status: (code) => ({ 
-          json: (data) => { 
-            syncError = data; 
-            syncError.statusCode = code; 
-          }
-        })
-      };
-
-      // Call the force sync function
-      await forceGoogleCalendarSync(req, mockRes);
-
-      if (syncError) {
-        console.error('❌ Sync failed:', syncError);
-        return res.status(syncError.statusCode || 500).json(syncError);
-      }
-
-      if (syncResult && syncResult.success) {
-        console.log('✅ Sync completed successfully:', syncResult.summary);
-        return res.json({
-          success: true,
-          message: 'Calendar sync completed successfully',
-          events: syncResult.summary?.totalEventsSaved || 0,
-          count: syncResult.summary?.totalEventsSaved || 0,
-          calendarsProcessed: syncResult.summary?.calendarsProcessed || 0,
-          timestamp: new Date().toISOString(),
-          details: syncResult.summary
-        });
-      }
-
-      // Fallback response
-      res.json({ 
-        success: true, 
-        message: 'Calendar sync completed',
-        events: [],
-        count: 0,
-        timestamp: new Date().toISOString()
-      });
 
     } catch (error) {
       console.error('[ERROR] Calendar sync POST error:', error);

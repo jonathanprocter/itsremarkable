@@ -143,14 +143,53 @@ export async function forceGoogleCalendarSync(req: any, res: any) {
         } catch (refreshError) {
           console.error("❌ Token refresh failed:", refreshError.message);
           
-          return res.status(401).json({
-            error: "Authentication failed",
-            message: "Google tokens have expired and cannot be refreshed. Please re-authenticate.",
-            oauthUrl: "/api/auth/google",
-            needsReauth: true,
-            details: "Refresh token is invalid or expired",
-            statusCode: 401
-          });
+          // Check if we can proceed with environment tokens as fallback
+          const envAccessToken = process.env.GOOGLE_ACCESS_TOKEN;
+          const envRefreshToken = process.env.GOOGLE_REFRESH_TOKEN;
+          
+          if (envAccessToken && envRefreshToken && 
+              !envAccessToken.startsWith('dev-') && 
+              !envRefreshToken.startsWith('dev-')) {
+            console.log("🔄 Falling back to environment tokens...");
+            
+            try {
+              // Test environment tokens
+              const fallbackClient = createOAuth2Client();
+              fallbackClient.setCredentials({
+                access_token: envAccessToken,
+                refresh_token: envRefreshToken,
+              });
+              
+              const testCalendar = google.calendar({ version: "v3", auth: fallbackClient });
+              await testCalendar.calendarList.list({ maxResults: 1 });
+              
+              console.log("✅ Environment tokens working, proceeding with sync");
+              oauth2Client = fallbackClient;
+              accessToken = envAccessToken;
+              refreshToken = envRefreshToken;
+              
+            } catch (envError) {
+              console.error("❌ Environment tokens also failed:", envError.message);
+              
+              return res.status(401).json({
+                error: "Authentication failed",
+                message: "Google tokens have expired and cannot be refreshed. Please re-authenticate.",
+                oauthUrl: "/api/auth/google",
+                needsReauth: true,
+                details: "Both session and environment tokens are invalid",
+                statusCode: 401
+              });
+            }
+          } else {
+            return res.status(401).json({
+              error: "Authentication failed",
+              message: "Google tokens have expired and cannot be refreshed. Please re-authenticate.",
+              oauthUrl: "/api/auth/google", 
+              needsReauth: true,
+              details: "Refresh token is invalid or expired",
+              statusCode: 401
+            });
+          }
         }
       } else {
         throw tokenError; // Re-throw if it's not a token issue
