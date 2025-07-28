@@ -8,7 +8,7 @@ import { addMinimalOAuthRoutes } from './minimal-oauth';
 
 export function registerRoutes(app: Express) {
   console.log('[INFO] Creating routes...');
-  
+
   // Add minimal OAuth routes
   addMinimalOAuthRoutes(app);
 
@@ -283,7 +283,7 @@ export function registerRoutes(app: Express) {
   });
 
   // CLIENT MANAGEMENT ROUTES
-  
+
   // Get all clients for user
   app.get('/api/clients', async (req, res) => {
     try {
@@ -302,11 +302,11 @@ export function registerRoutes(app: Express) {
       const userId = parseInt(req.user?.id || req.session?.userId || "1");
       const clientId = parseInt(req.params.id);
       const client = await storage.getClient(userId, clientId);
-      
+
       if (!client) {
         return res.status(404).json({ error: 'Client not found' });
       }
-      
+
       res.json(client);
     } catch (error) {
       console.error('Get client error:', error);
@@ -332,11 +332,11 @@ export function registerRoutes(app: Express) {
     try {
       const clientId = parseInt(req.params.id);
       const client = await storage.updateClient(clientId, req.body);
-      
+
       if (!client) {
         return res.status(404).json({ error: 'Client not found' });
       }
-      
+
       res.json(client);
     } catch (error) {
       console.error('Update client error:', error);
@@ -358,20 +358,20 @@ export function registerRoutes(app: Express) {
   });
 
   // CONFLICT DETECTION ROUTES
-  
+
   // Detect schedule conflicts for a new appointment
   app.post('/api/conflicts/detect', async (req, res) => {
     try {
       const userId = parseInt(req.user?.id || req.session?.userId || "1");
       const { startTime, endTime, eventId } = req.body;
-      
+
       const conflicts = await storage.detectScheduleConflicts(
         userId,
         new Date(startTime),
         new Date(endTime),
         eventId ? parseInt(eventId) : undefined
       );
-      
+
       res.json(conflicts);
     } catch (error) {
       console.error('Detect conflicts error:', error);
@@ -405,7 +405,7 @@ export function registerRoutes(app: Express) {
   });
 
   // SESSION NOTES ROUTES
-  
+
   // Get session notes
   app.get('/api/session-notes', async (req, res) => {
     try {
@@ -433,14 +433,14 @@ export function registerRoutes(app: Express) {
   });
 
   // REVENUE TRACKING ROUTES
-  
+
   // Get revenue analytics
   app.get('/api/revenue/analytics', async (req, res) => {
     try {
       const userId = parseInt(req.user?.id || req.session?.userId || "1");
       const startDate = new Date(req.query.startDate as string);
       const endDate = new Date(req.query.endDate as string);
-      
+
       const analytics = await storage.getRevenueAnalytics(userId, startDate, endDate);
       res.json(analytics);
     } catch (error) {
@@ -455,7 +455,7 @@ export function registerRoutes(app: Express) {
       const userId = parseInt(req.user?.id || req.session?.userId || "1");
       const startDate = req.query.startDate ? new Date(req.query.startDate as string) : undefined;
       const endDate = req.query.endDate ? new Date(req.query.endDate as string) : undefined;
-      
+
       const records = await storage.getRevenueRecords(userId, startDate, endDate);
       res.json(records);
     } catch (error) {
@@ -465,7 +465,7 @@ export function registerRoutes(app: Express) {
   });
 
   // APPOINTMENT TEMPLATES ROUTES
-  
+
   // Get appointment templates
   app.get('/api/templates', async (req, res) => {
     try {
@@ -570,24 +570,17 @@ export function registerRoutes(app: Express) {
   });
 
   // Auth debug endpoint
-  app.get('/api/auth/debug', async (req, res) => {
-    try {
-      const authStatus = {
-        authenticated: !!req.user,
-        hasValidTokens: !!req.user,
-        user: req.user || null,
-        sessionId: req.sessionID,
-        sessionData: req.session ? {
-          userId: req.session.userId,
-          passport: req.session.passport
-        } : null
-      };
+  app.get('/api/auth/debug', requireGoogleAuth, (req, res) => {
+    const debugInfo = {
+      authenticated: !!req.user,
+      hasValidTokens: !!(req.user?.googleAccessToken && req.user?.googleRefreshToken),
+      sessionId: req.sessionID,
+      userAgent: req.get('User-Agent'),
+      timestamp: new Date().toISOString(),
+      userId: req.user?.id
+    };
 
-      res.json(authStatus);
-    } catch (error) {
-      console.error('[ERROR] Auth debug error:', error);
-      res.status(500).json({ error: error.message });
-    }
+    res.json(debugInfo);
   });
 
   // Calendar sync endpoint
@@ -671,15 +664,15 @@ export function registerRoutes(app: Express) {
 
       // Try simple calendar sync first to avoid authentication complexity
       const { simpleCalendarSync } = await import('./simple-calendar-sync');
-      
+
       try {
         return await simpleCalendarSync(req, res);
       } catch (simpleError) {
         console.log('⚠️ Simple sync failed, trying force sync:', simpleError.message);
-        
+
         // Fallback to force sync if simple sync fails
         const { forceGoogleCalendarSync } = await import('./force-google-sync');
-        
+
         // Create a mock response object for the force sync function
         let syncResult = null;
         let syncError = null;
@@ -891,7 +884,7 @@ export function registerRoutes(app: Express) {
       // Write events to a temporary file to avoid shell escaping issues
       const fs = await import('fs');
       const tempEventsFile = `/tmp/events_${Date.now()}.json`;
-      const eventsData = typeof events === 'string' ? events : JSON.stringify(events);
+      const eventsData = typeof events === 'string' ? events : JSONstringify(events);
       fs.default.writeFileSync(tempEventsFile, eventsData);
 
       const pythonCommand = `python3 pymypdf_bidirectional_export.py "${tempEventsFile}" "${weekStart}" "${weekEnd}"`;

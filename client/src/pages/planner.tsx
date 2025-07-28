@@ -186,6 +186,26 @@ export default function Planner() {
 
   }, [refreshAuth, queryClient, user, userLoading]);
 
+  // Check authentication status
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const response = await fetch('/api/auth/status', {
+          credentials: 'include'
+        });
+        if (!response.ok) {
+          console.warn('Auth check failed');
+        }
+      } catch (error) {
+        console.error('Auth check error:', error);
+      }
+    };
+
+    checkAuth();
+    const interval = setInterval(checkAuth, 300000); // Check every 5 minutes instead of 30 seconds
+    return () => clearInterval(interval);
+  }, []);
+
   // DISABLED autonomous auth check to prevent reload loops - only manual fix button available
   useEffect(() => {
     // Autonomous checking disabled - only manual "FIX AUTHENTICATION NOW" button available
@@ -332,11 +352,11 @@ export default function Planner() {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        
+
         if (response.status === 401 || errorData.needsReauth) {
           throw new Error(`Authentication required: ${errorData.message || 'Please re-authenticate with Google'}`);
         }
-        
+
         throw new Error(errorData.message || 'Failed to sync calendar events');
       }
 
@@ -353,7 +373,7 @@ export default function Planner() {
     },
     onError: (error) => {
       console.error('❌ Calendar sync failed:', error);
-      
+
       if (error.message?.includes('Authentication required')) {
         toast({
           title: "Authentication Required",
@@ -812,18 +832,18 @@ export default function Planner() {
           console.log('🎯 UNIFIED BIDIRECTIONAL EXPORT STARTING...');
           try {
             const { exportUnifiedBidirectionalWeeklyPackage } = await import('../utils/unifiedBidirectionalExport');
-            
+
             const weekStart = currentWeek[0]?.date || new Date();
             console.log(`📅 Week starting: ${weekStart.toDateString()}`);
             console.log(`📊 Events count: ${allEvents.length}`);
             console.log('🎯 Creating single 8-page PDF with EXACT template rendering logic');
-            
+
             const filename = await exportUnifiedBidirectionalWeeklyPackage(allEvents, weekStart);
-            
+
             console.log('✅ Unified bidirectional PDF created successfully');
             console.log(`📄 Generated: ${filename}`);
             console.log('🔗 Single 8-page PDF with bidirectional navigation');
-            
+
             toast({
               title: "Export Complete",
               description: `Unified bidirectional PDF saved as ${filename}`,
@@ -863,7 +883,7 @@ export default function Planner() {
 
         case 'isolated-calendar':
           console.log('🎯 ISOLATED CALENDAR PDF EXPORT STARTING...');
-          console.log('📅 Selected date:', selectedDate.toDateString());
+          console.log('📅Selected date:', selectedDate.toDateString());
           console.log('📊 Available events:', allEvents.length);
 
           await exportIsolatedCalendarPDF({
@@ -1730,17 +1750,17 @@ export default function Planner() {
                             <TabsTrigger value="workflows">Advanced Workflows</TabsTrigger>
                             <TabsTrigger value="ai-engine">AI Engine</TabsTrigger>
                           </TabsList>
-                          
+
                           <TabsContent value="basic" className="mt-4">
                             <TaskAutomation 
                               events={filteredEvents}
                             />
                           </TabsContent>
-                          
+
                           <TabsContent value="workflows" className="mt-4">
                             <AdvancedWorkflowAutomation />
                           </TabsContent>
-                          
+
                           <TabsContent value="ai-engine" className="mt-4">
                             <SmartWorkflowEngine />
                           </TabsContent>
@@ -1755,7 +1775,7 @@ export default function Planner() {
                             <TabsTrigger value="slack">Slack</TabsTrigger>
                             <TabsTrigger value="workflows">Advanced</TabsTrigger>
                           </TabsList>
-                          
+
                           <TabsContent value="overview" className="mt-4">
                             <CrossPlatformSync 
                               onSyncComplete={() => {
@@ -1767,15 +1787,15 @@ export default function Planner() {
                               }}
                             />
                           </TabsContent>
-                          
+
                           <TabsContent value="notion" className="mt-4">
                             <NotionIntegration />
                           </TabsContent>
-                          
+
                           <TabsContent value="slack" className="mt-4">
                             <SlackIntegration />
                           </TabsContent>
-                          
+
                           <TabsContent value="workflows" className="mt-4">
                             <div className="space-y-6">
                               <AdvancedWorkflowAutomation />
@@ -2375,7 +2395,7 @@ export default function Planner() {
                     <Download className="h-4 w-4 mr-2" />
                     🎨 Custom Weekly Calendar
                   </Button>
-                  
+
                   <Button
                     variant="outline"
                     size="sm"
@@ -2385,7 +2405,7 @@ export default function Planner() {
                     <Download className="h-4 w-4 mr-2" />
                     📦 EXACT Weekly Package (8 Pages)
                   </Button>
-                  
+
                   <Button
                     variant="outline"
                     size="sm"
