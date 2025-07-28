@@ -4,7 +4,7 @@ hidden = [".config", ".git", "generated-icon.png", "node_modules", "dist"]
 
 [nix]
 channel = "stable-24_05"
-packages = ["freetype", "gh", "glibcLocales", "gumbo", "harfbuzz", "jbig2dec", "libjpeg_turbo", "mupdf", "nano", "openjpeg", "swig", "unzip", "xcbuild", "python311Packages.pymupdf", "python311Packages.reportlab"]
+packages = ["freetype", "gh", "glibcLocales", "gumbo", "harfbuzz", "jbig2dec", "libjpeg_turbo", "mupdf", "nano", "openjpeg", "python311Packages.pymupdf", "python311Packages.reportlab", "swig", "unzip", "xcbuild"]
 
 [deployment]
 deploymentTarget = "autoscale"
@@ -16,7 +16,7 @@ localPort = 5000
 externalPort = 80
 
 [workflows]
-runButton = "Start application"
+runButton = "Fixed Development Server"
 
 [[workflows.workflow]]
 name = "Project"
