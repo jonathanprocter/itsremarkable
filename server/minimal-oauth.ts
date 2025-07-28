@@ -44,19 +44,24 @@ export function initializeMinimalOAuth() {
     const user = {
       id: 1,
       email: profile.emails?.[0]?.value || 'user@example.com',
-      name: profile.displayName || 'User'
+      name: profile.displayName || 'User',
+      accessToken: accessToken,
+      refreshToken: refreshToken
     };
     
+    console.log('🎯 Created user object:', { id: user.id, email: user.email, name: user.name, hasTokens: !!accessToken });
     return done(null, user);
   }));
 
   // Simple serialization
   passport.serializeUser((user: any, done) => {
-    done(null, user.id);
+    console.log('📝 Serializing user:', user);
+    done(null, user);
   });
 
-  passport.deserializeUser((id: any, done) => {
-    done(null, { id, email: 'user@example.com', name: 'User' });
+  passport.deserializeUser((user: any, done) => {
+    console.log('🔍 Deserializing user:', user);
+    done(null, user);
   });
 
   console.log('✅ Minimal OAuth configured');
@@ -73,23 +78,38 @@ export function addMinimalOAuthRoutes(app: Express) {
   app.get('/api/auth/google/callback', 
     passport.authenticate('google', { failureRedirect: '/?error=auth_failed' }),
     (req: Request, res: Response) => {
-      console.log('✅ OAuth callback successful');
-      res.redirect('/?auth=success');
+      console.log('✅ OAuth callback successful for user:', req.user);
+      
+      // Ensure session is saved properly
+      req.session.save((err) => {
+        if (err) {
+          console.error('Session save error:', err);
+        }
+        res.redirect('/?auth=success');
+      });
     }
   );
 
   // Auth status
   app.get('/api/auth/status', (req: Request, res: Response) => {
-    const isAuthenticated = req.isAuthenticated() || !!process.env.GOOGLE_ACCESS_TOKEN;
+    const isAuthenticated = req.isAuthenticated();
+    const hasValidTokens = !!process.env.GOOGLE_ACCESS_TOKEN;
     
     res.json({
       authenticated: isAuthenticated,
+      hasValidTokens: hasValidTokens,
+      user: isAuthenticated ? req.user : null
+    });
+  });
+
+  // Auth debug (separate from status for troubleshooting)
+  app.get('/api/auth/debug', (req: Request, res: Response) => {
+    res.json({
+      authenticated: req.isAuthenticated(),
       hasValidTokens: !!process.env.GOOGLE_ACCESS_TOKEN,
-      user: isAuthenticated ? {
-        id: req.user?.id || 1,
-        email: req.user?.email || 'user@example.com',
-        name: req.user?.name || 'User'
-      } : null
+      sessionId: req.sessionID,
+      userAgent: req.get('User-Agent'),
+      timestamp: new Date().toISOString()
     });
   });
 
