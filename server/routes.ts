@@ -658,6 +658,12 @@ export function registerRoutes(app: Express) {
     }
   });
 
+  // Test Google tokens endpoint
+  app.get('/api/test/google-tokens', async (req, res) => {
+    const { testGoogleTokens } = await import('./test-google-tokens');
+    return await testGoogleTokens(req, res);
+  });
+
   // Alternative calendar sync endpoint (POST version)
   app.post('/api/sync/calendar', async (req, res) => {
     try {

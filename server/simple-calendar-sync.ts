@@ -55,11 +55,56 @@ export async function simpleCalendarSync(req: any, res: any) {
     } catch (calendarError) {
       console.error("❌ Calendar access failed:", calendarError.message);
       
-      // If it's a 401, suggest re-authentication
-      if (calendarError.code === 401 || calendarError.message?.includes('unauthorized')) {
-        return res.status(401).json({
-          error: "Calendar access unauthorized",
-          message: "Google Calendar access denied. Please re-authenticate.",
+      // Try to refresh the token if we get an authentication error
+      if (calendarError.code === 401 || calendarError.message?.includes('unauthorized') || calendarError.message?.includes('invalid_grant')) {
+        console.log("🔄 Attempting token refresh due to authentication error...");
+        
+        try {
+          // Use refresh token to get new access token
+          const { credentials } = await oauth2Client.refreshAccessToken();
+          console.log("✅ Token refresh successful");
+          
+          // Update the client with new credentials
+          oauth2Client.setCredentials({
+            access_token: credentials.access_token,
+            refresh_token: credentials.refresh_token || refreshToken,
+          });
+          
+          // Retry the calendar call with refreshed token
+          const retryResponse = await calendar.calendarList.list({ maxResults: 5 });
+          console.log(`✅ Calendar access verified after token refresh - found ${retryResponse.data.items?.length || 0} calendars`);
+          
+          return res.json({
+            success: true,
+            message: "Calendar sync successful (after token refresh)",
+            calendarsFound: retryResponse.data.items?.length || 0,
+            calendars: retryResponse.data.items?.map(cal => ({
+              id: cal.id,
+              summary: cal.summary,
+              primary: cal.primary
+            })) || [],
+            tokenRefreshed: true,
+            timestamp: new Date().toISOString()
+          });
+          
+        } catch (refreshError) {
+          console.error("❌ Token refresh failed:", refreshError.message);
+          
+          return res.status(401).json({
+            error: "Calendar access unauthorized",
+            message: "Google Calendar access denied and token refresh failed. Please re-authenticate.",
+            needsReauth: true,
+            authUrl: "/api/auth/google",
+            details: `Original error: ${calendarError.message}, Refresh error: ${refreshError.message}`
+          });
+        }
+      }
+      
+      // Handle 403 (forbidden) errors specifically
+      if (calendarError.code === 403) {
+        return res.status(403).json({
+          error: "Calendar access forbidden",
+          message: "Google Calendar API access is forbidden. Check API quotas and permissions.",
           needsReauth: true,
           authUrl: "/api/auth/google",
           details: calendarError.message
