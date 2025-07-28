@@ -1,4 +1,5 @@
 import { Component, ReactNode } from 'react';
+import { ConsoleManager } from '../../utils/consoleManager';
 
 interface ErrorBoundaryState {
   hasError: boolean;
@@ -23,7 +24,11 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
   }
 
   componentDidCatch(error: Error, errorInfo: any) {
-    // ErrorBoundary caught an error
+    ConsoleManager.throttledLog('ErrorBoundary caught an error:', {
+      error: error.message,
+      stack: error.stack,
+      componentStack: errorInfo?.componentStack
+    }, 'error');
 
     this.setState({
       error,

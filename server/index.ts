@@ -120,13 +120,16 @@ app.use((req, res, next) => {
   // Handle unhandled promise rejections
   process.on('unhandledRejection', (reason, promise) => {
     console.error('Unhandled Rejection at:', promise, 'reason:', reason);
-    // Don't exit the process, just log the error
+    // Log additional context if available
+    if (reason instanceof Error) {
+      console.error('Stack trace:', reason.stack);
+    }
   });
 
   // Handle uncaught exceptions
   process.on('uncaughtException', (error) => {
     console.error('Uncaught Exception:', error);
-    // Don't exit the process, just log the error
+    console.error('Stack trace:', error.stack);
   });
 
   // CRITICAL: Ensure API routes are fully registered before Vite setup

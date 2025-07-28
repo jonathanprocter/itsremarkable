@@ -56,24 +56,44 @@ export class ConsoleManager {
   }
 }
 
-// Disable console throttling for connection debugging
+// Enhanced error handling for development
 if (process.env.NODE_ENV === 'development') {
+  // Handle unhandled promise rejections
+  window.addEventListener('unhandledrejection', (event) => {
+    console.error('Unhandled promise rejection:', event.reason);
+    console.error('Promise:', event.promise);
+    // Prevent the default behavior (logging to console twice)
+    event.preventDefault();
+  });
+
+  // Handle uncaught errors
+  window.addEventListener('error', (event) => {
+    console.error('Uncaught error:', event.error);
+    console.error('Message:', event.message);
+    console.error('Source:', event.filename, 'Line:', event.lineno);
+  });
+
   const originalLog = console.log;
   const originalWarn = console.warn;
   const originalError = console.error;
 
   console.log = (message: any, ...args: any[]) => {
-    // Allow all logs through for connection debugging
+    // Filter out vite connection messages to reduce noise
+    if (typeof message === 'string' && (
+      message.includes('[vite] connecting') ||
+      message.includes('[vite] connected') ||
+      message.includes('[vite] failed to connect')
+    )) {
+      return; // Suppress vite connection spam
+    }
     originalLog(message, ...args);
   };
 
   console.warn = (message: any, ...args: any[]) => {
-    // Allow all warnings through
     originalWarn(message, ...args);
   };
 
   console.error = (message: any, ...args: any[]) => {
-    // Always allow all errors through for debugging
     originalError(message, ...args);
   };
 }

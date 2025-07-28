@@ -27,6 +27,7 @@ import { exportTrulyPixelPerfectWeeklyPDF } from '@/utils/trulyPixelPerfectExpor
 import { exportExactWeeklySpec } from '@/utils/exactWeeklySpecExport';
 import { exportExactWeeklyPackage } from '@/utils/exactWeeklyPackageExport';
 import { exportLinkedWeeklyPackage } from '@/utils/bidirectionalWeeklyPackageLinked';
+import { ConsoleManager } from '@/utils/consoleManager';
 
 
 import { export100PercentPixelPerfectPDF } from '@/utils/pixelPerfectPDFExport';
@@ -1392,8 +1393,8 @@ export default function Planner() {
 
   // Calculate event breakdown
   const eventBreakdown = useMemo(() => {
-    console.log('🔍 Calculating event breakdown for events:', allEvents);
-    console.log('🔍 Events type:', typeof allEvents, 'isArray:', Array.isArray(allEvents));
+    ConsoleManager.throttledLog('🔍 Calculating event breakdown for events:', allEvents);
+    ConsoleManager.throttledLog('🔍 Events type:', typeof allEvents, 'isArray:', Array.isArray(allEvents));
 
     if (!Array.isArray(allEvents)) {
       console.warn('⚠️ Events is not an array:', allEvents);
