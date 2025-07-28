@@ -11,19 +11,23 @@ import {
   testGoogleCalendarAccess,
   comprehensiveTokenRefresh
 } from './oauth-comprehensive-fix';
+import { addAuthDebugRoutes } from './auth-debug';
 
 export function registerRoutes(app: Express) {
   console.log('[INFO] Creating routes...');
+  
+  // Add debug routes
+  addAuthDebugRoutes(app);
 
   // Essential auth routes
   app.get('/api/auth/google', passport.authenticate('google', { 
     scope: ['profile', 'email', 'https://www.googleapis.com/auth/calendar'] 
   }));
 
-  app.get('/api/auth/callback', passport.authenticate('google', { failureRedirect: '/login' }), 
+  app.get('/api/auth/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), 
     (req, res) => {
       console.log('[SUCCESS] OAuth callback successful');
-      res.redirect('/dashboard?auth=success');
+      res.redirect('/?auth=success');
     }
   );
 

@@ -11,7 +11,7 @@ function getCurrentDomain(): string {
   }
   
   // Fallback to current domain from environment
-  return `https://474155cb-26cc-45e2-9759-28eaffdac638-00-20mxsrmp7mzl4.worf.replit.dev`;
+  return `https://5a6f843f-53cb-48cf-8afc-05f223a337ff-00-3gvxznlnxvdl8.riker.replit.dev`;
 }
 
 // Configure OAuth2 client with proper redirect URI
