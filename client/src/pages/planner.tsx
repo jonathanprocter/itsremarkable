@@ -53,7 +53,7 @@ import { ProductivityHub } from '@/components/productivity/ProductivityHub';
 import { TaskAutomation } from '@/components/workflow/TaskAutomation';
 import { CrossPlatformSync } from '@/components/integrations/CrossPlatformSync';
 import NotionIntegration from '@/components/integrations/NotionIntegration';
-import SlackIntegration from '@/components/integrations/SlackIntegration';
+
 import AdvancedWorkflowAutomation from '@/components/workflow/AdvancedWorkflowAutomation';
 import SmartWorkflowEngine from '@/components/workflow/SmartWorkflowEngine';
 import { useTabTransitions } from '@/hooks/useTabTransitions';
@@ -1769,10 +1769,9 @@ export default function Planner() {
 
                       <TabsContent value="integrations" className="mt-4">
                         <Tabs defaultValue="overview" className="w-full">
-                          <TabsList className="grid w-full grid-cols-4">
+                          <TabsList className="grid w-full grid-cols-3">
                             <TabsTrigger value="overview">Overview</TabsTrigger>
                             <TabsTrigger value="notion">Notion</TabsTrigger>
-                            <TabsTrigger value="slack">Slack</TabsTrigger>
                             <TabsTrigger value="workflows">Advanced</TabsTrigger>
                           </TabsList>
 
@@ -1792,9 +1791,7 @@ export default function Planner() {
                             <NotionIntegration />
                           </TabsContent>
 
-                          <TabsContent value="slack" className="mt-4">
-                            <SlackIntegration />
-                          </TabsContent>
+
 
                           <TabsContent value="workflows" className="mt-4">
                             <div className="space-y-6">

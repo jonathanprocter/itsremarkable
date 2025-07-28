@@ -87,16 +87,7 @@ export function CrossPlatformSync({ onSyncComplete }: CrossPlatformSyncProps) {
         syncedEvents: 0,
         category: 'productivity'
       },
-      {
-        id: 'slack',
-        name: 'Slack',
-        description: 'Team communication and collaboration',
-        icon: '💬',
-        status: 'connected',
-        lastSync: '2025-01-27T21:30:00Z',
-        syncedEvents: 0,
-        category: 'communication'
-      },
+
       {
         id: 'zoom',
         name: 'Zoom',
