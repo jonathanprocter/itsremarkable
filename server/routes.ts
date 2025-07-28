@@ -12,12 +12,16 @@ import {
   comprehensiveTokenRefresh
 } from './oauth-comprehensive-fix';
 import { addAuthDebugRoutes } from './auth-debug';
+import { add403FixRoutes, configure403FixStrategy, test403Fix } from './oauth-403-fix';
 
 export function registerRoutes(app: Express) {
   console.log('[INFO] Creating routes...');
   
   // Add debug routes
   addAuthDebugRoutes(app);
+  
+  // Add 403 fix routes
+  add403FixRoutes(app);
 
   // Essential auth routes
   app.get('/api/auth/google', passport.authenticate('google', { 

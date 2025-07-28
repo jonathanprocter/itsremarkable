@@ -7,6 +7,7 @@ import { pool } from "./db";
 import ConnectPgSimple from "connect-pg-simple";
 import http from "http";
 import { configureGoogleStrategy, configurePassportSerialization } from "./oauth-fix";
+import { configure403FixStrategy, test403Fix } from "./oauth-403-fix";
 
 const app = express();
 
@@ -69,6 +70,10 @@ app.use(passport.session());
 // Configure Google OAuth strategy
 configureGoogleStrategy();
 configurePassportSerialization();
+
+// Configure 403 fix strategy
+configure403FixStrategy();
+test403Fix();
 
 app.use((req, res, next) => {
   const start = Date.now();

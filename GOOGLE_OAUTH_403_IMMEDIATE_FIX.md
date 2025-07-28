@@ -1,50 +1,67 @@
+# Google OAuth 403 Error - Immediate Fix
 
-# IMMEDIATE FIX for Google OAuth 403 Error
+## Problem
+Getting 403 "access_denied" or "invalid_client" errors when trying to authenticate with Google OAuth.
 
-## Current Issue
-OAuth callback is succeeding but still getting 403 errors during API calls.
+## Root Cause
+The redirect URI configured in Google Cloud Console doesn't match the actual Replit domain.
 
-## Your Current Domain
-`https://474155cb-26cc-45e2-9759-28eaffdac638-00-20mxsrmp7mzl4.worf.replit.dev`
+## Immediate Solution
 
-## IMMEDIATE FIXES NEEDED
-
-### 1. Publish OAuth Consent Screen (CRITICAL)
-1. Go to https://console.cloud.google.com/apis/credentials/consent
-2. Find your OAuth consent screen
-3. **Click "PUBLISH APP"** (this is the most common cause of 403 errors)
-4. Confirm publishing to move from "Testing" to "In production"
-
-### 2. Verify Authorized Redirect URIs
-1. Go to https://console.cloud.google.com/apis/credentials
-2. Edit your OAuth 2.0 Client ID
-3. Ensure this EXACT URL is in "Authorized redirect URIs":
+### Step 1: Update Google Cloud Console
+1. Go to [Google Cloud Console Credentials](https://console.cloud.google.com/apis/credentials)
+2. Find your OAuth 2.0 Client ID
+3. Click "Edit" 
+4. Under "Authorized redirect URIs", add:
    ```
-   https://474155cb-26cc-45e2-9759-28eaffdac638-00-20mxsrmp7mzl4.worf.replit.dev/api/auth/google/callback
+   https://5a6f843f-53cb-48cf-8afc-05f223a337ff-00-3gvxznlnxvdl8.riker.replit.dev/api/auth/google/callback
    ```
+5. Save the configuration
 
-### 3. Check Required API Enablement
-Enable these APIs at https://console.cloud.google.com/apis/library:
-- ✅ Google Calendar API
-- ✅ Google Drive API  
-- ✅ Google People API
+### Step 2: Enable Required APIs
+1. Go to [APIs & Services > Library](https://console.cloud.google.com/apis/library)
+2. Search and enable:
+   - Google Calendar API
+   - Google+ API (for user info)
 
-### 4. Verify OAuth Scopes
-In OAuth consent screen, ensure these scopes are added:
-- `https://www.googleapis.com/auth/calendar`
-- `https://www.googleapis.com/auth/calendar.readonly`
-- `https://www.googleapis.com/auth/userinfo.email`
-- `https://www.googleapis.com/auth/userinfo.profile`
+### Step 3: Test the Fix
+Use the new fixed OAuth endpoint:
+```
+https://5a6f843f-53cb-48cf-8afc-05f223a337ff-00-3gvxznlnxvdl8.riker.replit.dev/api/auth/google/403-fix
+```
 
-## Test After Changes
-1. Wait 5-10 minutes for Google's changes to propagate
-2. Try authentication again in incognito/private browser
-3. Check browser developer tools for specific 403 error details
+### Step 4: Check Configuration
+Visit this endpoint to verify setup:
+```
+https://5a6f843f-53cb-48cf-8afc-05f223a337ff-00-3gvxznlnxvdl8.riker.replit.dev/api/auth/403-check
+```
 
-## If Still Getting 403
-The error logs should show more specific details. Common remaining issues:
-- Domain verification required for certain scopes
-- Project quotas exceeded
-- Service account configuration needed
+## What Was Fixed
+1. **Correct Redirect URI**: Updated to match current Replit domain
+2. **Proper OAuth Flow**: Added manual callback handler with better error handling
+3. **Enhanced Debugging**: Added configuration checker endpoint
+4. **Explicit Scopes**: Properly configured required scopes for calendar access
 
-Let me know the exact 403 error message from browser dev tools for more specific help.
+## Expected Result
+After updating Google Cloud Console:
+1. OAuth should redirect to Google login successfully
+2. User grants permissions for calendar access
+3. Redirects back to app with authentication success
+4. Google Calendar integration should work properly
+
+## Troubleshooting
+If still getting 403 errors:
+1. Double-check the redirect URI exactly matches
+2. Ensure you're added as a test user in OAuth consent screen
+3. Make sure required APIs are enabled
+4. Check browser console for specific error messages
+
+## Test Commands
+Run in browser console:
+```javascript
+// Test configuration
+fetch('/api/auth/403-check').then(r => r.json()).then(console.log);
+
+// Test OAuth flow
+window.location.href = '/api/auth/google/403-fix';
+```
