@@ -8,11 +8,21 @@ import { storage } from "./storage";
 
 // OAuth2 client configuration
 function createOAuth2Client() {
-  return new google.auth.OAuth2(
-    process.env.GOOGLE_CLIENT_ID?.trim(),
-    process.env.GOOGLE_CLIENT_SECRET?.trim(),
-    getRedirectURI(),
-  );
+  const clientId = process.env.GOOGLE_CLIENT_ID?.trim();
+  const clientSecret = process.env.GOOGLE_CLIENT_SECRET?.trim();
+  const redirectUri = getRedirectURI();
+  
+  console.log('🔧 Creating OAuth2 client with:', {
+    hasClientId: !!clientId,
+    hasClientSecret: !!clientSecret,
+    redirectUri
+  });
+  
+  if (!clientId || !clientSecret) {
+    throw new Error('Missing GOOGLE_CLIENT_ID or GOOGLE_CLIENT_SECRET environment variables');
+  }
+  
+  return new google.auth.OAuth2(clientId, clientSecret, redirectUri);
 }
 
 function getRedirectURI() {
@@ -84,10 +94,18 @@ export async function forceGoogleCalendarSync(req: any, res: any) {
     } catch (tokenError) {
       console.log("⚠️ Token validation failed:", tokenError.message);
       
-      if (tokenError.message?.includes('invalid_grant') || tokenError.code === 401) {
+      // Check for specific authentication errors
+      if (tokenError.message?.includes('invalid_client') || 
+          tokenError.message?.includes('invalid_grant') || 
+          tokenError.code === 401) {
         console.log("🔄 Attempting token refresh...");
         
         try {
+          // Ensure we have the necessary credentials for refresh
+          if (!refreshToken) {
+            throw new Error('No refresh token available for token refresh');
+          }
+          
           const { credentials } = await oauth2Client.refreshAccessToken();
           
           // Update tokens
@@ -95,6 +113,8 @@ export async function forceGoogleCalendarSync(req: any, res: any) {
           if (credentials.refresh_token) {
             refreshToken = credentials.refresh_token;
           }
+          
+          console.log("✅ Token refresh successful - new access token obtained");
           
           // Update session if using session tokens
           if (sessionUser) {
@@ -110,7 +130,15 @@ export async function forceGoogleCalendarSync(req: any, res: any) {
             process.env.GOOGLE_REFRESH_TOKEN = credentials.refresh_token;
           }
           
-          console.log("✅ Token refresh successful");
+          // Verify the new tokens work by making a test call
+          oauth2Client.setCredentials({
+            access_token: accessToken,
+            refresh_token: refreshToken,
+          });
+          
+          const testCalendar = google.calendar({ version: "v3", auth: oauth2Client });
+          await testCalendar.calendarList.list({ maxResults: 1 });
+          console.log("✅ Refreshed tokens validated successfully");
           
         } catch (refreshError) {
           console.error("❌ Token refresh failed:", refreshError.message);
@@ -120,7 +148,8 @@ export async function forceGoogleCalendarSync(req: any, res: any) {
             message: "Google tokens have expired and cannot be refreshed. Please re-authenticate.",
             oauthUrl: "/api/auth/google",
             needsReauth: true,
-            details: "Refresh token is invalid or expired"
+            details: "Refresh token is invalid or expired",
+            statusCode: 401
           });
         }
       } else {
