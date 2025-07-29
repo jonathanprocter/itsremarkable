@@ -31,11 +31,11 @@ export const CalendarLegend = ({ filters, onFilterChange }: CalendarLegendProps)
           id="simplepractice"
           checked={filters.simplepractice}
           onChange={() => handleFilterToggle('simplepractice')}
-          className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+          className="w-4 h-4 text-accent rounded focus:ring-accent"
         />
         <label htmlFor="simplepractice" className="flex items-center space-x-2 text-sm">
-          <div className="w-3 h-3 bg-blue-50 border-2 border-blue-500" style={{borderLeft: '4px solid #6495ED'}}></div>
-          <span className="text-blue-700 font-medium">SimplePractice</span>
+          <div className="w-3 h-3 bg-background border-2 border-accent" style={{borderLeft: '4px solid hsl(28, 43.5%, 69.4%)'}}></div>
+          <span className="text-foreground font-medium">SimplePractice</span>
         </label>
       </div>
       
@@ -45,11 +45,11 @@ export const CalendarLegend = ({ filters, onFilterChange }: CalendarLegendProps)
           id="google"
           checked={filters.google}
           onChange={() => handleFilterToggle('google')}
-          className="w-4 h-4 text-green-600 rounded focus:ring-green-500"
+          className="w-4 h-4 text-success rounded focus:ring-success"
         />
         <label htmlFor="google" className="flex items-center space-x-2 text-sm">
-          <div className="w-3 h-3 bg-white border-2 border-green-500 border-dashed"></div>
-          <span className="text-green-700 font-medium">Google Calendar</span>
+          <div className="w-3 h-3 bg-background border-2 border-success border-dashed"></div>
+          <span className="text-foreground font-medium">Google Calendar</span>
         </label>
       </div>
       
@@ -59,11 +59,11 @@ export const CalendarLegend = ({ filters, onFilterChange }: CalendarLegendProps)
           id="personal"
           checked={filters.personal}
           onChange={() => handleFilterToggle('personal')}
-          className="w-4 h-4 text-yellow-600 rounded focus:ring-yellow-500"
+          className="w-4 h-4 text-warning rounded focus:ring-warning"
         />
         <label htmlFor="personal" className="flex items-center space-x-2 text-sm">
-          <div className="w-3 h-3 bg-yellow-500 border-2 border-yellow-600"></div>
-          <span className="text-yellow-700 font-medium">Holidays</span>
+          <div className="w-3 h-3 bg-warning border-2 border-warning"></div>
+          <span className="text-foreground font-medium">Holidays</span>
         </label>
       </div>
     </div>

@@ -260,7 +260,7 @@ export const WeeklyCalendarGrid = ({
           <div style={{ fontWeight: 'bold', fontSize: '14px', marginBottom: '2px' }}>
             {day.dayOfWeek}
           </div>
-          <div style={{ fontSize: '11px', color: '#666' }}>
+          <div style={{ fontSize: '11px', color: 'var(--muted-foreground)' }}>
             {day.date.getMonth() + 1}/{day.date.getDate()}/{day.date.getFullYear()}
           </div>
         </div>
@@ -428,7 +428,7 @@ export const WeeklyCalendarGrid = ({
                         <div className="appointment-location" style={{ 
                           fontSize: durationMinutes <= 30 ? '6px' : '7px',
                           lineHeight: '1.0',
-                          color: '#666',
+                          color: 'var(--muted-foreground)',
                           fontWeight: 'normal',
                           marginTop: '1px',
                           marginBottom: '1px'
@@ -439,7 +439,7 @@ export const WeeklyCalendarGrid = ({
 
                       <div className="appointment-spacer" style={{ 
                         height: durationMinutes <= 30 ? '1px' : '2px',
-                        borderBottom: '1px solid #ccc',
+                        borderBottom: '1px solid var(--border)',
                         margin: durationMinutes <= 30 ? '1px 0' : '2px 0'
                       }}></div>
                       <div className="appointment-time" style={{ 

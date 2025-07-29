@@ -31,12 +31,12 @@ interface AppointmentStatusModalProps {
 }
 
 const statusOptions = [
-  { value: AppointmentStatus.SCHEDULED, label: 'Scheduled', color: '#4285f4' },
-  { value: AppointmentStatus.CONFIRMED, label: 'Confirmed', color: '#34a853' },
-  { value: AppointmentStatus.CANCELLED, label: 'Cancelled', color: '#ffc107' },
-  { value: AppointmentStatus.NO_SHOW, label: 'No Show', color: '#dc3545' },
-  { value: AppointmentStatus.CLINICIAN_CANCELED, label: 'Clinician Canceled', color: '#6c757d' },
-  { value: AppointmentStatus.COMPLETED, label: 'Completed', color: '#28a745' }
+  { value: AppointmentStatus.SCHEDULED, label: 'Scheduled', color: 'hsl(28, 43.5%, 69.4%)' },
+  { value: AppointmentStatus.CONFIRMED, label: 'Confirmed', color: 'hsl(212, 31.2%, 42.0%)' },
+  { value: AppointmentStatus.CANCELLED, label: 'Cancelled', color: 'hsl(91, 19.1%, 62.2%)' },
+  { value: AppointmentStatus.NO_SHOW, label: 'No Show', color: 'hsl(0, 20.8%, 55.3%)' },
+  { value: AppointmentStatus.CLINICIAN_CANCELED, label: 'Clinician Canceled', color: 'hsl(0, 0%, 45%)' },
+  { value: AppointmentStatus.COMPLETED, label: 'Completed', color: 'hsl(212, 31.2%, 42.0%)' }
 ];
 
 const locationOptions = [
