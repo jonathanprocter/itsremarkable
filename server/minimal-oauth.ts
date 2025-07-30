@@ -112,7 +112,7 @@ export function addMinimalOAuthRoutes(app: Express) {
 
     passport.authenticate('google', { 
       failureRedirect: '/?error=auth_failed',
-      session: false // Disable session for now to avoid session errors
+      session: true // Enable session for proper authentication
     })(req, res, (err) => {
       if (err) {
         console.error('❌ Passport authentication error:', err);
@@ -120,18 +120,15 @@ export function addMinimalOAuthRoutes(app: Express) {
       }
 
       console.log('✅ OAuth callback successful for user:', req.user);
-      // Store in session with proper serialization
-      req.session.user = req.user;
-      req.session.passport = { user: req.user };
-      req.session.isAuthenticated = true;
-
+      
       // Ensure session is saved before redirect
-      req.session.save((err) => {
-        if (err) {
-          console.error('Session save error:', err);
+      req.session.save((saveErr) => {
+        if (saveErr) {
+          console.error('Session save error:', saveErr);
         }
+        console.log('✅ Session saved, redirecting to success page');
+        res.redirect('/?auth=success');
       });
-      res.redirect('/?auth=success');
     });
   });
 
@@ -139,11 +136,20 @@ export function addMinimalOAuthRoutes(app: Express) {
   app.get('/api/auth/status', (req: Request, res: Response) => {
     const isAuthenticated = req.isAuthenticated();
     const hasValidTokens = !!process.env.GOOGLE_ACCESS_TOKEN;
+    const hasSessionUser = !!(req.session && req.session.user);
+
+    console.log('🔍 Auth status check:', {
+      isAuthenticated,
+      hasValidTokens,
+      hasSessionUser,
+      sessionExists: !!req.session,
+      userId: req.user?.id || 'none'
+    });
 
     res.json({
-      authenticated: isAuthenticated,
+      authenticated: isAuthenticated || hasSessionUser,
       hasValidTokens: hasValidTokens,
-      user: isAuthenticated ? req.user : null
+      user: isAuthenticated ? req.user : (hasSessionUser ? req.session.user : null)
     });
   });
 

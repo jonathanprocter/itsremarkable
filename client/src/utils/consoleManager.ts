@@ -98,14 +98,34 @@ if (process.env.NODE_ENV === 'development') {
   };
 }
 
+type LogLevel = 'log' | 'warn' | 'error' | 'debug' | 'info';
+
+function shouldLog(level: LogLevel): boolean {
+  // Always allow logging in development
+  if (process.env.NODE_ENV === 'development') {
+    return true;
+  }
+  // In production, only allow warn and error
+  return level === 'warn' || level === 'error';
+}
+
 export function logWithLevel(level: LogLevel, message: string, data?: any) {
   if (shouldLog(level)) {
-    // Ensure the console method exists before calling it
-    const consoleMethod = console[level as keyof typeof console] as Function;
-    if (typeof consoleMethod === 'function') {
-      consoleMethod(message, data);
-    } else {
-      console.log(`[${level.toUpperCase()}]`, message, data);
+    // Map log levels to valid console methods
+    switch (level) {
+      case 'log':
+      case 'debug':
+      case 'info':
+        console.log(`[${level.toUpperCase()}]`, message, data);
+        break;
+      case 'warn':
+        console.warn(message, data);
+        break;
+      case 'error':
+        console.error(message, data);
+        break;
+      default:
+        console.log(`[${level.toUpperCase()}]`, message, data);
     }
   }
 }
