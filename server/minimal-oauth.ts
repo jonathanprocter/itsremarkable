@@ -39,6 +39,13 @@ function getCurrentDomain(): string {
 export function initializeMinimalOAuth() {
   console.log('🚀 Initializing minimal OAuth...');
 
+  // Clear any invalid tokens on startup
+  if (process.env.GOOGLE_ACCESS_TOKEN) {
+    console.log('🧹 Clearing potentially invalid tokens from environment');
+    delete process.env.GOOGLE_ACCESS_TOKEN;
+    delete process.env.GOOGLE_REFRESH_TOKEN;
+  }
+
   const redirectUri = `${getCurrentDomain()}/api/auth/callback`;
 
   console.log('🔗 Redirect URI:', redirectUri);

@@ -13,10 +13,10 @@ async function testGoogleCalendarAccess(accessToken: string) {
     const { google } = await import('googleapis');
     const oauth2Client = new google.auth.OAuth2();
     oauth2Client.setCredentials({ access_token: accessToken });
-    
+
     const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
     const response = await calendar.calendarList.list({ maxResults: 10 });
-    
+
     return response.data.items || [];
   } catch (error) {
     console.error('Google Calendar test error:', error);
@@ -28,33 +28,33 @@ async function testGoogleCalendarAccess(accessToken: string) {
 async function comprehensiveTokenRefresh(user: any) {
   try {
     console.log('🔄 Attempting token refresh...');
-    
+
     if (!user || !user.refreshToken) {
       throw new Error('AUTHENTICATION_REQUIRED');
     }
-    
+
     const { google } = await import('googleapis');
     const oauth2Client = new google.auth.OAuth2(
       process.env.GOOGLE_CLIENT_ID,
       process.env.GOOGLE_CLIENT_SECRET
     );
-    
+
     oauth2Client.setCredentials({
       refresh_token: user.refreshToken
     });
-    
+
     const { credentials } = await oauth2Client.refreshAccessToken();
-    
+
     if (credentials.access_token) {
       user.accessToken = credentials.access_token;
       process.env.GOOGLE_ACCESS_TOKEN = credentials.access_token;
     }
-    
+
     if (credentials.refresh_token) {
       user.refreshToken = credentials.refresh_token;
       process.env.GOOGLE_REFRESH_TOKEN = credentials.refresh_token;
     }
-    
+
     console.log('✅ Token refresh successful');
     return user;
   } catch (error) {
@@ -130,18 +130,36 @@ export function registerRoutes(app: Express) {
         userId = 1;
       }
 
+      const userIdNumber = parseInt(userId) || 1;
+
       console.log(`📊 Events endpoint called with userId: ${userId} (type: ${typeof userId})`);
 
       // Import storage to get real events
       const { storage } = await import('./storage');
 
+      // Ensure default user exists
+      try {
+        const existingUser = await storage.getUser(userIdNumber);
+        if (!existingUser) {
+          console.log(`🔧 Creating default user with ID ${userIdNumber}`);
+          await storage.createUser({
+            username: 'default_user',
+            email: 'user@example.com',
+            name: 'Default User',
+            password: null
+          });
+        }
+      } catch (userError) {
+        console.warn('User creation warning:', userError);
+      }
+
       // Get real events from database
-      let events = await storage.getEvents(userId);
+      let events = await storage.getEvents(userIdNumber);
 
       // If no events found, create some sample events for testing
       if (events.length === 0) {
         console.log('🆔 No events found in database, creating sample events...');
-        
+
         // Create sample events for today and the next few days
         const today = new Date();
         const sampleEvents = [
@@ -893,7 +911,7 @@ export function registerRoutes(app: Express) {
       // Write events to a temporary file to avoid shell escaping issues
       const fs = await import('fs');
       const tempEventsFile = `/tmp/events_${Date.now()}.json`;
-      const eventsData = typeof events === 'string' ? events : JSONstringify(events);
+      const eventsData = typeof events === 'string' ? events : JSON.stringify(events);
       fs.default.writeFileSync(tempEventsFile, eventsData);
 
       const pythonCommand = `python3 pymypdf_bidirectional_export.py "${tempEventsFile}" "${weekStart}" "${weekEnd}"`;

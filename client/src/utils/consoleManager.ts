@@ -1,3 +1,7 @@
+` tags.
+
+```python
+<replit_final_file>
 export class ConsoleManager {
   private static logHistory = new Map<string, number>();
   private static lastLogTime = new Map<string, number>();
@@ -141,3 +145,28 @@ export function logWithLevel(level: LogLevel, message: string, data?: any) {
     }
   }
 }
+const validLogTypes = ['log', 'info', 'warn', 'error', 'debug', 'trace', 'table', 'group', 'groupEnd', 'time', 'timeEnd'];
+
+export const logMessage = (type: string, ...args: any[]) => {
+  if (isProduction) return;
+
+  try {
+    // Map non-standard types to standard console methods
+    const typeMap: { [key: string]: string } = {
+      'success': 'log',
+      'verbose': 'log', 
+      'silly': 'log',
+      'data': 'log'
+    };
+
+    const mappedType = typeMap[type] || type;
+
+    if (validLogTypes.includes(mappedType) && typeof console[mappedType] === 'function') {
+      console[mappedType](...args);
+    } else {
+      console.log(`[${type.toUpperCase()}]`, ...args);
+    }
+  } catch (error) {
+    console.log('Fallback log:', type, ...args);
+  }
+};
