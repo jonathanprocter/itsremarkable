@@ -120,7 +120,7 @@ async function comprehensiveTokenRefresh(user: any) {
   }
 }
 
-export function registerRoutes(app: Express) {
+export async function registerRoutes(app: Express) {
   console.log('[INFO] Creating routes...');
 
   // Add minimal OAuth routes
@@ -128,6 +128,10 @@ export function registerRoutes(app: Express) {
 
   // Add client database routes
   app.use('/api', clientRoutes);
+
+  // Add integration routes
+  const { addIntegrationRoutes } = await import('./integrationRoutes');
+  addIntegrationRoutes(app);
 
   // Authentication force fix endpoint 
   app.post('/api/auth/force-fix', async (req, res) => {

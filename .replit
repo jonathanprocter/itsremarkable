@@ -122,4 +122,4 @@ task = "shell.exec"
 args = "npm run dev"
 
 [agent]
-integrations = ["javascript_database==1.0.0", "javascript_openai==1.0.0"]
+integrations = ["javascript_notion==1.0.0", "javascript_websocket==1.0.0", "javascript_openai==1.0.0", "javascript_database==1.0.0"]
