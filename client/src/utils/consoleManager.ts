@@ -44,9 +44,21 @@ export class ConsoleManager {
 
     // Show suppression message if we had multiple attempts
     if (logCount > this.MAX_SAME_LOGS) {
-      console[type](`${message} (suppressed ${logCount - 1} duplicate logs)`, data);
+      // Safely call console method
+      const consoleMethod = console[type as keyof Console] as (...args: any[]) => void;
+      if (typeof consoleMethod === 'function') {
+        consoleMethod(`${message} (suppressed ${logCount - 1} duplicate logs)`, data);
+      } else {
+        console.log(`[${type.toUpperCase()}] ${message} (suppressed ${logCount - 1} duplicate logs)`, data);
+      }
     } else {
-      console[type](message, data);
+      // Safely call console method
+      const consoleMethod = console[type as keyof Console] as (...args: any[]) => void;
+      if (typeof consoleMethod === 'function') {
+        consoleMethod(message, data);
+      } else {
+        console.log(`[${type.toUpperCase()}] ${message}`, data);
+      }
     }
   }
 
