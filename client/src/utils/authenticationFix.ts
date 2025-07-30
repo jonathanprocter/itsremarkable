@@ -62,6 +62,8 @@ export async function runAuthenticationFix(): Promise<AuthFixResult> {
         const forceFixResult = await forceFixResponse.json();
         if (forceFixResult.success) {
           console.log('✅ Force authentication fix successful');
+          // Wait for session to propagate
+          await new Promise(resolve => setTimeout(resolve, 200));
           return {
             success: true,
             message: 'Authentication fixed successfully',

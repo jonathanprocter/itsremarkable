@@ -267,7 +267,8 @@ export default function Planner() {
         const response = await fetch('/api/events', {
           credentials: 'include',
           headers: {
-            'Cache-Control': 'no-cache'
+            'Cache-Control': 'no-cache',
+            'Content-Type': 'application/json'
           }
         });
 
@@ -355,7 +356,10 @@ export default function Planner() {
           const result = await runAuthenticationFix();
           if (result.success) {
             console.log('✅ Auto-authentication fix successful');
-            queryClient.invalidateQueries({ queryKey: ['/api/events'] });
+            // Give the session time to propagate, then invalidate queries
+            setTimeout(() => {
+              queryClient.invalidateQueries({ queryKey: ['/api/events'] });
+            }, 500);
           }
         }
       } catch (error) {

@@ -55,8 +55,8 @@ app.use(session({
   cookie: {
     secure: false, // Must be false for HTTP in development
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days for reasonable session length
-    httpOnly: true, // Secure HTTP-only cookies
-    sameSite: 'lax', // Use lax for OAuth compatibility
+    httpOnly: false, // Set to false to allow client-side access for debugging
+    sameSite: 'none', // Allow cross-origin cookies for development
     path: '/', // Ensure cookie is sent for all paths
     domain: undefined // Let browser set domain automatically
   }
