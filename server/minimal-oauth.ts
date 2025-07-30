@@ -160,14 +160,17 @@ export function addMinimalOAuthRoutes(app: Express) {
       
       // Store user in session manually to ensure persistence
       req.session.user = req.user;
+      req.session.userId = req.user?.id;
       req.session.isAuthenticated = true;
       
       // Ensure session is saved before redirect
       req.session.save((saveErr) => {
         if (saveErr) {
           console.error('Session save error:', saveErr);
+          return res.redirect('/?error=session_save_failed');
         }
         console.log('✅ Session saved with user data, redirecting to success page');
+        console.log('✅ User ID stored in session:', req.user?.id);
         res.redirect('/?auth=success');
       });
     });
@@ -238,6 +241,32 @@ export function addMinimalOAuthRoutes(app: Express) {
       redirectUri: `${getCurrentDomain()}/api/auth/callback`,
       timestamp: new Date().toISOString()
     });
+  });
+
+  // Logout endpoint
+  app.get('/api/auth/logout', (req: Request, res: Response) => {
+    console.log('🚪 Logout requested');
+    
+    // Clear session
+    req.session.destroy((err) => {
+      if (err) {
+        console.error('Session destruction error:', err);
+      }
+    });
+    
+    // Clear passport authentication
+    req.logout((err) => {
+      if (err) {
+        console.error('Passport logout error:', err);
+      }
+    });
+    
+    // Clear environment tokens
+    delete process.env.GOOGLE_ACCESS_TOKEN;
+    delete process.env.GOOGLE_REFRESH_TOKEN;
+    
+    console.log('✅ Logout successful');
+    res.redirect('/?auth=logout');
   });
 
   console.log('✅ Minimal OAuth routes added');
