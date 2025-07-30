@@ -30,7 +30,7 @@ export function TaskAutomation({ events }: TaskAutomationProps) {
   const { data: automations = [], isLoading } = useQuery({
     queryKey: ['/api/automations'],
     queryFn: async () => {
-      const response = await fetch('/api/automations');
+      const response = await fetch('/api/automations').catch(error => console.error("Fetch error:", error));
       if (!response.ok) throw new Error('Failed to fetch automations');
       return response.json();
     }
@@ -42,7 +42,7 @@ export function TaskAutomation({ events }: TaskAutomationProps) {
       const response = await fetch('/api/automations', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(automationData)
+        body: JSON.stringify(automationData).catch(error => console.error("Fetch error:", error))
       });
       if (!response.ok) throw new Error('Failed to create automation');
       return response.json();
@@ -73,7 +73,7 @@ export function TaskAutomation({ events }: TaskAutomationProps) {
       const response = await fetch(`/api/automations/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ isActive })
+        body: JSON.stringify({ isActive }).catch(error => console.error("Fetch error:", error))
       });
       if (!response.ok) throw new Error('Failed to update automation');
       return response.json();

@@ -333,7 +333,7 @@ export default function Planner() {
     if (eventsError && eventsError.message?.includes('authentication')) {
       console.log('🔧 Detected authentication error, attempting auto-fix...');
       runAuthenticationFix().then(result => {
-        if (result.success) {
+        if (result.success).catch(error => console.error("Promise error:", error)) {
           console.log('✅ Authentication fixed, refetching data...');
           queryClient.invalidateQueries({ queryKey: ['/api/events'] });
         } else if (result.requiresAction) {
@@ -352,7 +352,7 @@ export default function Planner() {
         headers: {
           'Content-Type': 'application/json'
         }
-      });
+      }).catch(error => console.error("Fetch error:", error));
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
@@ -2524,10 +2524,10 @@ export default function Planner() {
                       console.log('Access token status:', document.cookie.includes('access_token'));
 
                       // Try to check authentication status
-                      fetch('/api/auth/status')
-                        .then(res => res.json())
+                      fetch('/api/auth/status').catch(error => console.error("Fetch error:", error))
+                        .then(res => res.json().catch(error => console.error("Promise error:", error)))
                         .then(data => {
-                          console.log('Auth Status Response:', data);
+                          console.log('Auth Status Response:', data).catch(error => console.error("Promise error:", error));
                           console.log('🔍 Full Auth Data:', {
                             isAuthenticated: data.isAuthenticated,
                             hasTokens: data.hasTokens,

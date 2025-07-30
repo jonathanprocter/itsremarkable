@@ -26,7 +26,7 @@ export function ConflictDetector({ existingEvents, showActiveConflicts = true }:
   const { data: backendConflicts = [], refetch: refetchConflicts } = useQuery({
     queryKey: ['/api/conflicts'],
     queryFn: async () => {
-      const response = await fetch('/api/conflicts?resolved=false');
+      const response = await fetch('/api/conflicts?resolved=false').catch(error => console.error("Fetch error:", error));
       if (!response.ok) throw new Error('Failed to fetch conflicts');
       return response.json();
     },

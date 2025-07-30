@@ -1,20 +1,16 @@
 {
   "summary": {
-    "total_issues": 7,
-    "total_warnings": 264,
-    "silent_failures": 221,
-    "duplicate_code_blocks": 224
+    "total_issues": 3,
+    "total_warnings": 261,
+    "silent_failures": 217,
+    "duplicate_code_blocks": 222
   },
   "issues": {
     "auth": [],
     "api": [
-      "Frontend calls non-existent endpoint: /api/conflicts?resolved=false",
-      "Frontend calls non-existent endpoint: /api/automations",
-      "Frontend calls non-existent endpoint: /api/calendar/events?start=2025-01-01T00:00:00Z&end=2025-12-31T23:59:59Z",
-      "Frontend calls non-existent endpoint: /api/audit/autofix",
-      "Frontend calls non-existent endpoint: /api/session-materials/upload",
       "Frontend calls non-existent endpoint: /api/live-sync/calendar/events?start=2025-01-01&end=2025-12-31",
-      "Frontend calls non-existent endpoint: /api/audit/comprehensive"
+      "Frontend calls non-existent endpoint: /api/calendar/events?start=2025-01-01T00:00:00Z&end=2025-12-31T23:59:59Z",
+      "Frontend calls non-existent endpoint: /api/conflicts?resolved=false"
     ]
   },
   "warnings": {
@@ -80,9 +76,6 @@
       "Async function exportBrowserReplicaPDF in client/src/utils/browserReplicaPDF.ts has no await",
       "Async function fixAuthenticationSession in client/src/utils/authSessionFix.ts has no await",
       "Async function checkAndFixAuthentication in client/src/utils/authSessionFix.ts has no await",
-      "Async function fixSessionNow in client/src/utils/sessionFixCommands.ts has no await",
-      "Async function testAuthenticatedSession in client/src/utils/sessionFixCommands.ts has no await",
-      "Async function clearAuthenticationData in client/src/utils/sessionFixCommands.ts has no await",
       "Async function throwIfResNotOk in src/lib/queryClient.ts has no await",
       "Async function apiRequest in src/lib/queryClient.ts has no await",
       "Async function generateWeeklyOverviewPage in src/utils/bidirectionalWeeklyPackage.ts has no await",
@@ -223,8 +216,8 @@
       "Many console.error calls in server/routes_broken.ts: 46",
       "Many console.error calls in server/clientRoutes.ts: 10",
       "Many console.error calls in server/index.ts: 10",
-      "Many console.error calls in server/routes.ts: 35",
-      "Many console.error calls in server/minimal-oauth.ts: 13",
+      "Many console.error calls in server/routes.ts: 39",
+      "Many console.error calls in server/minimal-oauth.ts: 15",
       "Many console.error calls in client/src/hooks/useGoogleAuth.ts: 8",
       "Many console.error calls in client/src/utils/dynamicDailyPlannerPDF.ts: 7",
       "Many console.error calls in client/src/utils/pixelPerfectDailyExport.ts: 9",
@@ -234,7 +227,7 @@
       "Many console.error calls in src/utils/pixelPerfectDailyExport.ts: 9",
       "Many console.error calls in client/src/components/OAuthFixer.tsx: 18",
       "Many console.error calls in client/src/components/sidebar/ExportToPDF.tsx: 7",
-      "Many console.error calls in client/src/pages/planner.tsx: 27",
+      "Many console.error calls in client/src/pages/planner.tsx: 32",
       "Many console.error calls in src/components/sidebar/ExportToPDF.tsx: 6",
       "Many console.error calls in src/pages/planner.tsx: 28",
       "Many console.error calls in live-sync-fix.js: 9",
@@ -254,52 +247,51 @@
       "High complexity in dist/index.js: 84.6 (16 functions, 0 classes, 2557 lines)"
     ],
     "api": [
-      "Unused backend endpoint: /api/events/status/test",
-      "Unused backend endpoint: /api/health",
-      "Unused backend endpoint: /api/auth/test-authentication",
-      "Unused backend endpoint: /api/clients/search/:query",
-      "Unused backend endpoint: /api/export/complete-monthly",
-      "Unused backend endpoint: /api/auth/test-session",
-      "Unused backend endpoint: /api/auth/test-callback",
-      "Unused backend endpoint: /api/conflicts/detect",
-      "Unused backend endpoint: /api/download/:filename",
-      "Unused backend endpoint: /api/daily-notes/:userId/:date",
-      "Unused backend endpoint: /api/export/bidirectional-package",
-      "Unused backend endpoint: /api/clients/:id",
-      "Unused backend endpoint: /api/auth/google/callback",
-      "Unused backend endpoint: /api/auth/fix",
-      "Unused backend endpoint: /api/auth/callback",
-      "Unused backend endpoint: /api/calendar/events/:eventId",
-      "Unused backend endpoint: /api/conflicts/:id/resolve",
       "Unused backend endpoint: /api/sync/test",
-      "Unused backend endpoint: /api/events/source/:sourceId",
+      "Unused backend endpoint: /api/conflicts",
+      "Unused backend endpoint: /api/download/:filename",
+      "Unused backend endpoint: /api/events/status/test",
+      "Unused backend endpoint: /api/export/complete-monthly",
       "Unused backend endpoint: /api/calendar/events",
-      "Unused backend endpoint: /api/events/:id",
-      "Unused backend endpoint: /api/daily-notes",
-      "Unused backend endpoint: /api/revenue/analytics",
-      "Unused backend endpoint: /api/export/three-column-daily",
-      "Unused backend endpoint: /api/events/stats",
-      "Unused backend endpoint: /api/auth/google",
-      "Unused backend endpoint: /api/events/status",
-      "Unused backend endpoint: /api/revenue",
-      "Unused backend endpoint: /api/export/pymypdf-bidirectional",
-      "Unused backend endpoint: /api/test/google-tokens",
-      "Unused backend endpoint: /api/export/enhanced-weekly",
+      "Unused backend endpoint: /api/conflicts/:id/resolve",
       "Unused backend endpoint: /api/live-sync/calendar/events",
-      "Unused backend endpoint: /api/simplepractice/events",
-      "Unused backend endpoint: /api/auth/google/test",
-      "Unused backend endpoint: /api/sync-calendar",
       "Unused backend endpoint: /api/events/:id/status-history",
-      "Unused backend endpoint: /api/conflicts"
+      "Unused backend endpoint: /api/revenue",
+      "Unused backend endpoint: /api/events/:id",
+      "Unused backend endpoint: /api/auth/test-callback",
+      "Unused backend endpoint: /api/export/enhanced-weekly",
+      "Unused backend endpoint: /api/daily-notes",
+      "Unused backend endpoint: /api/events/status",
+      "Unused backend endpoint: /api/health",
+      "Unused backend endpoint: /api/clients/:id",
+      "Unused backend endpoint: /api/events/source/:sourceId",
+      "Unused backend endpoint: /api/calendar/events/:eventId",
+      "Unused backend endpoint: /api/revenue/analytics",
+      "Unused backend endpoint: /api/export/pymypdf-bidirectional",
+      "Unused backend endpoint: /api/events/stats",
+      "Unused backend endpoint: /api/daily-notes/:userId/:date",
+      "Unused backend endpoint: /api/auth/callback",
+      "Unused backend endpoint: /api/sync-calendar",
+      "Unused backend endpoint: /api/auth/test-authentication",
+      "Unused backend endpoint: /api/export/bidirectional-package",
+      "Unused backend endpoint: /api/auth/google",
+      "Unused backend endpoint: /api/clients/search/:query",
+      "Unused backend endpoint: /api/simplepractice/events",
+      "Unused backend endpoint: /api/conflicts/detect",
+      "Unused backend endpoint: /api/auth/test-session",
+      "Unused backend endpoint: /api/auth/google/callback",
+      "Unused backend endpoint: /api/export/three-column-daily",
+      "Unused backend endpoint: /api/auth/google/test",
+      "Unused backend endpoint: /api/auth/fix",
+      "Unused backend endpoint: /api/test/google-tokens"
     ]
   },
   "silent_failures": [
     "Promise without catch in server/minimal-oauth.ts at position 23754",
-    "Fetch without error handling in client/src/lib/queryClient.ts: fetch(url, {\n    method,\n    headers: data ? { \"Co...",
+    "Promise without catch in server/minimal-oauth.ts at position 26773",
     "Promise without catch in client/src/utils/autonomousAuthAudit.ts at position 6769",
     "Promise without catch in client/src/utils/dynamicDailyPlannerPDF.ts at position 2263",
     "Promise without catch in client/src/utils/dynamicDailyPlannerPDF.ts at position 2779",
-    "Promise without catch in client/src/utils/exportDemo.ts at position 1904",
     "Promise without catch in client/src/utils/perfectDailyCalendarPDF.ts at position 5756",
     "Promise without catch in client/src/utils/perfectDailyCalendarPDF.ts at position 6405",
     "Promise without catch in client/src/utils/perfectDailyCalendarPDF.ts at position 6783",
@@ -313,8 +305,9 @@
     "Promise without catch in client/src/utils/templateExtractors.ts at position 17218",
     "Promise without catch in client/src/utils/templateExtractorsNew.ts at position 18778",
     "Fetch without error handling in client/src/utils/authSessionFix.ts: fetch('/api/auth/fix-session', {\n      method: 'PO...",
-    "Fetch without error handling in client/src/utils/sessionFixCommands.ts: fetch('/api/auth/fix-session', {\n      method: 'PO...",
-    "Fetch without error handling in client/src/utils/sessionFixCommands.ts: fetch('/api/auth/restore-session', {\n      method:...",
+    "Fetch without error handling in client/src/utils/sessionFixCommands.ts: fetch('/api/auth/fix-session', { method: 'POST' })...",
+    "Fetch without error handling in client/src/utils/sessionFixCommands.ts: fetch('/api/auth/quick-diag')...",
+    "Fetch without error handling in client/src/utils/authRecovery.ts: fetch('/api/auth/restore-session', { method: 'POST...",
     "Fetch without error handling in src/lib/queryClient.ts: fetch(url, {\n    method,\n    headers: data ? { \"Co...",
     "Promise without catch in src/utils/auditReportGenerator.ts at position 10712",
     "Promise without catch in src/utils/auditReportGenerator.ts at position 11525",
@@ -333,11 +326,7 @@
     "Promise without catch in client/src/components/FixedPDFExport.tsx at position 10486",
     "Promise without catch in client/src/components/PerfectDailyReplicaPDF.tsx at position 23797",
     "Promise without catch in client/src/components/integrations/CrossPlatformSync.tsx at position 4069",
-    "Fetch without error handling in client/src/components/clients/ComprehensiveClientDatabase.tsx: fetch('/api/session-materials/upload', {\n        m...",
     "Fetch without error handling in client/src/pages/planner.tsx: fetch('/api/auth/quick-diag')...",
-    "Promise without catch in client/src/pages/planner.tsx at position 13610",
-    "Promise without catch in client/src/pages/planner.tsx at position 101453",
-    "Promise without catch in client/src/pages/planner.tsx at position 101502",
     "Fetch without error handling in src/pages/planner.tsx: fetch('/api/events')...",
     "Fetch without error handling in src/pages/planner.tsx: fetch(`/api/events/${event.id}`, {\n               ...",
     "Promise without catch in src/pages/planner.tsx at position 73932",
@@ -635,16 +624,6 @@
       [
         "src/lib/queryClient.ts",
         3
-      ]
-    ],
-    "export async function apiRequest( method: string, url: string, data?: unknown | undefined, ): Promis...": [
-      [
-        "client/src/lib/queryClient.ts",
-        10
-      ],
-      [
-        "src/lib/queryClient.ts",
-        10
       ]
     ],
     "export function cn(...inputs: ClassValue[]) { return twMerge(clsx(inputs)) }...": [
@@ -1141,16 +1120,6 @@
       [
         "src/utils/exportAudit.ts",
         529
-      ]
-    ],
-    "export function demoAuditSystem() { console.log('\\n=== EXPORT AUDIT SYSTEM DEMO ==='); console.log('...": [
-      [
-        "client/src/utils/exportDemo.ts",
-        52
-      ],
-      [
-        "src/utils/exportDemo.ts",
-        52
       ]
     ],
     "function drawPerfectHeader(pdf: jsPDF, weekStartDate: Date, weekEndDate: Date, events: CalendarEvent...": [

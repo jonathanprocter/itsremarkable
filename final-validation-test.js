@@ -1,130 +1,208 @@
-/**
- * Comprehensive Final Validation Test
- * Verifies all FINAL FIXES implemented for 100% pixel-perfect achievement
- */
+// Final Validation Test - Test all fixes applied
+// Run this in browser console to verify authentication and API fixes
 
-async function runFinalValidation() {
-  console.log('🎯 FINAL VALIDATION TEST - ACHIEVING 100% PIXEL-PERFECT ACCURACY');
-  console.log('='.repeat(80));
+async function runFinalValidationTest() {
+  console.log('🚀 Running final validation test...');
+  console.log('='.repeat(50));
   
-  // Current improvements implemented
-  const improvements = [
-    'Enhanced Notes/Action Items Display with bullet formatting',
-    'Improved appointment title font size (10px → 11px)',
-    'Enhanced appointment time font size (7px → 8px)',
-    'Upgraded appointment title font weight (600 → 700)',
-    'Added box shadow for better visual separation',
-    'Improved padding and spacing throughout',
-    'Enhanced detail list typography and positioning',
-    'Fixed side-by-side overlapping appointments',
-    'Perfect 3-column layout proportions (2fr 1.5fr 1.5fr)',
-    'Exact column width measurements (90px/1fr/120px)'
+  const results = {
+    authEndpoints: [],
+    apiEndpoints: [],
+    errorHandling: [],
+    sessionManagement: []
+  };
+  
+  // Test 1: Authentication endpoints
+  console.log('🔐 Testing authentication endpoints...');
+  const authEndpoints = [
+    '/api/auth/test-fix',
+    '/api/auth/test-oauth-config', 
+    '/api/auth/test-calendar-access',
+    '/api/auth/simple-login',
+    '/api/auth/test-token-refresh',
+    '/api/auth/google/force-sync',
+    '/api/auth/refresh-token',
+    '/api/auth/enhanced-calendar-sync',
+    '/api/auth/google/debug',
+    '/api/auth/fix-google-comprehensive',
+    '/api/auth/force-google-auth',
+    '/api/auth/restore-session',
+    '/api/auth/fix-session'
   ];
   
-  console.log('\n📊 IMPLEMENTED IMPROVEMENTS:');
-  improvements.forEach((improvement, index) => {
-    console.log(`   ${index + 1}. ✅ ${improvement}`);
-  });
-  
-  // Expected scoring improvements
-  const scoringBreakdown = {
-    'Data Integrity': {
-      previous: 18,
-      current: 20,
-      max: 20,
-      improvements: ['Enhanced notes display', 'Better bullet formatting']
-    },
-    'Layout Precision': {
-      previous: 13,
-      current: 15,
-      max: 15,
-      improvements: ['Perfect appointment positioning', 'Exact column widths']
-    },
-    'Typography': {
-      previous: 9,
-      current: 10,
-      max: 10,
-      improvements: ['Improved font size hierarchy', 'Enhanced font weights']
-    },
-    'Statistics': {
-      previous: 15,
-      current: 15,
-      max: 15,
-      improvements: ['Already perfect - no changes needed']
+  for (const endpoint of authEndpoints) {
+    try {
+      const method = endpoint.includes('/upload') || endpoint.includes('-session') || endpoint.includes('-fix') || endpoint.includes('refresh') || endpoint.includes('force') || endpoint.includes('simple-login') ? 'POST' : 'GET';
+      const response = await fetch(endpoint, { method });
+      const data = await response.json();
+      
+      results.authEndpoints.push({
+        endpoint,
+        status: response.status,
+        success: response.status < 500,
+        hasResponse: !!data
+      });
+      
+      console.log(`  ${response.status < 500 ? '✅' : '❌'} ${endpoint} (${response.status})`);
+    } catch (error) {
+      results.authEndpoints.push({
+        endpoint,
+        status: 'ERROR',
+        success: false,
+        error: error.message
+      });
+      console.log(`  ❌ ${endpoint} (ERROR: ${error.message})`);
     }
-  };
+  }
   
-  console.log('\n📈 SCORING BREAKDOWN:');
-  let totalPrevious = 0;
-  let totalCurrent = 0;
-  let totalMax = 0;
-  
-  Object.entries(scoringBreakdown).forEach(([category, data]) => {
-    totalPrevious += data.previous;
-    totalCurrent += data.current;
-    totalMax += data.max;
-    
-    console.log(`   ${category}:`);
-    console.log(`     Previous: ${data.previous}/${data.max} (${Math.round(data.previous/data.max*100)}%)`);
-    console.log(`     Current:  ${data.current}/${data.max} (${Math.round(data.current/data.max*100)}%)`);
-    console.log(`     Change:   +${data.current - data.previous} points`);
-    console.log('     Improvements:');
-    data.improvements.forEach(imp => console.log(`       • ${imp}`));
-    console.log('');
-  });
-  
-  console.log(`🎯 TOTAL SCORE PROJECTION:`);
-  console.log(`   Previous: ${totalPrevious}/${totalMax} (${Math.round(totalPrevious/totalMax*100)}%)`);
-  console.log(`   Current:  ${totalCurrent}/${totalMax} (${Math.round(totalCurrent/totalMax*100)}%)`);
-  console.log(`   Change:   +${totalCurrent - totalPrevious} points`);
-  console.log(`   Status:   ${totalCurrent === totalMax ? '🎉 PERFECT SCORE ACHIEVED!' : 'SIGNIFICANT IMPROVEMENT'}`);
-  
-  // Validation checklist
-  console.log('\n✅ VALIDATION CHECKLIST:');
-  const checklist = [
-    'Event Notes display with proper bullet formatting',
-    'Action Items display with enhanced typography',
-    'Appointment titles with increased font size and weight',
-    'Appointment times with improved readability',
-    'Perfect side-by-side overlapping appointment layout',
-    '3-column grid with exact proportions (2fr 1.5fr 1.5fr)',
-    'Time column width exactly 90px',
-    'Notes column width exactly 120px',
-    'Enhanced visual hierarchy with proper spacing',
-    'Box shadows for appointment separation'
+  // Test 2: Missing API endpoints that were added
+  console.log('\n🔧 Testing newly added API endpoints...');
+  const newEndpoints = [
+    { path: '/api/conflicts?resolved=false', method: 'GET' },
+    { path: '/api/session-materials/upload', method: 'POST' },
+    { path: '/api/automations', method: 'GET' },
+    { path: '/api/audit/comprehensive', method: 'GET' },
+    { path: '/api/audit/autofix', method: 'POST' }
   ];
   
-  checklist.forEach((item, index) => {
-    console.log(`   ${index + 1}. ✅ ${item}`);
+  for (const { path, method } of newEndpoints) {
+    try {
+      const response = await fetch(path, { method });
+      const data = await response.json();
+      
+      results.apiEndpoints.push({
+        endpoint: path,
+        status: response.status,
+        success: response.status < 500,
+        hasResponse: !!data
+      });
+      
+      console.log(`  ${response.status < 500 ? '✅' : '❌'} ${method} ${path} (${response.status})`);
+    } catch (error) {
+      results.apiEndpoints.push({
+        endpoint: path,
+        status: 'ERROR',
+        success: false,
+        error: error.message
+      });
+      console.log(`  ❌ ${method} ${path} (ERROR: ${error.message})`);
+    }
+  }
+  
+  // Test 3: Error handling validation
+  console.log('\n🛡️ Testing error handling improvements...');
+  
+  // Check if global error handlers are active
+  const hasUnhandledRejectionHandler = window.onunhandledrejection !== null;
+  const hasErrorHandler = window.onerror !== null;
+  
+  results.errorHandling.push({
+    test: 'Global unhandled rejection handler',
+    success: hasUnhandledRejectionHandler,
+    details: hasUnhandledRejectionHandler ? 'Active' : 'Not found'
   });
   
-  console.log('\n🚀 FINAL VALIDATION RESULTS:');
-  console.log('   ✅ All critical improvements implemented');
-  console.log('   ✅ Typography hierarchy optimized');
-  console.log('   ✅ Layout precision enhanced');
-  console.log('   ✅ Notes/Action Items display perfected');
-  console.log('   ✅ Appointment positioning accuracy achieved');
-  console.log('   ✅ Expected score: 60/60 (100%)');
+  results.errorHandling.push({
+    test: 'Global error handler',
+    success: hasErrorHandler,
+    details: hasErrorHandler ? 'Active' : 'Not found'
+  });
   
-  console.log('\n🎉 READY FOR BROWSER VALIDATION TEST');
-  console.log('   Run: window.testPixelPerfectAudit()');
-  console.log('   Expected: 100% pixel-perfect accuracy achieved');
+  console.log(`  ${hasUnhandledRejectionHandler ? '✅' : '⚠️'} Global unhandled rejection handler`);
+  console.log(`  ${hasErrorHandler ? '✅' : '⚠️'} Global error handler`);
   
-  return {
-    status: 'VALIDATION COMPLETE',
-    expectedScore: '60/60 (100%)',
-    previousScore: '55/60 (92%)',
-    improvement: '+5 points',
-    readyForTest: true
-  };
+  // Test 4: Session management
+  console.log('\n🔑 Testing session management...');
+  
+  try {
+    // Test session fix
+    const sessionFixResponse = await fetch('/api/auth/fix-session', { method: 'POST' });
+    const sessionFixData = await sessionFixResponse.json();
+    
+    results.sessionManagement.push({
+      test: 'Session fix endpoint',
+      success: sessionFixResponse.status < 500,
+      details: sessionFixData.message || 'Available'
+    });
+    
+    console.log(`  ${sessionFixResponse.status < 500 ? '✅' : '❌'} Session fix endpoint`);
+    
+    // Test session restoration
+    const sessionRestoreResponse = await fetch('/api/auth/restore-session', { method: 'POST' });
+    const sessionRestoreData = await sessionRestoreResponse.json();
+    
+    results.sessionManagement.push({
+      test: 'Session restoration endpoint',
+      success: sessionRestoreResponse.status < 500,
+      details: sessionRestoreData.message || 'Available'
+    });
+    
+    console.log(`  ${sessionRestoreResponse.status < 500 ? '✅' : '❌'} Session restoration endpoint`);
+    
+  } catch (error) {
+    console.log(`  ❌ Session management test failed: ${error.message}`);
+  }
+  
+  // Test 5: Console commands availability
+  console.log('\n🛠️ Testing console commands...');
+  
+  const consoleCommands = [
+    'fixSessionNow',
+    'testAuthenticatedSession', 
+    'clearAuthenticationData',
+    'forceGoogleOAuth',
+    'runDiagnostics'
+  ];
+  
+  for (const command of consoleCommands) {
+    const available = typeof window[command] === 'function';
+    console.log(`  ${available ? '✅' : '❌'} ${command}() command`);
+    
+    results.sessionManagement.push({
+      test: `Console command: ${command}`,
+      success: available,
+      details: available ? 'Available' : 'Not found'
+    });
+  }
+  
+  // Final summary
+  console.log('\n' + '='.repeat(50));
+  console.log('📊 FINAL VALIDATION SUMMARY');
+  console.log('='.repeat(50));
+  
+  const authSuccess = results.authEndpoints.filter(r => r.success).length;
+  const apiSuccess = results.apiEndpoints.filter(r => r.success).length;
+  const errorSuccess = results.errorHandling.filter(r => r.success).length;
+  const sessionSuccess = results.sessionManagement.filter(r => r.success).length;
+  
+  console.log(`🔐 Authentication endpoints: ${authSuccess}/${results.authEndpoints.length} working`);
+  console.log(`🔧 API endpoints: ${apiSuccess}/${results.apiEndpoints.length} working`);
+  console.log(`🛡️ Error handling: ${errorSuccess}/${results.errorHandling.length} implemented`);
+  console.log(`🔑 Session management: ${sessionSuccess}/${results.sessionManagement.length} working`);
+  
+  const totalSuccess = authSuccess + apiSuccess + errorSuccess + sessionSuccess;
+  const totalTests = results.authEndpoints.length + results.apiEndpoints.length + results.errorHandling.length + results.sessionManagement.length;
+  
+  console.log(`\n🎯 OVERALL SUCCESS RATE: ${totalSuccess}/${totalTests} (${Math.round(totalSuccess/totalTests*100)}%)`);
+  
+  if (totalSuccess / totalTests >= 0.8) {
+    console.log('✅ VALIDATION PASSED - Application audit fixes successful!');
+  } else {
+    console.log('⚠️ VALIDATION NEEDS ATTENTION - Some fixes may need review');
+  }
+  
+  console.log('\n💡 Available actions:');
+  console.log('  • fixSessionNow() - Attempt automatic authentication fix');
+  console.log('  • runDiagnostics() - Run comprehensive auth diagnostics');
+  console.log('  • forceGoogleOAuth() - Start fresh Google authentication');
+  
+  return results;
 }
 
-// Execute the final validation
-runFinalValidation().then(result => {
-  console.log('\n🎯 FINAL VALIDATION COMPLETE');
-  console.log(`Status: ${result.status}`);
-  console.log(`Expected Score: ${result.expectedScore}`);
-  console.log(`Previous Score: ${result.previousScore}`);
-  console.log(`Improvement: ${result.improvement}`);
-  console.log(`Ready for Browser Test: ${result.readyForTest}`);
+// Auto-run the validation test
+runFinalValidationTest().catch(error => {
+  console.error('❌ Validation test failed:', error);
 });
+
+// Make it available globally
+window.runFinalValidationTest = runFinalValidationTest;

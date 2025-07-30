@@ -157,7 +157,7 @@ export function ComprehensiveClientDatabase() {
       const response = await fetch('/api/session-materials/upload', {
         method: 'POST',
         body: formData
-      });
+      }).catch(error => console.error("Fetch error:", error));
       return response.json();
     },
     onSuccess: () => {

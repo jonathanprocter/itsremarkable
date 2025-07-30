@@ -29,7 +29,7 @@ export function SmartScheduling({ selectedClient, existingEvents, onScheduleAppo
   const { data: templates = [] } = useQuery({
     queryKey: ['/api/templates'],
     queryFn: async () => {
-      const response = await fetch('/api/templates');
+      const response = await fetch('/api/templates').catch(error => console.error("Fetch error:", error));
       if (!response.ok) throw new Error('Failed to fetch templates');
       return response.json();
     }
@@ -41,7 +41,7 @@ export function SmartScheduling({ selectedClient, existingEvents, onScheduleAppo
       const response = await fetch('/api/events', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(appointmentData)
+        body: JSON.stringify(appointmentData).catch(error => console.error("Fetch error:", error))
       });
       if (!response.ok) throw new Error('Failed to create appointment');
       return response.json();

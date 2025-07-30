@@ -1,4 +1,10 @@
+#!/usr/bin/env python3
+"""
+Session Fix Commands JavaScript Module
+Creates console commands that can fix authentication issues
+"""
 
+SESSION_FIX_CONTENT = '''
 // Session Fix Commands - Available in browser console
 // Usage: fixSessionNow(), testAuthenticatedSession(), etc.
 
@@ -144,3 +150,22 @@ console.log('  forceGoogleOAuth() - Force fresh OAuth');
 console.log('  runDiagnostics() - Run comprehensive diagnostics');
 
 export { SessionFixCommands };
+'''
+
+def create_session_fix_commands():
+    """Create the session fix commands file"""
+    from pathlib import Path
+    
+    # Create the utils directory if it doesn't exist
+    utils_dir = Path('client/src/utils')
+    utils_dir.mkdir(parents=True, exist_ok=True)
+    
+    # Write the session fix commands
+    session_file = utils_dir / 'sessionFixCommands.ts'
+    session_file.write_text(SESSION_FIX_CONTENT, encoding='utf-8')
+    
+    print("✅ Created session fix commands")
+    return str(session_file)
+
+if __name__ == "__main__":
+    create_session_fix_commands()

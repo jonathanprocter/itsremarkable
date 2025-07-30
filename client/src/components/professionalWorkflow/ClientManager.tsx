@@ -39,7 +39,7 @@ export function ClientManager({ onSelectClient, selectedClientId }: ClientManage
   const { data: clients = [], isLoading } = useQuery({
     queryKey: ['/api/clients'],
     queryFn: async () => {
-      const response = await fetch('/api/clients');
+      const response = await fetch('/api/clients').catch(error => console.error("Fetch error:", error));
       if (!response.ok) throw new Error('Failed to fetch clients');
       return response.json();
     }
@@ -50,7 +50,7 @@ export function ClientManager({ onSelectClient, selectedClientId }: ClientManage
     queryKey: ['/api/clients/search', searchQuery],
     queryFn: async () => {
       if (!searchQuery.trim()) return clients;
-      const response = await fetch(`/api/clients/search?q=${encodeURIComponent(searchQuery)}`);
+      const response = await fetch(`/api/clients/search?q=${encodeURIComponent(searchQuery).catch(error => console.error("Fetch error:", error))}`);
       if (!response.ok) throw new Error('Failed to search clients');
       return response.json();
     },

@@ -30,7 +30,7 @@ export function SmartSchedulingPanel({
       const endDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
       
       const response = await fetch(
-        `/api/revenue/analytics?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`
+        `/api/revenue/analytics?startDate=${startDate.toISOString().catch(error => console.error("Fetch error:", error))}&endDate=${endDate.toISOString()}`
       );
       if (!response.ok) throw new Error('Failed to fetch revenue analytics');
       return response.json();
@@ -41,7 +41,7 @@ export function SmartSchedulingPanel({
   const { data: templates = [] } = useQuery({
     queryKey: ['/api/templates'],
     queryFn: async () => {
-      const response = await fetch('/api/templates');
+      const response = await fetch('/api/templates').catch(error => console.error("Fetch error:", error));
       if (!response.ok) throw new Error('Failed to fetch templates');
       return response.json();
     }

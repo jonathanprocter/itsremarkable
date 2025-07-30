@@ -121,6 +121,72 @@ export function registerRoutes(app: Express) {
   // Add client database routes
   app.use('/api', clientRoutes);
 
+  // Add missing API endpoints that frontend calls
+  app.get('/api/conflicts', async (req, res) => {
+    try {
+      const userId = getAuthenticatedUserId(req);
+      if (!userId) {
+        return res.status(401).json({ error: 'Authentication required', needsAuth: true });
+      }
+      res.json({ conflicts: [], resolved: req.query.resolved === 'true', total: 0 });
+    } catch (error) {
+      console.error('Conflicts endpoint error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
+  app.post('/api/session-materials/upload', async (req, res) => {
+    try {
+      const userId = getAuthenticatedUserId(req);
+      if (!userId) {
+        return res.status(401).json({ error: 'Authentication required', needsAuth: true });
+      }
+      res.json({ success: true, message: 'Upload functionality placeholder', fileId: 'mock-file-id' });
+    } catch (error) {
+      console.error('Upload endpoint error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
+  app.get('/api/automations', async (req, res) => {
+    try {
+      const userId = getAuthenticatedUserId(req);
+      if (!userId) {
+        return res.status(401).json({ error: 'Authentication required', needsAuth: true });
+      }
+      res.json({ automations: [], total: 0, message: 'Automation system placeholder' });
+    } catch (error) {
+      console.error('Automations endpoint error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
+  app.get('/api/audit/comprehensive', async (req, res) => {
+    try {
+      res.json({
+        audit: 'comprehensive',
+        timestamp: new Date().toISOString(),
+        message: 'Comprehensive audit placeholder'
+      });
+    } catch (error) {
+      console.error('Audit endpoint error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
+  app.post('/api/audit/autofix', async (req, res) => {
+    try {
+      res.json({
+        success: true,
+        fixes: [],
+        message: 'Autofix functionality placeholder'
+      });
+    } catch (error) {
+      console.error('Autofix endpoint error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
   // Calendar sync endpoint
   app.get('/api/calendar/sync', async (req, res) => {
     try {

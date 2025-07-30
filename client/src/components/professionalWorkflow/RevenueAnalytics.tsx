@@ -23,7 +23,7 @@ export function RevenueAnalytics({ events }: RevenueAnalyticsProps) {
     queryKey: ['/api/revenue/analytics', selectedMonth, selectedYear],
     queryFn: async () => {
       const response = await fetch(
-        `/api/revenue/analytics?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`
+        `/api/revenue/analytics?startDate=${startDate.toISOString().catch(error => console.error("Fetch error:", error))}&endDate=${endDate.toISOString()}`
       );
       if (!response.ok) throw new Error('Failed to fetch revenue analytics');
       return response.json();

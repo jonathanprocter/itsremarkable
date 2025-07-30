@@ -28,7 +28,7 @@ export function NewOAuthTest() {
   const { data: authStatus, isLoading, refetch } = useQuery<AuthStatus>({
     queryKey: ['/api/auth/status'],
     queryFn: async () => {
-      const response = await fetch('/api/auth/status');
+      const response = await fetch('/api/auth/status').catch(error => console.error("Fetch error:", error));
       if (!response.ok) throw new Error('Failed to check auth status');
       return response.json();
     },
