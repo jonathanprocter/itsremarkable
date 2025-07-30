@@ -142,7 +142,7 @@ export function registerRoutes(app: Express) {
       try {
         user = await storage.getUser(userIdNumber);
         if (!user) {
-          console.log(`🔧 Creating default user with ID ${userIdNumber}`);
+          console.log(`🔧 Creating default user`);
           user = await storage.createUser({
             username: 'default_user',
             email: 'user@example.com',
@@ -152,24 +152,11 @@ export function registerRoutes(app: Express) {
           
           console.log(`✅ User resolved with ID: ${user.id}`);
         } else {
-          console.log(`✅ User ${userIdNumber} already exists`);
+          console.log(`✅ User ${user.id} already exists`);
         }
       } catch (userError) {
         console.error('❌ User creation/retrieval failed:', userError);
-        // Try to find any existing user as fallback
-        try {
-          const fallbackUser = await storage.getUserByUsername('default_user');
-          if (fallbackUser) {
-            console.log(`🔄 Using fallback user with ID: ${fallbackUser.id}`);
-            user = fallbackUser;
-          } else {
-            console.error('❌ No fallback user found, returning empty events');
-            return res.json([]);
-          }
-        } catch (fallbackError) {
-          console.error('❌ Fallback user search failed:', fallbackError);
-          return res.json([]);
-        }
+        return res.json([]);
       }
 
       // Ensure we have a valid user before proceeding
@@ -178,8 +165,11 @@ export function registerRoutes(app: Express) {
         return res.json([]);
       }
 
-      // Get real events from database
-      let events = await storage.getEvents(userIdNumber);
+      // Use the actual user ID from the database
+      const actualUserId = user.id;
+
+      // Get real events from database using the actual user ID
+      let events = await storage.getEvents(actualUserId);
 
       // If no events found, create some sample events for testing
       if (events.length === 0) {
@@ -216,7 +206,7 @@ export function registerRoutes(app: Express) {
           try {
             await storage.createEvent({
               ...eventData,
-              userId: user.id, // Use the resolved user ID
+              userId: actualUserId, // Use the actual user ID
               allDay: false,
               color: '#3b82f6'
             });
@@ -227,7 +217,7 @@ export function registerRoutes(app: Express) {
         }
 
         // Refetch events after creating samples
-        events = await storage.getEvents(user.id);
+        events = await storage.getEvents(actualUserId);
       }
 
       // Format events for frontend
@@ -246,7 +236,7 @@ export function registerRoutes(app: Express) {
         notes: event.notes || '',
         actionItems: event.actionItems || '',
         calendarId: event.calendarId || '',
-        userId: userId
+        userId: actualUserId
       }));
 
       console.log(`📊 Loaded events from unified API: {"total":${formattedEvents.length},"google":${formattedEvents.filter(e => e.source === 'google').length},"simplepractice":${formattedEvents.filter(e => e.source === 'simplepractice').length},"manual":${formattedEvents.filter(e => e.source === 'manual').length}}`);

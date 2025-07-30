@@ -115,28 +115,27 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    // First check if this is the default user request and if it already exists
+    // For default user, always check if one exists first
     if (insertUser.username === 'default_user') {
-      // Check if user with ID 1 already exists
-      const existingUser = await this.getUser(1);
-      if (existingUser) {
-        console.log('✅ Default user already exists with ID 1');
-        return existingUser;
-      }
-
-      // Also check by username in case it exists with different ID
+      // First check by username (most reliable)
       const userByUsername = await this.getUserByUsername('default_user');
       if (userByUsername) {
         console.log('✅ Default user found by username with ID:', userByUsername.id);
         return userByUsername;
       }
 
-      // Try to create with ID 1
+      // Check if user with ID 1 exists
+      const userById = await this.getUser(1);
+      if (userById) {
+        console.log('✅ Default user found by ID 1');
+        return userById;
+      }
+
+      // No existing default user found, create one
       try {
         const [user] = await db
           .insert(users)
           .values({
-            id: 1,
             username: insertUser.username,
             email: insertUser.email,
             name: insertUser.name || insertUser.username,
@@ -146,27 +145,18 @@ export class DatabaseStorage implements IStorage {
           })
           .returning();
 
-        console.log('✅ Created default user with ID:', user.id);
+        console.log('✅ Created new default user with ID:', user.id);
         return user;
       } catch (error) {
         console.error('❌ Error creating default user:', error);
         
-        // If there's a constraint violation, try to find the existing user
-        if (error.code === '23505') {
-          // Try by ID first
-          const existingUser = await this.getUser(1);
-          if (existingUser) {
-            console.log('✅ Found existing user by ID 1 after constraint violation');
-            return existingUser;
-          }
-          
-          // Try by username
-          const userByUsername = await this.getUserByUsername('default_user');
-          if (userByUsername) {
-            console.log('✅ Found existing user by username after constraint violation');
-            return userByUsername;
-          }
+        // If creation failed, try to find any existing default user
+        const fallbackUser = await this.getUserByUsername('default_user');
+        if (fallbackUser) {
+          console.log('✅ Using fallback default user with ID:', fallbackUser.id);
+          return fallbackUser;
         }
+        
         throw error;
       }
     }
