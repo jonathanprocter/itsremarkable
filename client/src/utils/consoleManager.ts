@@ -1,7 +1,4 @@
-` tags.
 
-```python
-<replit_final_file>
 export class ConsoleManager {
   private static logHistory = new Map<string, number>();
   private static lastLogTime = new Map<string, number>();
@@ -73,7 +70,7 @@ export class ConsoleManager {
 }
 
 // Enhanced error handling for development
-if (process.env.NODE_ENV === 'development') {
+if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
   // Handle unhandled promise rejections
   window.addEventListener('unhandledrejection', (event) => {
     console.error('Unhandled promise rejection:', event.reason);
@@ -145,6 +142,8 @@ export function logWithLevel(level: LogLevel, message: string, data?: any) {
     }
   }
 }
+
+const isProduction = process.env.NODE_ENV === 'production';
 const validLogTypes = ['log', 'info', 'warn', 'error', 'debug', 'trace', 'table', 'group', 'groupEnd', 'time', 'timeEnd'];
 
 export const logMessage = (type: string, ...args: any[]) => {
@@ -161,8 +160,8 @@ export const logMessage = (type: string, ...args: any[]) => {
 
     const mappedType = typeMap[type] || type;
 
-    if (validLogTypes.includes(mappedType) && typeof console[mappedType] === 'function') {
-      console[mappedType](...args);
+    if (validLogTypes.includes(mappedType) && typeof (console as any)[mappedType] === 'function') {
+      (console as any)[mappedType](...args);
     } else {
       console.log(`[${type.toUpperCase()}]`, ...args);
     }
