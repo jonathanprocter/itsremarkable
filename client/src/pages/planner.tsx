@@ -47,6 +47,7 @@ import { NewOAuthTest } from '@/components/auth/NewOAuthTest';
 import { DateRangeInfo } from '@/components/DateRangeInfo';
 import { runAuthenticationFix } from '@/utils/authenticationFix';
 import { runSimpleAuthFix, testAuthenticationStatus, forceCalendarSync } from '@/utils/simpleAuthFix';
+import { fixAuthenticationSession, checkAndFixAuthentication } from '@/utils/authSessionFix';
 import { AppointmentStatusView, AppointmentStats } from '@/components/calendar/AppointmentStatusView';
 import { AppointmentStatusModal } from '@/components/calendar/AppointmentStatusModal';
 import { SmartSchedulingPanel } from '@/components/smartCalendar/SmartSchedulingPanel';
@@ -2557,6 +2558,50 @@ export default function Planner() {
                     size="sm"
                   >
                     🚨 Check Auth Status
+                  </Button>
+                  <Button
+                    onClick={async () => {
+                      console.log('🔧 FIXING AUTHENTICATION SESSION');
+                      
+                      try {
+                        const result = await fixAuthenticationSession();
+                        
+                        if (result.success) {
+                          toast({
+                            title: 'Authentication Fixed',
+                            description: result.message,
+                            variant: 'default'
+                          });
+                          
+                          // If requires reload, it will happen automatically
+                          if (!result.requiresReload) {
+                            // Manually refresh auth and events
+                            refetchAuth();
+                            refetchEvents();
+                          }
+                        } else {
+                          console.log('Fix failed:', result);
+                          toast({
+                            title: 'Authentication Fix Failed',
+                            description: result.message,
+                            variant: 'destructive'
+                          });
+                          
+                          // If needs reauth, redirect will happen automatically
+                        }
+                      } catch (error) {
+                        console.error('Authentication fix error:', error);
+                        toast({
+                          title: 'Fix Error',
+                          description: error.message,
+                          variant: 'destructive'
+                        });
+                      }
+                    }}
+                    className="w-full bg-green-600 hover:bg-green-700 text-white"
+                    size="sm"
+                  >
+                    🔧 Fix Authentication Session
                   </Button>
                   <Button
                     onClick={() => {

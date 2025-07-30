@@ -9,23 +9,33 @@ import { addMinimalOAuthRoutes } from './minimal-oauth';
 
 // Authentication helper function
 function getAuthenticatedUserId(req: any): number | null {
-  // Try multiple sources for user ID
+  // Try multiple sources for user ID in order of preference
   const sources = [
     req.user?.id,
     req.session?.user?.id,
     req.session?.userId,
-    req.session?.passport?.user?.id
+    req.session?.passport?.user
   ];
+
+  console.log('🔍 Checking authentication sources:', {
+    'req.user?.id': req.user?.id,
+    'req.session?.user?.id': req.session?.user?.id,
+    'req.session?.userId': req.session?.userId,
+    'req.session?.passport?.user': req.session?.passport?.user,
+    sessionExists: !!req.session
+  });
 
   for (const source of sources) {
     if (source) {
       const parsed = parseInt(source);
       if (!isNaN(parsed) && parsed > 0) {
+        console.log('✅ Found valid user ID:', parsed);
         return parsed;
       }
     }
   }
 
+  console.log('❌ No valid user ID found in any source');
   return null;
 }
 

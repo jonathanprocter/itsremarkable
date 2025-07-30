@@ -62,9 +62,9 @@ app.use(session({
   }
 }));
 
-// Configure Passport without session middleware to avoid "session" strategy errors
+// Configure Passport with session middleware
 app.use(passport.initialize());
-// Note: passport.session() disabled temporarily to resolve "Unknown authentication strategy 'session'" errors
+app.use(passport.session());
 
 // Initialize minimal OAuth
 initializeMinimalOAuth();

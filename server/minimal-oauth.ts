@@ -153,6 +153,54 @@ export function initializeMinimalOAuth() {
 export function addMinimalOAuthRoutes(app: Express) {
   console.log('🛣️ Adding minimal OAuth routes...');
 
+  // Session restoration endpoint (for fixing broken sessions)
+  app.post('/api/auth/restore-session', async (req: Request, res: Response) => {
+    try {
+      console.log('🔧 Attempting session restoration...');
+      
+      // Try to find user by stored tokens
+      if (process.env.GOOGLE_ACCESS_TOKEN) {
+        console.log('📡 Found stored access token, attempting user lookup...');
+        
+        // Use storage to find user - this will need to be implemented
+        const { storage } = await import('./storage');
+        const users = await storage.getAllUsers();
+        
+        if (users && users.length > 0) {
+          const user = users[0]; // For now, take the first user
+          console.log('👤 Found user for session restoration:', user.id);
+          
+          // Manually restore session
+          req.session.user = user;
+          req.session.userId = user.id;
+          req.session.isAuthenticated = true;
+          
+          // Ensure session is saved
+          req.session.save((saveErr) => {
+            if (saveErr) {
+              console.error('Session save error:', saveErr);
+              return res.json({ success: false, error: 'Session save failed' });
+            }
+            
+            console.log('✅ Session restored successfully');
+            res.json({ 
+              success: true, 
+              message: 'Session restored',
+              user: { id: user.id, email: user.email, name: user.name }
+            });
+          });
+        } else {
+          res.json({ success: false, error: 'No users found' });
+        }
+      } else {
+        res.json({ success: false, error: 'No valid tokens found' });
+      }
+    } catch (error) {
+      console.error('Session restoration error:', error);
+      res.json({ success: false, error: error.message });
+    }
+  });
+
   // Start OAuth
   app.get('/api/auth/google', passport.authenticate('google'));
 
@@ -288,6 +336,106 @@ export function addMinimalOAuthRoutes(app: Express) {
     
     console.log('✅ Logout successful');
     res.redirect('/?auth=logout');
+  });
+
+  // Comprehensive authentication fix endpoint
+  app.post('/api/auth/fix-session', async (req: Request, res: Response) => {
+    try {
+      console.log('🔧 Running comprehensive authentication fix...');
+      
+      const currentUser = req.user || req.session?.user;
+      const hasTokens = !!process.env.GOOGLE_ACCESS_TOKEN;
+      
+      console.log('Current state:', {
+        hasCurrentUser: !!currentUser,
+        hasTokens,
+        sessionId: req.sessionID,
+        sessionExists: !!req.session
+      });
+
+      // If we have tokens but no user session, try to restore
+      if (hasTokens && !currentUser) {
+        console.log('📡 Tokens exist but no user session, attempting restoration...');
+        
+        const { storage } = await import('./storage');
+        const users = await storage.getAllUsers();
+        
+        if (users && users.length > 0) {
+          // Find the most recently created user (likely the Google user)
+          const user = users.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0];
+          console.log('👤 Restoring session for user:', user.email);
+          
+          // Manually restore session
+          req.session.user = user;
+          req.session.userId = user.id;
+          req.session.isAuthenticated = true;
+          
+          // Also set req.user for immediate use
+          req.user = user;
+          
+          // Save session and return success
+          req.session.save((saveErr) => {
+            if (saveErr) {
+              console.error('Session save error:', saveErr);
+              return res.json({ 
+                success: false, 
+                error: 'Session save failed',
+                needsReauth: true
+              });
+            }
+            
+            console.log('✅ Session restored successfully');
+            res.json({ 
+              success: true, 
+              message: 'Authentication restored',
+              user: { id: user.id, email: user.email, name: user.name },
+              requiresReload: true
+            });
+          });
+          return;
+        }
+      }
+
+      // If we have a user but authentication is still failing
+      if (currentUser) {
+        console.log('✅ User exists, ensuring session consistency...');
+        req.session.user = currentUser;
+        req.session.userId = currentUser.id;
+        req.session.isAuthenticated = true;
+        
+        req.session.save((saveErr) => {
+          if (saveErr) {
+            console.error('Session save error:', saveErr);
+            return res.json({ success: false, error: 'Session save failed' });
+          }
+          
+          res.json({ 
+            success: true, 
+            message: 'Session consistency verified',
+            user: { id: currentUser.id, email: currentUser.email, name: currentUser.name }
+          });
+        });
+        return;
+      }
+
+      // No user and no tokens - need fresh authentication
+      console.log('❌ No user session and no tokens found');
+      res.json({ 
+        success: false, 
+        error: 'No authentication data found',
+        needsReauth: true,
+        authUrl: '/api/auth/google'
+      });
+      
+    } catch (error) {
+      console.error('Authentication fix error:', error);
+      res.json({ 
+        success: false, 
+        error: error.message,
+        needsReauth: true,
+        authUrl: '/api/auth/google'
+      });
+    }
   });
 
   // Test session endpoint for debugging authentication
