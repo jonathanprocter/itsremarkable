@@ -333,13 +333,13 @@ export default function Planner() {
     if (eventsError && eventsError.message?.includes('authentication')) {
       console.log('🔧 Detected authentication error, attempting auto-fix...');
       runAuthenticationFix().then(result => {
-        if (result.success).catch(error => console.error("Promise error:", error)) {
+        if (result.success) {
           console.log('✅ Authentication fixed, refetching data...');
           queryClient.invalidateQueries({ queryKey: ['/api/events'] });
         } else if (result.requiresAction) {
           console.log('⚠️ Manual authentication required:', result.message);
         }
-      });
+      }).catch(error => console.error("Promise error:", error));
     }
   }, [eventsError, queryClient]);
 
@@ -352,7 +352,7 @@ export default function Planner() {
         headers: {
           'Content-Type': 'application/json'
         }
-      }).catch(error => console.error("Fetch error:", error));
+      });
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));

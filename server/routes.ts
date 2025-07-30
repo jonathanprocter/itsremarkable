@@ -1133,15 +1133,16 @@ export function registerRoutes(app: Express) {
     }
   });
 
-function getRedirectURI() {
-  // Get current domain for redirect URI
-  const baseURL = process.env.REPLIT_DOMAINS
-    ? `https://${process.env.REPLIT_DOMAINS.split(",")[0]}`
-    : "https://5a6f843f-53cb-48cf-8afc-05f223a337ff-00-3gvxznlnxvdl8.riker.replit.dev";
+  function getRedirectURI() {
+    // Get current domain for redirect URI
+    const baseURL = process.env.REPLIT_DOMAINS
+      ? `https://${process.env.REPLIT_DOMAINS.split(",")[0]}`
+      : "https://5a6f843f-53cb-48cf-8afc-05f223a337ff-00-3gvxznlnxvdl8.riker.replit.dev";
 
-  return `${baseURL}/api/auth/google/callback`;
-}
+    return `${baseURL}/api/auth/google/callback`;
+  }
 
+  // Create and return HTTP server
   const httpServer = createServer(app);
   return httpServer;
 }
