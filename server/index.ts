@@ -62,8 +62,9 @@ app.use(session({
   }
 }));
 
-// Configure Passport (minimal setup)
+// Configure Passport (initialize only, no session middleware)
 app.use(passport.initialize());
+// Note: passport.session() temporarily disabled to resolve session strategy conflict
 
 // Initialize minimal OAuth
 initializeMinimalOAuth();

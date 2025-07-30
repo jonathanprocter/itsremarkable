@@ -235,8 +235,8 @@ export function registerRoutes(app: Express) {
         try {
           console.log(`🔄 Attempting to update Google Calendar event ${eventId} in calendar ${currentEvent.calendarId}`);
 
-          // Import the Google Calendar update function
-          const { updateGoogleCalendarEvent } = await import('./oauth-comprehensive-fix');
+          // TODO: Re-implement Google Calendar update without conflicting OAuth
+          console.log('⚠️ Google Calendar update temporarily disabled to resolve authentication conflicts');
 
           // Prepare the updated event data
           const eventDataToUpdate = {
@@ -247,12 +247,12 @@ export function registerRoutes(app: Express) {
             endTime: updates.endTime || currentEvent.endTime
           };
 
-          // Update in Google Calendar
-          await updateGoogleCalendarEvent(
-            currentEvent.calendarId,
-            eventId, // This should be the Google Calendar event ID
-            eventDataToUpdate
-          );
+          // Update in Google Calendar - temporarily disabled
+          // await updateGoogleCalendarEvent(
+          //   currentEvent.calendarId,
+          //   eventId, // This should be the Google Calendar event ID
+          //   eventDataToUpdate
+          // );
 
           console.log(`✅ Successfully updated Google Calendar event ${eventId}`);
         } catch (googleError) {
@@ -581,67 +581,9 @@ export function registerRoutes(app: Express) {
     }
   });
 
-  // Auth status endpoint
-  app.get('/api/auth/status', async (req, res) => {
-    try {
-      const user = req.user || req.session?.passport?.user;
-      const envAccessToken = process.env.GOOGLE_ACCESS_TOKEN;
-      const envRefreshToken = process.env.GOOGLE_REFRESH_TOKEN;
+  // Note: Auth status endpoint is handled by minimal-oauth.ts
 
-      const isAuthenticated = !!user;
-      const userHasTokens = user?.accessToken && user?.refreshToken && 
-                           !user.accessToken.startsWith('dev-') && 
-                           !user.refreshToken.startsWith('dev-');
-      const envHasTokens = !!envAccessToken && !!envRefreshToken && 
-                          !envAccessToken.startsWith('dev-') && 
-                          !envRefreshToken.startsWith('dev-');
-
-      const hasValidTokens = userHasTokens || envHasTokens;
-
-      console.log('🔍 Auth Status Check:', {
-        hasUser: !!user,
-        userEmail: user?.email,
-        userHasTokens,
-        envHasTokens,
-        finalValidTokens: hasValidTokens
-      });
-
-      res.json({
-        authenticated: isAuthenticated,
-        hasValidTokens: hasValidTokens,
-        user: isAuthenticated ? {
-          id: user.id || "1",
-          email: user.email || "jonathan.procter@gmail.com",
-          name: user.name || user.displayName || "Jonathan Procter"
-        } : null,
-        environment: {
-          hasAccessToken: !!envAccessToken && !envAccessToken.startsWith('dev-'),
-          hasRefreshToken: !!envRefreshToken && !envRefreshToken.startsWith('dev-')
-        },
-        tokenSources: {
-          userSession: userHasTokens,
-          environment: envHasTokens
-        }
-      });
-    } catch (error) {
-      console.error('[ERROR] Auth status error:', error);
-      res.status(500).json({ error: error.message });
-    }
-  });
-
-  // Auth debug endpoint
-  app.get('/api/auth/debug', (req, res) => {
-    const debugInfo = {
-      authenticated: !!req.user,
-      hasValidTokens: !!(req.user?.googleAccessToken && req.user?.googleRefreshToken),
-      sessionId: req.sessionID,
-      userAgent: req.get('User-Agent'),
-      timestamp: new Date().toISOString(),
-      userId: req.user?.id
-    };
-
-    res.json(debugInfo);
-  });
+  // Note: Auth debug endpoint is handled by minimal-oauth.ts
 
   // Calendar sync endpoint
   app.get('/api/calendar/sync', async (req, res) => {
@@ -808,48 +750,7 @@ export function registerRoutes(app: Express) {
     }
   });
 
-  // Google OAuth login endpoint
-  app.get('/api/auth/google', async (req, res) => {
-    try {
-      const { generateOAuthUrl } = await import('./oauth-comprehensive-fix');
-      const authUrl = generateOAuthUrl();
-
-      res.redirect(authUrl);
-    } catch (error) {
-      console.error('[ERROR] Google OAuth error:', error);
-      res.status(500).json({ error: error.message });
-    }
-  });
-
-  // Google OAuth callback endpoint
-  app.get('/api/auth/google/callback', async (req, res) => {
-    try {
-      const { code } = req.query;
-
-      if (!code) {
-        console.error('[ERROR] Authorization code missing');
-        return res.redirect('/?auth=error&reason=no_code');
-      }
-
-      const { handleComprehensiveOAuthCallback } = await import('./oauth-comprehensive-fix');
-      const user = await handleComprehensiveOAuthCallback(code as string);
-
-      // Store user in session
-      req.user = user;
-      req.session.passport = {
-        user: user
-      };
-      req.session.userId = user.id;
-
-      console.log('✅ OAuth callback successful, user stored in session:', user.email);
-
-      // Redirect to success page
-      res.redirect('/?auth=success');
-    } catch (error) {
-      console.error('[ERROR] OAuth callback error:', error);
-      res.redirect('/?auth=error&reason=callback_failed');
-    }
-  });
+  // Note: Google OAuth endpoints are handled by minimal-oauth.ts
 
   // Token refresh endpoint
   app.post('/api/auth/refresh', async (req, res) => {
@@ -902,9 +803,9 @@ export function registerRoutes(app: Express) {
         });
       }
 
-      // Test creating OAuth client
-      const { createComprehensiveOAuth2Client } = await import('./oauth-comprehensive-fix');
-      const testClient = createComprehensiveOAuth2Client();
+      // Test creating OAuth client - temporarily disabled to resolve auth conflicts
+      // const { createComprehensiveOAuth2Client } = await import('./oauth-comprehensive-fix');
+      // const testClient = createComprehensiveOAuth2Client();
 
       console.log('✅ OAuth configuration refreshed successfully');
 

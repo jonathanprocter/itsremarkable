@@ -39,7 +39,7 @@ function getCurrentDomain(): string {
 export function initializeMinimalOAuth() {
   console.log('🚀 Initializing minimal OAuth...');
 
-  const redirectUri = `${getCurrentDomain()}/api/auth/google/callback`;
+  const redirectUri = `${getCurrentDomain()}/api/auth/callback`;
 
   console.log('🔗 Redirect URI:', redirectUri);
   console.log('🔑 Has Client ID:', !!process.env.GOOGLE_CLIENT_ID);
@@ -99,7 +99,7 @@ export function addMinimalOAuthRoutes(app: Express) {
   app.get('/api/auth/google', passport.authenticate('google'));
 
   // OAuth callback with enhanced error handling
-  app.get('/api/auth/google/callback', (req: Request, res: Response, next) => {
+  app.get('/api/auth/callback', (req: Request, res: Response, next) => {
     console.log('🔄 OAuth callback triggered');
     console.log('Query params:', req.query);
 
@@ -166,7 +166,7 @@ export function addMinimalOAuthRoutes(app: Express) {
 
   // Configuration check with redirect URI validation
   app.get('/api/auth/config', (req: Request, res: Response) => {
-    const redirectUri = `${getCurrentDomain()}/api/auth/google/callback`;
+    const redirectUri = `${getCurrentDomain()}/api/auth/callback`;
     res.json({
       hasClientId: !!process.env.GOOGLE_CLIENT_ID,
       hasClientSecret: !!process.env.GOOGLE_CLIENT_SECRET,
@@ -189,7 +189,7 @@ export function addMinimalOAuthRoutes(app: Express) {
     res.json({
       success: true,
       message: 'Redirect URI is reachable',
-      redirectUri: `${getCurrentDomain()}/api/auth/google/callback`,
+      redirectUri: `${getCurrentDomain()}/api/auth/callback`,
       timestamp: new Date().toISOString()
     });
   });
