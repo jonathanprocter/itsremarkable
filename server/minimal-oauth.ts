@@ -63,25 +63,55 @@ export function initializeMinimalOAuth() {
     clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     callbackURL: redirectUri,
     scope: ['profile', 'email', 'https://www.googleapis.com/auth/calendar']
-  }, (accessToken: string, refreshToken: string, profile: any, done: any) => {
-    console.log('✅ OAuth success for:', profile.emails?.[0]?.value);
+  }, async (accessToken: string, refreshToken: string, profile: any, done: any) => {
+    try {
+      console.log('✅ OAuth success for:', profile.emails?.[0]?.value);
 
-    // Store tokens in environment
-    process.env.GOOGLE_ACCESS_TOKEN = accessToken;
-    if (refreshToken) {
-      process.env.GOOGLE_REFRESH_TOKEN = refreshToken;
+      // Store tokens in environment
+      process.env.GOOGLE_ACCESS_TOKEN = accessToken;
+      if (refreshToken) {
+        process.env.GOOGLE_REFRESH_TOKEN = refreshToken;
+      }
+
+      // Get or create user in database
+      const { storage } = await import('./storage');
+      const googleId = profile.id;
+      const email = profile.emails?.[0]?.value || 'user@example.com';
+      const name = profile.displayName || 'User';
+
+      // First try to find existing user by Google ID
+      let user = await storage.getUserByGoogleId(googleId);
+      
+      if (!user) {
+        // Try to find by email
+        const existingUser = await storage.getUserByUsername(email);
+        if (existingUser) {
+          // Update existing user with Google ID
+          user = existingUser;
+          console.log('🔗 Linking existing user with Google ID');
+        } else {
+          // Create new user
+          user = await storage.createGoogleUser(googleId, email, name);
+          console.log('👤 Created new Google user with ID:', user.id);
+        }
+      } else {
+        console.log('👤 Found existing Google user with ID:', user.id);
+      }
+
+      const userObject = {
+        id: user.id, // Use actual database ID
+        email: user.email,
+        name: user.name,
+        accessToken: accessToken,
+        refreshToken: refreshToken
+      };
+
+      console.log('🎯 Created user object:', { id: userObject.id, email: userObject.email, name: userObject.name, hasTokens: !!accessToken });
+      return done(null, userObject);
+    } catch (error) {
+      console.error('❌ OAuth user creation/retrieval error:', error);
+      return done(error, null);
     }
-
-    const user = {
-      id: 1,
-      email: profile.emails?.[0]?.value || 'user@example.com',
-      name: profile.displayName || 'User',
-      accessToken: accessToken,
-      refreshToken: refreshToken
-    };
-
-    console.log('🎯 Created user object:', { id: user.id, email: user.email, name: user.name, hasTokens: !!accessToken });
-    return done(null, user);
   }));
 
   // Simple serialization

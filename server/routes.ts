@@ -7,6 +7,45 @@ import clientRoutes from './clientRoutes';
 
 import { addMinimalOAuthRoutes } from './minimal-oauth';
 
+// Authentication helper function
+function getAuthenticatedUserId(req: any): number | null {
+  // Try multiple sources for user ID
+  const sources = [
+    req.user?.id,
+    req.session?.user?.id,
+    req.session?.userId,
+    req.session?.passport?.user?.id
+  ];
+
+  for (const source of sources) {
+    if (source) {
+      const parsed = parseInt(source);
+      if (!isNaN(parsed) && parsed > 0) {
+        return parsed;
+      }
+    }
+  }
+
+  return null;
+}
+
+// Middleware to ensure authentication
+function requireAuth(req: any, res: any, next: any) {
+  const userId = getAuthenticatedUserId(req);
+  
+  if (!userId) {
+    console.log('❌ Authentication required but no valid user ID found');
+    return res.status(401).json({ 
+      error: 'Authentication required',
+      needsAuth: true,
+      authUrl: '/api/auth/google'
+    });
+  }
+
+  req.authenticatedUserId = userId;
+  next();
+}
+
 // Add missing function for Google Calendar testing
 async function testGoogleCalendarAccess(accessToken: string) {
   try {
@@ -75,10 +114,14 @@ export function registerRoutes(app: Express) {
   // Calendar sync endpoint
   app.get('/api/calendar/sync', async (req, res) => {
     try {
-      const userId = req.user?.id || req.session?.userId || "1";
+      const userId = getAuthenticatedUserId(req);
 
       if (!userId) {
-        return res.status(401).json({ error: 'Authentication required' });
+        return res.status(401).json({ 
+          error: 'Authentication required',
+          needsAuth: true,
+          authUrl: '/api/auth/google'
+        });
       }
 
       // Use environment tokens for calendar access
@@ -106,64 +149,35 @@ export function registerRoutes(app: Express) {
   // Events endpoint - returns calendar events
   app.get('/api/events', async (req, res) => {
     try {
-      let userId = req.user?.id || req.session?.userId || req.session?.user?.id || 1;
-
-      // Handle userId parsing more safely - check for object type
-      if (typeof userId === 'object' && userId !== null) {
-        // If userId is an object, try to extract the id property
-        userId = userId.id || 1;
+      // Get authenticated user ID
+      const userId = getAuthenticatedUserId(req);
+      
+      if (!userId) {
+        console.log('❌ No authenticated user found for events endpoint');
+        return res.status(401).json({ 
+          error: 'Authentication required',
+          needsAuth: true,
+          authUrl: '/api/auth/google'
+        });
       }
 
-      if (typeof userId === 'string') {
-        const parsed = parseInt(userId);
-        if (isNaN(parsed)) {
-          console.log(`⚠️ Invalid userId "${userId}", using fallback userId 1`);
-          userId = 1;
-        } else {
-          userId = parsed;
-        }
-      }
-
-      // Ensure userId is a valid number
-      if (typeof userId !== 'number' || isNaN(userId)) {
-        console.log(`⚠️ UserId is not a valid number: ${userId}, using fallback userId 1`);
-        userId = 1;
-      }
-
-      const userIdNumber = parseInt(userId) || 1;
-
-      console.log(`📊 Events endpoint called with userId: ${userId} (type: ${typeof userId})`);
+      console.log(`📊 Events endpoint called with authenticated userId: ${userId}`);
 
       // Import storage to get real events
       const { storage } = await import('./storage');
 
-      // Ensure default user exists
-      let user;
-      try {
-        user = await storage.getUser(userIdNumber);
-        if (!user) {
-          console.log(`🔧 Creating default user`);
-          user = await storage.createUser({
-            username: 'default_user',
-            email: 'user@example.com',
-            name: 'Default User',
-            password: null
-          });
-          
-          console.log(`✅ User resolved with ID: ${user.id}`);
-        } else {
-          console.log(`✅ User ${user.id} already exists`);
-        }
-      } catch (userError) {
-        console.error('❌ User creation/retrieval failed:', userError);
-        return res.json([]);
+      // Verify user exists in database
+      let user = await storage.getUser(userId);
+      if (!user) {
+        console.log(`❌ User ${userId} not found in database`);
+        return res.status(401).json({ 
+          error: 'User not found',
+          needsAuth: true,
+          authUrl: '/api/auth/google'
+        });
       }
 
-      // Ensure we have a valid user before proceeding
-      if (!user || !user.id) {
-        console.error('❌ No valid user found, returning empty events');
-        return res.json([]);
-      }
+      console.log(`✅ Verified user ${user.id} exists`);
 
       // Use the actual user ID from the database
       const actualUserId = user.id;
@@ -254,21 +268,23 @@ export function registerRoutes(app: Express) {
       const eventId = req.params.id;
       const updates = req.body;
 
-      // Use the same authentication logic as other endpoints - be more permissive for development
-      const userId = req.user?.id || req.session?.userId || req.session?.passport?.user?.id || "1";
+      // Get authenticated user ID
+      const userId = getAuthenticatedUserId(req);
 
       console.log(`[DEBUG] Update event authentication check:`, {
         hasReqUser: !!req.user,
         reqUserId: req.user?.id,
         sessionUserId: req.session?.userId,
-        passportUser: req.session?.passport?.user?.id,
-        finalUserId: userId
+        authenticatedUserId: userId
       });
 
-      // For development, always allow with fallback userId
       if (!userId) {
         console.log('[ERROR] Could not determine user ID for event update');
-        return res.status(401).json({ error: "Not authenticated" });
+        return res.status(401).json({ 
+          error: "Not authenticated",
+          needsAuth: true,
+          authUrl: '/api/auth/google'
+        });
       }
 
       if (!updates || typeof updates !== "object") {
@@ -294,7 +310,7 @@ export function registerRoutes(app: Express) {
         }
       }
 
-      const userIdNumber = parseInt(userId) || 1;
+      const userIdNumber = userId;
 
       // First, get the current event to check its source and calendar info
       let currentEvent = await storage.getEventBySourceId(userIdNumber, eventId);
@@ -385,16 +401,20 @@ export function registerRoutes(app: Express) {
   app.delete("/api/events/:id", async (req, res) => {
     try {
       const eventId = req.params.id;
-      const userId = req.user?.id || req.session?.userId || req.session?.passport?.user?.id || "1";
+      const userId = getAuthenticatedUserId(req);
 
       console.log(`[DEBUG] Delete event request for eventId: ${eventId}, userId: ${userId}`);
 
       if (!userId) {
         console.log('[ERROR] Could not determine user ID for event deletion');
-        return res.status(401).json({ error: "Not authenticated" });
+        return res.status(401).json({ 
+          error: "Not authenticated",
+          needsAuth: true,
+          authUrl: '/api/auth/google'
+        });
       }
 
-      const userIdNumber = parseInt(userId) || 1;
+      const userIdNumber = userId;
 
       // Try to delete by sourceId first (for Google Calendar events)
       let success = await storage.deleteEventBySourceId(userIdNumber, eventId);
@@ -427,9 +447,9 @@ export function registerRoutes(app: Express) {
   // CLIENT MANAGEMENT ROUTES
 
   // Get all clients for user
-  app.get('/api/clients', async (req, res) => {
+  app.get('/api/clients', requireAuth, async (req, res) => {
     try {
-      const userId = parseInt(req.user?.id || req.session?.userId || "1");
+      const userId = req.authenticatedUserId;
       const clients = await storage.getClients(userId);
       res.json(clients);
     } catch (error) {
@@ -439,11 +459,11 @@ export function registerRoutes(app: Express) {
   });
 
   // Get specific client
-  app.get('/api/clients/:id', async (req, res) => {
+  app.get('/api/clients/:id', requireAuth, async (req, res) => {
     try {
-      const userId = parseInt(req.user?.id || req.session?.userId || "1");
+      const userId = req.authenticatedUserId;
       const clientId = parseInt(req.params.id);
-      const client = await storage.getClient(userId, clientId);
+      const client = await storage.getClient(clientId, userId);
 
       if (!client) {
         return res.status(404).json({ error: 'Client not found' });
@@ -457,9 +477,9 @@ export function registerRoutes(app: Express) {
   });
 
   // Create new client
-  app.post('/api/clients', async (req, res) => {
+  app.post('/api/clients', requireAuth, async (req, res) => {
     try {
-      const userId = parseInt(req.user?.id || req.session?.userId || "1");
+      const userId = req.authenticatedUserId;
       const clientData = { ...req.body, userId };
       const client = await storage.createClient(clientData);
       res.status(201).json(client);
@@ -487,9 +507,9 @@ export function registerRoutes(app: Express) {
   });
 
   // Search clients
-  app.get('/api/clients/search/:query', async (req, res) => {
+  app.get('/api/clients/search/:query', requireAuth, async (req, res) => {
     try {
-      const userId = parseInt(req.user?.id || req.session?.userId || "1");
+      const userId = req.authenticatedUserId;
       const query = req.params.query;
       const clients = await storage.searchClients(userId, query);
       res.json(clients);
@@ -502,9 +522,9 @@ export function registerRoutes(app: Express) {
   // CONFLICT DETECTION ROUTES
 
   // Detect schedule conflicts for a new appointment
-  app.post('/api/conflicts/detect', async (req, res) => {
+  app.post('/api/conflicts/detect', requireAuth, async (req, res) => {
     try {
-      const userId = parseInt(req.user?.id || req.session?.userId || "1");
+      const userId = req.authenticatedUserId;
       const { startTime, endTime, eventId } = req.body;
 
       const conflicts = await storage.detectScheduleConflicts(
@@ -641,7 +661,7 @@ export function registerRoutes(app: Express) {
   // Auth test endpoint
   app.get('/api/auth/test', async (req, res) => {
     try {
-      const userId = req.user?.id || req.session?.userId || "1";
+      const userId = getAuthenticatedUserId(req);
 
       if (userId) {
         res.json({
