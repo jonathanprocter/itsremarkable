@@ -14,7 +14,7 @@ import { createRoot } from "react-dom/client";
 import App from "./App";
 import "./index.css";
 import "./utils/globalErrorHandler";
-import "./utils/sessionPersistenceFix";
+import "./utils/sessionManager";
 
 const container = document.getElementById("root");
 if (!container) {

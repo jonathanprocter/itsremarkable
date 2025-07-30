@@ -49,14 +49,14 @@ app.use(session({
   store: sessionStore,
   secret: process.env.SESSION_SECRET || 'remarkable-planner-secret-key-2025',
   resave: false, // Don't save session if unmodified
-  saveUninitialized: true, // Change to false - only save sessions when data is stored
+  saveUninitialized: false, // Only save sessions when data is stored - prevents unnecessary sessions
   rolling: true, // Reset expiration on each request to keep active sessions alive
   name: 'remarkable.sid', // Use unique session name
   cookie: {
     secure: false, // Must be false for HTTP in development
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days for reasonable session length
-    httpOnly: false, // Set to false to allow client-side access for debugging
-    sameSite: 'none', // Allow cross-origin cookies for development
+    httpOnly: true, // Secure cookie - prevents XSS attacks
+    sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax', // More secure sameSite policy
     path: '/', // Ensure cookie is sent for all paths
     domain: undefined // Let browser set domain automatically
   }

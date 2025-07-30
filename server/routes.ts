@@ -176,6 +176,39 @@ export function registerRoutes(app: Express) {
     }
   });
 
+  // Proper logout endpoint
+  app.post('/api/auth/logout', async (req, res) => {
+    try {
+      console.log('🔄 Processing logout request...');
+      
+      // Clear session data
+      if (req.session) {
+        req.session.destroy((err) => {
+          if (err) {
+            console.error('Session destruction error:', err);
+            return res.status(500).json({ error: 'Logout failed' });
+          }
+          
+          // Clear session cookie
+          res.clearCookie('remarkable.sid', {
+            path: '/',
+            httpOnly: true,
+            secure: false,
+            sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax'
+          });
+          
+          console.log('✅ Logout successful');
+          res.json({ success: true, message: 'Logged out successfully' });
+        });
+      } else {
+        res.json({ success: true, message: 'No active session' });
+      }
+    } catch (error) {
+      console.error('Logout error:', error);
+      res.status(500).json({ error: 'Logout failed' });
+    }
+  });
+
   // Add missing API endpoints that frontend calls
   app.get('/api/conflicts', async (req, res) => {
     try {
@@ -239,6 +272,100 @@ export function registerRoutes(app: Express) {
     } catch (error) {
       console.error('Autofix endpoint error:', error);
       res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
+  // Database sanity check endpoint
+  app.get('/api/auth/database-sanity', async (req, res) => {
+    try {
+      const { DatabaseSanityManager } = await import('./auth/databaseSanity');
+      const results = await DatabaseSanityManager.runComprehensiveCheck();
+      
+      res.json({
+        success: true,
+        timestamp: new Date().toISOString(),
+        ...results
+      });
+    } catch (error) {
+      console.error('Database sanity check error:', error);
+      res.status(500).json({ error: 'Database sanity check failed' });
+    }
+  });
+
+  // Complete authentication test endpoint
+  app.get('/api/auth/complete-test', async (req, res) => {
+    try {
+      const userId = getAuthenticatedUserId(req);
+      
+      if (!userId) {
+        return res.status(401).json({
+          success: false,
+          error: 'Not authenticated',
+          needsAuth: true
+        });
+      }
+
+      // Test token validity
+      const { TokenRefreshManager } = await import('./auth/tokenRefresh');
+      const hasValidTokens = await TokenRefreshManager.testGoogleCalendarAccess();
+
+      // Test user isolation
+      const { DatabaseSanityManager } = await import('./auth/databaseSanity');
+      const isolation = await DatabaseSanityManager.verifyUserIsolation(userId);
+
+      res.json({
+        success: true,
+        userId,
+        hasValidTokens,
+        userIsolation: isolation.isIsolated,
+        isolationIssues: isolation.leakage,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Complete authentication test error:', error);
+      res.status(500).json({ error: 'Authentication test failed' });
+    }
+  });
+
+  // Token refresh endpoint
+  app.post('/api/auth/refresh-tokens', async (req, res) => {
+    try {
+      const userId = getAuthenticatedUserId(req);
+      
+      if (!userId) {
+        return res.status(401).json({
+          error: 'Authentication required',
+          needsAuth: true
+        });
+      }
+
+      const { TokenRefreshManager } = await import('./auth/tokenRefresh');
+      const userSession = req.session?.user;
+      
+      if (!userSession) {
+        return res.status(401).json({
+          error: 'No user session found',
+          needsAuth: true
+        });
+      }
+
+      const tokensValid = await TokenRefreshManager.ensureValidTokens(userSession);
+      
+      if (tokensValid) {
+        res.json({
+          success: true,
+          message: 'Tokens are valid or refreshed successfully'
+        });
+      } else {
+        res.status(401).json({
+          success: false,
+          error: 'Token refresh failed',
+          needsReauth: true
+        });
+      }
+    } catch (error) {
+      console.error('Token refresh error:', error);
+      res.status(500).json({ error: 'Token refresh failed' });
     }
   });
 
