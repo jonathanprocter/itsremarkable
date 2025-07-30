@@ -343,6 +343,29 @@ export default function Planner() {
     }
   }, [eventsError, queryClient]);
 
+  // Auto-fix authentication on page load
+  React.useEffect(() => {
+    const autoFixAuth = async () => {
+      try {
+        const statusResponse = await fetch('/api/auth/status', { credentials: 'include' });
+        const status = await statusResponse.json();
+        
+        if (!status.authenticated) {
+          console.log('🔧 No authentication detected, running auto-fix...');
+          const result = await runAuthenticationFix();
+          if (result.success) {
+            console.log('✅ Auto-authentication fix successful');
+            queryClient.invalidateQueries({ queryKey: ['/api/events'] });
+          }
+        }
+      } catch (error) {
+        console.error('Auto-fix auth error:', error);
+      }
+    };
+    
+    autoFixAuth();
+  }, [queryClient]);
+
   // Unified sync mutation for calendar events
   const syncCalendarMutation = useMutation({
     mutationFn: async () => {

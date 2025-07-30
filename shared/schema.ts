@@ -21,6 +21,8 @@ export const users = pgTable("users", {
   googleId: text("google_id").unique(),
   email: text("email"),
   name: text("name"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 export const events = pgTable("events", {

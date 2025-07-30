@@ -8,10 +8,12 @@ window.addEventListener("unhandledrejection", (event) => {
 window.addEventListener("error", (event) => {
   console.error("Global error:", event.error);
 });
+
 import { StrictMode } from 'react';
 import { createRoot } from "react-dom/client";
 import App from "./App";
 import "./index.css";
+import "./utils/globalErrorHandler";
 
 const container = document.getElementById("root");
 if (!container) {
