@@ -115,31 +115,34 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    // For the default user, ensure we use ID 1
-    const userToInsert = {
-      username: insertUser.username,
-      email: insertUser.email,
-      name: insertUser.name || insertUser.username,
-      password: insertUser.password,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-
-    // If this is the default user, try to insert with ID 1
+    // First check if this is the default user request and if it already exists
     if (insertUser.username === 'default_user') {
-      try {
-        // First check if user with ID 1 already exists
-        const existingUser = await this.getUser(1);
-        if (existingUser) {
-          console.log('✅ Default user already exists with ID 1');
-          return existingUser;
-        }
+      // Check if user with ID 1 already exists
+      const existingUser = await this.getUser(1);
+      if (existingUser) {
+        console.log('✅ Default user already exists with ID 1');
+        return existingUser;
+      }
 
+      // Also check by username in case it exists with different ID
+      const userByUsername = await this.getUserByUsername('default_user');
+      if (userByUsername) {
+        console.log('✅ Default user found by username with ID:', userByUsername.id);
+        return userByUsername;
+      }
+
+      // Try to create with ID 1
+      try {
         const [user] = await db
           .insert(users)
           .values({
             id: 1,
-            ...userToInsert
+            username: insertUser.username,
+            email: insertUser.email,
+            name: insertUser.name || insertUser.username,
+            password: insertUser.password,
+            createdAt: new Date(),
+            updatedAt: new Date(),
           })
           .returning();
 
@@ -147,20 +150,38 @@ export class DatabaseStorage implements IStorage {
         return user;
       } catch (error) {
         console.error('❌ Error creating default user:', error);
-        // If ID 1 already exists, try to get it
-        if (error.code === '23505') { // Unique constraint violation
+        
+        // If there's a constraint violation, try to find the existing user
+        if (error.code === '23505') {
+          // Try by ID first
           const existingUser = await this.getUser(1);
           if (existingUser) {
+            console.log('✅ Found existing user by ID 1 after constraint violation');
             return existingUser;
+          }
+          
+          // Try by username
+          const userByUsername = await this.getUserByUsername('default_user');
+          if (userByUsername) {
+            console.log('✅ Found existing user by username after constraint violation');
+            return userByUsername;
           }
         }
         throw error;
       }
     }
 
+    // For non-default users, create normally
     const [user] = await db
       .insert(users)
-      .values(userToInsert)
+      .values({
+        username: insertUser.username,
+        email: insertUser.email,
+        name: insertUser.name || insertUser.username,
+        password: insertUser.password,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      })
       .returning();
 
     return user;

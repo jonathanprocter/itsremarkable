@@ -138,8 +138,9 @@ export function registerRoutes(app: Express) {
       const { storage } = await import('./storage');
 
       // Ensure default user exists
+      let user;
       try {
-        let user = await storage.getUser(userIdNumber);
+        user = await storage.getUser(userIdNumber);
         if (!user) {
           console.log(`🔧 Creating default user with ID ${userIdNumber}`);
           user = await storage.createUser({
@@ -149,17 +150,31 @@ export function registerRoutes(app: Express) {
             password: null
           });
           
-          if (!user || !user.id) {
-            console.error('❌ User creation returned invalid user object:', user);
-            return res.json([]);
-          }
-          
-          console.log(`✅ Created user with ID: ${user.id}`);
+          console.log(`✅ User resolved with ID: ${user.id}`);
         } else {
           console.log(`✅ User ${userIdNumber} already exists`);
         }
       } catch (userError) {
-        console.error('❌ User creation failed:', userError);
+        console.error('❌ User creation/retrieval failed:', userError);
+        // Try to find any existing user as fallback
+        try {
+          const fallbackUser = await storage.getUserByUsername('default_user');
+          if (fallbackUser) {
+            console.log(`🔄 Using fallback user with ID: ${fallbackUser.id}`);
+            user = fallbackUser;
+          } else {
+            console.error('❌ No fallback user found, returning empty events');
+            return res.json([]);
+          }
+        } catch (fallbackError) {
+          console.error('❌ Fallback user search failed:', fallbackError);
+          return res.json([]);
+        }
+      }
+
+      // Ensure we have a valid user before proceeding
+      if (!user || !user.id) {
+        console.error('❌ No valid user found, returning empty events');
         return res.json([]);
       }
 
@@ -201,7 +216,7 @@ export function registerRoutes(app: Express) {
           try {
             await storage.createEvent({
               ...eventData,
-              userId: userIdNumber, // Use the properly parsed userId
+              userId: user.id, // Use the resolved user ID
               allDay: false,
               color: '#3b82f6'
             });
@@ -212,7 +227,7 @@ export function registerRoutes(app: Express) {
         }
 
         // Refetch events after creating samples
-        events = await storage.getEvents(userId);
+        events = await storage.getEvents(user.id);
       }
 
       // Format events for frontend
