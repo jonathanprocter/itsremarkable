@@ -121,12 +121,16 @@ export function addMinimalOAuthRoutes(app: Express) {
 
       console.log('✅ OAuth callback successful for user:', req.user);
       
+      // Store user in session manually to ensure persistence
+      req.session.user = req.user;
+      req.session.isAuthenticated = true;
+      
       // Ensure session is saved before redirect
       req.session.save((saveErr) => {
         if (saveErr) {
           console.error('Session save error:', saveErr);
         }
-        console.log('✅ Session saved, redirecting to success page');
+        console.log('✅ Session saved with user data, redirecting to success page');
         res.redirect('/?auth=success');
       });
     });
@@ -143,13 +147,18 @@ export function addMinimalOAuthRoutes(app: Express) {
       hasValidTokens,
       hasSessionUser,
       sessionExists: !!req.session,
-      userId: req.user?.id || 'none'
+      userId: req.user?.id || req.session?.user?.id || 'none'
     });
 
+    // Consider user authenticated if they have session data or are passport authenticated
+    const userAuthenticated = isAuthenticated || hasSessionUser;
+    const currentUser = req.user || req.session?.user || null;
+
     res.json({
-      authenticated: isAuthenticated || hasSessionUser,
+      authenticated: userAuthenticated,
       hasValidTokens: hasValidTokens,
-      user: isAuthenticated ? req.user : (hasSessionUser ? req.session.user : null)
+      user: currentUser,
+      isAuthenticated: userAuthenticated // Add this for compatibility
     });
   });
 

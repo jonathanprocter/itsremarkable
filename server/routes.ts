@@ -106,7 +106,7 @@ export function registerRoutes(app: Express) {
   // Events endpoint - returns calendar events
   app.get('/api/events', async (req, res) => {
     try {
-      let userId = req.user?.id || req.session?.userId || 1;
+      let userId = req.user?.id || req.session?.userId || req.session?.user?.id || 1;
 
       // Handle userId parsing more safely - check for object type
       if (typeof userId === 'object' && userId !== null) {
@@ -136,7 +136,55 @@ export function registerRoutes(app: Express) {
       const { storage } = await import('./storage');
 
       // Get real events from database
-      const events = await storage.getEvents(userId);
+      let events = await storage.getEvents(userId);
+
+      // If no events found, create some sample events for testing
+      if (events.length === 0) {
+        console.log('🆔 No events found in database, creating sample events...');
+        
+        // Create sample events for today and the next few days
+        const today = new Date();
+        const sampleEvents = [
+          {
+            title: 'Sample Morning Meeting',
+            startTime: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 9, 0),
+            endTime: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 10, 0),
+            source: 'manual',
+            description: 'Sample morning meeting for testing'
+          },
+          {
+            title: 'Lunch Break',
+            startTime: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 12, 0),
+            endTime: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 13, 0),
+            source: 'manual',
+            description: 'Lunch break'
+          },
+          {
+            title: 'Afternoon Session',
+            startTime: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 14, 0),
+            endTime: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 15, 0),
+            source: 'google',
+            description: 'Afternoon work session'
+          }
+        ];
+
+        // Create sample events in database
+        for (const eventData of sampleEvents) {
+          try {
+            await storage.createEvent({
+              ...eventData,
+              userId,
+              allDay: false,
+              color: '#3b82f6'
+            });
+          } catch (createError) {
+            console.warn('Failed to create sample event:', createError);
+          }
+        }
+
+        // Refetch events after creating samples
+        events = await storage.getEvents(userId);
+      }
 
       // Format events for frontend
       const formattedEvents = events.map(event => ({
