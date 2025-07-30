@@ -139,22 +139,27 @@ export function registerRoutes(app: Express) {
 
       // Ensure default user exists
       try {
-        const existingUser = await storage.getUser(userIdNumber);
-        if (!existingUser) {
+        let user = await storage.getUser(userIdNumber);
+        if (!user) {
           console.log(`🔧 Creating default user with ID ${userIdNumber}`);
-          const newUser = await storage.createUser({
+          user = await storage.createUser({
             username: 'default_user',
             email: 'user@example.com',
             name: 'Default User',
             password: null
           });
-          console.log(`✅ Created user with ID: ${newUser?.id}`);
+          
+          if (!user || !user.id) {
+            console.error('❌ User creation returned invalid user object:', user);
+            return res.json([]);
+          }
+          
+          console.log(`✅ Created user with ID: ${user.id}`);
         } else {
           console.log(`✅ User ${userIdNumber} already exists`);
         }
       } catch (userError) {
         console.error('❌ User creation failed:', userError);
-        // Skip event creation if user creation fails
         return res.json([]);
       }
 
@@ -196,12 +201,13 @@ export function registerRoutes(app: Express) {
           try {
             await storage.createEvent({
               ...eventData,
-              userId,
+              userId: userIdNumber, // Use the properly parsed userId
               allDay: false,
               color: '#3b82f6'
             });
+            console.log(`✅ Created sample event: ${eventData.title}`);
           } catch (createError) {
-            console.warn('Failed to create sample event:', createError);
+            console.error('❌ Failed to create sample event:', createError);
           }
         }
 

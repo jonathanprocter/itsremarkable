@@ -128,6 +128,13 @@ export class DatabaseStorage implements IStorage {
     // If this is the default user, try to insert with ID 1
     if (insertUser.username === 'default_user') {
       try {
+        // First check if user with ID 1 already exists
+        const existingUser = await this.getUser(1);
+        if (existingUser) {
+          console.log('✅ Default user already exists with ID 1');
+          return existingUser;
+        }
+
         const [user] = await db
           .insert(users)
           .values({
@@ -136,11 +143,16 @@ export class DatabaseStorage implements IStorage {
           })
           .returning();
 
+        console.log('✅ Created default user with ID:', user.id);
         return user;
       } catch (error) {
-        // If ID 1 already exists, just return the existing user
+        console.error('❌ Error creating default user:', error);
+        // If ID 1 already exists, try to get it
         if (error.code === '23505') { // Unique constraint violation
-          return await this.getUser(1);
+          const existingUser = await this.getUser(1);
+          if (existingUser) {
+            return existingUser;
+          }
         }
         throw error;
       }
