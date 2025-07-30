@@ -95,7 +95,8 @@ if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
     if (typeof message === 'string' && (
       message.includes('[vite] connecting') ||
       message.includes('[vite] connected') ||
-      message.includes('[vite] failed to connect')
+      message.includes('[vite] failed to connect') ||
+      message.includes('WebSocket closed without opened')
     )) {
       return; // Suppress vite connection spam
     }

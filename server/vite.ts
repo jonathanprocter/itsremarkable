@@ -25,9 +25,10 @@ export async function setupVite(app: Express, server: Server) {
     hmr: { 
       server,
       host: '0.0.0.0',
-      port: 5173
+      port: 5174,
+      clientPort: 5174
     },
-    allowedHosts: ['localhost', '.replit.dev'],
+    allowedHosts: ['localhost', '.replit.dev', '.replit.app'],
   };
 
   const vite = await createViteServer({

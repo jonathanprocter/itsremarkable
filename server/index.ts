@@ -49,7 +49,7 @@ app.use(session({
   store: sessionStore,
   secret: process.env.SESSION_SECRET || 'remarkable-planner-secret-key-2025',
   resave: false, // Don't save session if unmodified
-  saveUninitialized: false, // Change to false - only save sessions when data is stored
+  saveUninitialized: true, // Change to false - only save sessions when data is stored
   rolling: true, // Reset expiration on each request to keep active sessions alive
   name: 'remarkable.sid', // Use unique session name
   cookie: {
@@ -99,6 +99,23 @@ app.use((req, res, next) => {
   next();
 });
 
+// Session debugging and persistence middleware
+app.use((req, res, next) => {
+  console.log(`🔍 Session ID: ${req.sessionID}`);
+  console.log(`🔍 Session data:`, req.session);
+
+  // Ensure session is saved after each request
+  const originalSend = res.send;
+  res.send = function(data) {
+    req.session.save((err) => {
+      if (err) console.error('Session save error:', err);
+      originalSend.call(this, data);
+    });
+  };
+
+  next();
+});
+
 (async () => {
   try {
     console.log('Starting server setup...');
@@ -111,7 +128,7 @@ app.use((req, res, next) => {
     const message = err.message || "Internal Server Error";
 
     console.error('Server error:', err);
-    
+
     // Only send response if headers haven't been sent yet
     if (!res.headersSent) {
       res.status(status).json({ message });
@@ -136,7 +153,7 @@ app.use((req, res, next) => {
   // CRITICAL: Ensure API routes are fully registered before Vite setup
   // to prevent frontend from intercepting OAuth callbacks
   console.log('✅ All API routes registered, now setting up frontend...');
-  
+
   if (app.get("env") === "development") {
     console.log('Setting up Vite (after API routes)...');
     await setupVite(app, server);
@@ -149,7 +166,7 @@ app.use((req, res, next) => {
   // this serves both the API and the client.
   // It is the only port that is not firewalled.
   const port = 5000;
-  
+
   // Add error handling before listen
   server.on('error', (err: any) => {
     console.error('Server error:', err);
@@ -159,7 +176,7 @@ app.use((req, res, next) => {
       process.exit(1);
     }
   });
-  
+
   // Graceful shutdown
   const gracefulShutdown = () => {
     console.log('Shutting down gracefully...');
@@ -174,7 +191,7 @@ app.use((req, res, next) => {
 
   process.on('SIGTERM', gracefulShutdown);
   process.on('SIGINT', gracefulShutdown);
-  
+
   // Try to start server with retry logic
   const startServer = () => {
     try {
@@ -188,7 +205,7 @@ app.use((req, res, next) => {
   };
 
   startServer();
-  
+
   } catch (error) {
     console.error('Server startup failed:', error);
     process.exit(1);
