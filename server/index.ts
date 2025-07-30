@@ -49,22 +49,22 @@ app.use(session({
   store: sessionStore,
   secret: process.env.SESSION_SECRET || 'remarkable-planner-secret-key-2025',
   resave: false, // Don't save session if unmodified
-  saveUninitialized: true, // Allow session creation for OAuth flow
-  rolling: false, // Don't reset expiration on each request to maintain stable sessions
+  saveUninitialized: false, // Change to false - only save sessions when data is stored
+  rolling: true, // Reset expiration on each request to keep active sessions alive
   name: 'remarkable.sid', // Use unique session name
   cookie: {
     secure: false, // Must be false for HTTP in development
-    maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days for persistent login
-    httpOnly: false, // Allow client-side access for debugging
-    sameSite: 'lax', // Use lax for better compatibility
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days for reasonable session length
+    httpOnly: true, // Secure HTTP-only cookies
+    sameSite: 'lax', // Use lax for OAuth compatibility
     path: '/', // Ensure cookie is sent for all paths
     domain: undefined // Let browser set domain automatically
   }
 }));
 
-// Configure Passport (initialize only, no session middleware)
+// Configure Passport without session middleware to avoid "session" strategy errors
 app.use(passport.initialize());
-// Note: passport.session() temporarily disabled to resolve session strategy conflict
+// Note: passport.session() disabled temporarily to resolve "Unknown authentication strategy 'session'" errors
 
 // Initialize minimal OAuth
 initializeMinimalOAuth();

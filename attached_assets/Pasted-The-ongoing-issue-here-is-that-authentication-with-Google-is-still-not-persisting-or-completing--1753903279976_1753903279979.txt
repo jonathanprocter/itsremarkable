@@ -1,0 +1,63 @@
+The ongoing issue here is that **authentication with Google is still not persisting or completing**, even though the backend loads events (298 SimplePractice + 230 Google Calendar events), and you are repeatedly **presented with "Authentication Required" and prompted to Connect Google Calendar**.
+
+Here’s what’s likely happening based on the page content, logs, and previous context:
+
+### Root Problems
+
+1. **Session/Auth State Is Not Persisting After OAuth**
+    - You’re asked to connect your Google account, which suggests the app does NOT recognize you as authenticated even after a successful login attempt.
+    - The backend can fetch events (which means it can use valid tokens, at least temporarily), but the frontend/session/cookie fails to reflect an authenticated user.
+
+2. **"Connecting..." Hangs or Loops**
+    - You see a "Connecting..." message but do not transition to an authenticated, personalized dashboard view.
+    - This suggests that a step in the authentication flow is failing silently, such as:
+        - Session cookie not set or being rejected
+        - User lookup/session binding fails (e.g., ID mismatch)
+        - State restoration after passport.js (or other auth middleware) not working
+
+3. **Console Diagnostics and Commands Offered**
+    - The presence of `fixSessionNow()` or `testAuthenticatedSession()` commands implies the developer anticipated or observed persistent session/auth bugs.
+
+4. **Backend Loads Events but Still Demands Login**
+    - The backend can successfully access calendar sources, indicating it can use tokens at least briefly, but this state is not maintained for you as an end-user session.
+
+### Likely Technical Causes
+
+- **Session Cookie Issues**: Cookies may not be set, flagged as secure/HTTP-only inappropriately, or not returned correctly in your runtime environment (Replit/devhost).
+- **User ID Mismatch**: As covered before, inconsistent user ID handling causes the app to fetch event data generally but not link session state to an authenticated, known user on the frontend.
+- **OAuth/Session Callback**: The callback either isn’t binding the user to your session or there is a disconnect between token storage and session validation.
+- **Dev Environment/Domain Mismatch**: Sometimes, cookies don’t persist correctly in custom/dev domains or across OAuth login redirects if settings are too strict or domain isn’t consistent.
+- **Frontend/Backend Desync**: Frontend sees “not authenticated” even as backend can fetch events, possibly due to a missing or broken `/api/auth/status` route, or bad state handoff between backend and SPA.
+
+### Key Symptoms
+- **You are always returned to "Authentication Required"**.
+- **No persistent signed-in session**—you must “Connect Google Calendar” again and again.
+- **Events load on backend, but personalized, authenticated features are unavailable to you**.
+
+### What to Check/Fix Next
+
+1. **Check All Auth Status Endpoints**
+    - Confirm that `/api/auth/status` reflects `authenticated:true` after OAuth callback and is using the real session.
+
+2. **Cookie/Session Settings**
+    - Make sure `cookie-session`, `express-session`, or similar is configured to match your deployment domain, and cookies are not set to `secure` in a non-SSL environment.
+    - Set proper `sameSite` and `domain` on cookies for local/test environments.
+
+3. **OAuth Callback Completion**
+    - Immediately after you authorize with Google, check what your frontend receives for `/api/auth/status`.
+    - Log the exact session object and user ID - confirm it matches what the backend expects.
+
+4. **User Binding**
+    - All backend queries and event fetching should use the actual user object from the session, not a hardcoded user or ID.
+
+5. **Devtools Inspection**
+    - In your browser, inspect cookies after trying to connect—look for the session, and see if it's refreshed or lost on redirect.
+
+**Next Steps for You**:
+- Try running the console command `fixSessionNow()` or `testAuthenticatedSession()` as offered in the UI. See if it clears/sets a cookie or gives you a clue about session state.
+- Review and debug your authentication middleware (session handling, passport callback, user serialization).
+- Make sure all API endpoints and frontend checks rely exclusively on the user/info in the session object, never on a “guessed” or generic user.
+
+If you want file- or code-level guidance fixing session/auth bugs, show your current `server/minimal-oauth.ts` or session-related logic, and I can help pinpoint the source!
+
+[1] https://5a6f843f-53cb-48cf-8afc-05f223a337ff-00-3gvxznlnxvdl8.riker.replit.dev/

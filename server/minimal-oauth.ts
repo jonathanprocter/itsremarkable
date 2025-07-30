@@ -52,8 +52,12 @@ export function initializeMinimalOAuth() {
   console.log('🔑 Has Client ID:', !!process.env.GOOGLE_CLIENT_ID);
   console.log('🔐 Has Client Secret:', !!process.env.GOOGLE_CLIENT_SECRET);
 
-  // Completely reset passport
-  passport._strategies = {};
+  // Clear existing strategies but preserve session support
+  if (passport._strategies.google) {
+    delete passport._strategies.google;
+  }
+  
+  // Clear existing serializers/deserializers
   passport._serializers = [];
   passport._deserializers = [];
 
@@ -114,15 +118,32 @@ export function initializeMinimalOAuth() {
     }
   }));
 
-  // Simple serialization
+  // Enhanced serialization for better session persistence
   passport.serializeUser((user: any, done) => {
-    console.log('📝 Serializing user:', user);
-    done(null, user);
+    console.log('📝 Serializing user for session storage:', { id: user.id, email: user.email });
+    // Store only the user ID in the session for security and efficiency
+    done(null, user.id);
   });
 
-  passport.deserializeUser((user: any, done) => {
-    console.log('🔍 Deserializing user:', user);
-    done(null, user);
+  passport.deserializeUser(async (userId: number, done) => {
+    try {
+      console.log('🔍 Deserializing user ID from session:', userId);
+      
+      // Retrieve full user data from database using stored ID
+      const { storage } = await import('./storage');
+      const user = await storage.getUserById(userId);
+      
+      if (user) {
+        console.log('✅ User found in database:', { id: user.id, email: user.email });
+        done(null, user);
+      } else {
+        console.log('❌ User not found in database for ID:', userId);
+        done(null, false);
+      }
+    } catch (error) {
+      console.error('❌ User deserialization error:', error);
+      done(error, null);
+    }
   });
 
   console.log('✅ Minimal OAuth configured');
@@ -178,20 +199,20 @@ export function addMinimalOAuthRoutes(app: Express) {
 
   // Auth status
   app.get('/api/auth/status', (req: Request, res: Response) => {
-    const isAuthenticated = req.isAuthenticated();
     const hasValidTokens = !!process.env.GOOGLE_ACCESS_TOKEN;
     const hasSessionUser = !!(req.session && req.session.user);
+    const hasUserData = !!req.user;
 
     console.log('🔍 Auth status check:', {
-      isAuthenticated,
+      hasUserData,
       hasValidTokens,
       hasSessionUser,
       sessionExists: !!req.session,
       userId: req.user?.id || req.session?.user?.id || 'none'
     });
 
-    // Consider user authenticated if they have session data or are passport authenticated
-    const userAuthenticated = isAuthenticated || hasSessionUser;
+    // Consider user authenticated if they have session data or user object
+    const userAuthenticated = hasUserData || hasSessionUser;
     const currentUser = req.user || req.session?.user || null;
 
     res.json({
@@ -205,7 +226,7 @@ export function addMinimalOAuthRoutes(app: Express) {
   // Auth debug (separate from status for troubleshooting)
   app.get('/api/auth/debug', (req: Request, res: Response) => {
     res.json({
-      authenticated: req.isAuthenticated(),
+      authenticated: !!(req.user || req.session?.user),
       hasValidTokens: !!process.env.GOOGLE_ACCESS_TOKEN,
       sessionId: req.sessionID,
       userAgent: req.get('User-Agent'),
@@ -267,6 +288,29 @@ export function addMinimalOAuthRoutes(app: Express) {
     
     console.log('✅ Logout successful');
     res.redirect('/?auth=logout');
+  });
+
+  // Test session endpoint for debugging authentication
+  app.post('/api/auth/test-session', (req: Request, res: Response) => {
+    console.log('🧪 Test session endpoint called');
+    const isAuthenticated = !!(req.user || req.session?.user);
+    console.log('Session data:', {
+      sessionId: req.sessionID,
+      isAuthenticated,
+      user: req.user,
+      sessionUser: req.session.user,
+      hasValidTokens: !!process.env.GOOGLE_ACCESS_TOKEN
+    });
+    
+    res.json({
+      success: true,
+      sessionId: req.sessionID,
+      isAuthenticated,
+      user: req.user || null,
+      sessionUser: req.session.user || null,
+      hasValidTokens: !!process.env.GOOGLE_ACCESS_TOKEN,
+      message: 'Session test completed'
+    });
   });
 
   console.log('✅ Minimal OAuth routes added');
