@@ -8,30 +8,67 @@ class SessionFixCommands {
     
     try {
       // Step 1: Check current session status
-      const statusResponse = await fetch('/api/auth/status');
+      const statusResponse = await fetch('/api/auth/status', { credentials: 'include' });
       const status = await statusResponse.json();
       console.log('📊 Current auth status:', status);
       
-      // Step 2: Try session fix endpoint
-      const fixResponse = await fetch('/api/auth/fix-session', { method: 'POST' });
+      // Step 2: Try the force-fix endpoint first
+      console.log('🔧 Attempting force authentication fix...');
+      const forceFixResponse = await fetch('/api/auth/force-fix', { 
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (forceFixResponse.ok) {
+        const forceFixResult = await forceFixResponse.json();
+        console.log('✅ Force fix result:', forceFixResult);
+        
+        if (forceFixResult.success) {
+          // Wait a moment for session to propagate
+          await new Promise(resolve => setTimeout(resolve, 500));
+          
+          // Verify authentication worked
+          const verifyResponse = await fetch('/api/auth/status', { credentials: 'include' });
+          const verifyStatus = await verifyResponse.json();
+          console.log('✅ Post-fix auth status:', verifyStatus);
+          
+          if (verifyStatus.authenticated) {
+            console.log('🎉 Authentication fixed successfully!');
+            window.location.reload();
+            return;
+          }
+        }
+      }
+      
+      // Step 3: If force-fix didn't work, try other methods
+      const fixResponse = await fetch('/api/auth/fix-session', { 
+        method: 'POST', 
+        credentials: 'include' 
+      });
       const fixResult = await fixResponse.json();
       console.log('🔧 Session fix result:', fixResult);
       
-      // Step 3: Check if tokens exist in environment
-      const configResponse = await fetch('/api/auth/test-oauth-config');
+      // Step 4: Check if tokens exist in environment
+      const configResponse = await fetch('/api/auth/test-oauth-config', { credentials: 'include' });
       const config = await configResponse.json();
       console.log('🔑 OAuth config:', config);
       
-      // Step 4: If we have tokens but no session, try to restore
+      // Step 5: If we have tokens but no session, try to restore
       if (config.hasAccessToken && !status.authenticated) {
         console.log('🔄 Attempting session restoration...');
-        const restoreResponse = await fetch('/api/auth/restore-session', { method: 'POST' });
+        const restoreResponse = await fetch('/api/auth/restore-session', { 
+          method: 'POST',
+          credentials: 'include'
+        });
         const restoreResult = await restoreResponse.json();
         console.log('✨ Session restoration result:', restoreResult);
       }
       
-      // Step 5: Final status check
-      const finalStatus = await fetch('/api/auth/status');
+      // Step 6: Final status check
+      const finalStatus = await fetch('/api/auth/status', { credentials: 'include' });
       const final = await finalStatus.json();
       console.log('✅ Final auth status:', final);
       
@@ -142,5 +179,23 @@ console.log('  testAuthenticatedSession() - Test and debug session');
 console.log('  clearAuthenticationData() - Clear all auth data');
 console.log('  forceGoogleOAuth() - Force fresh OAuth');
 console.log('  runDiagnostics() - Run comprehensive diagnostics');
+
+// Auto-run authentication fix on module load if needed
+async function checkAndFixAuth() {
+  try {
+    const response = await fetch('/api/auth/status', { credentials: 'include' });
+    const status = await response.json();
+    
+    if (!status.authenticated) {
+      console.log('🔧 No authentication detected, running auto-fix...');
+      await SessionFixCommands.fixSessionNow();
+    }
+  } catch (error) {
+    console.log('Auth check failed:', error);
+  }
+}
+
+// Run auth check after a short delay to ensure DOM is ready
+setTimeout(checkAndFixAuth, 1000);
 
 export { SessionFixCommands };
