@@ -142,15 +142,20 @@ export function registerRoutes(app: Express) {
         const existingUser = await storage.getUser(userIdNumber);
         if (!existingUser) {
           console.log(`🔧 Creating default user with ID ${userIdNumber}`);
-          await storage.createUser({
+          const newUser = await storage.createUser({
             username: 'default_user',
             email: 'user@example.com',
             name: 'Default User',
             password: null
           });
+          console.log(`✅ Created user with ID: ${newUser?.id}`);
+        } else {
+          console.log(`✅ User ${userIdNumber} already exists`);
         }
       } catch (userError) {
-        console.warn('User creation warning:', userError);
+        console.error('❌ User creation failed:', userError);
+        // Skip event creation if user creation fails
+        return res.json([]);
       }
 
       // Get real events from database

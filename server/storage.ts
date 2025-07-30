@@ -17,7 +17,7 @@ export interface IStorage {
   getUserByGoogleId(googleId: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   createGoogleUser(googleId: string, email: string, name: string): Promise<User>;
-  
+
   // Event management
   getEvents(userId: number): Promise<Event[]>;
   createEvent(event: InsertEvent): Promise<Event>;
@@ -26,17 +26,17 @@ export interface IStorage {
   updateEventBySourceId(userId: number, sourceId: string, updates: Partial<Event>): Promise<Event | null>;
   deleteEvent(eventId: number): Promise<void>;
   deleteEventBySourceId(userId: number, sourceId: string): Promise<boolean>;
-  
+
   // Daily notes
   getDailyNote(userId: number, date: string): Promise<DailyNote | undefined>;
   createOrUpdateDailyNote(note: InsertDailyNote): Promise<DailyNote>;
-  
+
   // Appointment status methods
   updateEventStatus(userId: number, eventId: string, status: string, reason?: string): Promise<Event>;
   getEventBySourceId(userId: number, sourceId: string): Promise<Event | undefined>;
   createStatusChangeLog(log: InsertStatusChangeLog): Promise<StatusChangeLog>;
   getStatusChangeLogs(userId: number, eventId: string): Promise<StatusChangeLog[]>;
-  
+
   // Client management
   getClients(userId: number): Promise<Client[]>;
   getClient(clientId: number, userId: number): Promise<Client | undefined>;
@@ -45,42 +45,42 @@ export interface IStorage {
   deleteClient(clientId: number): Promise<void>;
   searchClients(userId: number, query: string): Promise<Client[]>;
   getClientsByTag(userId: number, tag: string): Promise<Client[]>;
-  
+
   // Session notes
   getSessionNotes(clientId: number, userId: number): Promise<SessionNote[]>;
   getSessionNote(userId: number, noteId: number): Promise<SessionNote | undefined>;
   createSessionNote(note: InsertSessionNote): Promise<SessionNote>;
   updateSessionNote(noteId: number, updates: Partial<SessionNote>): Promise<SessionNote | null>;
-  
+
   // Session materials
   getSessionMaterials(clientId: number, userId: number): Promise<any[]>;
   createSessionMaterial(material: any): Promise<any>;
-  
+
   // AI case conceptualization
   getAIConceptualization(clientId: number, userId: number): Promise<any | null>;
   saveAIConceptualization(conceptualization: any): Promise<any>;
-  
+
   // Client notes
   getClientNotes(clientId: number, userId: number): Promise<any[]>;
   createClientNote(note: any): Promise<any>;
-  
+
   // Conflict detection
   detectScheduleConflicts(userId: number, startTime: Date, endTime: Date, eventId?: number): Promise<ScheduleConflict[]>;
   createScheduleConflict(conflict: Omit<ScheduleConflict, 'id' | 'createdAt'>): Promise<ScheduleConflict>;
   getScheduleConflicts(userId: number, resolved?: boolean): Promise<ScheduleConflict[]>;
   resolveConflict(conflictId: number): Promise<void>;
-  
+
   // Location management
   getLocationSettings(userId: number): Promise<LocationSetting[]>;
   createLocationSetting(setting: InsertLocationSetting): Promise<LocationSetting>;
   updateLocationSetting(settingId: number, updates: Partial<LocationSetting>): Promise<LocationSetting | null>;
-  
+
   // Revenue tracking
   getRevenueRecords(userId: number, startDate?: Date, endDate?: Date): Promise<RevenueRecord[]>;
   createRevenueRecord(record: Omit<RevenueRecord, 'id' | 'createdAt'>): Promise<RevenueRecord>;
   updateRevenueRecord(recordId: number, updates: Partial<RevenueRecord>): Promise<RevenueRecord | null>;
   getRevenueAnalytics(userId: number, startDate: Date, endDate: Date): Promise<any>;
-  
+
   // Appointment templates
   getAppointmentTemplates(userId: number): Promise<AppointmentTemplate[]>;
   createAppointmentTemplate(template: InsertAppointmentTemplate): Promise<AppointmentTemplate>;
@@ -90,8 +90,18 @@ export interface IStorage {
 
 export class DatabaseStorage implements IStorage {
   async getUser(id: number): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.id, id));
-    return user || undefined;
+    try {
+      const [user] = await db
+        .select()
+        .from(users)
+        .where(eq(users.id, id))
+        .limit(1);
+
+      return user || undefined;
+    } catch (error) {
+      console.error(`Error getting user ${id}:`, error);
+      return undefined;
+    }
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
@@ -105,10 +115,42 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
+    // For the default user, ensure we use ID 1
+    const userToInsert = {
+      username: insertUser.username,
+      email: insertUser.email,
+      name: insertUser.name || insertUser.username,
+      password: insertUser.password,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+
+    // If this is the default user, try to insert with ID 1
+    if (insertUser.username === 'default_user') {
+      try {
+        const [user] = await db
+          .insert(users)
+          .values({
+            id: 1,
+            ...userToInsert
+          })
+          .returning();
+
+        return user;
+      } catch (error) {
+        // If ID 1 already exists, just return the existing user
+        if (error.code === '23505') { // Unique constraint violation
+          return await this.getUser(1);
+        }
+        throw error;
+      }
+    }
+
     const [user] = await db
       .insert(users)
-      .values(insertUser)
+      .values(userToInsert)
       .returning();
+
     return user;
   }
 
@@ -380,7 +422,7 @@ export class DatabaseStorage implements IStorage {
     }
 
     const overlappingEvents = await overlappingEventsQuery;
-    
+
     // Create conflict records for overlapping events
     const conflicts: ScheduleConflict[] = [];
     for (const event of overlappingEvents) {
@@ -412,7 +454,7 @@ export class DatabaseStorage implements IStorage {
 
   async getScheduleConflicts(userId: number, resolved?: boolean): Promise<ScheduleConflict[]> {
     let query = db.select().from(scheduleConflicts).where(eq(scheduleConflicts.userId, userId));
-    
+
     if (resolved !== undefined) {
       if (resolved) {
         query = query.where(sql`${scheduleConflicts.resolvedAt} IS NOT NULL`);
@@ -420,7 +462,7 @@ export class DatabaseStorage implements IStorage {
         query = query.where(sql`${scheduleConflicts.resolvedAt} IS NULL`);
       }
     }
-    
+
     return await query.orderBy(desc(scheduleConflicts.createdAt));
   }
 
@@ -456,14 +498,14 @@ export class DatabaseStorage implements IStorage {
   // Revenue tracking methods
   async getRevenueRecords(userId: number, startDate?: Date, endDate?: Date): Promise<RevenueRecord[]> {
     let query = db.select().from(revenueTracking).where(eq(revenueTracking.userId, userId));
-    
+
     if (startDate) {
       query = query.where(gte(revenueTracking.sessionDate, startDate));
     }
     if (endDate) {
       query = query.where(lte(revenueTracking.sessionDate, endDate));
     }
-    
+
     return await query.orderBy(desc(revenueTracking.sessionDate));
   }
 
@@ -486,12 +528,12 @@ export class DatabaseStorage implements IStorage {
 
   async getRevenueAnalytics(userId: number, startDate: Date, endDate: Date): Promise<any> {
     const records = await this.getRevenueRecords(userId, startDate, endDate);
-    
+
     const totalPlanned = records.reduce((sum, r) => sum + (r.plannedRevenue || 0), 0);
     const totalActual = records.reduce((sum, r) => sum + (r.actualRevenue || 0), 0);
     const totalSessions = records.length;
     const avgSessionValue = totalSessions > 0 ? totalActual / totalSessions : 0;
-    
+
     return {
       totalPlannedRevenue: totalPlanned,
       totalActualRevenue: totalActual,
