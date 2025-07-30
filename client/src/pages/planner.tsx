@@ -48,6 +48,7 @@ import { DateRangeInfo } from '@/components/DateRangeInfo';
 import { runAuthenticationFix } from '@/utils/authenticationFix';
 import { runSimpleAuthFix, testAuthenticationStatus, forceCalendarSync } from '@/utils/simpleAuthFix';
 import { fixAuthenticationSession, checkAndFixAuthentication } from '@/utils/authSessionFix';
+import '@/utils/sessionFixCommands'; // Load console commands
 import { AppointmentStatusView, AppointmentStats } from '@/components/calendar/AppointmentStatusView';
 import { AppointmentStatusModal } from '@/components/calendar/AppointmentStatusModal';
 import { SmartSchedulingPanel } from '@/components/smartCalendar/SmartSchedulingPanel';
@@ -2602,6 +2603,53 @@ export default function Planner() {
                     size="sm"
                   >
                     🔧 Fix Authentication Session
+                  </Button>
+                  <Button
+                    onClick={async () => {
+                      console.log('🚨 RUNNING COMPREHENSIVE AUTH DIAGNOSTIC');
+                      
+                      try {
+                        // Run diagnostics
+                        const diagResponse = await fetch('/api/auth/quick-diag');
+                        const diag = await diagResponse.json();
+                        console.log('📊 Full Diagnostics:', diag);
+                        
+                        // Show results to user
+                        const diagMessage = `
+Session: ${diag.session.exists ? 'Exists' : 'Missing'}
+User: ${diag.session.user ? diag.session.user.email : 'None'}
+Tokens: ${diag.environment.hasAccessToken ? 'Present' : 'Missing'}
+Recommendations: ${diag.recommendations.join(', ')}
+                        `.trim();
+                        
+                        toast({
+                          title: 'Authentication Diagnostics',
+                          description: diagMessage,
+                          variant: diag.session.user ? 'default' : 'destructive'
+                        });
+                        
+                        // If no user found, automatically try to fix
+                        if (!diag.session.user && !diag.passport.user) {
+                          console.log('🔧 No user found, automatically running session fix...');
+                          
+                          // Import and run the fix commands
+                          const { fixSessionNow } = await import('@/utils/sessionFixCommands');
+                          await fixSessionNow();
+                        }
+                        
+                      } catch (error) {
+                        console.error('Diagnostic error:', error);
+                        toast({
+                          title: 'Diagnostic Error',
+                          description: error.message,
+                          variant: 'destructive'
+                        });
+                      }
+                    }}
+                    className="w-full bg-purple-600 hover:bg-purple-700 text-white"
+                    size="sm"
+                  >
+                    🚨 Run Full Diagnostic & Fix
                   </Button>
                   <Button
                     onClick={() => {

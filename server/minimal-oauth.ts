@@ -245,11 +245,53 @@ export function addMinimalOAuthRoutes(app: Express) {
     });
   });
 
-  // Auth status
-  app.get('/api/auth/status', (req: Request, res: Response) => {
-    const hasValidTokens = !!process.env.GOOGLE_ACCESS_TOKEN;
+  // Auth status with proper token validation
+  app.get('/api/auth/status', async (req: Request, res: Response) => {
     const hasSessionUser = !!(req.session && req.session.user);
     const hasUserData = !!req.user;
+    
+    // Test if tokens are actually valid by making a simple API call
+    let hasValidTokens = false;
+    if (process.env.GOOGLE_ACCESS_TOKEN) {
+      try {
+        const { google } = await import('googleapis');
+        const oauth2Client = new google.auth.OAuth2();
+        oauth2Client.setCredentials({ access_token: process.env.GOOGLE_ACCESS_TOKEN });
+        
+        // Test token with a simple API call
+        const oauth2 = google.oauth2({ version: 'v2', auth: oauth2Client });
+        await oauth2.userinfo.get();
+        hasValidTokens = true;
+        console.log('✅ Google tokens validated successfully');
+      } catch (error) {
+        console.log('❌ Google tokens invalid or expired:', error.message);
+        hasValidTokens = false;
+        
+        // Try to refresh if we have a refresh token
+        if (process.env.GOOGLE_REFRESH_TOKEN) {
+          try {
+            console.log('🔄 Attempting token refresh...');
+            const { google } = await import('googleapis');
+            const oauth2Client = new google.auth.OAuth2(
+              process.env.GOOGLE_CLIENT_ID,
+              process.env.GOOGLE_CLIENT_SECRET
+            );
+            oauth2Client.setCredentials({
+              refresh_token: process.env.GOOGLE_REFRESH_TOKEN
+            });
+            
+            const { credentials } = await oauth2Client.refreshAccessToken();
+            if (credentials.access_token) {
+              process.env.GOOGLE_ACCESS_TOKEN = credentials.access_token;
+              hasValidTokens = true;
+              console.log('✅ Token refresh successful');
+            }
+          } catch (refreshError) {
+            console.log('❌ Token refresh failed:', refreshError.message);
+          }
+        }
+      }
+    }
 
     console.log('🔍 Auth status check:', {
       hasUserData,
@@ -344,18 +386,56 @@ export function addMinimalOAuthRoutes(app: Express) {
       console.log('🔧 Running comprehensive authentication fix...');
       
       const currentUser = req.user || req.session?.user;
-      const hasTokens = !!process.env.GOOGLE_ACCESS_TOKEN;
+      
+      // First, validate and refresh tokens if needed
+      let hasValidTokens = false;
+      if (process.env.GOOGLE_ACCESS_TOKEN) {
+        try {
+          const { google } = await import('googleapis');
+          const oauth2Client = new google.auth.OAuth2();
+          oauth2Client.setCredentials({ access_token: process.env.GOOGLE_ACCESS_TOKEN });
+          
+          const oauth2 = google.oauth2({ version: 'v2', auth: oauth2Client });
+          await oauth2.userinfo.get();
+          hasValidTokens = true;
+          console.log('✅ Tokens validated during fix');
+        } catch (error) {
+          console.log('❌ Tokens invalid, attempting refresh...');
+          
+          if (process.env.GOOGLE_REFRESH_TOKEN) {
+            try {
+              const { google } = await import('googleapis');
+              const oauth2Client = new google.auth.OAuth2(
+                process.env.GOOGLE_CLIENT_ID,
+                process.env.GOOGLE_CLIENT_SECRET
+              );
+              oauth2Client.setCredentials({
+                refresh_token: process.env.GOOGLE_REFRESH_TOKEN
+              });
+              
+              const { credentials } = await oauth2Client.refreshAccessToken();
+              if (credentials.access_token) {
+                process.env.GOOGLE_ACCESS_TOKEN = credentials.access_token;
+                hasValidTokens = true;
+                console.log('✅ Token refresh successful during fix');
+              }
+            } catch (refreshError) {
+              console.log('❌ Token refresh failed during fix:', refreshError.message);
+            }
+          }
+        }
+      }
       
       console.log('Current state:', {
         hasCurrentUser: !!currentUser,
-        hasTokens,
+        hasValidTokens,
         sessionId: req.sessionID,
         sessionExists: !!req.session
       });
 
-      // If we have tokens but no user session, try to restore
-      if (hasTokens && !currentUser) {
-        console.log('📡 Tokens exist but no user session, attempting restoration...');
+      // If we have valid tokens but no user session, try to restore
+      if (hasValidTokens && !currentUser) {
+        console.log('📡 Valid tokens exist but no user session, attempting restoration...');
         
         const { storage } = await import('./storage');
         const users = await storage.getAllUsers();
@@ -419,10 +499,10 @@ export function addMinimalOAuthRoutes(app: Express) {
       }
 
       // No user and no tokens - need fresh authentication
-      console.log('❌ No user session and no tokens found');
+      console.log('❌ No user session and no valid tokens found');
       res.json({ 
         success: false, 
-        error: 'No authentication data found',
+        error: 'No authentication data found - need fresh OAuth',
         needsReauth: true,
         authUrl: '/api/auth/google'
       });
@@ -436,6 +516,43 @@ export function addMinimalOAuthRoutes(app: Express) {
         authUrl: '/api/auth/google'
       });
     }
+  });
+
+  // Quick authentication diagnostics endpoint
+  app.get('/api/auth/quick-diag', async (req: Request, res: Response) => {
+    console.log('🚨 QUICK AUTHENTICATION DIAGNOSTICS');
+    
+    const diagnostics = {
+      session: {
+        exists: !!req.session,
+        id: req.sessionID,
+        user: req.session?.user || null,
+        userId: req.session?.userId || null,
+        isAuthenticated: req.session?.isAuthenticated || false
+      },
+      passport: {
+        user: req.user || null
+      },
+      environment: {
+        hasAccessToken: !!process.env.GOOGLE_ACCESS_TOKEN,
+        hasRefreshToken: !!process.env.GOOGLE_REFRESH_TOKEN,
+        hasClientId: !!process.env.GOOGLE_CLIENT_ID,
+        hasClientSecret: !!process.env.GOOGLE_CLIENT_SECRET
+      },
+      recommendations: []
+    };
+
+    // Add recommendations based on findings
+    if (!diagnostics.session.user && !diagnostics.passport.user) {
+      diagnostics.recommendations.push('No user found in session or passport - run fixSessionNow()');
+    }
+    
+    if (!diagnostics.environment.hasAccessToken) {
+      diagnostics.recommendations.push('No access token found - fresh OAuth required');
+    }
+
+    console.log('📊 Diagnostics result:', diagnostics);
+    res.json(diagnostics);
   });
 
   // Test session endpoint for debugging authentication

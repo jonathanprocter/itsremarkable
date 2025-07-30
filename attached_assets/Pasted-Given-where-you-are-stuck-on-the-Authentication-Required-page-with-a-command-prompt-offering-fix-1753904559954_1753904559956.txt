@@ -1,0 +1,43 @@
+Given where you are (stuck on the "Authentication Required" page with a command prompt offering `fixSessionNow()` and `testAuthenticatedSession()`, while the backend says events have loaded), here’s how to proceed:
+
+### 1. **Run the Console Commands**
+Since the app provides `fixSessionNow()` and `testAuthenticatedSession()` as recovery/debugging commands, start by running these in your dev console (usually a built-in terminal or browser JavaScript console if accessible through the UI):
+
+- `fixSessionNow()`  
+  This likely attempts to refresh, reset, or repair your session/cookie. If your session is out-of-sync or half-set, this can force-reset things in dev.
+- `testAuthenticatedSession()`  
+  This will likely check and log whether your session is recognized as authenticated, and may print out errors/warnings if it is not.
+
+### 2. **Observe the Output**
+- After running those commands, watch for any output, pop-ups, or logging info that appears. Take note of:
+    - Any errors or warnings.
+    - Any messages about “user not found,” “session created,” “session expired,” etc.
+    - If you are redirected or the UI state changes.
+
+### 3. **Check Cookies and `auth/status`**
+- Open your browser's developer tools (F12 or right-click → Inspect → Application/Storage) and look at cookies for your `.replit.dev` domain, particularly around `session` or `connect.sid`.
+- After running the fix commands, reload `/api/auth/status` (or have your frontend do it) and see if `authenticated: true` appears, or if it’s still `false`.
+
+### 4. **If Problem Persists**
+If the commands do NOT resolve the issue:
+- You are very likely facing a backend session bug or a dev/production domain cookie/config issue.
+- Double-check your backend:
+    - **Session/cookie setup** in your Node.js/Express app: Is `secure:true` only if using HTTPS? Is your cookie `domain` and `sameSite` set properly for `.replit.dev`?
+    - **User matching/session persistence:** After Google OAuth, does the backend always store the right user ID/object in the session? Does every endpoint read user from session, not a hardcoded value?
+    - **Dev/Prod mismatch:** Sometimes session issues are strictly environmental; does it work in Replit production deployment (not dev)?
+
+### 5. **What If You’re Still Stuck?**
+
+If running both commands, refreshing, and checking the status still don’t result in a persistent login, you’ll need to:
+
+- **Paste any error/output from those console commands here** for more targeted diagnosis.
+- Consider pasting your relevant session/auth code: how you handle session creation after Google OAuth callback and how the `/api/auth/status` endpoint determines if you’re logged in.
+
+**Summary:**
+- Run `fixSessionNow()` and `testAuthenticatedSession()`.
+- Watch/log output, session cookies, and `/api/auth/status`.
+- If it still loops, provide output or code so I can help you debug line-by-line.
+
+Ready to proceed—run the commands and let me know what happens!
+
+[1] https://5a6f843f-53cb-48cf-8afc-05f223a337ff-00-3gvxznlnxvdl8.riker.replit.dev/
