@@ -1,0 +1,58 @@
+Based on your current logs and recent troubleshooting, the issue with your app is almost certainly related to user ID and authentication/session management mismatches in your backend/database logic:
+
+What’s Happening
+You’re able to initiate Google OAuth and even receive valid tokens ("hasValidTokens: true"), but the authentication state (authenticated: false) is not sticking.
+
+Logs show repeated confusion about user IDs:
+
+The system tries to create a default user with ID 1, but finds an existing user with ID 2.
+
+Operations are inconsistently trying to use either the assumed user ID (often 1) or whatever is returned from the DB (sometimes 2).
+
+Foreign key errors and empty events—often due to creating events for a user ID that does not actually exist in the database.
+
+App REST endpoints like /api/events keep returning empty arrays.
+
+Why You Keep Getting Redirected/Not Authenticated
+OAuth appears to work, but the session/auth cookie does NOT persist or is tied to a non-existent/incorrect user.
+
+After OAuth, your system assumes the user is ID 1, but the actual database user is ID 2 (or another value).
+
+Backend logic doesn’t consistently use the user ID pulled from the DB.
+
+As a result, session state breaks, and you’re redirected back to authenticate again and again.
+
+The mismatch between session, database user IDs, and event creation leads to either failed logins, session drops, or app stalling at “connecting”/“redirecting” after OAuth.
+
+The Core Problems (Based on Your Logs & Patches)
+Your code attempts to create or use a default user with a hardcoded ID, but if that user already exists (or has a different ID), things break.
+
+Inconsistent user management: sometimes fetches/expects ID 1, sometimes correctly gets the real DB ID.
+
+Events are created for user ID 1 even if that’s not the actual user.
+
+Session persistence and returning user logic is tightly coupled to these user ID lookups.
+
+How to Fix (Summary)
+Never hardcode user IDs. Always fetch users by a unique attribute (like username or email), and use the user ID returned from the database for all related database operations.
+
+Fix all places in your code that assume user ID 1. Change to always use the actual ID returned when fetching/creating a user.
+
+Session/Passport Logic: After OAuth, always update the session with the correct user. Don’t just store “user 1”—use whatever user object the DB returns.
+
+Backend Endpoints: Always validate session user and only fetch/create events for the authenticated user's actual ID.
+
+Add Logging: Temporarily add logs for user creation/fetching and for every major session state change, so you can verify the correct user is always associated with the current session.
+
+Database Migration: Ensure your users table doesn’t have ID collisions or partial failed user creation attempts. Clean up any zombie/duplicate entries.
+
+What You Can Do Immediately
+Search your backend code (especially server/routes.ts, server/storage.ts, server/minimal-oauth.ts) for any use of userId: 1 or similar. Replace all of them with logic that uses the actual user ID from the DB.
+
+In OAuth callback, after creating or finding the user, set the session appropriately using the actual ID or user object.
+
+Remove all "assume user ID 1" logic—always act on the real authenticated user.
+
+Double-check how events are tied to users in the DB: every event needs a valid, existing user ID.
+
+If you want, I can walk you through an example code adjustment for one of the main backend flows to fix this! Let me know which file or flow you'd like to start with.

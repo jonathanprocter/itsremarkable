@@ -1,0 +1,1753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weekly Package - July 7-13, 2025</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Times New Roman', serif;
+            background-color: white;
+            color: black;
+            line-height: 1.2;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Print styles for PDF generation */
+        @page {
+            size: A4;
+            margin: 0.5in;
+        }
+
+        .page {
+            page-break-after: always;
+            min-height: 100vh;
+        }
+
+        .page:last-child {
+            page-break-after: avoid;
+        }
+
+        /* Common styles */
+        .planner-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border: 2px solid black;
+            min-height: calc(100vh - 1in);
+        }
+
+        .header {
+            border-bottom: 3px solid black;
+            padding: 20px;
+            text-align: center;
+            background: white;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .week-info, .date-info {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .navigation {
+            font-size: 12px;
+            margin-top: 8px;
+            border-top: 1px solid black;
+            padding-top: 8px;
+        }
+
+        .footer {
+            background: #f8f8f8;
+            padding: 15px 20px;
+            text-align: center;
+            font-size: 11px;
+            border-top: 2px solid black;
+            margin-top: auto;
+        }
+
+        .footer a {
+            color: black;
+            text-decoration: underline;
+            margin: 0 10px;
+            cursor: pointer;
+        }
+
+        /* Weekly view specific styles */
+        .week-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            border-bottom: 2px solid black;
+            background: #f8f8f8;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 15px;
+            border-right: 1px solid black;
+            font-size: 12px;
+        }
+
+        .stat-card:last-child {
+            border-right: none;
+        }
+
+        .stat-number {
+            font-size: 18px;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .legend {
+            padding: 12px 20px;
+            border-bottom: 2px solid black;
+            font-size: 10px;
+            background: #f8f8f8;
+        }
+
+        .legend-item {
+            display: inline-block;
+            margin-right: 20px;
+            margin-bottom: 4px;
+        }
+
+        .legend-symbol {
+            display: inline-block;
+            width: 14px;
+            height: 12px;
+            margin-right: 5px;
+            vertical-align: middle;
+        }
+
+        .legend-symbol.simplepractice {
+            background: #f5f5f5;
+            border: 2px solid #6495ED;
+            border-left: 6px solid #6495ED;
+        }
+
+        .legend-symbol.google-calendar {
+            background: #e0e0e0;
+            border: 2px dashed #666;
+        }
+
+        .legend-symbol.outlook {
+            background: #f5f5f5;
+            border: 2px dotted #333;
+        }
+
+        .legend-symbol.personal {
+            background: #f0f0f0;
+            border: 2px solid #999;
+            border-style: double;
+        }
+
+        .calendar-container {
+            position: relative;
+            overflow: hidden;
+            flex: 1;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: 80px repeat(7, 1fr);
+            grid-template-rows: 60px repeat(32, 35px);
+            background: white;
+        }
+
+        .time-header {
+            background: #f0f0f0;
+            padding: 15px 8px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 12px;
+            border-right: 2px solid black;
+            border-bottom: 3px solid black;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .day-header {
+            background: #f0f0f0;
+            padding: 10px 8px;
+            text-align: center;
+            font-weight: bold;
+            border-right: 1px solid black;
+            border-bottom: 3px solid black;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .day-header:last-child {
+            border-right: none;
+        }
+
+        .day-name {
+            font-size: 12px;
+            margin-bottom: 3px;
+            text-transform: uppercase;
+        }
+
+        .day-date {
+            font-size: 16px;
+        }
+
+        .time-slot {
+            background: #f8f8f8;
+            padding: 5px;
+            text-align: center;
+            font-size: 10px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-right: 2px solid black;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .time-slot.hour {
+            background: #f0f0f0;
+            border-bottom: 2px solid black;
+            font-size: 11px;
+        }
+
+        .calendar-cell {
+            background: white;
+            border-right: 1px solid #ddd;
+            border-bottom: 1px solid #ddd;
+            position: relative;
+        }
+
+        .calendar-cell:last-child {
+            border-right: none;
+        }
+
+        .calendar-cell.hour {
+            border-bottom: 2px solid black;
+        }
+
+        /* Daily view specific styles */
+        .daily-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border: 2px solid black;
+            min-height: calc(100vh - 1in);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .daily-stats {
+            padding: 15px 20px;
+            border-bottom: 2px solid black;
+            display: flex;
+            justify-content: space-between;
+            background: #f8f8f8;
+        }
+
+        .stat-item {
+            text-align: center;
+            font-size: 12px;
+        }
+
+        .schedule-grid {
+            display: flex;
+            border-collapse: collapse;
+            flex: 1;
+        }
+
+        .time-column {
+            width: 80px;
+            border-right: 2px solid black;
+        }
+
+        .daily-time-slot {
+            height: 60px;
+            border-bottom: 1px solid black;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            background: white;
+        }
+
+        .daily-time-slot.hour {
+            background: #f0f0f0;
+            border-bottom: 2px solid black;
+            font-size: 14px;
+        }
+
+        .appointments-column {
+            flex: 1;
+            position: relative;
+        }
+
+        .appointment-slot {
+            height: 60px;
+            border-bottom: 1px solid black;
+            position: relative;
+            background: white;
+        }
+
+        .appointment-slot.hour {
+            border-bottom: 2px solid black;
+        }
+
+        /* Sample appointments for demonstration */
+        .appointment {
+            position: absolute;
+            left: 8px;
+            right: 8px;
+            background: white;
+            padding: 4px 6px;
+            font-size: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            overflow: hidden;
+        }
+
+        .appointment.simplepractice {
+            background: #f5f5f5;
+            color: black;
+            border: 2px solid #6495ED;
+            border-left: 8px solid #6495ED;
+        }
+
+        .appointment.personal {
+            background: #f0f0f0;
+            color: black;
+            border: 2px solid #999;
+            border-style: double;
+        }
+
+        .appointment.duration-1h {
+            height: 116px;
+        }
+
+        .appointment.start-0900 {
+            top: 360px;
+        }
+
+        .appointment.start-1500 {
+            top: 720px;
+        }
+
+        .appointment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 3px;
+            border-bottom: 1px solid rgba(0,0,0,0.3);
+            padding-bottom: 2px;
+        }
+
+        .appointment-title {
+            font-weight: bold;
+            font-size: 11px;
+            text-transform: uppercase;
+            flex: 1;
+        }
+
+        .appointment-time {
+            font-size: 9px;
+            font-weight: normal;
+            white-space: nowrap;
+            margin-left: 4px;
+        }
+
+        .appointment-calendar {
+            font-size: 7px;
+            font-weight: normal;
+            opacity: 0.8;
+            text-transform: uppercase;
+            margin-top: 1px;
+        }
+
+        .appointment-description {
+            font-size: 9px;
+            margin: 2px 0;
+            line-height: 1.1;
+            font-weight: normal;
+        }
+
+        .appointment-notes {
+            font-size: 8px;
+            font-style: italic;
+            margin: 2px 0;
+            line-height: 1.1;
+        }
+
+        /* JavaScript will handle page navigation */
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @media print {
+            .page {
+                display: block !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Page 1: Weekly Overview -->
+    <div class="page active" id="weekly-overview">
+        <div class="planner-container">
+            <div class="header">
+                <h1>Weekly Planner</h1>
+                <div class="week-info">July 7-13, 2025 • Week 28</div>
+            </div>
+
+            <div class="week-stats">
+                <div class="stat-card">
+                    <span class="stat-number">15</span>
+                    Total Appointments
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">15.0h</span>
+                    Scheduled Time
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">2.1h</span>
+                    Daily Average
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">153h</span>
+                    Available Time
+                </div>
+            </div>
+
+            <div class="legend">
+                <span class="legend-item">
+                    <span class="legend-symbol simplepractice"></span>SimplePractice
+                </span>
+                <span class="legend-item">
+                    <span class="legend-symbol google-calendar"></span>Google Calendar
+                </span>
+                <span class="legend-item">
+                    <span class="legend-symbol outlook"></span>Outlook
+                </span>
+                <span class="legend-item">
+                    <span class="legend-symbol personal"></span>Personal
+                </span>
+            </div>
+
+            <div class="calendar-container">
+                <div class="calendar-grid">
+                    <!-- Headers -->
+                    <div class="time-header">TIME</div>
+                    <div class="day-header"><div class="day-name">MON</div><div class="day-date">7</div></div>
+                    <div class="day-header"><div class="day-name">TUE</div><div class="day-date">8</div></div>
+                    <div class="day-header"><div class="day-name">WED</div><div class="day-date">9</div></div>
+                    <div class="day-header"><div class="day-name">THU</div><div class="day-date">10</div></div>
+                    <div class="day-header"><div class="day-name">FRI</div><div class="day-date">11</div></div>
+                    <div class="day-header"><div class="day-name">SAT</div><div class="day-date">12</div></div>
+                    <div class="day-header"><div class="day-name">SUN</div><div class="day-date">13</div></div>
+
+                    <!-- Complete time slots 6:00-21:30 -->
+                    <!-- 6:00 AM -->
+                    <div class="time-slot hour">6:00</div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+
+                    <!-- 6:30 AM -->
+                    <div class="time-slot">6:30</div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+
+                    <!-- 7:00 AM -->
+                    <div class="time-slot hour">7:00</div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+
+                    <!-- 7:30 AM -->
+                    <div class="time-slot">7:30</div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+
+                    <!-- 8:00 AM -->
+                    <div class="time-slot hour">8:00</div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+
+                    <!-- 8:30 AM -->
+                    <div class="time-slot">8:30</div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+
+                    <!-- 9:00 AM -->
+                    <div class="time-slot hour">9:00</div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+
+                    <!-- 9:30 AM -->
+                    <div class="time-slot">9:30</div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+
+                    <!-- 10:00 AM -->
+                    <div class="time-slot hour">10:00</div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+
+                    <!-- 10:30 AM -->
+                    <div class="time-slot">10:30</div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+
+                    <!-- 11:00 AM -->
+                    <div class="time-slot hour">11:00</div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+
+                    <!-- 11:30 AM -->
+                    <div class="time-slot">11:30</div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+
+                    <!-- 12:00 PM -->
+                    <div class="time-slot hour">12:00</div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+
+                    <!-- 12:30 PM -->
+                    <div class="time-slot">12:30</div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+
+                    <!-- 13:00 (1:00 PM) -->
+                    <div class="time-slot hour">13:00</div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+
+                    <!-- 13:30 (1:30 PM) -->
+                    <div class="time-slot">13:30</div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+
+                    <!-- 14:00 (2:00 PM) -->
+                    <div class="time-slot hour">14:00</div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+
+                    <!-- 14:30 (2:30 PM) -->
+                    <div class="time-slot">14:30</div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+
+                    <!-- 15:00 (3:00 PM) -->
+                    <div class="time-slot hour">15:00</div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+
+                    <!-- 15:30 (3:30 PM) -->
+                    <div class="time-slot">15:30</div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+
+                    <!-- 16:00 (4:00 PM) -->
+                    <div class="time-slot hour">16:00</div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+
+                    <!-- 16:30 (4:30 PM) -->
+                    <div class="time-slot">16:30</div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+
+                    <!-- 17:00 (5:00 PM) -->
+                    <div class="time-slot hour">17:00</div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+
+                    <!-- 17:30 (5:30 PM) -->
+                    <div class="time-slot">17:30</div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+
+                    <!-- 18:00 (6:00 PM) -->
+                    <div class="time-slot hour">18:00</div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+
+                    <!-- 18:30 (6:30 PM) -->
+                    <div class="time-slot">18:30</div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+
+                    <!-- 19:00 (7:00 PM) -->
+                    <div class="time-slot hour">19:00</div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+
+                    <!-- 19:30 (7:30 PM) -->
+                    <div class="time-slot">19:30</div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+
+                    <!-- 20:00 (8:00 PM) -->
+                    <div class="time-slot hour">20:00</div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+
+                    <!-- 20:30 (8:30 PM) -->
+                    <div class="time-slot">20:30</div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+
+                    <!-- 21:00 (9:00 PM) -->
+                    <div class="time-slot hour">21:00</div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+
+                    <!-- 21:30 (9:30 PM) -->
+                    <div class="time-slot">21:30</div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                </div>
+            </div>
+
+            <div class="footer">
+                <a onclick="navigateToPage('weekly-overview')">Weekly Overview</a> |
+                <a onclick="navigateToPage('monday')">Monday →</a> |
+                <a onclick="navigateToPage('tuesday')">Tuesday</a> |
+                <a onclick="navigateToPage('wednesday')">Wednesday</a> |
+                <a onclick="navigateToPage('thursday')">Thursday</a> |
+                <a onclick="navigateToPage('friday')">Friday</a> |
+                <a onclick="navigateToPage('saturday')">Saturday</a> |
+                <a onclick="navigateToPage('sunday')">Sunday</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page 2: Monday, July 7, 2025 -->
+    <div class="page" id="monday">
+        <div class="daily-container">
+            <div class="header">
+                <h1>Daily Planner</h1>
+                <div class="date-info">Monday, July 7, 2025</div>
+                <div class="navigation">Week 28 • Day 1 of 7 • Page 2 of 8</div>
+            </div>
+
+            <div class="daily-stats">
+                <div class="stat-item">
+                    <span class="stat-number">2</span>
+                    Appointments
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">2.0h</span>
+                    Scheduled
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">22.0h</span>
+                    Available
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">92%</span>
+                    Free Time
+                </div>
+            </div>
+
+            <div class="legend">
+                <div class="legend-item">
+                    <span class="legend-symbol simplepractice"></span>SimplePractice
+                </div>
+                <div class="legend-item">
+                    <span class="legend-symbol personal"></span>Personal
+                </div>
+            </div>
+
+            <div class="schedule-grid">
+                <div class="time-column">
+                    <div class="daily-time-slot hour">06:00</div>
+                    <div class="daily-time-slot">06:30</div>
+                    <div class="daily-time-slot hour">07:00</div>
+                    <div class="daily-time-slot">07:30</div>
+                    <div class="daily-time-slot hour">08:00</div>
+                    <div class="daily-time-slot">08:30</div>
+                    <div class="daily-time-slot hour">09:00</div>
+                    <div class="daily-time-slot">09:30</div>
+                    <div class="daily-time-slot hour">10:00</div>
+                    <div class="daily-time-slot">10:30</div>
+                    <div class="daily-time-slot hour">11:00</div>
+                    <div class="daily-time-slot">11:30</div>
+                    <div class="daily-time-slot hour">12:00</div>
+                    <div class="daily-time-slot">12:30</div>
+                    <div class="daily-time-slot hour">13:00</div>
+                    <div class="daily-time-slot">13:30</div>
+                    <div class="daily-time-slot hour">14:00</div>
+                    <div class="daily-time-slot">14:30</div>
+                    <div class="daily-time-slot hour">15:00</div>
+                    <div class="daily-time-slot">15:30</div>
+                    <div class="daily-time-slot hour">16:00</div>
+                    <div class="daily-time-slot">16:30</div>
+                    <div class="daily-time-slot hour">17:00</div>
+                    <div class="daily-time-slot">17:30</div>
+                    <div class="daily-time-slot hour">18:00</div>
+                    <div class="daily-time-slot">18:30</div>
+                    <div class="daily-time-slot hour">19:00</div>
+                    <div class="daily-time-slot">19:30</div>
+                    <div class="daily-time-slot hour">20:00</div>
+                    <div class="daily-time-slot">20:30</div>
+                    <div class="daily-time-slot hour">21:00</div>
+                    <div class="daily-time-slot">21:30</div>
+                </div>
+
+                <div class="appointments-column">
+                    <!-- Empty time slots -->
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+
+                    <!-- Sample appointments -->
+                    <div class="appointment personal duration-1h start-0900">
+                        <div class="appointment-header">
+                            <div class="appointment-title">Team Meeting</div>
+                            <div class="appointment-time">09:00-10:00</div>
+                        </div>
+                        <div class="appointment-calendar">Personal Calendar</div>
+                        <div class="appointment-description">Weekly team sync meeting</div>
+                        <div class="appointment-notes">Conference room A - bring laptop</div>
+                    </div>
+
+                    <div class="appointment simplepractice duration-1h start-1500">
+                        <div class="appointment-header">
+                            <div class="appointment-title">John Smith</div>
+                            <div class="appointment-time">15:00-16:00</div>
+                        </div>
+                        <div class="appointment-calendar">SimplePractice</div>
+                        <div class="appointment-description">Individual therapy session</div>
+                        <div class="appointment-notes">First session - intake assessment</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer">
+                <a onclick="navigateToPage('weekly-overview')">← Weekly Overview</a> |
+                <a onclick="navigateToPage('tuesday')">Tuesday →</a> |
+                <a onclick="navigateToPage('sunday')">← Sunday</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page 3: Tuesday, July 8, 2025 -->
+    <div class="page" id="tuesday">
+        <div class="daily-container">
+            <div class="header">
+                <h1>Daily Planner</h1>
+                <div class="date-info">Tuesday, July 8, 2025</div>
+                <div class="navigation">Week 28 • Day 2 of 7 • Page 3 of 8</div>
+            </div>
+
+            <div class="daily-stats">
+                <div class="stat-item">
+                    <span class="stat-number">3</span>
+                    Appointments
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">3.0h</span>
+                    Scheduled
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">21.0h</span>
+                    Available
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">88%</span>
+                    Free Time
+                </div>
+            </div>
+
+            <div class="legend">
+                <div class="legend-item">
+                    <span class="legend-symbol simplepractice"></span>SimplePractice
+                </div>
+                <div class="legend-item">
+                    <span class="legend-symbol personal"></span>Personal
+                </div>
+            </div>
+
+            <div class="schedule-grid">
+                <div class="time-column">
+                    <div class="daily-time-slot hour">06:00</div>
+                    <div class="daily-time-slot">06:30</div>
+                    <div class="daily-time-slot hour">07:00</div>
+                    <div class="daily-time-slot">07:30</div>
+                    <div class="daily-time-slot hour">08:00</div>
+                    <div class="daily-time-slot">08:30</div>
+                    <div class="daily-time-slot hour">09:00</div>
+                    <div class="daily-time-slot">09:30</div>
+                    <div class="daily-time-slot hour">10:00</div>
+                    <div class="daily-time-slot">10:30</div>
+                    <div class="daily-time-slot hour">11:00</div>
+                    <div class="daily-time-slot">11:30</div>
+                    <div class="daily-time-slot hour">12:00</div>
+                    <div class="daily-time-slot">12:30</div>
+                    <div class="daily-time-slot hour">13:00</div>
+                    <div class="daily-time-slot">13:30</div>
+                    <div class="daily-time-slot hour">14:00</div>
+                    <div class="daily-time-slot">14:30</div>
+                    <div class="daily-time-slot hour">15:00</div>
+                    <div class="daily-time-slot">15:30</div>
+                    <div class="daily-time-slot hour">16:00</div>
+                    <div class="daily-time-slot">16:30</div>
+                    <div class="daily-time-slot hour">17:00</div>
+                    <div class="daily-time-slot">17:30</div>
+                    <div class="daily-time-slot hour">18:00</div>
+                    <div class="daily-time-slot">18:30</div>
+                    <div class="daily-time-slot hour">19:00</div>
+                    <div class="daily-time-slot">19:30</div>
+                    <div class="daily-time-slot hour">20:00</div>
+                    <div class="daily-time-slot">20:30</div>
+                    <div class="daily-time-slot hour">21:00</div>
+                    <div class="daily-time-slot">21:30</div>
+                </div>
+
+                <div class="appointments-column">
+                    <!-- Empty time slots -->
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                </div>
+            </div>
+
+            <div class="footer">
+                <a onclick="navigateToPage('weekly-overview')">← Weekly Overview</a> |
+                <a onclick="navigateToPage('monday')">← Monday</a> |
+                <a onclick="navigateToPage('wednesday')">Wednesday →</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page 4: Wednesday, July 9, 2025 -->
+    <div class="page" id="wednesday">
+        <div class="daily-container">
+            <div class="header">
+                <h1>Daily Planner</h1>
+                <div class="date-info">Wednesday, July 9, 2025</div>
+                <div class="navigation">Week 28 • Day 3 of 7 • Page 4 of 8</div>
+            </div>
+
+            <div class="daily-stats">
+                <div class="stat-item">
+                    <span class="stat-number">2</span>
+                    Appointments
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">2.0h</span>
+                    Scheduled
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">22.0h</span>
+                    Available
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">92%</span>
+                    Free Time
+                </div>
+            </div>
+
+            <div class="legend">
+                <div class="legend-item">
+                    <span class="legend-symbol simplepractice"></span>SimplePractice
+                </div>
+            </div>
+
+            <div class="schedule-grid">
+                <div class="time-column">
+                    <div class="daily-time-slot hour">06:00</div>
+                    <div class="daily-time-slot">06:30</div>
+                    <div class="daily-time-slot hour">07:00</div>
+                    <div class="daily-time-slot">07:30</div>
+                    <div class="daily-time-slot hour">08:00</div>
+                    <div class="daily-time-slot">08:30</div>
+                    <div class="daily-time-slot hour">09:00</div>
+                    <div class="daily-time-slot">09:30</div>
+                    <div class="daily-time-slot hour">10:00</div>
+                    <div class="daily-time-slot">10:30</div>
+                    <div class="daily-time-slot hour">11:00</div>
+                    <div class="daily-time-slot">11:30</div>
+                    <div class="daily-time-slot hour">12:00</div>
+                    <div class="daily-time-slot">12:30</div>
+                    <div class="daily-time-slot hour">13:00</div>
+                    <div class="daily-time-slot">13:30</div>
+                    <div class="daily-time-slot hour">14:00</div>
+                    <div class="daily-time-slot">14:30</div>
+                    <div class="daily-time-slot hour">15:00</div>
+                    <div class="daily-time-slot">15:30</div>
+                    <div class="daily-time-slot hour">16:00</div>
+                    <div class="daily-time-slot">16:30</div>
+                    <div class="daily-time-slot hour">17:00</div>
+                    <div class="daily-time-slot">17:30</div>
+                    <div class="daily-time-slot hour">18:00</div>
+                    <div class="daily-time-slot">18:30</div>
+                    <div class="daily-time-slot hour">19:00</div>
+                    <div class="daily-time-slot">19:30</div>
+                    <div class="daily-time-slot hour">20:00</div>
+                    <div class="daily-time-slot">20:30</div>
+                    <div class="daily-time-slot hour">21:00</div>
+                    <div class="daily-time-slot">21:30</div>
+                </div>
+
+                <div class="appointments-column">
+                    <!-- Empty time slots -->
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                </div>
+            </div>
+
+            <div class="footer">
+                <a onclick="navigateToPage('weekly-overview')">← Weekly Overview</a> |
+                <a onclick="navigateToPage('tuesday')">← Tuesday</a> |
+                <a onclick="navigateToPage('thursday')">Thursday →</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page 5: Thursday, July 10, 2025 -->
+    <div class="page" id="thursday">
+        <div class="daily-container">
+            <div class="header">
+                <h1>Daily Planner</h1>
+                <div class="date-info">Thursday, July 10, 2025</div>
+                <div class="navigation">Week 28 • Day 4 of 7 • Page 5 of 8</div>
+            </div>
+
+            <div class="daily-stats">
+                <div class="stat-item">
+                    <span class="stat-number">4</span>
+                    Appointments
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">4.0h</span>
+                    Scheduled
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">20.0h</span>
+                    Available
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">83%</span>
+                    Free Time
+                </div>
+            </div>
+
+            <div class="legend">
+                <div class="legend-item">
+                    <span class="legend-symbol simplepractice"></span>SimplePractice
+                </div>
+                <div class="legend-item">
+                    <span class="legend-symbol personal"></span>Personal
+                </div>
+            </div>
+
+            <div class="schedule-grid">
+                <div class="time-column">
+                    <div class="daily-time-slot hour">06:00</div>
+                    <div class="daily-time-slot">06:30</div>
+                    <div class="daily-time-slot hour">07:00</div>
+                    <div class="daily-time-slot">07:30</div>
+                    <div class="daily-time-slot hour">08:00</div>
+                    <div class="daily-time-slot">08:30</div>
+                    <div class="daily-time-slot hour">09:00</div>
+                    <div class="daily-time-slot">09:30</div>
+                    <div class="daily-time-slot hour">10:00</div>
+                    <div class="daily-time-slot">10:30</div>
+                    <div class="daily-time-slot hour">11:00</div>
+                    <div class="daily-time-slot">11:30</div>
+                    <div class="daily-time-slot hour">12:00</div>
+                    <div class="daily-time-slot">12:30</div>
+                    <div class="daily-time-slot hour">13:00</div>
+                    <div class="daily-time-slot">13:30</div>
+                    <div class="daily-time-slot hour">14:00</div>
+                    <div class="daily-time-slot">14:30</div>
+                    <div class="daily-time-slot hour">15:00</div>
+                    <div class="daily-time-slot">15:30</div>
+                    <div class="daily-time-slot hour">16:00</div>
+                    <div class="daily-time-slot">16:30</div>
+                    <div class="daily-time-slot hour">17:00</div>
+                    <div class="daily-time-slot">17:30</div>
+                    <div class="daily-time-slot hour">18:00</div>
+                    <div class="daily-time-slot">18:30</div>
+                    <div class="daily-time-slot hour">19:00</div>
+                    <div class="daily-time-slot">19:30</div>
+                    <div class="daily-time-slot hour">20:00</div>
+                    <div class="daily-time-slot">20:30</div>
+                    <div class="daily-time-slot hour">21:00</div>
+                    <div class="daily-time-slot">21:30</div>
+                </div>
+
+                <div class="appointments-column">
+                    <!-- Empty time slots -->
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                </div>
+            </div>
+
+            <div class="footer">
+                <a onclick="navigateToPage('weekly-overview')">← Weekly Overview</a> |
+                <a onclick="navigateToPage('wednesday')">← Wednesday</a> |
+                <a onclick="navigateToPage('friday')">Friday →</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page 6: Friday, July 11, 2025 -->
+    <div class="page" id="friday">
+        <div class="daily-container">
+            <div class="header">
+                <h1>Daily Planner</h1>
+                <div class="date-info">Friday, July 11, 2025</div>
+                <div class="navigation">Week 28 • Day 5 of 7 • Page 6 of 8</div>
+            </div>
+
+            <div class="daily-stats">
+                <div class="stat-item">
+                    <span class="stat-number">2</span>
+                    Appointments
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">2.0h</span>
+                    Scheduled
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">22.0h</span>
+                    Available
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">92%</span>
+                    Free Time
+                </div>
+            </div>
+
+            <div class="legend">
+                <div class="legend-item">
+                    <span class="legend-symbol simplepractice"></span>SimplePractice
+                </div>
+                <div class="legend-item">
+                    <span class="legend-symbol personal"></span>Personal
+                </div>
+            </div>
+
+            <div class="schedule-grid">
+                <div class="time-column">
+                    <div class="daily-time-slot hour">06:00</div>
+                    <div class="daily-time-slot">06:30</div>
+                    <div class="daily-time-slot hour">07:00</div>
+                    <div class="daily-time-slot">07:30</div>
+                    <div class="daily-time-slot hour">08:00</div>
+                    <div class="daily-time-slot">08:30</div>
+                    <div class="daily-time-slot hour">09:00</div>
+                    <div class="daily-time-slot">09:30</div>
+                    <div class="daily-time-slot hour">10:00</div>
+                    <div class="daily-time-slot">10:30</div>
+                    <div class="daily-time-slot hour">11:00</div>
+                    <div class="daily-time-slot">11:30</div>
+                    <div class="daily-time-slot hour">12:00</div>
+                    <div class="daily-time-slot">12:30</div>
+                    <div class="daily-time-slot hour">13:00</div>
+                    <div class="daily-time-slot">13:30</div>
+                    <div class="daily-time-slot hour">14:00</div>
+                    <div class="daily-time-slot">14:30</div>
+                    <div class="daily-time-slot hour">15:00</div>
+                    <div class="daily-time-slot">15:30</div>
+                    <div class="daily-time-slot hour">16:00</div>
+                    <div class="daily-time-slot">16:30</div>
+                    <div class="daily-time-slot hour">17:00</div>
+                    <div class="daily-time-slot">17:30</div>
+                    <div class="daily-time-slot hour">18:00</div>
+                    <div class="daily-time-slot">18:30</div>
+                    <div class="daily-time-slot hour">19:00</div>
+                    <div class="daily-time-slot">19:30</div>
+                    <div class="daily-time-slot hour">20:00</div>
+                    <div class="daily-time-slot">20:30</div>
+                    <div class="daily-time-slot hour">21:00</div>
+                    <div class="daily-time-slot">21:30</div>
+                </div>
+
+                <div class="appointments-column">
+                    <!-- Empty time slots -->
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                </div>
+            </div>
+
+            <div class="footer">
+                <a onclick="navigateToPage('weekly-overview')">← Weekly Overview</a> |
+                <a onclick="navigateToPage('thursday')">← Thursday</a> |
+                <a onclick="navigateToPage('saturday')">Saturday →</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page 7: Saturday, July 12, 2025 -->
+    <div class="page" id="saturday">
+        <div class="daily-container">
+            <div class="header">
+                <h1>Daily Planner</h1>
+                <div class="date-info">Saturday, July 12, 2025</div>
+                <div class="navigation">Week 28 • Day 6 of 7 • Page 7 of 8</div>
+            </div>
+
+            <div class="daily-stats">
+                <div class="stat-item">
+                    <span class="stat-number">1</span>
+                    Appointments
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">1.0h</span>
+                    Scheduled
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">23.0h</span>
+                    Available
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">96%</span>
+                    Free Time
+                </div>
+            </div>
+
+            <div class="legend">
+                <div class="legend-item">
+                    <span class="legend-symbol personal"></span>Personal
+                </div>
+            </div>
+
+            <div class="schedule-grid">
+                <div class="time-column">
+                    <div class="daily-time-slot hour">06:00</div>
+                    <div class="daily-time-slot">06:30</div>
+                    <div class="daily-time-slot hour">07:00</div>
+                    <div class="daily-time-slot">07:30</div>
+                    <div class="daily-time-slot hour">08:00</div>
+                    <div class="daily-time-slot">08:30</div>
+                    <div class="daily-time-slot hour">09:00</div>
+                    <div class="daily-time-slot">09:30</div>
+                    <div class="daily-time-slot hour">10:00</div>
+                    <div class="daily-time-slot">10:30</div>
+                    <div class="daily-time-slot hour">11:00</div>
+                    <div class="daily-time-slot">11:30</div>
+                    <div class="daily-time-slot hour">12:00</div>
+                    <div class="daily-time-slot">12:30</div>
+                    <div class="daily-time-slot hour">13:00</div>
+                    <div class="daily-time-slot">13:30</div>
+                    <div class="daily-time-slot hour">14:00</div>
+                    <div class="daily-time-slot">14:30</div>
+                    <div class="daily-time-slot hour">15:00</div>
+                    <div class="daily-time-slot">15:30</div>
+                    <div class="daily-time-slot hour">16:00</div>
+                    <div class="daily-time-slot">16:30</div>
+                    <div class="daily-time-slot hour">17:00</div>
+                    <div class="daily-time-slot">17:30</div>
+                    <div class="daily-time-slot hour">18:00</div>
+                    <div class="daily-time-slot">18:30</div>
+                    <div class="daily-time-slot hour">19:00</div>
+                    <div class="daily-time-slot">19:30</div>
+                    <div class="daily-time-slot hour">20:00</div>
+                    <div class="daily-time-slot">20:30</div>
+                    <div class="daily-time-slot hour">21:00</div>
+                    <div class="daily-time-slot">21:30</div>
+                </div>
+
+                <div class="appointments-column">
+                    <!-- Empty time slots -->
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                </div>
+            </div>
+
+            <div class="footer">
+                <a onclick="navigateToPage('weekly-overview')">← Weekly Overview</a> |
+                <a onclick="navigateToPage('friday')">← Friday</a> |
+                <a onclick="navigateToPage('sunday')">Sunday →</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page 8: Sunday, July 13, 2025 -->
+    <div class="page" id="sunday">
+        <div class="daily-container">
+            <div class="header">
+                <h1>Daily Planner</h1>
+                <div class="date-info">Sunday, July 13, 2025</div>
+                <div class="navigation">Week 28 • Day 7 of 7 • Page 8 of 8</div>
+            </div>
+
+            <div class="daily-stats">
+                <div class="stat-item">
+                    <span class="stat-number">1</span>
+                    Appointments
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">1.0h</span>
+                    Scheduled
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">23.0h</span>
+                    Available
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">96%</span>
+                    Free Time
+                </div>
+            </div>
+
+            <div class="legend">
+                <div class="legend-item">
+                    <span class="legend-symbol personal"></span>Personal
+                </div>
+            </div>
+
+            <div class="schedule-grid">
+                <div class="time-column">
+                    <div class="daily-time-slot hour">06:00</div>
+                    <div class="daily-time-slot">06:30</div>
+                    <div class="daily-time-slot hour">07:00</div>
+                    <div class="daily-time-slot">07:30</div>
+                    <div class="daily-time-slot hour">08:00</div>
+                    <div class="daily-time-slot">08:30</div>
+                    <div class="daily-time-slot hour">09:00</div>
+                    <div class="daily-time-slot">09:30</div>
+                    <div class="daily-time-slot hour">10:00</div>
+                    <div class="daily-time-slot">10:30</div>
+                    <div class="daily-time-slot hour">11:00</div>
+                    <div class="daily-time-slot">11:30</div>
+                    <div class="daily-time-slot hour">12:00</div>
+                    <div class="daily-time-slot">12:30</div>
+                    <div class="daily-time-slot hour">13:00</div>
+                    <div class="daily-time-slot">13:30</div>
+                    <div class="daily-time-slot hour">14:00</div>
+                    <div class="daily-time-slot">14:30</div>
+                    <div class="daily-time-slot hour">15:00</div>
+                    <div class="daily-time-slot">15:30</div>
+                    <div class="daily-time-slot hour">16:00</div>
+                    <div class="daily-time-slot">16:30</div>
+                    <div class="daily-time-slot hour">17:00</div>
+                    <div class="daily-time-slot">17:30</div>
+                    <div class="daily-time-slot hour">18:00</div>
+                    <div class="daily-time-slot">18:30</div>
+                    <div class="daily-time-slot hour">19:00</div>
+                    <div class="daily-time-slot">19:30</div>
+                    <div class="daily-time-slot hour">20:00</div>
+                    <div class="daily-time-slot">20:30</div>
+                    <div class="daily-time-slot hour">21:00</div>
+                    <div class="daily-time-slot">21:30</div>
+                </div>
+
+                <div class="appointments-column">
+                    <!-- Empty time slots -->
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot hour"></div>
+                    <div class="appointment-slot"></div>
+                </div>
+            </div>
+
+            <div class="footer">
+                <a onclick="navigateToPage('weekly-overview')">← Weekly Overview</a> |
+                <a onclick="navigateToPage('saturday')">← Saturday</a> |
+                <a onclick="navigateToPage('monday')">Monday →</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Navigation between pages
+        function navigateToPage(pageId) {
+            // Hide all pages
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(page => page.classList.remove('active'));
+            
+            // Show the selected page
+            const targetPage = document.getElementById(pageId);
+            if (targetPage) {
+                targetPage.classList.add('active');
+            }
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(event) {
+            const currentPage = document.querySelector('.page.active');
+            const currentId = currentPage.id;
+            
+            const pageOrder = ['weekly-overview', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+            const currentIndex = pageOrder.indexOf(currentId);
+            
+            if (event.key === 'ArrowRight' || event.key === 'PageDown') {
+                // Next page
+                const nextIndex = (currentIndex + 1) % pageOrder.length;
+                navigateToPage(pageOrder[nextIndex]);
+                event.preventDefault();
+            } else if (event.key === 'ArrowLeft' || event.key === 'PageUp') {
+                // Previous page
+                const prevIndex = currentIndex === 0 ? pageOrder.length - 1 : currentIndex - 1;
+                navigateToPage(pageOrder[prevIndex]);
+                event.preventDefault();
+            } else if (event.key === 'Home') {
+                // Go to weekly overview
+                navigateToPage('weekly-overview');
+                event.preventDefault();
+            }
+        });
+
+        // Print function to generate PDF
+        function printWeeklyPackage() {
+            window.print();
+        }
+
+        // Show print button in browser (hidden in print)
+        document.addEventListener('DOMContentLoaded', function() {
+            const style = document.createElement('style');
+            style.textContent = `
+                .print-button {
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: #007bff;
+                    color: white;
+                    border: none;
+                    padding: 10px 20px;
+                    border-radius: 5px;
+                    cursor: pointer;
+                    font-size: 14px;
+                    z-index: 1000;
+                }
+                
+                .print-button:hover {
+                    background: #0056b3;
+                }
+                
+                @media print {
+                    .print-button {
+                        display: none;
+                    }
+                }
+                
+                .nav-help {
+                    position: fixed;
+                    bottom: 20px;
+                    left: 20px;
+                    background: #f8f9fa;
+                    padding: 10px;
+                    border-radius: 5px;
+                    font-size: 12px;
+                    border: 1px solid #ddd;
+                    z-index: 1000;
+                }
+                
+                @media print {
+                    .nav-help {
+                        display: none;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            const printButton = document.createElement('button');
+            printButton.className = 'print-button';
+            printButton.textContent = 'Print/Save as PDF';
+            printButton.onclick = printWeeklyPackage;
+            document.body.appendChild(printButton);
+            
+            const navHelp = document.createElement('div');
+            navHelp.className = 'nav-help';
+            navHelp.innerHTML = `
+                <strong>Navigation:</strong><br>
+                ← → Arrow keys: Navigate pages<br>
+                Home: Weekly overview<br>
+                Click links in footer to jump
+            `;
+            document.body.appendChild(navHelp);
+        });
+    </script>
+</body>
+</html>

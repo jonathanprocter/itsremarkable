@@ -1,0 +1,55 @@
+Here’s how you should address the “emoji artifact” (progress note lock emoji from SimplePractice appointments) and guide Replit AI for a truly professional PDF export:
+
+## **Explicit Prompt for Replit AI:**
+
+**Summary:**  
+My latest Daily Template PDF export is *nearly* correct—but it still has a formatting/logical bug where some SimplePractice appointments show an emoji or icon at the beginning of the title when a progress note is locked. This causes visible artifacts and breaks the professional look of the PDF. I want all such emojis, icons, or non-text artifacts filtered/stripped from appointment labels **before rendering them to the PDF**.
+
+### **Detailed Instructions:**
+
+**1. Filter out Emojis/Icons in Appointment Titles**
+- Before drawing an appointment’s text, check and remove any leading (or embedded) emoji, lock icons, or other non-ASCII/Unicode symbol artifacts.
+- Specifically:
+    - SimplePractice *locked* appointments sometimes prepend a lock emoji, padlock Unicode, or other icon as the **first** character of the appointment title (or in a separate field).
+    - These are **UI artifacts** only for the web and should NOT appear in the PDF export—they break the visual style!
+    - Use a Unicode regex to strip any emoji or non-letter character at the beginning of appointment titles.
+    - If you see a lock (🔒), padlock, star, checkmark, etc., remove it from the text being rendered.
+- If your code renders title like `"🔒 John Doe — Session"`, your export should show *just* `"John Doe — Session"`.
+
+**2. Maintain All Other Title Content**
+- Only remove leading or “status” emojis. Do **not** delete user-entered letters, patient initials, or session type codes that are part of the actual title.
+- If multiple emojis/icons are present at the start, remove all of them.
+
+**3. Where To Apply the Filter**
+- Place this filtering logic in your PDF export appointment label render function, right before drawing/wrapping text in the appointment cell/box.
+- The filter should be performed regardless of the appointment’s type (SimplePractice or otherwise), but is most vital for SimplePractice locked sessions.
+- Prefer a reusable utility function, e.g.,
+    ```typescript
+    function stripLeadingEmoji(text: string): string {
+      return text.replace(/^[\p{Emoji_Presentation}\p{Emoji}\p{So}\p{Sk}\uFE0F]+/gu, '').trim();
+    }
+    ```
+
+**4. Testing/Validation**
+- Review a sample daily PDF where some SimplePractice appointments had locked progress notes (and thus previously had a padlock or emoji).
+- Confirm that **no visible emojis, padlocks, or status icons** render in the exported PDF—the text is now clean and aligned.
+- Appointments with no emoji artifacts should remain unchanged.
+
+**5. Document the Change**
+- Briefly explain in the PR or commit message that emoji/status artifacts are now filtered from appointment titles for PDF exports.
+
+**Commit message example:**
+```
+fix(pdf): Remove emoji/status artifacts from appointment titles in daily template export for SimplePractice locked notes
+```
+
+### **Example for Chat:**
+
+```
+Important! The Daily Template PDF export still outputs artifacts (emoji, padlock, icons) at the start of SimplePractice appointment titles whenever a note is locked. Strip any leading emoji (🔒 or similar) or non-ASCII Unicode from all appointment titles before rendering in the PDF. Only clean the start of the string, not user-entered content. Add this as a filtering utility in the PDF export function and verify with a daily export containing locked/flagged SimplePractice events. Commit with a clear note that locked status emojis are now filtered from appointment titles.
+```
+
+**Give the above to Replit’s AI, or paste it as your issue/feedback.**  
+If you want me to provide a longer regex or more robust function for emoji remove, just ask! Let me know if you want a code snippet formatted for your project.
+
+[1] https://replit.com/@jonathanprocter/RemarkablePlannerPro-1

@@ -1,0 +1,65 @@
+x
+import React, { useState, ChangeEvent, FunctionComponent } from 'react';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+
+interface DailyNotesProps {
+  notes: string;
+  onSaveNotes: (notes: string) => Promise<void>;
+}
+
+/**
+ * Component for daily notes input and save functionality.
+ * @param {DailyNotesProps} props - The props for the component.
+ * @returns {React.ReactElement} The DailyNotes component.
+ */
+export const DailyNotes: FunctionComponent<DailyNotesProps> = ({ notes, onSaveNotes }) => {
+  const [currentNotes, setCurrentNotes] = useState<string>(notes);
+
+  /**
+   * Handles saving the current notes.
+   */
+  const handleSave = async () => {
+    try {
+      await onSaveNotes(currentNotes);
+    } catch (error) {
+      console.error('Failed to save notes:', error);
+      // Optionally, handle the error in the UI, e.g., show a notification.
+    }
+  };
+
+  /**
+   * Handles changes to the textarea for notes.
+   * @param {ChangeEvent<HTMLTextAreaElement>} event - The change event from the textarea.
+   */
+  const handleChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
+    setCurrentNotes(event.target.value);
+  };
+
+  return (
+    <div className="sidebar-section">
+      <h3 className="text-sm font-semibold mb-3 text-gray-900">Daily Notes</h3>
+      <Textarea
+        value={currentNotes}
+        onChange={handleChange}
+        placeholder="Daily reflections, goals, and notes..."
+        className="w-full h-20 resize-none"
+      />
+      <Button 
+        onClick={handleSave}
+        className="w-full mt-2 bg-blue-600 hover:bg-blue-700"
+        size="sm"
+      >
+        Save Notes
+      </Button>
+    </div>
+  );
+};
+
+
+- Introduced `React.FunctionComponent` for a more explicit component type.
+- Added `async` to `handleSave` and wrapped `onSaveNotes` call in a try/catch for error handling.
+- Extracted the `onChange` handler to a named function `handleChange` for better readability and potential reusability.
+- Added JSDoc comments for better documentation and understanding of the component and its functions.
+- Ensured all functions are arrow functions for consistent coding style.
+- Updated `onSaveNotes` prop type to reflect that it might return a promise, aligning with the async nature of saving data which might involve API calls.

@@ -1,0 +1,114 @@
+// Immediate test to run in browser console
+// Copy and paste this entire block into your browser console
+
+(async function immediateCalendarTest() {
+  console.log('🚀 Starting immediate calendar sync test...');
+  
+  try {
+    // Step 1: Check current authentication
+    console.log('1️⃣ Checking authentication...');
+    const authCheck = await fetch('/api/auth/status', { credentials: 'include' });
+    const authData = await authCheck.json();
+    
+    if (!authData.authenticated) {
+      console.error('❌ Authentication failed. Please refresh page and log in.');
+      return;
+    }
+    console.log('✅ Authenticated as:', authData.user?.email || 'Unknown user');
+    
+    // Step 2: Test current events endpoint
+    console.log('2️⃣ Checking current events...');
+    const currentEvents = await fetch('/api/events', { credentials: 'include' });
+    const eventsData = await currentEvents.json();
+    console.log(`📅 Current events in database: ${eventsData.length}`);
+    
+    // Step 3: Trigger calendar sync
+    console.log('3️⃣ Triggering calendar sync...');
+    const syncStart = Date.now();
+    
+    const syncResponse = await fetch('/api/sync/calendar', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include'
+    });
+    
+    if (!syncResponse.ok) {
+      const errorText = await syncResponse.text();
+      console.error('❌ Sync request failed:', syncResponse.status, errorText);
+      return;
+    }
+    
+    const syncResult = await syncResponse.json();
+    const syncDuration = Date.now() - syncStart;
+    
+    console.log('✅ Sync completed in', syncDuration + 'ms');
+    console.log('📊 Sync Results:');
+    console.table(syncResult.stats || {});
+    
+    // Step 4: Check for SimplePractice events
+    if (syncResult.sampleSimplePracticeEvents?.length > 0) {
+      console.log('🎯 SimplePractice events found:');
+      syncResult.sampleSimplePracticeEvents.forEach((event, i) => {
+        console.log(`  ${i + 1}. "${event.title}" on ${new Date(event.start).toLocaleDateString()}`);
+      });
+    } else {
+      console.log('ℹ️ No SimplePractice events detected in current sync');
+    }
+    
+    // Step 5: Verify database update
+    console.log('4️⃣ Verifying database update...');
+    const updatedEvents = await fetch('/api/events', { credentials: 'include' });
+    const updatedEventsData = await updatedEvents.json();
+    console.log(`📅 Events after sync: ${updatedEventsData.length}`);
+    
+    // Step 6: Show sample events by source
+    const eventsBySource = updatedEventsData.reduce((acc, event) => {
+      acc[event.source] = (acc[event.source] || 0) + 1;
+      return acc;
+    }, {});
+    
+    console.log('📈 Events by source:');
+    console.table(eventsBySource);
+    
+    // Success summary
+    console.log('🎉 Test completed successfully!');
+    console.log('Summary:', {
+      totalEvents: updatedEventsData.length,
+      syncDuration: syncDuration + 'ms',
+      simplePracticeDetected: syncResult.stats?.simplePractice || 0
+    });
+    
+    return {
+      success: true,
+      results: syncResult,
+      totalEvents: updatedEventsData.length
+    };
+    
+  } catch (error) {
+    console.error('❌ Test failed with error:', error);
+    console.error('Error details:', error.message);
+    
+    // Provide troubleshooting suggestions
+    console.log('🔧 Troubleshooting suggestions:');
+    console.log('- Refresh the page and try again');
+    console.log('- Check if you\'re logged into Google Calendar');
+    console.log('- Verify the server is running on the correct port');
+    
+    return { success: false, error: error.message };
+  }
+})();
+
+// Also add a simple function for repeated testing
+window.quickSyncTest = async () => {
+  const response = await fetch('/api/sync/calendar', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include'
+  });
+  const result = await response.json();
+  console.log('Quick sync result:', result);
+  return result;
+};
+
+console.log('✨ Test loaded! The test is running automatically above.');
+console.log('💡 For quick retests, run: quickSyncTest()');

@@ -1,0 +1,31 @@
+import React, { forwardRef, ComponentProps } from "react";
+
+/**
+ * Utility function to concatenate class names.
+ * @param classNames - An array of class names to be combined.
+ * @returns A string of combined class names.
+ */
+const cn = (...classNames: string[]): string => classNames.filter(Boolean).join(' ');
+
+/**
+ * Textarea component with custom styling.
+ * @param props - Component props including `className` and other textarea attributes.
+ * @param ref - Ref forwarding for the textarea element.
+ * @returns A styled textarea component.
+ */
+const Textarea = forwardRef<HTMLTextAreaElement, ComponentProps<"textarea">>(
+  ({ className, ...props }, ref) => (
+    <textarea
+      className={cn(
+        "flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
+        className
+      )}
+      ref={ref}
+      {...props}
+    />
+  )
+);
+
+Textarea.displayName = "Textarea";
+
+export { Textarea };

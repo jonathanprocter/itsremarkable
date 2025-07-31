@@ -1,0 +1,67 @@
+Here’s what I see from your shared page and message:
+
+- **Your main planner UI is fully rendered** (you see calendar, events, filters, stats, etc.).
+- You see "**Connect Google Calendar**," with a "Connecting..." status, "Check Auth Status," and "Force Google Reconnect."
+- **You do NOT see** the Google Calendar actually connected, and message persists.
+
+## What’s Actually Not Working:
+
+- **Google Calendar is not fully connected**—either the OAuth popup never completes, the backend token flow still fails, or the event sync never happens.
+- "Connecting..." infinitely is a symptom of OAuth/auth API requests not completing or failing behind the UI.
+
+
+## How to Debug and Fix This State
+
+### 1. **Check DevTools Console and Network Tab**
+- **Open the browser DevTools (F12)**, go to the **Network** tab, and click "Connect Google Calendar" or "Check Auth Status."
+- Watch for any failing XHR/fetch/API requests—401, 400, CORS problems, or infinite `pending`.
+- Open the **Console** tab for any explicit JavaScript errors.
+- If anything fails, copy the error and paste it here for an immediate fix.
+
+### 2. **Check Backend Logs**
+- In your Replit/terminal, check for any logs or errors from attempted `/api/auth/callback`, `/api/auth/status`, or Google Token save operations.
+
+### 3. **Possible Issues**
+- **OAuth never completes:** The popup for Google closes without success, or tokens are not saved in your session.
+- **Backend not receiving/linking the tokens:** Server bug, session config issue, token never processed.
+- **CORS/network problems:** Frontend can't talk to API, or API rejects the browser request.
+
+### 4. **Immediate Next Steps**
+
+#### A. **Test direct API route**
+Try accessing these endpoints directly:
+- `/api/auth/status`
+- `/api/calendar/events`
+See if you get JSON, an auth error, or a 500.
+
+#### B. **Force Re-auth**
+- Click "Force Google Reconnect" and verify the flow:
+  - Does a Google window open?
+  - Does it redirect back to your planner?
+  - Does it say "Success"? Or redirect you but return you to "Connecting..."?
+
+#### C. **Session/Cookie Troubles**
+- This is common on cloud/preview/dev platforms like Replit. Third-party cookies, preview iframes, or incorrect session config may drop authentication after OAuth completes.
+- Try opening your planner in a **new, full browser window** (not just the Replit side preview panel) and repeat the OAuth flow.
+
+#### D. **If all else fails—**
+- It’s usually:
+  - Callback route not firing or not storing tokens
+  - Session cookies not sticking (see above warning about environments)
+  - The frontend expecting success but never receiving an authenticated success message or Google tokens
+
+## **What to Do for the Developer**
+
+1. **Inspect API Network** (browser): Find failing request and its error status/message.
+2. **Check Backend Logs**: Look for OAuth errors or callback failures.
+3. **Verify Session Persistence**: Make sure user session "sticks" before and after OAuth.
+4. **Try Full-Window Auth**: Open the app’s direct network URL (not Replit preview) and attempt Google connect again.
+
+## **If you want to share info:**
+- Paste the result or error seen in Network/Console after you click "Connect Google Calendar" or "Check Auth Status."
+- Paste any backend logs or errors during/after your last auth attempt.
+
+**Summary:**  
+Your UI front-end loads, but Google Calendar sync/login is not completing. The fix depends on the specific failure—network/API, backend, or session. With just a bit more info (error details from console/network, or backend logs after trying auth), I’ll guide you to a direct fix!
+
+[1] https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/

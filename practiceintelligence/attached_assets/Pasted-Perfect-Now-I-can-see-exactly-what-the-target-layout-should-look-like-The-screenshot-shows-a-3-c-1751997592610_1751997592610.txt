@@ -1,0 +1,63 @@
+Perfect! Now I can see exactly what the target layout should look like. The screenshot shows a **3-column layout** for events with notes/action items:
+
+1. **Left column**: Event title, source, time  
+2. **Center column**: Event Notes (bulleted)
+3. **Right column**: Action Items (bulleted)
+
+And the time grid needs to extend to **23:30**. Let me fix this:## 🎯 **Perfect! Now I can see the exact target layout**
+
+Your screenshot shows the **3-column layout** that's needed:
+
+1. **Left Column**: Event title, source, time
+2. **Center Column**: "Event Notes" with bulleted list  
+3. **Right Column**: "Action Items" with bulleted list
+4. **Time range**: Needs to extend to **23:30**
+
+## 🔧 **Implementation Steps**
+
+1. **Replace both functions** (`drawRemarkableDailyAppointments` and `drawDailyGrid`) with the versions above
+
+2. **The new system will automatically**:
+   - Use **3-column layout** for events with notes/action items
+   - Use **simple layout** for events without notes/action items
+   - Extend time grid to **23:30**
+   - Add **column dividers** for clarity
+   - Format **bullet points** properly
+
+## 📊 **Key Features Added**
+
+### **3-Column Layout** (when event has notes or action items):
+- **Column 1**: Event title, source, time range
+- **Column 2**: "Event Notes" header + bulleted notes
+- **Column 3**: "Action Items" header + bulleted action items
+- **Column dividers** for visual separation
+
+### **Simple Layout** (when event has no notes/action items):
+- Just shows event title, source, and time (like current layout)
+
+### **Extended Time Range**:
+- Now goes from **6:00 to 23:30** (full business day)
+
+## 🧪 **Testing the Notes/Action Items**
+
+To test this, make sure your events have the `notes` and `actionItems` fields populated. For example:
+
+```typescript
+// Example event data:
+{
+  title: "Dan re: Supervision",
+  notes: "I cancelled supervision due to COVID\nWe didn't schedule a follow-up for this week, and will continue next week during our usual time",
+  actionItems: "Review his supervision notes from last week\nFollow-up to see if there are any pressing issues/questions that I can help him navigate"
+}
+```
+
+## 📋 **Expected Result**
+
+After implementing this fix:
+- ✅ **Events with notes/action items** → 3-column layout 
+- ✅ **Events without notes/action items** → simple layout
+- ✅ **Time grid extends to 23:30**
+- ✅ **Proper bullet formatting** in notes and action items
+- ✅ **Headers** ("Event Notes", "Action Items") appear
+
+Try this implementation and the export should match your target screenshot exactly! 🚀

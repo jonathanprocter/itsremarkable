@@ -1,0 +1,58 @@
+✅ PDF saved successfully as: daily-planner-2025-07-12.pdf
+Event: Calvin Hill Appointment on Sat Jul 12 2025, Selected: Sat Jul 12 2025, Matches: true
+Event: David Grossman Appointment on Sat Jul 12 2025, Selected: Sat Jul 12 2025, Matches: true
+Daily View - Selected date: Sat Jul 12 2025
+Daily View - Total events: 2
+Daily View - Day events: 2
+Event: Calvin Hill Appointment on Sat Jul 12 2025, Selected: Sat Jul 12 2025, Matches: true
+Event: David Grossman Appointment on Sat Jul 12 2025, Selected: Sat Jul 12 2025, Matches: true
+Daily View - Selected date: Sat Jul 12 2025
+Daily View - Total events: 2
+Daily View - Day events: 2
+🎉 Daily PDF export completed successfully!
+🎯 Creating TRULY pixel-perfect weekly PDF using dashboard styles...
+📸 Step 1: Capturing dashboard screenshot for visual comparison...
+🎯 Starting pixel-perfect visual comparison...
+📸 Capturing dashboard screenshot for pixel comparison...
+❌ Failed to capture dashboard screenshot: 
+Error {}
+
+Event: Calvin Hill Appointment on Sat Jul 12 2025, Selected: Sat Jul 12 2025, Matches: true
+Event: David Grossman Appointment on Sat Jul 12 2025, Selected: Sat Jul 12 2025, Matches: true
+Daily View - Selected date: Sat Jul 12 2025
+Daily View - Total events: 2
+Daily View - Day events: 2
+❌ Visual comparison failed: 
+Error {}
+
+❌ Error creating truly pixel-perfect weekly PDF: 
+Error {}
+
+at t.value (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:17465)
+at new t (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:12630)
+at t.value (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:32766)
+at https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:34400
+Export failed: 
+Error {}
+message: "Calendar container not found for screenshot"
+stack: "Error: Calendar container not found for screenshot↵ at captureDashboardScreenshot (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/utils/pixelPerfectComparison.ts:7:13)↵ at performVisualComparison (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/utils/pixelPerfectComparison.ts:171:39)↵ at exportTrulyPixelPerfectWeeklyPDF (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/utils/trulyPixelPerfectExport.ts:183:36)↵ at handleExportPDF (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/pages/planner.tsx:159:17)↵ at onClick (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/pages/planner.tsx:573:32)↵ at HTMLUnknownElement.callCallback2 (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=243ff4c6:3674:22)↵ at Object.invokeGuardedCallbackDev (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=243ff4c6:3699:24)↵ at invokeGuardedCallback (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=243ff4c6:3733:39)↵ at invokeGuardedCallbackAndCatchFirstError (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=243ff4c6:3736:33)↵ at executeDispatch (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=243ff4c6:7014:11)"
+get stack: ƒ ()
+set stack: ƒ ()
+[[Prototype]]: Object
+
+Event: Calvin Hill Appointment on Sat Jul 12 2025, Selected: Sat Jul 12 2025, Matches: true
+Event: David Grossman Appointment on Sat Jul 12 2025, Selected: Sat Jul 12 2025, Matches: true
+Daily View - Selected date: Sat Jul 12 2025
+Daily View - Total events: 2
+Daily View - Day events: 2
+Event: Calvin Hill Appointment on Sat Jul 12 2025, Selected: Sat Jul 12 2025, Matches: true
+Event: David Grossman Appointment on Sat Jul 12 2025, Selected: Sat Jul 12 2025, Matches: true
+Daily View - Selected date: Sat Jul 12 2025
+Daily View - Total events: 2
+Daily View - Day events: 2
+Event: Calvin Hill Appointment on Sat Jul 12 2025, Selected: Sat Jul 12 2025, Matches: true
+Event: David Grossman Appointment on Sat Jul 12 2025, Selected: Sat Jul 12 2025, Matches: true
+Daily View - Selected date: Sat Jul 12 2025
+Daily View - Total events: 2
+Daily View - Day events: 2
+Event: Calvin Hill Appointment on Sat Jul 12 2025, Selected: Sat Jul 12 2025, Matches: true

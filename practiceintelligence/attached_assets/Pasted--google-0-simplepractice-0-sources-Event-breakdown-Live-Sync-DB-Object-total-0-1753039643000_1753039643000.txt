@@ -1,0 +1,20 @@
+, google: 0, simplepractice: 0, sources: {…}}
+📊 Event breakdown (Live Sync + DB): 
+Object {total: 0, manual: 0, google: 0, simplepractice: 0, sources: {…}}
+📡 Events API response: 200 OK
+Failed to fetch
+at window.fetch (https://474155cb-26cc-45e2-9759-28eaffdac638-00-20mxsrmp7mzl4.worf.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:218642)
+at loadEnhancementScript (https://474155cb-26cc-45e2-9759-28eaffdac638-00-20mxsrmp7mzl4.worf.replit.dev/client/src/pages/planner.tsx?t=1753039395893:168:40)
+at https://474155cb-26cc-45e2-9759-28eaffdac638-00-20mxsrmp7mzl4.worf.replit.dev/client/src/pages/planner.tsx?t=1753039395893:187:9
+at commitHookEffectListMount (https://474155cb-26cc-45e2-9759-28eaffdac638-00-20mxsrmp7mzl4.worf.replit.dev/node_modules/.vite/deps/chunk-VAMZPUBM.js?v=84884f34:16963:34)
+at commitPassiveMountOnFiber (https://474155cb-26cc-45e2-9759-28eaffdac638-00-20mxsrmp7mzl4.worf.replit.dev/node_modules/.vite/deps/chunk-VAMZPUBM.js?v=84884f34:18206:19)
+at commitPassiveMountEffects_complete (https://474155cb-26cc-45e2-9759-28eaffdac638-00-20mxsrmp7mzl4.worf.replit.dev/node_modules/.vite/deps/chunk-VAMZPUBM.js?v=84884f34:18179:17)
+at commitPassiveMountEffects_begin (https://474155cb-26cc-45e2-9759-28eaffdac638-00-20mxsrmp7mzl4.worf.replit.dev/node_modules/.vite/deps/chunk-VAMZPUBM.js?v=84884f34:18169:15)
+at commitPassiveMountEffects (https://474155cb-26cc-45e2-9759-28eaffdac638-00-20mxsrmp7mzl4.worf.replit.dev/node_modules/.vite/deps/chunk-VAMZPUBM.js?v=84884f34:18159:11)
+at flushPassiveEffectsImpl (https://474155cb-26cc-45e2-9759-28eaffdac638-00-20mxsrmp7mzl4.worf.replit.dev/node_modules/.vite/deps/chunk-VAMZPUBM.js?v=84884f34:19543:11)
+at flushPassiveEffects (https://474155cb-26cc-45e2-9759-28eaffdac638-00-20mxsrmp7mzl4.worf.replit.dev/node_modules/.vite/deps/chunk-VAMZPUBM.js?v=84884f34:19500:22)
+📊 Event breakdown (Live Sync + DB): 
+Object {total: 0, manual: 0, google: 0, simplepractice: 0, sources: {…}}
+📊 Event breakdown (Live Sync + DB): 
+Object {total: 0, manual: 0, google: 0, simplepractice: 0, sources: {…}}
+📦 Raw API response data: 

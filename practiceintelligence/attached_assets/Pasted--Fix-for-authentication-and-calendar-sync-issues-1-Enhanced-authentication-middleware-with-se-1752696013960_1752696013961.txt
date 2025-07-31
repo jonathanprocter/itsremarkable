@@ -1,0 +1,356 @@
+// Fix for authentication and calendar sync issues
+
+// 1. Enhanced authentication middleware with session refresh
+const enhanceAuthMiddleware = (req, res, next) => {
+  // Check if session is about to expire and refresh it
+  if (req.session && req.session.cookie) {
+    const now = new Date();
+    const expires = new Date(req.session.cookie.expires);
+    const timeUntilExpiry = expires - now;
+    
+    // If session expires in less than 5 minutes, refresh it
+    if (timeUntilExpiry < 5 * 60 * 1000) {
+      req.session.cookie.expires = new Date(now.getTime() + 24 * 60 * 60 * 1000); // Extend 24 hours
+      req.session.save((err) => {
+        if (err) console.error('Session refresh error:', err);
+      });
+    }
+  }
+  next();
+};
+
+// 2. Robust calendar sync endpoint with better error handling
+app.post('/api/sync/calendar', enhanceAuthMiddleware, async (req, res) => {
+  try {
+    if (!req.session || !req.session.googleTokens) {
+      return res.status(401).json({ 
+        error: 'Authentication required',
+        needsAuth: true 
+      });
+    }
+
+    const oauth2Client = new google.auth.OAuth2(
+      process.env.GOOGLE_CLIENT_ID,
+      process.env.GOOGLE_CLIENT_SECRET,
+      process.env.GOOGLE_REDIRECT_URI
+    );
+    
+    oauth2Client.setCredentials(req.session.googleTokens);
+    const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
+    
+    // Fetch events with retry logic
+    let events = [];
+    let retryCount = 0;
+    const maxRetries = 3;
+    
+    while (retryCount < maxRetries) {
+      try {
+        const response = await calendar.events.list({
+          calendarId: 'primary',
+          timeMin: new Date().toISOString(),
+          maxResults: 2500,
+          singleEvents: true,
+          orderBy: 'startTime',
+        });
+        
+        events = response.data.items || [];
+        break;
+      } catch (error) {
+        if (error.code === 401 && retryCount < maxRetries - 1) {
+          // Try to refresh token
+          try {
+            const { credentials } = await oauth2Client.refreshAccessToken();
+            oauth2Client.setCredentials(credentials);
+            req.session.googleTokens = credentials;
+            retryCount++;
+            continue;
+          } catch (refreshError) {
+            console.error('Token refresh failed:', refreshError);
+            return res.status(401).json({ 
+              error: 'Authentication expired',
+              needsAuth: true 
+            });
+          }
+        }
+        throw error;
+      }
+    }
+
+    // Enhanced SimplePractice detection logic
+    const detectSimplePractice = (event) => {
+      const summary = (event.summary || '').toLowerCase();
+      const description = (event.description || '').toLowerCase();
+      const location = (event.location || '').toLowerCase();
+      const organizer = (event.organizer?.email || '').toLowerCase();
+      const creator = (event.creator?.email || '').toLowerCase();
+      
+      // Multiple detection criteria
+      const simplePracticeIndicators = [
+        // Direct mentions
+        summary.includes('simplepractice'),
+        description.includes('simplepractice'),
+        organizer.includes('simplepractice'),
+        creator.includes('simplepractice'),
+        
+        // Common SimplePractice patterns
+        summary.includes('therapy'),
+        summary.includes('session'),
+        summary.includes('counseling'),
+        summary.includes('appointment'),
+        description.includes('therapy'),
+        description.includes('counseling'),
+        
+        // Location patterns
+        location.includes('office'),
+        location.includes('clinic'),
+        
+        // Email patterns
+        organizer.includes('noreply'),
+        organizer.includes('notifications'),
+        creator.includes('calendar')
+      ];
+      
+      const score = simplePracticeIndicators.filter(Boolean).length;
+      return score >= 2; // Require at least 2 indicators
+    };
+
+    // Process and categorize events
+    const processedEvents = [];
+    const stats = {
+      total: events.length,
+      google: 0,
+      simplePractice: 0,
+      manual: 0
+    };
+
+    for (const event of events) {
+      const isSimplePractice = detectSimplePractice(event);
+      const source = isSimplePractice ? 'SimplePractice' : 'Google';
+      
+      if (isSimplePractice) {
+        stats.simplePractice++;
+      } else {
+        stats.google++;
+      }
+
+      const processedEvent = {
+        id: event.id,
+        title: event.summary || 'Untitled',
+        start: event.start?.dateTime || event.start?.date,
+        end: event.end?.dateTime || event.end?.date,
+        description: event.description || '',
+        location: event.location || '',
+        source: source,
+        googleEventId: event.id,
+        organizer: event.organizer?.email,
+        creator: event.creator?.email,
+        lastModified: event.updated
+      };
+
+      processedEvents.push(processedEvent);
+    }
+
+    // Store in database with conflict resolution
+    for (const event of processedEvents) {
+      try {
+        await db.query(`
+          INSERT OR REPLACE INTO events (
+            id, title, start_date, end_date, description, 
+            location, source, google_event_id, organizer, 
+            creator, last_modified, updated_at
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
+        `, [
+          event.googleEventId,
+          event.title,
+          event.start,
+          event.end,
+          event.description,
+          event.location,
+          event.source,
+          event.googleEventId,
+          event.organizer,
+          event.creator,
+          event.lastModified
+        ]);
+      } catch (dbError) {
+        console.error('Database insert error:', dbError);
+      }
+    }
+
+    res.json({
+      success: true,
+      message: 'Calendar sync completed',
+      stats: stats,
+      sampleSimplePracticeEvents: processedEvents
+        .filter(e => e.source === 'SimplePractice')
+        .slice(0, 5)
+    });
+
+  } catch (error) {
+    console.error('Calendar sync error:', error);
+    res.status(500).json({ 
+      error: 'Sync failed',
+      details: error.message 
+    });
+  }
+});
+
+// 3. Browser-compatible test function
+const testCalendarSync = async () => {
+  try {
+    console.log('🔄 Starting calendar sync test...');
+    
+    // Check authentication status first
+    const authResponse = await fetch('/api/auth/status');
+    const authData = await authResponse.json();
+    
+    if (!authData.authenticated) {
+      console.error('❌ Not authenticated. Please log in first.');
+      return;
+    }
+    
+    console.log('✅ Authentication confirmed');
+    
+    // Trigger sync
+    const syncResponse = await fetch('/api/sync/calendar', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include'
+    });
+    
+    if (!syncResponse.ok) {
+      const errorData = await syncResponse.json();
+      console.error('❌ Sync failed:', errorData);
+      return;
+    }
+    
+    const syncData = await syncResponse.json();
+    console.log('✅ Sync completed successfully!');
+    console.log('📊 Stats:', syncData.stats);
+    
+    if (syncData.sampleSimplePracticeEvents?.length > 0) {
+      console.log('🎯 SimplePractice events detected:');
+      syncData.sampleSimplePracticeEvents.forEach((event, index) => {
+        console.log(`  ${index + 1}. ${event.title} (${event.start})`);
+      });
+    } else {
+      console.log('ℹ️ No SimplePractice events detected in current batch');
+    }
+    
+    // Verify events are accessible
+    const eventsResponse = await fetch('/api/events');
+    const eventsData = await eventsResponse.json();
+    console.log(`📅 Total events in database: ${eventsData.length}`);
+    
+    return syncData;
+    
+  } catch (error) {
+    console.error('❌ Test failed:', error);
+  }
+};
+
+// 4. Frontend calendar sync button enhancement
+const enhanceCalendarSyncButton = () => {
+  const syncButton = document.querySelector('#sync-calendar-btn');
+  if (!syncButton) return;
+  
+  const originalText = syncButton.textContent;
+  
+  syncButton.addEventListener('click', async (e) => {
+    e.preventDefault();
+    
+    // Update button state
+    syncButton.disabled = true;
+    syncButton.textContent = 'Syncing...';
+    
+    try {
+      const result = await testCalendarSync();
+      
+      if (result?.success) {
+        syncButton.textContent = '✅ Synced!';
+        
+        // Show toast notification
+        showToast(`Sync completed! Found ${result.stats.simplePractice} SimplePractice events`, 'success');
+        
+        // Refresh calendar view if available
+        if (window.calendar && window.calendar.refetchEvents) {
+          window.calendar.refetchEvents();
+        }
+        
+        setTimeout(() => {
+          syncButton.textContent = originalText;
+          syncButton.disabled = false;
+        }, 3000);
+      }
+    } catch (error) {
+      syncButton.textContent = '❌ Failed';
+      showToast('Sync failed. Please try again.', 'error');
+      
+      setTimeout(() => {
+        syncButton.textContent = originalText;
+        syncButton.disabled = false;
+      }, 3000);
+    }
+  });
+};
+
+// 5. Toast notification helper
+const showToast = (message, type = 'info') => {
+  const toast = document.createElement('div');
+  toast.className = `toast toast-${type}`;
+  toast.textContent = message;
+  toast.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 12px 20px;
+    border-radius: 6px;
+    color: white;
+    z-index: 10000;
+    font-family: system-ui, -apple-system, sans-serif;
+    font-size: 14px;
+    max-width: 400px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6'};
+    transition: all 0.3s ease;
+  `;
+  
+  document.body.appendChild(toast);
+  
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateX(100%)';
+    setTimeout(() => toast.remove(), 300);
+  }, 4000);
+};
+
+// 6. Initialize on page load
+document.addEventListener('DOMContentLoaded', () => {
+  enhanceCalendarSyncButton();
+  
+  // Add global test function for manual testing
+  window.testCalendarSync = testCalendarSync;
+  console.log('🚀 Calendar sync fixes loaded. Run testCalendarSync() to test manually.');
+});
+
+// 7. Session monitoring and auto-refresh
+const monitorSession = () => {
+  setInterval(async () => {
+    try {
+      const response = await fetch('/api/auth/status');
+      const data = await response.json();
+      
+      if (!data.authenticated && window.location.pathname !== '/login') {
+        console.warn('Session expired, redirecting to login...');
+        window.location.href = '/login';
+      }
+    } catch (error) {
+      console.error('Session monitoring error:', error);
+    }
+  }, 60000); // Check every minute
+};
+
+// Start session monitoring
+monitorSession();

@@ -1,0 +1,320 @@
+// FIXES for event rendering in htmlTemplatePDF.ts
+
+// 1. CORRECTED EVENT RENDERING FUNCTION
+function drawRemarkableDailyAppointments(pdf: jsPDF, selectedDate: Date, events: CalendarEvent[], gridStartY: number, dayColumnWidth: number, timeSlotHeight: number): void {
+  const { margin, timeColumnWidth } = REMARKABLE_DAILY_CONFIG;
+  
+  // Filter events for the selected day
+  const dayEvents = events.filter(event => {
+    const eventDate = new Date(event.startTime);
+    return eventDate.getFullYear() === selectedDate.getFullYear() &&
+           eventDate.getMonth() === selectedDate.getMonth() &&
+           eventDate.getDate() === selectedDate.getDate();
+  }).sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
+  
+  console.log(`Rendering ${dayEvents.length} events for ${selectedDate.toDateString()}`);
+  console.log('Grid start Y:', gridStartY);
+  console.log('Day column width:', dayColumnWidth);
+  console.log('Time slot height:', timeSlotHeight);
+  
+  dayEvents.forEach((event, index) => {
+    const eventDate = new Date(event.startTime);
+    const endDate = new Date(event.endTime);
+    const startHour = eventDate.getHours();
+    const startMinute = eventDate.getMinutes();
+    const endHour = endDate.getHours();
+    const endMinute = endDate.getMinutes();
+    
+    console.log(`Event ${index + 1}: ${event.title}, Start: ${startHour}:${startMinute}, End: ${endHour}:${endMinute}`);
+    
+    // Calculate position based on 30-minute slots from 6:00
+    const startMinutesFrom6 = (startHour - 6) * 60 + startMinute;
+    const endMinutesFrom6 = (endHour - 6) * 60 + endMinute;
+    
+    // Convert to slot positions (each slot is 30 minutes)
+    const startSlot = Math.max(0, startMinutesFrom6 / 30);
+    const endSlot = Math.min(35, endMinutesFrom6 / 30);
+    const durationSlots = Math.max(1, endSlot - startSlot); // Minimum 1 slot
+    
+    console.log(`Start slot: ${startSlot}, End slot: ${endSlot}, Duration: ${durationSlots}`);
+    
+    if (startSlot < 0 || startSlot > 35) {
+      console.log('Event outside time range, skipping');
+      return;
+    }
+    
+    // CORRECTED Position calculation - events should span full column width
+    const eventX = margin + timeColumnWidth + 3; // Small margin from time column
+    const eventY = gridStartY + (startSlot * timeSlotHeight) + 2; // Small margin from top
+    const eventWidth = dayColumnWidth - 6; // Full width minus margins
+    const eventHeight = Math.max(timeSlotHeight - 4, (durationSlots * timeSlotHeight) - 4);
+    
+    console.log(`Event position: X=${eventX}, Y=${eventY}, Width=${eventWidth}, Height=${eventHeight}`);
+    
+    // Determine event type for styling
+    const isSimplePractice = event.source === 'simplepractice' || 
+                           event.title.toLowerCase().includes('appointment') ||
+                           event.calendarId?.includes('simplepractice') ||
+                           event.calendarId === '0np7sib5u30o7oc297j5pb259g'; // Your SimplePractice calendar ID
+    
+    const isHoliday = event.title.toLowerCase().includes('holiday') ||
+                     event.calendarId === 'en.usa#holiday@group.v.calendar.google.com';
+    
+    const isGoogle = event.source === 'google' && !isSimplePractice && !isHoliday;
+    
+    console.log(`Event type: SimplePractice=${isSimplePractice}, Google=${isGoogle}, Holiday=${isHoliday}`);
+    
+    // Draw event background (WHITE for all events)
+    pdf.setFillColor(255, 255, 255);
+    pdf.rect(eventX, eventY, eventWidth, eventHeight, 'F');
+    
+    // Draw event borders based on type
+    if (isSimplePractice) {
+      // SimplePractice: Thick BLUE left border + thin gray outline
+      pdf.setDrawColor(66, 133, 244); // Blue
+      pdf.setLineWidth(4);
+      pdf.line(eventX, eventY, eventX, eventY + eventHeight);
+      
+      // Thin gray border around the rest
+      pdf.setDrawColor(200, 200, 200);
+      pdf.setLineWidth(0.5);
+      pdf.line(eventX + 4, eventY, eventX + eventWidth, eventY); // top
+      pdf.line(eventX + eventWidth, eventY, eventX + eventWidth, eventY + eventHeight); // right
+      pdf.line(eventX, eventY + eventHeight, eventX + eventWidth, eventY + eventHeight); // bottom
+      
+    } else if (isGoogle) {
+      // Google Calendar: DASHED GREEN border all around
+      pdf.setDrawColor(52, 168, 83); // Green
+      pdf.setLineWidth(1.5);
+      pdf.setLineDash([4, 2]); // Dashed pattern
+      pdf.rect(eventX, eventY, eventWidth, eventHeight);
+      pdf.setLineDash([]); // Reset to solid
+      
+    } else if (isHoliday) {
+      // Holiday: YELLOW background with orange border
+      pdf.setFillColor(251, 188, 4); // Yellow
+      pdf.rect(eventX, eventY, eventWidth, eventHeight, 'F');
+      pdf.setDrawColor(255, 152, 0); // Orange
+      pdf.setLineWidth(1);
+      pdf.rect(eventX, eventY, eventWidth, eventHeight);
+      
+    } else {
+      // Default: Gray border
+      pdf.setDrawColor(156, 163, 175);
+      pdf.setLineWidth(1);
+      pdf.rect(eventX, eventY, eventWidth, eventHeight);
+    }
+    
+    // Event text content - MATCH THE TARGET LAYOUT EXACTLY
+    const textX = eventX + (isSimplePractice ? 8 : 6); // More margin for SimplePractice due to thick border
+    const textWidth = eventWidth - (isSimplePractice ? 12 : 8);
+    let currentY = eventY + 12;
+    
+    // 1. EVENT TITLE (Bold, larger font)
+    const cleanTitle = event.title.replace(/ Appointment$/, '').trim();
+    pdf.setFontSize(9);
+    pdf.setFont('helvetica', 'bold');
+    pdf.setTextColor(0, 0, 0);
+    
+    // Handle text wrapping for title
+    const titleLines = pdf.splitTextToSize(cleanTitle, textWidth);
+    const maxTitleLines = Math.min(titleLines.length, Math.floor((eventHeight - 25) / 11));
+    
+    for (let i = 0; i < maxTitleLines; i++) {
+      if (currentY + 11 <= eventY + eventHeight - 15) { // Leave space for source and time
+        pdf.text(titleLines[i], textX, currentY);
+        currentY += 11;
+      }
+    }
+    
+    // 2. SOURCE (Smaller, all caps, gray)
+    if (eventHeight > 25 && currentY + 10 <= eventY + eventHeight - 12) {
+      pdf.setFontSize(7);
+      pdf.setFont('helvetica', 'normal');
+      pdf.setTextColor(100, 100, 100); // Gray
+      
+      let sourceText = '';
+      if (isSimplePractice) {
+        sourceText = 'SIMPLEPRACTICE';
+      } else if (isGoogle) {
+        sourceText = 'GOOGLE CALENDAR';
+      } else if (isHoliday) {
+        sourceText = 'HOLIDAYS IN UNITED STATES';
+      } else {
+        sourceText = (event.source || 'MANUAL').toUpperCase();
+      }
+      
+      pdf.text(sourceText, textX, currentY);
+      currentY += 10;
+    }
+    
+    // 3. TIME RANGE (Bold, format: "HH:MM-HH:MM")
+    if (eventHeight > 35 && currentY + 10 <= eventY + eventHeight - 5) {
+      pdf.setFontSize(8);
+      pdf.setFont('helvetica', 'bold');
+      pdf.setTextColor(0, 0, 0); // Black
+      
+      const startTimeStr = eventDate.toLocaleTimeString('en-US', { 
+        hour: '2-digit', 
+        minute: '2-digit', 
+        hour12: false 
+      });
+      const endTimeStr = endDate.toLocaleTimeString('en-US', { 
+        hour: '2-digit', 
+        minute: '2-digit', 
+        hour12: false 
+      });
+      const timeRange = `${startTimeStr}-${endTimeStr}`;
+      
+      pdf.text(timeRange, textX, currentY);
+    }
+  });
+}
+
+// 2. ALSO UPDATE THE TIME GRID TO ENSURE PROPER SPACING
+function drawDailyGrid(pdf: jsPDF, selectedDate: Date, events: CalendarEvent[]): void {
+  const { margin, pageWidth, timeColumnWidth, timeSlotHeight } = REMARKABLE_DAILY_CONFIG;
+  const gridY = REMARKABLE_DAILY_CONFIG.gridStartY;
+  const dayColumnWidth = REMARKABLE_DAILY_CONFIG.dayColumnWidth;
+  
+  console.log('Drawing grid with:', {
+    margin,
+    timeColumnWidth,
+    dayColumnWidth,
+    gridY,
+    timeSlotHeight
+  });
+  
+  // Time slots (6:00 to 23:30 in 30-minute increments)
+  const timeSlots = [];
+  for (let hour = 6; hour <= 23; hour++) {
+    for (let minute = 0; minute < 60; minute += 30) {
+      timeSlots.push({
+        time: `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`,
+        hour,
+        minute,
+        isHour: minute === 0
+      });
+      if (hour === 23 && minute === 30) break;
+    }
+  }
+  
+  const totalGridHeight = timeSlots.length * timeSlotHeight;
+  const headerHeight = 30; // Slightly larger header
+  
+  // === GRID BACKGROUND ===
+  pdf.setFillColor(255, 255, 255);
+  pdf.rect(margin, gridY, timeColumnWidth + dayColumnWidth, headerHeight + totalGridHeight, 'F');
+  
+  // === GRID BORDER ===
+  pdf.setLineWidth(2);
+  pdf.setDrawColor(0, 0, 0);
+  pdf.rect(margin, gridY, timeColumnWidth + dayColumnWidth, headerHeight + totalGridHeight);
+  
+  // === HEADERS ===
+  // Time column header
+  pdf.setFillColor(245, 245, 245);
+  pdf.rect(margin, gridY, timeColumnWidth, headerHeight, 'F');
+  
+  pdf.setFontSize(10);
+  pdf.setFont('helvetica', 'bold');
+  pdf.setTextColor(0, 0, 0);
+  pdf.text('TIME', margin + timeColumnWidth / 2, gridY + 20, { align: 'center' });
+  
+  // Day header
+  const dayX = margin + timeColumnWidth;
+  pdf.setFillColor(245, 245, 245);
+  pdf.rect(dayX, gridY, dayColumnWidth, headerHeight, 'F');
+  
+  const dayName = selectedDate.toLocaleDateString('en-US', { weekday: 'long' });
+  const dateStr = `Jul 7`; // Or format as needed
+  
+  pdf.setFontSize(12);
+  pdf.setFont('helvetica', 'bold');
+  pdf.text(dayName, dayX + dayColumnWidth / 2, gridY + 15, { align: 'center' });
+  
+  pdf.setFontSize(10);
+  pdf.setFont('helvetica', 'normal');
+  pdf.text(dateStr, dayX + dayColumnWidth / 2, gridY + 25, { align: 'center' });
+  
+  // === TIME GRID ===
+  timeSlots.forEach((slot, index) => {
+    const y = gridY + headerHeight + (index * timeSlotHeight);
+    
+    // Time column cell
+    pdf.setFillColor(248, 248, 248);
+    pdf.rect(margin, y, timeColumnWidth, timeSlotHeight, 'F');
+    
+    // Time text
+    pdf.setFontSize(8);
+    pdf.setFont('helvetica', slot.isHour ? 'bold' : 'normal');
+    pdf.setTextColor(0, 0, 0);
+    pdf.text(slot.time, margin + timeColumnWidth / 2, y + timeSlotHeight / 2 + 3, { align: 'center' });
+    
+    // Day cell - WHITE background for events
+    pdf.setFillColor(255, 255, 255);
+    pdf.rect(dayX, y, dayColumnWidth, timeSlotHeight, 'F');
+    
+    // Horizontal grid lines
+    pdf.setLineWidth(0.5);
+    pdf.setDrawColor(220, 220, 220);
+    pdf.line(margin, y + timeSlotHeight, margin + timeColumnWidth + dayColumnWidth, y + timeSlotHeight);
+  });
+  
+  // === VERTICAL GRID LINES ===
+  pdf.setLineWidth(2);
+  pdf.setDrawColor(0, 0, 0);
+  pdf.line(margin + timeColumnWidth, gridY, margin + timeColumnWidth, gridY + headerHeight + totalGridHeight);
+  
+  // Header separator
+  pdf.setLineWidth(1);
+  pdf.setDrawColor(0, 0, 0);
+  pdf.line(margin, gridY + headerHeight, margin + timeColumnWidth + dayColumnWidth, gridY + headerHeight);
+  
+  // === EVENTS - Call the corrected event rendering function ===
+  drawRemarkableDailyAppointments(pdf, selectedDate, events, gridY + headerHeight, dayColumnWidth, timeSlotHeight);
+}
+
+// 3. ADD DEBUGGING TO HELP TROUBLESHOOT
+// Add this debugging function to see what's happening:
+function debugEventPositioning(events: CalendarEvent[], selectedDate: Date) {
+  console.log('=== EVENT POSITIONING DEBUG ===');
+  console.log('Selected date:', selectedDate.toLocaleDateString());
+  console.log('Total events:', events.length);
+  
+  const dayEvents = events.filter(event => {
+    const eventDate = new Date(event.startTime);
+    const matches = eventDate.getFullYear() === selectedDate.getFullYear() &&
+                   eventDate.getMonth() === selectedDate.getMonth() &&
+                   eventDate.getDate() === selectedDate.getDate();
+    
+    if (matches) {
+      console.log('Found matching event:', {
+        title: event.title,
+        source: event.source,
+        calendarId: event.calendarId,
+        startTime: event.startTime.toLocaleString(),
+        endTime: event.endTime.toLocaleString()
+      });
+    }
+    
+    return matches;
+  });
+  
+  console.log('Filtered day events:', dayEvents.length);
+  
+  // Check if events are being classified correctly
+  dayEvents.forEach(event => {
+    const isSimplePractice = event.source === 'simplepractice' || 
+                           event.title.toLowerCase().includes('appointment') ||
+                           event.calendarId?.includes('simplepractice') ||
+                           event.calendarId === '0np7sib5u30o7oc297j5pb259g';
+    
+    const isGoogle = event.source === 'google' && !isSimplePractice;
+    
+    console.log(`${event.title}: SimplePractice=${isSimplePractice}, Google=${isGoogle}`);
+  });
+}
+
+// Call this function in your handleExportAction before exporting:
+// debugEventPositioning(currentEvents, selectedDateForExport);

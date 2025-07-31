@@ -1,0 +1,52 @@
+[vite] connecting...
+[vite] connected.
+📊 Event breakdown (Live Sync + DB): 
+Object {total: 0, manual: 0, google: 0, simplepractice: 0, sources: {…}}
+📊 Event breakdown (Live Sync + DB): 
+Object {total: 0, manual: 0, google: 0, simplepractice: 0, sources: {…}}
+📊 Event breakdown (Live Sync + DB): 
+Object {total: 0, manual: 0, google: 0, simplepractice: 0, sources: {…}}
+📊 Event breakdown (Live Sync + DB): 
+Object {total: 0, manual: 0, google: 0, simplepractice: 0, sources: {…}}
+📊 Event breakdown (Live Sync + DB): 
+Object {total: 0, manual: 0, google: 0, simplepractice: 0, sources: {…}}
+📊 Event breakdown (Live Sync + DB): 
+Object {total: 0, manual: 0, google: 0, simplepractice: 0, sources: {…}}
+📊 Loaded events from unified API: 
+Object {total: 1731, google: 371, simplepractice: 1360, manual: 0}
+📊 Event breakdown (Live Sync + DB): 
+Object {total: 1731, manual: 0, google: 371, simplepractice: 1360, sources: {…}}
+📊 Event breakdown (Live Sync + DB): 
+Object {total: 1731, manual: 0, google: 371, simplepractice: 1360, sources: {…}}
+🔄 Force loading all events...
+✅ Auth fix result: 
+Object {success: true, message: "Environment tokens restored from session", userEmail: "jonathan.procter@gmail.com", hasTokens: true, timestamp: "2025-07-17T03:48:55.899Z"}
+📊 Loaded events from unified API: 
+Object {total: 1731, google: 371, simplepractice: 1360, manual: 0}
+📊 Loaded events from unified API: 
+Object {total: 1731, google: 371, simplepractice: 1360, manual: 0}
+📊 Event breakdown (Live Sync + DB): 
+Object {total: 1731, manual: 0, google: 371, simplepractice: 1360, sources: {…}}
+📊 Event breakdown (Live Sync + DB): 
+Object {total: 1731, manual: 0, google: 371, simplepractice: 1360, sources: {…}}
+📊 Event breakdown (Live Sync + DB): 
+Object {total: 1731, manual: 0, google: 371, simplepractice: 1360, sources: {…}}
+📊 Event breakdown (Live Sync + DB): 
+Object {total: 1731, manual: 0, google: 371, simplepractice: 1360, sources: {…}}
+❌ Calendar sync failed: 
+Error {}
+
+at t.value (https://474155cb-26cc-45e2-9759-28eaffdac638-00-20mxsrmp7mzl4.worf.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:17465)
+at new t (https://474155cb-26cc-45e2-9759-28eaffdac638-00-20mxsrmp7mzl4.worf.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:12630)
+at t.value (https://474155cb-26cc-45e2-9759-28eaffdac638-00-20mxsrmp7mzl4.worf.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:32766)
+at https://474155cb-26cc-45e2-9759-28eaffdac638-00-20mxsrmp7mzl4.worf.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:34400
+📊 Event breakdown (Live Sync + DB): 
+Object {total: 1731, manual: 0, google: 371, simplepractice: 1360, sources: {…}}
+📊 Event breakdown (Live Sync + DB): 
+Object {total: 1731, manual: 0, google: 371, simplepractice: 1360, sources: {…}}
+📊 Event breakdown (Live Sync + DB): 
+Object {total: 1731, manual: 0, google: 371, simplepractice: 1360, sources: {…}}
+📊 Event breakdown (Live Sync + DB): 
+Object {total: 1731, manual: 0, google: 371, simplepractice: 1360, sources: {…}}
+📊 Loaded events from unified API: 
+Object {total: 1731, google: 371, simplepractice: 1360, manual: 0}

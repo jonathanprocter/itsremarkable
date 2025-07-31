@@ -1,0 +1,82 @@
+type Event = {
+  title: string;
+  startTime?: string;
+  start?: string;
+  source: string;
+};
+
+/**
+ * Debugs event filtering by target date, searches for specific keywords in titles,
+ * and groups events by date.
+ * @param events Array of event objects to be filtered.
+ * @param targetDate The target date for filtering events.
+ * @returns An object containing filtered events and grouped events by date.
+ */
+export function debugEventFiltering(events: Event[], targetDate: Date | string): {
+  calvinEvents: Event[];
+  julyEvents: Event[];
+  eventsByDate: Map<string, Event[]>;
+  targetDateString: string;
+} {
+  const target = new Date(targetDate);
+  console.log('\n🔍 DATE FILTERING DEBUG REPORT');
+  console.log('==================================');
+  console.log('Target Date:', target.toDateString());
+  console.log('Target ISO:', target.toISOString());
+  console.log('Total Events:', events.length);
+
+  const calvinEvents = events.filter(({ title }) =>
+    title?.toLowerCase().includes('calvin') || title?.toLowerCase().includes('hill'),
+  );
+
+  console.log('\n🎯 CALVIN HILL SEARCH:');
+  console.log('Calvin Hill events found:', calvinEvents.length);
+  calvinEvents.forEach((event, i) => {
+    const eventDate = new Date(event.startTime || event.start);
+    console.log(`${i + 1}. ${event.title} - ${eventDate.toDateString()} ${eventDate.toLocaleTimeString()}`);
+    console.log(`   Start: ${event.startTime || event.start}`);
+    console.log(`   Source: ${event.source}`);
+  });
+
+  const targetMonth = target.getMonth();
+  const targetYear = target.getFullYear();
+  const julyEvents = events.filter(({ startTime, start }) => {
+    const eventDate = new Date(startTime || start);
+    return eventDate.getMonth() === targetMonth && eventDate.getFullYear() === targetYear;
+  });
+
+  console.log(`\n📅 JULY ${targetYear} EVENTS:`, julyEvents.length);
+
+  const eventsByDate = julyEvents.reduce((acc, event) => {
+    const eventDate = new Date(event.startTime || event.start);
+    const dateKey = eventDate.toDateString();
+    if (!acc.has(dateKey)) {
+      acc.set(dateKey, []);
+    }
+    acc.get(dateKey).push(event);
+    return acc;
+  }, new Map<string, Event[]>());
+
+  const sortedDates = Array.from(eventsByDate.keys()).sort();
+  const targetDateString = target.toDateString();
+
+  console.log('\n📊 EVENTS BY DATE (around target):');
+  sortedDates.forEach(dateStr => {
+    const isTarget = dateStr === targetDateString;
+    const eventsOnDate = eventsByDate.get(dateStr)!;
+    console.log(`${isTarget ? '🎯' : '📅'} ${dateStr}: ${eventsOnDate.length} events`);
+
+    if (isTarget || eventsOnDate.some(({ title }) => title?.toLowerCase().includes('calvin'))) {
+      eventsOnDate.forEach(({ title, source }) => {
+        console.log(`   - ${title} (${source})`);
+      });
+    }
+  });
+
+  return {
+    calvinEvents,
+    julyEvents,
+    eventsByDate,
+    targetDateString,
+  };
+}

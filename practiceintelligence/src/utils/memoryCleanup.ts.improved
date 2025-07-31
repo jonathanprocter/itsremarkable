@@ -1,0 +1,66 @@
+/**
+ * Utility functions for memory cleanup in the application.
+ */
+
+interface WindowWithBlobUrls extends Window {
+  __blobUrls?: string[];
+}
+
+/**
+ * Removes all elements marked for cleanup and revokes any cached blob URLs.
+ * Also, forces garbage collection in development mode if available.
+ */
+export const performMemoryCleanup = (): void => {
+  try {
+    cleanupElements();
+    revokeBlobUrls();
+    forceGarbageCollection();
+    console.log('✅ Memory cleanup completed');
+  } catch (error) {
+    console.warn('Memory cleanup warning:', error);
+  }
+};
+
+/**
+ * Removes all elements from the DOM that are marked with a `data-cleanup` attribute.
+ */
+const cleanupElements = (): void => {
+  const oldElements = document.querySelectorAll('[data-cleanup]');
+  oldElements.forEach(el => el.remove());
+};
+
+/**
+ * Revokes all cached blob URLs stored in `window.__blobUrls` to free up memory.
+ */
+const revokeBlobUrls = (): void => {
+  const windowWithBlobUrls: WindowWithBlobUrls = window;
+  const blobUrls = windowWithBlobUrls.__blobUrls || [];
+  blobUrls.forEach(url => {
+    try {
+      URL.revokeObjectURL(url);
+    } catch {
+      // Ignore errors during URL revocation
+    }
+  });
+  windowWithBlobUrls.__blobUrls = [];
+};
+
+/**
+ * Forces garbage collection in development mode if the `gc` function is available on the `window` object.
+ * This is a non-standard feature and should be used cautiously.
+ */
+const forceGarbageCollection = (): void => {
+  const isDevelopment = process.env.NODE_ENV === 'development';
+  const gcAvailable = typeof (window as any).gc === 'function';
+  if (gcAvailable && isDevelopment) {
+    (window as any).gc();
+  }
+};
+
+// Setup to run the cleanup periodically only if the window object is defined.
+if (typeof window !== 'undefined') {
+  setInterval(performMemoryCleanup, 5 * 60 * 1000); // Every 5 minutes
+}
+
+
+This revised version of the code incorporates TypeScript best practices, enhances performance and memory efficiency, improves readability and maintainability, uses modern ES6+ features and patterns, handles errors properly, considers security in data processing, and is documented for better understanding and maintenance.

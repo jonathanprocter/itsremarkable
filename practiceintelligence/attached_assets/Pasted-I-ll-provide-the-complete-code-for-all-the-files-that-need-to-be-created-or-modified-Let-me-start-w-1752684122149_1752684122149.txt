@@ -1,0 +1,56 @@
+I'll provide the complete code for all the files that need to be created or modified. Let me start with the most critical ones:
+
+## **1. CREATE: `/api/auth/force-env-tokens.js`**## **2. CREATE: `/api/auth/refresh-tokens.js`**## **3. MODIFY: `client/src/pages/planner.tsx` - Key Function Replacements**## **4. CREATE: `/api/auth/test-authentication.js` (Optional Test Endpoint)**## **5. IMPLEMENTATION STEPS**
+
+### **Step 1: Create the Backend Endpoints**
+
+1. **Create `/api/auth/force-env-tokens.js`** - Copy the first artifact code
+2. **Create `/api/auth/refresh-tokens.js`** - Copy the second artifact code
+3. **Create `/api/auth/test-authentication.js`** - Copy the fourth artifact code (optional but helpful)
+
+### **Step 2: Update Your planner.tsx**
+
+In your existing `client/src/pages/planner.tsx` file, make these replacements:
+
+1. **Replace the `handleSyncCalendarEvents` function** with the version from the third artifact
+2. **Add the `handleTokenRestoration` function** (new function)
+3. **Replace the events query** with the improved retry logic
+4. **Replace the Google Calendar events query** with the improved retry logic  
+5. **Replace the "Force Load All Events" button** with the "FIX AUTHENTICATION NOW" button
+6. **Add the token refresh button** after the fix authentication button
+
+### **Step 3: Test the Fix**
+
+1. **Restart your Replit** to ensure the new endpoints are loaded
+2. **Click the "🔧 FIX AUTHENTICATION NOW" button** in your planner
+3. **Check the console** for success messages
+4. **Test the authentication endpoint** by visiting `/api/auth/test-authentication` in your browser
+
+### **Step 4: Verify Results**
+
+After the fix, you should see:
+- ✅ No more "No valid environment tokens" errors
+- ✅ Your `.env` file should have populated `GOOGLE_ACCESS_TOKEN` and `GOOGLE_REFRESH_TOKEN`
+- ✅ Calendar events should load properly
+- ✅ All sync buttons should work without JSON parsing errors
+
+## **🚨 CRITICAL NOTE**
+
+The **key fix** is creating the `/api/auth/force-env-tokens.js` endpoint. This was the missing piece identified in your analysis that caused the 404 error. Once you create this file, the "FIX AUTHENTICATION NOW" button will work and resolve your session-token authentication split.
+
+## **🔧 Quick Debug Commands**
+
+After implementation, you can test these in your browser console:
+
+```javascript
+// Test authentication status
+fetch('/api/auth/test-authentication').then(r => r.json()).then(console.log);
+
+// Test token restoration
+fetch('/api/auth/force-env-tokens', {method: 'POST'}).then(r => r.json()).then(console.log);
+
+// Test token refresh
+fetch('/api/auth/refresh-tokens', {method: 'POST'}).then(r => r.json()).then(console.log);
+```
+
+This should completely resolve your authentication issues! Let me know if you need any clarification on the implementation steps.

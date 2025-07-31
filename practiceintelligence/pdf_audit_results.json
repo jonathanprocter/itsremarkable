@@ -1,0 +1,92 @@
+{
+  "score": 0,
+  "total_issues": 9,
+  "issues_by_severity": {
+    "critical": 3,
+    "high": 4,
+    "medium": 2,
+    "low": 0
+  },
+  "issues": [
+    {
+      "severity": "critical",
+      "category": "content_visibility",
+      "description": "Time display missing from left column",
+      "current_state": "Time '10:00-11:00' not visible in left column below SIMPLEPRACTICE",
+      "expected_state": "Time '10:00-11:00' should be clearly visible below 'SIMPLEPRACTICE' text",
+      "fix_suggestion": "Ensure time display is rendered with 14px font, 500 weight, positioned below source text"
+    },
+    {
+      "severity": "critical",
+      "category": "content_visibility",
+      "description": "Event Notes text is truncated/cut off",
+      "current_state": "Text appears cut off: 'He wasn't able to be at this...'",
+      "expected_state": "Full text visible: 'He wasn't able to be at this morning's appointment due to work.'",
+      "fix_suggestion": "Increase event height to minimum 100px and ensure proper text wrapping"
+    },
+    {
+      "severity": "critical",
+      "category": "content_visibility",
+      "description": "Action Items text is truncated/cut off",
+      "current_state": "Text appears cut off in right column",
+      "expected_state": "Full text visible: 'I need to see if he's able to find another fixed time, given his schedule with the LIRR.'",
+      "fix_suggestion": "Increase event height and improve text wrapping with overflow-wrap: break-word"
+    },
+    {
+      "severity": "high",
+      "category": "typography",
+      "description": "Appointment title font size too small",
+      "current_state": "Title font size: 13px",
+      "expected_state": "Title font size: 16px",
+      "fix_suggestion": "Update appointment title font-size to 16px for better readability"
+    },
+    {
+      "severity": "high",
+      "category": "typography",
+      "description": "Section headers font size too small",
+      "current_state": "Header font size: 10px",
+      "expected_state": "Header font size: 14px",
+      "fix_suggestion": "Update Event Notes and Action Items headers to 14px font size"
+    },
+    {
+      "severity": "high",
+      "category": "layout",
+      "description": "Column proportions incorrect",
+      "current_state": "Grid columns: 1fr 1fr 1fr",
+      "expected_state": "Grid columns: 3fr 3.5fr 3.5fr",
+      "fix_suggestion": "Change grid-template-columns to '3fr 3.5fr 3.5fr' for better content distribution"
+    },
+    {
+      "severity": "high",
+      "category": "layout",
+      "description": "Event height insufficient for content visibility",
+      "current_state": "Event height: 45px",
+      "expected_state": "Event height: minimum 100px",
+      "fix_suggestion": "Increase minimum event height to 100px to prevent text truncation"
+    },
+    {
+      "severity": "medium",
+      "category": "typography",
+      "description": "Text hierarchy needs improvement",
+      "current_state": "Inconsistent spacing and positioning between text elements",
+      "expected_state": "Clear hierarchy: title \u2192 source \u2192 time with 4px margins",
+      "fix_suggestion": "Apply consistent 4px margins between text elements and proper line-height: 1.4"
+    },
+    {
+      "severity": "medium",
+      "category": "styling",
+      "description": "Styling consistency with browser view",
+      "current_state": "Some styling elements may not match browser exactly",
+      "expected_state": "Pixel-perfect match with browser daily view styling",
+      "fix_suggestion": "Ensure Inter font family, proper colors (#1E293B, #64748B), and exact spacing"
+    }
+  ],
+  "recommendations": [
+    "IMMEDIATE FIX: Add time display '10:00-11:00' below SIMPLEPRACTICE in left column",
+    "IMMEDIATE FIX: Increase event height to minimum 100px to show full text content",
+    "HIGH PRIORITY: Update font sizes - title: 16px, headers: 14px, body: 14px",
+    "HIGH PRIORITY: Change grid columns to '3fr 3.5fr 3.5fr' for better proportions",
+    "MEDIUM PRIORITY: Apply Inter font family and proper text hierarchy spacing",
+    "FINAL STEP: Ensure all text wraps properly with overflow-wrap: break-word"
+  ]
+}

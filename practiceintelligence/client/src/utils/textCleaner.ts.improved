@@ -1,0 +1,40 @@
+/**
+ * Cleans a given text by removing emojis, symbols, and normalizing spaces.
+ * @param text The text to be cleaned.
+ * @returns The cleaned text.
+ */
+export const cleanText = (text: string): string => {
+  if (!text) return '';
+
+  const emojiAndSymbolPattern = /🔒\s*|[\u{1F500}-\u{1F6FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F300}-\u{1F5FF}]|Ø=ÜÅ|Ø=Ý|[!•]/gu;
+  return text.replace(emojiAndSymbolPattern, '').replace(/\s+/g, ' ').trim();
+};
+
+/**
+ * Cleans an event title by removing specific emojis, symbols, and a trailing "Appointment" suffix.
+ * @param title The event title to be cleaned.
+ * @returns The cleaned event title.
+ */
+export const cleanEventTitle = (title: string): string => {
+  if (!title) return '';
+
+  const emojiAndSymbolPattern = /🔒\s*|[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F700}-\u{1F77F}\u{1F780}-\u{1F7FF}\u{1F800}-\u{1F8FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]|Ø=[\w\s]*|!•/gu;
+  return title.replace(emojiAndSymbolPattern, '').replace(/\s+Appointment\s*$/i, '').replace(/\s+/g, ' ').trim();
+};
+
+/**
+ * Cleans all text content within the DOM that does not contain child elements.
+ */
+export const cleanAllTextContent = (): void => {
+  document.querySelectorAll('*').forEach(element => {
+    if (element.textContent && element.children.length === 0) {
+      const cleanedText = cleanText(element.textContent);
+      if (cleanedText !== element.textContent) {
+        element.textContent = cleanedText;
+      }
+    }
+  });
+};
+
+
+This refactored code improves upon the original by consolidating regex patterns for efficiency, enhancing readability, and ensuring better maintainability. It also adheres to TypeScript best practices, including explicit return types and parameter typing.

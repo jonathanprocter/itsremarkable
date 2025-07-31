@@ -1,0 +1,293 @@
+# AI Prompt: Build the reMarkable Pro Digital Planner (Comprehensive Guide)
+
+## Primary Goal & User Persona
+
+Create a single-page web application, a "reMarkable Pro Digital Planner," that precisely matches the design, layout, and functionality demonstrated in the provided screenshots: **Weekly View** (calendar grid), **Daily View** (individual day schedule), and **Expanded Daily Event** (detailed event view with notes).
+
+The target user is a professional who uses their reMarkable Pro for detailed planning. They are tech-savvy but value a clean, distraction-free interface that mimics a paper planner. The primary interaction method is a stylus, requiring precise touch targets.
+
+## Device Specifications and Constraints
+
+### reMarkable Pro Technical Requirements
+- **Target Device:** reMarkable Pro tablet (10.3-inch display, 1404x1872 resolution, 227 DPI)
+- **Application Width:** Fixed at **1404px** for native display without scaling
+- **Display Technology:** E-ink optimization requiring high contrast design elements
+- **Touch Interaction:** Optimized for stylus use with appropriately sized interactive elements
+- **Technology Stack:** Vanilla HTML5, CSS3, and JavaScript (avoid heavy frameworks)
+
+## Development Phases (Implementation Roadmap)
+
+1. **Phase 1: Static Layout & Core Structure** - Generate static HTML/CSS for two-column layout, header, and sidebar based on screenshots
+2. **Phase 2: Basic Navigation** - Implement JavaScript for week/day navigation buttons
+3. **Phase 3: Demo Mode with Sample Events** - Populate calendar with hardcoded sample events matching screenshot styling
+4. **Phase 4: PDF Export** - Implement PDF export functionality for both weekly and daily views
+5. **Phase 5: Google Calendar & Drive Integration** - Implement OAuth2 flow and Google services integration
+
+## Layout and Visual Design Requirements
+
+### Overall Layout Structure
+- **Fixed two-column layout** as shown in screenshots
+- **Left Column:** Fixed-width sidebar (approximately 250px) for controls and information
+- **Right Column:** Main content area for calendar views
+- **Color Scheme:** High contrast for e-ink display
+  - Interactive Elements: `#4299e1` (deep blue)
+  - Google Calendar Events: `#38a169` (green)
+  - Sample Events: Blue with distinct border styling
+
+### Left Sidebar Components (Top to Bottom)
+
+#### 1. Google Calendar Integration Section
+- Section title: "Google Calendar"
+- Text: "Ready to connect to Google Calendar"
+- Buttons: "Select All" and "Deselect All" (styled in blue)
+
+#### 2. Quick Actions Section
+- Section title: "Quick Actions"
+- Buttons (full-width, outlined style):
+  - "Go to Today"
+  - "Go to Date" 
+  - "Refresh Events"
+  - "Sync Notes to Calendar"
+
+#### 3. Daily Notes Section
+- Section title: "Daily Notes"
+- Multi-line textarea with placeholder: "Daily reflections, goals, and notes..."
+- "Save Notes" button
+
+#### 4. Export to PDF Section
+- Section title: "Export to PDF"
+- **Local Export** subsection with buttons:
+  - "Export Current View"
+  - "Export Weekly Package"
+  - "Export Daily View"
+  - "Export Full Month"
+- **Google Drive Export** subsection with identical buttons:
+  - Initially disabled (grayed out)
+  - Blue styling when enabled
+  - Only activate after successful Google authentication
+
+#### 5. reMarkable Pro Specifications Section
+- Static text block displaying:
+  - Screen Resolution: 1404 x 1872 pixels (4:3 aspect ratio)
+  - PDF Dimensions: 6.18" x 8.24" (157mm x 209.3mm)
+  - Weekly: Landscape orientation (8.24" x 6.18")
+  - Daily: Portrait orientation (6.18" x 8.24")
+  - Multi-page PDFs with hyperlinks for seamless navigation
+  - Google Drive: Auto-saved to 'reMarkable Calendars' folder
+
+#### 6. Mini Calendar Section
+- Display current month (e.g., "July 2025")
+- Calendar grid with day abbreviations (M, T, W, T, F, S, S)
+- Current day and selected week visually highlighted
+- Clickable dates for navigation
+
+### Main Content Area Structure
+
+#### Header Section
+- **Title:** "reMarkable Pro Digital Planner"
+- **Dynamic Week Display:** "Week 27 - Jun 30 - Jul 6" (ISO 8601 week numbering)
+- **Status Indicator:** "Online" badge in green
+- **Connect Button:** "Connect Google Calendar" (top right)
+
+#### Navigation Controls
+- Centered button group:
+  - "← Previous" 
+  - "Today" (highlighted when current week)
+  - "Next →"
+
+## View-Specific Requirements
+
+### Weekly View Implementation
+Based on the calendar grid screenshot:
+
+#### Grid Structure
+- **Time Column:** Left column showing times from **06:00 to 23:30 in 30-minute intervals**
+  - Format: 06:00, 06:30, 07:00, 07:30, ..., 23:00, 23:30
+  - Total of 36 time slots covering full day from early morning to late evening
+- **Day Columns:** Seven columns for Mon 6/30/2025 through Sun 7/6/2025
+- **Time Slots:** Each 30-minute slot as a distinct grid cell
+
+#### Event Display
+- **Sample Events:** 
+  - "Dan v. Supervision" (Monday 16:00, blue styling)
+  - "Ruben Spillers Appointment" (Tuesday 16:00, blue styling)
+  - "Coffee with Nora" (Wednesday 17:30, different styling)
+- **Event Properties:**
+  - Height proportional to duration
+  - Positioned accurately within time slots
+  - Clear text visibility at reMarkable resolution
+  - For overlapping events: reduce width and position side-by-side
+
+#### Interactivity
+- Clicking day headers switches to Daily View for that date
+- Clicking empty time slots provides feedback or event creation
+
+### Daily View Implementation
+Based on the daily view screenshots:
+
+#### Header and Navigation
+- **Date Display:** "Thursday, July 3, 2025"
+- **Navigation Buttons:**
+  - "← Previous Day"
+  - "← Back to Week View"
+  - "Next Day →"
+
+#### Schedule Display
+- **Time Column:** Single column with times from **06:00 to 23:30 in 30-minute intervals**
+- **Event Column:** Single wide column for events
+- **Full Day Coverage:** All 36 time slots available for scheduling
+
+#### Event Interaction States
+- **Collapsed State:** Show title, source, and time
+  - Example: "Sarah Palladino Appointment" from "SimplePractice" at "3:00 PM-4:00 PM"
+- **Expanded State:** On click, reveal:
+  - "Meeting Notes" textarea with placeholder "Regular therapy session."
+  - "Action Items" textarea with placeholder content
+  - Both areas styled with blue left border
+
+#### Daily Notes Section
+- **Bottom Section:** Large textarea with placeholder "Add your daily notes, reflections, and thoughts here..."
+- **Full Width:** Spans entire main content area
+
+## Technical Implementation Specifications
+
+### Calendar Grid Generation
+```javascript
+// Time slot generation for both weekly and daily views
+const generateTimeSlots = () => {
+  const timeSlots = [];
+  for (let hour = 6; hour <= 23; hour++) {
+    for (let minute = 0; minute < 60; minute += 30) {
+      const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+      timeSlots.push(timeString);
+    }
+  }
+  return timeSlots; // Returns: ['06:00', '06:30', '07:00', ..., '23:00', '23:30']
+};
+```
+
+### Frontend Architecture
+- **Vanilla JavaScript:** Modular functions for calendar generation, event management, navigation
+- **CSS Grid and Flexbox:** Precise layout management for 36 time slots
+- **State Management:** Local storage for preferences and authentication tokens
+- **Responsive Design:** Optimized for 1404px but gracefully adaptable
+
+### Google Services Integration
+
+#### Authentication System
+- **OAuth2 Web Application Flow:** Secure implementation avoiding "Storagerelay URI not allowed" error
+- **Backend-Managed Tokens:** Frontend sends credentials to backend for verification and storage
+- **Demo Mode:** Full functionality with sample data before authentication
+- **User Guide:** Step-by-step Google Cloud Console setup instructions
+
+#### Google Calendar API
+- **Event Fetching:** Real calendar events displayed in green with appropriate styling
+- **Event Creation:** Click empty time slots to open Google Calendar creation page
+- **Full Day Support:** Handle events across entire 06:00-23:30 time range
+- **Bidirectional Sync:** Support for reading and creating events
+
+#### Google Drive Integration
+- **PDF Upload:** Generated PDFs automatically saved to "reMarkable Calendars" folder
+- **Authentication Required:** Drive export buttons enabled only after successful OAuth
+
+### PDF Export System
+
+#### Weekly Package Export
+- **Multi-page PDF:**
+  - Page 1: Landscape orientation showing full weekly view (06:00-23:30 time range)
+  - Pages 2-8: Portrait orientation daily pages
+- **Daily Page Structure:**
+  - Day's events at top (full 06:00-23:30 schedule)
+  - "Daily Goals (1-5)" section
+  - "Important Items" section  
+  - "Notes/Reflections" section with ample writing space
+
+#### Daily View Export
+- **Single Page:** Portrait orientation of current daily view (06:00-23:30)
+- **High Quality:** Optimized for reMarkable Pro display and annotation
+
+#### File Naming Convention
+- Weekly: `Weekly_Planner_YYYY-MM-DD.pdf` (Monday of week)
+- Daily: `Daily_Planner_YYYY-MM-DD.pdf`
+
+## Interactive Features and User Experience
+
+### Navigation System
+- **Week Navigation:** Unlimited past/future browsing
+- **Date Picker:** "Go to Date" functionality for quick navigation
+- **Today Button:** Instant return to current week/day
+- **Mini Calendar:** Click any date to jump to that week
+
+### Event Management
+- **Visual Hierarchy:** Clear distinction between event types through styling
+- **Duration Display:** Event heights proportional to time span
+- **Overlap Handling:** Smart positioning for concurrent events
+- **Expandable Details:** Click to reveal note-taking areas
+- **Full Day Support:** Events can be scheduled from early morning (06:00) to late evening (23:30)
+
+### Status and Feedback
+- **Connection Status:** Visual indicator for Google Calendar connection
+- **Loading States:** Progress indicators for PDF generation and API calls
+- **Error Handling:** Graceful degradation when services unavailable
+- **User Guidance:** Clear feedback for all user actions
+
+## Performance and Compatibility
+
+### reMarkable Pro Optimization
+- **Fast Loading:** Minimal dependencies and optimized assets
+- **Smooth Stylus Interaction:** Responsive touch targets and feedback
+- **E-ink Friendly:** High contrast design and appropriate refresh patterns
+- **Memory Efficient:** Optimized for device hardware constraints
+- **Extended Schedule:** Efficient rendering of 36 time slots per day
+
+### Cross-Browser Support
+- **Primary Target:** reMarkable Pro browser environment
+- **Testing:** Validation across different browser versions
+- **Fallbacks:** Graceful degradation for unsupported features
+
+## Advanced Features (Future Scope)
+
+### Customization Options
+- **Color Schemes:** Alternative palettes for different e-ink settings
+- **Time Slot Intervals:** Adjustable calendar granularity (15-min, 30-min, 1-hour options)
+- **Time Range:** Customizable start/end times (default 06:00-23:30)
+- **Sidebar Configuration:** Customizable section arrangement
+
+### Data Management
+- **Export Formats:** JSON, CSV, iCal compatibility
+- **Synchronization:** Multi-device data consistency
+- **Backup:** Comprehensive data export capabilities
+
+### Wellness Integration
+- **Mood Tracking:** Optional daily mood indicators
+- **Habit Tracking:** Integration with daily planning workflow
+- **Reflection Prompts:** Guided planning and review features
+
+## Success Criteria and Validation
+
+### Functional Requirements
+- ✅ Loads and functions perfectly on reMarkable Pro browser
+- ✅ Immediate utility through demo mode with sample events
+- ✅ Seamless navigation between weekly and daily views
+- ✅ Full day scheduling support (06:00-23:30 in 30-minute intervals)
+- ✅ High-quality PDF exports optimized for device annotation
+- ✅ Successful Google Calendar OAuth2 integration
+- ✅ Real-time event synchronization and creation
+
+### User Experience Standards
+- ✅ Responsive stylus interaction for all interface elements
+- ✅ Professional visual design matching provided screenshots
+- ✅ Consistent performance across extended usage sessions
+- ✅ Clear feedback and status indication for all user actions
+- ✅ Intuitive navigation and workflow patterns
+- ✅ Efficient display of 36 time slots without interface crowding
+
+### Technical Performance
+- ✅ Fast loading and smooth operation on target hardware
+- ✅ Reliable PDF generation and Google Drive upload
+- ✅ Secure authentication and token management
+- ✅ Graceful error handling and offline capability
+- ✅ Maintainable and extensible codebase
+- ✅ Optimized rendering for extended time range display
+
+This comprehensive prompt now includes the full 06:00-23:30 time range in 30-minute intervals, providing complete day coverage from early morning to late evening for professional scheduling needs.

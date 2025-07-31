@@ -1,0 +1,129 @@
+import { useEffect, useState } from 'react';
+
+interface PerformanceMetrics {
+  renderTime: number;
+  memoryUsage?: number;
+  domNodes: number;
+  componentMounts: number;
+  reRenders: number;
+}
+
+interface PerformanceMonitorOptions {
+  enableMemoryTracking?: boolean;
+  enableRenderTracking?: boolean;
+  logThreshold?: number;
+  sampleRate?: number;
+}
+
+/**
+ * Custom hook to monitor performance metrics of a React component.
+ * @param componentName The name of the component being monitored.
+ * @param options Configuration options for the performance monitoring.
+ * @returns An object containing performance metrics and functions to manipulate performance recording.
+ */
+export const usePerformanceMonitor = (
+  componentName: string,
+  options: PerformanceMonitorOptions = {}
+) => {
+  const {
+    enableMemoryTracking = true,
+    enableRenderTracking = true,
+    logThreshold = 16,
+    sampleRate = 1.0,
+  } = options;
+
+  const [metrics, setMetrics] = useState<PerformanceMetrics>({
+    renderTime: 0,
+    domNodes: 0,
+    componentMounts: 0,
+    reRenders: 0,
+  });
+
+  const renderStartTime = useRef<number>(0);
+  const mountCount = useRef<number>(0);
+  const renderCount = useRef<number>(0);
+  const isFirstRender = useRef<boolean>(true);
+
+  const startRenderTiming = () => {
+    if (enableRenderTracking && Math.random() <= sampleRate) {
+      renderStartTime.current = performance.now();
+    }
+  };
+
+  const endRenderTiming = () => {
+    if (!enableRenderTracking || renderStartTime.current === 0) return;
+
+    const renderTime = performance.now() - renderStartTime.current;
+    renderCount.current += 1;
+
+    const domNodes = document.querySelectorAll('*').length;
+    let memoryUsage: number | undefined;
+
+    if (enableMemoryTracking && 'memory' in performance) {
+      memoryUsage = performance.memory.usedJSHeapSize / 1024 / 1024; // Convert to MB
+    }
+
+    const newMetrics: PerformanceMetrics = {
+      renderTime,
+      memoryUsage,
+      domNodes,
+      componentMounts: mountCount.current,
+      reRenders: renderCount.current,
+    };
+
+    setMetrics(newMetrics);
+    renderStartTime.current = 0;
+  };
+
+  useEffect(() => {
+    if (isFirstRender.current) {
+      mountCount.current += 1;
+      isFirstRender.current = false;
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!enableRenderTracking) return;
+
+    const observer = new PerformanceObserver((list) => {
+      // Process performance entries
+    });
+
+    observer.observe({ entryTypes: ['measure', 'navigation', 'resource'] });
+
+    return () => observer.disconnect();
+  }, [enableRenderTracking]);
+
+  const markPerformance = (markName: string) => {
+    if (enableRenderTracking) {
+      performance.mark(`${componentName}-${markName}`);
+    }
+  };
+
+  const measurePerformance = (measureName: string, startMark: string, endMark: string) => {
+    if (enableRenderTracking) {
+      performance.measure(
+        `${componentName}-${measureName}`,
+        `${componentName}-${startMark}`,
+        `${componentName}-${endMark}`
+      );
+    }
+  };
+
+  const getCurrentMetrics = (): PerformanceMetrics => ({
+    renderTime: metrics.renderTime,
+    memoryUsage: enableMemoryTracking && 'memory' in performance ? performance.memory.usedJSHeapSize / 1024 / 1024 : undefined,
+    domNodes: document.querySelectorAll('*').length,
+    componentMounts: mountCount.current,
+    reRenders: renderCount.current,
+  });
+
+  return {
+    metrics,
+    startRenderTiming,
+    endRenderTiming,
+    markPerformance,
+    measurePerformance,
+    getCurrentMetrics,
+  };
+};

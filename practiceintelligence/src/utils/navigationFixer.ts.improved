@@ -1,0 +1,111 @@
+/**
+ * Emergency Navigation Fix - Removes corrupted elements and rebuilds clean navigation.
+ */
+export const emergencyNavigationFix = (): void => {
+  console.log('🚨 STARTING EMERGENCY NAVIGATION FIX...');
+
+  /**
+   * Removes all corrupted elements from the document.
+   */
+  const removeCorruptedElements = (): void => {
+    const corruptedSelectors = [
+      '*[data-corrupted]',
+      '.corrupted-nav',
+      '.broken-navigation'
+    ];
+
+    corruptedSelectors.forEach(selector => {
+      document.querySelectorAll(selector).forEach(element => element.remove());
+    });
+
+    console.log('✅ Removed corrupted navigation elements');
+  };
+
+  /**
+   * Fixes header date format and cleans up corrupted text throughout the document.
+   */
+  const fixHeaderAndCleanText = (): void => {
+    const headerDateRegex = /July 7 - 2025 \(day: 13\)/g;
+    const corruptedSymbolsRegex = /Ø=ÜÅ|Ø=Ý/g;
+    const brokenTextNavigationRegex = /!•[^!]*!|Page \d+ of 8 -[^!]*|!• Back to Weekly Overview|!• Weekly Overview|!• Sunday Tuesday !/g;
+
+    document.body.innerHTML = document.body.innerHTML
+      .replace(headerDateRegex, 'July 7 - 13, 2025')
+      .replace(corruptedSymbolsRegex, '')
+      .replace(brokenTextNavigationRegex, '');
+
+    document.querySelectorAll('.event-title, .appointment-title, .event-name').forEach(element => {
+      const cleanText = element.textContent?.replace(/🔒\s*|Ø=ÜÅ|Ø=Ý|[!•]/g, '').replace(/\s+/g, ' ').trim();
+      if (cleanText) {
+        element.textContent = cleanText;
+      }
+    });
+
+    console.log('✅ Fixed header date and cleaned corrupted text');
+  };
+
+  /**
+   * Adds simple navigation buttons to daily views.
+   */
+  const addSimpleNavigation = (): void => {
+    const dailyViews = document.querySelectorAll('.daily-planner, .daily-view');
+    dailyViews.forEach(view => {
+      const headerHTML = `
+        <div style="padding: 20px; background: #f8f9fa; border-bottom: 2px solid #e0e0e0;">
+          <button onclick="alert('Go to Weekly View')" style="background: #f0f0f0; border: 2px solid #ccc; border-radius: 8px; padding: 10px 16px; cursor: pointer;">📅 Weekly Overview</button>
+        </div>
+      `;
+
+      const footerHTML = `
+        <div style="padding: 20px; background: #f8f9fa; border-top: 2px solid #e0e0e0; display: flex; justify-content: space-between;">
+          <button onclick="alert('Previous Day')" style="background: #f0f0f0; border: 2px solid #ccc; border-radius: 8px; padding: 8px 16px; cursor: pointer;">← Previous</button>
+          <button onclick="alert('Go to Weekly View')" style="background: #f0f0f0; border: 2px solid #ccc; border-radius: 8px; padding: 10px 16px; cursor: pointer;">📅 Weekly</button>
+          <button onclick="alert('Next Day')" style="background: #f0f0f0; border: 2px solid #ccc; border-radius: 8px; padding: 8px 16px; cursor: pointer;">Next →</button>
+        </div>
+      `;
+
+      view.insertAdjacentHTML('afterbegin', headerHTML);
+      view.insertAdjacentHTML('beforeend', footerHTML);
+    });
+
+    console.log('✅ Added simple navigation buttons');
+  };
+
+  /**
+   * Removes broken navigation styles by appending a style tag to the head.
+   */
+  const removeBrokenStyles = (): void => {
+    const style = document.createElement('style');
+    style.textContent = `
+      /* Hide any remaining corrupted navigation elements */
+      *[data-corrupted],
+      .corrupted-nav,
+      .broken-navigation {
+        display: none !important;
+      }
+      
+      /* Clean up any text with corrupted characters */
+      *:before,
+      *:after {
+        content: none !important;
+      }
+    `;
+    document.head.appendChild(style);
+
+    console.log('✅ Added cleanup styles');
+  };
+
+  // Execute all cleanup steps
+  removeCorruptedElements();
+  fixHeaderAndCleanText();
+  addSimpleNavigation();
+  removeBrokenStyles();
+
+  console.log('✅ EMERGENCY NAVIGATION FIX COMPLETE!');
+  console.log('Navigation should now be clean and functional');
+};
+
+// Auto-execute on page load
+if (typeof window !== 'undefined') {
+  document.addEventListener('DOMContentLoaded', emergencyNavigationFix);
+}

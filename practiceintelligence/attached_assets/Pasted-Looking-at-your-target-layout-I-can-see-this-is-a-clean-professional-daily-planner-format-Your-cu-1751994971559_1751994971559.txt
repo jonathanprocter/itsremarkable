@@ -1,0 +1,84 @@
+Looking at your target layout, I can see this is a clean, professional daily planner format. Your current export system in `htmlTemplatePDF.ts` has most of the right elements, but needs some adjustments to match this exact layout. Here are the specific changes needed:Now, to ensure your export matches that exact layout, you need to make these specific updates:
+
+## 🎯 **Implementation Steps**
+
+### 1. **Replace the functions in `htmlTemplatePDF.ts`**
+Replace your existing `drawDailyHeader`, `drawDailyGrid`, and `drawRemarkableDailyAppointments` functions with the improved versions above.
+
+### 2. **Update the date filtering in `planner.tsx`**
+```typescript
+// In handleExportAction function, replace:
+const dayEvents = events.filter(event => {
+  const eventDate = new Date(event.startTime);
+  return eventDate.toDateString() === selectedDate.toDateString();
+});
+
+// With this more reliable comparison:
+const dayEvents = events.filter(event => {
+  const eventDate = new Date(event.startTime);
+  return eventDate.getFullYear() === selectedDate.getFullYear() &&
+         eventDate.getMonth() === selectedDate.getMonth() &&
+         eventDate.getDate() === selectedDate.getDate();
+});
+```
+
+### 3. **Ensure correct event source detection**
+Add this helper function to better detect event types:### 4. **Add debugging to verify your data**
+Add this temporary debugging code to see what events are being processed:
+
+```typescript
+// In handleExportAction function, after filtering events:
+console.log('=== DAILY EXPORT DEBUG ===');
+console.log('Selected date:', selectedDate.toLocaleDateString());
+console.log('Total events before filtering:', currentEvents.length);
+console.log('Day events after filtering:', dayEvents.length);
+
+dayEvents.forEach((event, index) => {
+  console.log(`Event ${index + 1}:`, {
+    title: event.title,
+    source: event.source,
+    calendarId: event.calendarId,
+    startTime: event.startTime.toLocaleString(),
+    endTime: event.endTime.toLocaleString()
+  });
+});
+```
+
+## 🔧 **Key Layout Matching Points**
+
+1. **Stats Section**: Your layout shows exactly "11 Appointments, 11.5h Scheduled, 12.5h Available, 52% Free Time"
+2. **Legend Colors**: 
+   - SimplePractice = Blue left border (like first event)
+   - Google Calendar = Dashed green border
+   - Holidays = Yellow background
+3. **Event Display Format**:
+   - **Title** (bold, larger text)
+   - **SOURCE** (smaller, all caps, gray)
+   - **Time Range** (bold, format: "HH:MM-HH:MM")
+
+## 🧪 **Testing Checklist**
+
+- [ ] Stats calculations are correct (appointments count, hours, percentages)
+- [ ] Events show proper borders/styling based on source
+- [ ] Time slots align correctly (6:00 to 23:30 in 30-min increments)
+- [ ] Event text includes title, source, and time range
+- [ ] Legend matches your calendar types
+- [ ] Date filtering captures all events for the selected day
+
+## 🎨 **Fine-tuning**
+
+If the layout doesn't match exactly, adjust these values in `REMARKABLE_DAILY_CONFIG`:
+
+```typescript
+// For tighter/looser spacing:
+timeSlotHeight: 6,  // Increase/decrease for row height
+
+// For font sizes:
+fonts: {
+  eventTitle: 5,    // Event name size
+  eventSource: 4,   // "GOOGLE CALENDAR" size  
+  eventTime: 4      // "08:00-09:00" size
+}
+```
+
+Try exporting a test PDF and compare it with your target image. The layout should now match exactly! Let me know if any specific elements need further adjustment.

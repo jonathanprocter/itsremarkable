@@ -1,0 +1,96 @@
+Great question! Here are the exact calculations for the daily page time grid:
+
+## **📏 Daily Page Grid Calculations**
+
+### **Base Grid Parameters:**
+
+```css
+.daily-time-slot { height: 60px; }     /* Each 30-min slot */
+.appointment-slot { height: 60px; }    /* Same height */
+```
+
+### **⏰ Time Position Formula:**
+
+```javascript
+// Position calculation from top of grid
+position_px = ((target_hour - start_hour) * 60 + target_minutes) / 30 * 60
+
+// Where:
+// start_hour = 6 (6:00 AM)
+// target_hour = hour in 24-hour format
+// target_minutes = minutes past the hour
+// 30 = minutes per slot
+// 60 = pixels per slot
+```
+
+### **📊 Examples:**
+
+**9:00 AM positioning:**
+
+```javascript
+position = ((9 - 6) * 60 + 0) / 30 * 60
+position = (3 * 60 + 0) / 30 * 60
+position = 180 / 30 * 60
+position = 6 * 60 = 360px
+```
+
+**11:30 AM positioning:**
+
+```javascript
+position = ((11 - 6) * 60 + 30) / 30 * 60
+position = (5 * 60 + 30) / 30 * 60
+position = 330 / 30 * 60
+position = 11 * 60 = 660px
+```
+
+### **📐 Duration/Height Formula:**
+
+```javascript
+// Height calculation
+height_px = (duration_minutes / 30 * 60) - border_padding
+
+// Where:
+// duration_minutes = appointment length in minutes
+// 30 = minutes per slot
+// 60 = pixels per slot
+// border_padding = ~4px (for borders and spacing)
+```
+
+### **📊 Duration Examples:**
+
+**1 hour appointment:**
+
+```javascript
+height = (60 / 30 * 60) - 4
+height = (2 * 60) - 4
+height = 120 - 4 = 116px
+```
+
+**30 minute appointment:**
+
+```javascript
+height = (30 / 30 * 60) - 4
+height = (1 * 60) - 4
+height = 60 - 4 = 56px
+```
+
+### **🗓️ Complete Grid Structure:**
+
+- **Total time slots**: 32 (6:00 AM to 9:30 PM)
+- **Slot height**: 60px each
+- **Total grid height**: 32 × 60px = 1,920px
+- **Time increment**: 30 minutes per slot
+
+### **⚡ Quick Reference:**
+
+|Time    |Slot #|Position|
+|--------|------|--------|
+|6:00 AM |0     |0px     |
+|7:00 AM |2     |120px   |
+|8:00 AM |4     |240px   |
+|9:00 AM |6     |360px   |
+|12:00 PM|12    |720px   |
+|6:00 PM |24    |1,440px |
+|9:00 PM |30    |1,800px |
+
+This system allows for precise positioning of appointments at any time within the 6:00 AM - 9:30 PM window!​​​​​​​​​​​​​​​​

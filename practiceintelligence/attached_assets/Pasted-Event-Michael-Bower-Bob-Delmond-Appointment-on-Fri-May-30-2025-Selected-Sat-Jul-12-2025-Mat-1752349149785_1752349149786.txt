@@ -1,0 +1,35 @@
+Event: 🔒 Michael Bower & Bob Delmond Appointment on Fri May 30 2025, Selected: Sat Jul 12 2025, Matches: false
+Event: 🔒 Brianna Brickman Appointment on Fri May 30 2025, Selected: Sat Jul 12 2025, Matches: false
+Event: 🔒 Calvin Hill Appointment on Sat May 31 2025, Selected: Sat Jul 12 2025, Matches: false
+Event: Nancy Grossman Appointment on Mon Jul 07 2025, Selected: Sat Jul 12 2025, Matches: false
+Event: Amberly Comeau Appointment on Mon Jul 07 2025, Selected: Sat Jul 12 2025, Matches: false
+Event: Maryellen Dankenbrink Appointment on Mon Jul 07 2025, Selected: Sat Jul 12 2025, Matches: false
+Event: Angelica Ruden Appointment on Mon Jul 07 2025, Selected: Sat Jul 12 2025, Matches: false
+Event: Noah Silverman Appointment on Mon Jul 07 2025, Selected: Sat Jul 12 2025, Matches: false
+Event: Sarah Palladino Appointment on Mon Jul 07 2025, Selected: Sat Jul 12 2025, Matches: false
+Event: Gavin Fisch Appointment on Thu Jul 10 2025, Selected: Sat Jul 12 2025, Matches: false
+Event: 🔒 Nico Luppino Appointment on Mon Jul 07 2025, Selected: Sat Jul 12 2025, Matches: false
+Event: Paul Benjamin Appointment on Wed Jul 09 2025, Selected: Sat Jul 12 2025, Matches: false
+Event: Ava Moskowitz Appointment on Thu Jul 10 2025, Selected: Sat Jul 12 2025, Matches: false
+Event: Jennifer McNally Appointment on Fri Jul 11 2025, Selected: Sat Jul 12 2025, Matches: false
+Event: David Grossman Appointment on Sat Jul 12 2025, Selected: Sat Jul 12 2025, Matches: true
+Event: Haircut & Beard on Tue Jul 08 2025, Selected: Sat Jul 12 2025, Matches: false
+Event: Dan re: Supervision on Tue Jun 03 2025, Selected: Sat Jul 12 2025, Matches: false
+Event: Dan re: Supervision on Mon Jul 07 2025, Selected: Sat Jul 12 2025, Matches: false
+Event: Sherrifa Hoosein Appointment on Mon Jul 07 2025, Selected: Sat Jul 12 2025, Matches: false
+Event: Valentina Gjidoda Appointment on Thu Jul 10 2025, Selected: Sat Jul 12 2025, Matches: false
+Event: call Blake on Wed Jul 09 2025, Selected: Sat Jul 12 2025, Matches: false
+Event: Appointment with David Grossman on Wed Jul 09 2025, Selected: Sat Jul 12 2025, Matches: false
+Event: Gavin Fisch Appointment on Thu Jul 10 2025, Selected: Sat Jul 12 2025, Matches: false
+Event: Brianna Brickman Appointment on Wed Jul 09 2025, Selected: Sat Jul 12 2025, Matches: false
+Day events: 2
+✅ Cleaned 1600 hour time slot: 16:00 -> 16:00
+Export failed: 
+TypeError {}
+message: "e.startTime.toLocaleTimeString is not a function"
+stack: "TypeError: e.startTime.toLocaleTimeString is not a function↵ at https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/utils/dailyPDFExport.ts:439:96↵ at Array.map (<anonymous>)↵ at exportDailyToPDF (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/utils/dailyPDFExport.ts:439:48)↵ at handleExportPDF (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/pages/planner.tsx:153:17)↵ at onClick (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/pages/planner.tsx:546:32)↵ at HTMLUnknownElement.callCallback2 (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=243ff4c6:3674:22)↵ at Object.invokeGuardedCallbackDev (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=243ff4c6:3699:24)↵ at invokeGuardedCallback (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=243ff4c6:3733:39)↵ at invokeGuardedCallbackAndCatchFirstError (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=243ff4c6:3736:33)↵ at executeDispatch (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=243ff4c6:7014:11)"
+get stack: ƒ ()
+set stack: ƒ ()
+[[Prototype]]: Object
+
+✅ Cleaned 1600 hour time slot: 16:00 -> 16:00

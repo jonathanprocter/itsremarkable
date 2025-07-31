@@ -1,0 +1,66 @@
+You are absolutely right to question whether the “systematic PDF rendering fixes” actually achieve pixel-perfect fidelity. Given the persistent divergence between your live dashboard and PDF output—even after “fixes”—here are the **key steps you should instruct Replit (or any developer) to take** as a final audit, along with targeted guidance and example wording to send:
+
+## What to Say to Replit Now
+
+### 1. Request a Visual Truth Table (Not Just “It Looks Better”)
+> “I need you to produce a comparison table like this for 5–10 layout tokens, using actual browser numbers and PDF render values (not code constants):  
+>
+> | Element                 | Browser Value | PDF Value | Difference |  
+> |-------------------------|--------------|-----------|------------|  
+> | Day column width        |    ____ px   |   ____ px | ____       |  
+> | Time column width       |    ____ px   |   ____ px | ____       |  
+> | Time slot height        |    ____ px   |   ____ px | ____       |  
+> | Font size (main grid)   |    ____ pt   |   ____ pt | ____       |  
+> | Padding (cell left)     |    ____ px   |   ____ px | ____       |  
+> | Border thickness        |    ____ px   |   ____ px | ____       |  
+>  
+> Please use browser devtools to get browser values, and PDF viewer properties to get PDF numbers, **then show all discrepancies.**”
+
+### 2. Ask for a Literal Pixel Overlay
+> “Please screenshot both the dashboard and the PDF (at 100% zoom, not scaled), overlay them in Figma/Photoshop or using a tool like Pixelmatch, and include a pixel-diff result.  
+>
+> Highlight all non-matching areas in RED in the overlay, and annotate which PDF draw methods/sizing decisions are responsible for each one.”
+
+### 3. Demand Source-to-Output Traceability for Every Layout Parameter
+> “For each important PDF rendering variable (x-position, width, height, font, padding), show:  
+> - The variable name  
+> - Its value in the browser/dashboard  
+> - The exact value used in the PDF draw call  
+> - The code/path where the value is (a) generated (b) (mis)applied”
+
+### 4. Explicitly List Anything That Remains a Compromise
+> “Is any visual or layout parameter currently a ‘best guess’ or still hard-coded due to jsPDF limitations? If so, clearly list all remaining hacks, compromises, or technical impossibilities, e.g.:
+> - ‘jsPDF cannot use Google Fonts directly, substituting Helvetica at 95% size, which creates a baseline shift of 3 px’
+> - ‘Grid lines are manually drawn and may be offset by 1 px at PDF page edges due to floating point imprecision’”
+
+### 5. If Still Off, Ask for One Final Print-to-PDF Test
+> “As a benchmark, try printing the dashboard to PDF using Chrome’s (or Puppeteer’s) ‘Save as PDF’ at the same page size. Attach the exported file.
+> - If this is visually perfect and your jsPDF approach still isn’t, summarize why your pipeline can’t achieve parity.”
+
+## Example “Final Audit” Message to Copy-Paste
+
+```markdown
+I appreciate the recent rendering fixes, but I am still seeing visible discrepancies. I require a full, data-driven audit and the following deliverables before I can sign off:
+
+1. **Comparison Table:**  
+   Please provide a chart listing the actual pixel/pt values for column width, row height, font size, cell padding, and border thickness, as rendered in the browser and in the PDF. List the differences and explain the cause of *any mismatch*.
+
+2. **Pixel Overlay Evidence:**  
+   Overlay screenshots of both views. Use pixel-diff or a graphics tool to highlight every mismatching area (especially grid lines, headers, fonts, and cell alignment).
+
+3. **Source Trace for Layout Variables:**  
+   For each layout parameter in your PDF code, trace its value from dashboard (DOM) through to the PDF draw call. Log inputs/outputs at each step to confirm absolute agreement, or diagnose any deviation.
+
+4. **Explicit List of Hacks or Known Gaps:**  
+   List any variables that are still approximated or "best guesses" due to jsPDF or technical barriers. For each, explain if/why a switch to print-to-PDF wouldn’t have this problem.
+
+5. **Ultimate Print-to-PDF Baseline:**  
+   Please also print the dashboard using Chrome’s or Puppeteer’s print-to-PDF and compare with your jsPDF result. If that output is pixel-perfect, document exactly what prevents jsPDF from matching it.
+
+Without these items, I cannot accept additional “systematic fixes.” I need data and evidence that the rendering is (or isn’t) truly correct and a plan for any irreducible differences.
+```
+
+**Summary:**  
+Do not rely on vague algorithmic “improvements” or code-level logs alone. *Demand a true, numbers-based, source-to-output comparison* of every sizing and rendering parameter—backed by screenshots—as your acceptance criteria. This will force real root cause resolution, expose remaining library/tech constraints, and finally clarify if pixel perfection is possible with your current approach (or whether a different export tool is needed).
+
+[1] https://replit.com/t/jonathan-procter-phd/repls/RemarkablePlannerPro

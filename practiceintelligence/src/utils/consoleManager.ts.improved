@@ -1,0 +1,55 @@
+type ConsoleType = 'log' | 'warn' | 'error';
+
+/**
+ * Manages console logging with throttling capabilities to prevent excessive logging of the same messages.
+ */
+export class ConsoleManager {
+  private static logHistory = new Map<string, number>();
+  private static lastLogTime = new Map<string, number>();
+  private static readonly THROTTLE_TIME = 1000; // 1 second
+  private static readonly MAX_SAME_LOGS = 3;
+
+  /**
+   * Logs a message to the console if it hasn't been logged too frequently.
+   * @param message The message to log.
+   * @param data Optional data to log with the message.
+   * @param type The type of console method to use ('log', 'warn', 'error'). Defaults to 'log'.
+   */
+  static throttledLog(message: string, data?: unknown, type: ConsoleType = 'log'): void {
+    const now = Date.now();
+    const key = JSON.stringify({ message, type });
+
+    const lastTime = this.lastLogTime.get(key) || 0;
+    const logCount = this.logHistory.get(key) || 0;
+
+    if (now - lastTime < this.THROTTLE_TIME) {
+      this.logHistory.set(key, logCount + 1);
+      return;
+    }
+
+    this.logHistory.set(key, 1);
+    this.lastLogTime.set(key, now);
+
+    if (logCount >= this.MAX_SAME_LOGS) {
+      console[type](`${message} (suppressed ${logCount - 1} duplicate logs)`, data);
+    } else {
+      console[type](message, data);
+    }
+  }
+
+  /**
+   * Clears the history of logged messages.
+   */
+  static clearHistory(): void {
+    this.logHistory.clear();
+    this.lastLogTime.clear();
+  }
+}
+
+// Enhance console methods for development environment without throttling.
+if (process.env.NODE_ENV === 'development') {
+  ['log', 'warn', 'error'].forEach((method: ConsoleType) => {
+    const originalMethod = console[method];
+    console[method] = (message: any, ...args: any[]) => originalMethod(message, ...args);
+  });
+}

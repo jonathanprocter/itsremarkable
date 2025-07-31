@@ -1,0 +1,60 @@
+What Are the Remaining/Were the Main Problems?
+1. Session Persistence Between Browser and API
+Past Issue: Your backend "force-fix" or command-line authentication produced an authenticated session, but your browser was NOT using the same session/cookie, triggering 401/403 errors.
+
+Recent Fix: You implemented a browser-driven force-fix to synchronize session and authentication cookies from the UI/client itself, not just the server.
+
+Current State: Recent logs suggest sessions are now being deserialized and used correctly in the same browser session, with the right user and tokens attached.
+
+2. OAuth Redirect URI Configuration
+Past Problems: Mismatched/case-sensitive/copy-paste errors in redirect URIs (or using HTTP instead of HTTPS) will break OAuth on Google.
+
+Current State: The logs and recent successful token validation suggest your OAuth redirect is now correctly registered and matches the running app.
+
+3. WebSocket/HMR Issues
+Vite HMR (hot module reload) was disconnecting or port-conflicting.
+
+Fix: You changed HMR port and cleaned up session middleware—no critical HMR errors remain (unless you still see [vite] failed to connect to websocket repeatedly, in which case ignore for live-app usage but fix for dev comfort).
+
+4. User Logic & Orphaned Sessions
+Earlier issues stemmed from:
+
+Hardcoded/default user fallback logic
+
+Orphaned or duplicate users in the DB
+
+Unclear or invalid session → user mapping
+
+Current State: Logs now show a unique user ID and actual email, indicating you are operating as your real Google-authenticated user.
+
+5. Ongoing Risks and Checks
+If you log out and log in with a different user, make sure everything resets and data does not leak between users.
+
+If tokens expire, you want to confirm your refresh workflow actually renews them (otherwise, silent calendar sync failures can creep in).
+
+Try in an incognito/private window to ensure no stale cookies/sessions are masking latent bugs.
+
+What Needs to Be Fixed or Verified Now?
+Test a Complete Login/Logout Cycle:
+
+Log out, restart browser, log back in. Events should only show for the correct user.
+
+Check Session/Cookie Handling:
+
+Open dev tools and look for cookies; you should see a session cookie (like connect.sid). Delete it, reload the app, confirm you get logged out.
+
+Test Google Calendar Permissions:
+
+Try revoking OAuth from your Google Account's permissions page, then re-login. The OAuth flow should detect loss of tokens and prompt you to sign in again.
+
+Frontend Calls with Credentials:
+
+All fetch/API calls in the browser need { credentials: "include" } so that cookies flow to the backend, maintaining the session.
+
+Database Sanity:
+
+Scan your database for duplicates, test users, or inconsistent records (especially with earlier fallback/default user logic).
+
+Edge Cases for Force-Fix/Recovery:
+
+Make sure that running any manual or UI-based "force session recovery" functionality does NOT irreversibly break real OAuth-authenticated users for that session.

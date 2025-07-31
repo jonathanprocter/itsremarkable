@@ -1,0 +1,70 @@
+Here’s an explicit, methodical Replit AI prompt (copy this directly into your “Ask Agent” on Replit) that addresses all your current problems:
+
+## REPLIT AGENT PROMPT: Pixel-Perfect Daily PDF—Strict Filtering & HTML Fidelity
+
+**Summary:**  
+My Daily Template PDF export is improved, but still not production-grade. I need these critical issues resolved in the next revision:
+
+### 1. STRICT APPOINTMENT FILTERING
+
+- **Remove test appointments**: Exclude any appointments where the title contains (case-insensitive) “test”, “test-appointment”, “event test”, or other test/dummy markers. These should NEVER appear in the PDF.
+- **Remove ghost/populating events**: The “Paul Benjamin” appointment for Friday is populating in the PDF output even though it’s not actually listed in the UI appointments for that day. Fix logic so only currently displayed appointments (those visible in the day view) are exported—no ghost events.
+- **General filtering**: No placeholder, sample, or hidden appointments/data *should ever make it to PDF*.
+
+#### **Sample Filter Code**
+```typescript
+function shouldIncludeAppointment(appt: Appointment): boolean {
+  const name = appt.title?.toLowerCase() || "";
+  if (name.includes("test") || name.includes("test-appointment") || name.includes("event test")) return false;
+  // add any other known dummy/test event patterns
+  // you may also want to filter by hidden flags in the source data
+  return true;
+}
+```
+Apply this function before ALL rendering/positioning logic.
+
+### 2. ABSOLUTE HTML TEMPLATE MATCHING
+
+**This is non-negotiable:**
+- Open the exact HTML/CSS template I previously provided.
+- ALL spacing, section order, font weights/sizes, time grid cell sizes, header/stats/legend positioning, row backgrounds, event colors, bolding, and appointment block stylings **MUST match the HTML**, not a generic interpretation.
+- This includes:
+    - **Grid**: Each time block/slot is perfectly aligned (row heights, start/stop times, vertical rules, alternating backgrounds)
+    - **Appointments**: Boxes in their right slot, with color flags/borders matching type
+    - **Header/Stats/Legend/Footer**: Pixel-perfect vertical, horizontal spacing, block ordering, font styling, no layout drift
+
+> **No creative deviations.** If your export doesn’t match a screenshot of my HTML (side-by-side at the pixel level), fix it.
+
+### 3. ENCODING / CHARACTER SANITIZATION
+
+- **ONLY output ASCII-safe or validated UTF-8 text**—no random encoding artifacts, emoji, or corruption.
+- **Lock emoji and other system-placed icons** MUST be stripped from all event titles before rendering (as per previous instructions).
+
+### 4. FINAL QA REQUIREMENT
+
+- Before submitting the next update:
+    1. **Run the PDF export for several "real-world" scenario days**—include a day with overlapping, adjacent, and multi-type events.
+    2. **Place the resulting PDF next to the HTML template in a screenshot.** Mark up any deviation with annotation.
+    3. Only submit if all filtered events are correct, all unwanted (test/ghost) events are gone, and the output is pixel-perfect matching to the HTML.
+
+**Commit message to use:**  
+```
+fix(pdf): Enforce strict event filtering, remove test/ghost/populating events, and ensure pixel-perfect HTML template fidelity in Daily Template PDF
+```
+
+### **Developer Notes:**
+- If any part of the layout deviates by more than 2px, adjust the calculation until there is no visual difference.
+- If encoding errors persist, fallback to stripping all but standard printable characters (`/[ -~]/`).
+- Add comprehensive debug logging and output appointment set for each export as a separate JSON for validation.
+
+**The next update must deliver:**
+- No “test” or “Paul Benjamin” ghost appointments
+- Perfect event block positioning, spacing, and colors
+- Absolutely no emoji or encoding errors
+- A visual PDF that’s *indistinguishable* from the HTML template
+
+If you want, I can help you draft reference screenshots, or review the actual HTML/css here for explicit constants!  
+**Paste all of the above into your Replit agent chat or PR review.**  
+This will force a solution—not just improvement—for your perfect daily agenda export.
+
+[1] https://replit.com/@jonathanprocter/RemarkablePlannerPro-1

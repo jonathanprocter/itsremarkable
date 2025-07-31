@@ -1,0 +1,1260 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weekly Package - July 7-13, 2025</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+```
+    body {
+        font-family: 'Arial', 'Helvetica', sans-serif;
+        background-color: white;
+        color: black;
+        line-height: 1.3;
+        -webkit-font-smoothing: antialiased;
+        font-size: 14px;
+    }
+
+    /* Print styles optimized for reMarkable Paper Pro */
+    @page {
+        size: 8.5in 11in;
+        margin: 0.25in;
+    }
+
+    @page :first {
+        size: 11in 8.5in; /* landscape for weekly overview */
+        margin: 0.25in;
+    }
+
+    @page :not(:first) {
+        size: 8.5in 11in; /* portrait for daily pages */
+        margin: 0.25in;
+    }
+
+    .page {
+        page-break-after: always;
+        min-height: 100vh;
+    }
+
+    .page:last-child {
+        page-break-after: avoid;
+    }
+
+    /* Common styles */
+    .planner-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        background: white;
+        border: 3px solid black;
+        min-height: calc(100vh - 1in);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .header {
+        border-bottom: 3px solid black;
+        padding: 20px;
+        text-align: center;
+        background: white;
+    }
+
+    .header h1 {
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+    }
+
+    .week-info, .date-info {
+        font-size: 16px;
+        font-weight: bold;
+    }
+
+    .navigation {
+        font-size: 12px;
+        margin-top: 8px;
+        border-top: 1px solid black;
+        padding-top: 8px;
+    }
+
+    .footer {
+        background: #f8f8f8;
+        padding: 15px 20px;
+        text-align: center;
+        font-size: 11px;
+        border-top: 2px solid black;
+        margin-top: auto;
+    }
+
+    .footer a {
+        color: black;
+        text-decoration: underline;
+        margin: 0 10px;
+        cursor: pointer;
+    }
+
+    /* Weekly view specific styles */
+    .week-stats {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        border-bottom: 3px solid black;
+        background: white;
+    }
+
+    .stat-card {
+        text-align: center;
+        padding: 15px;
+        border-right: 2px solid black;
+        font-size: 12px;
+    }
+
+    .stat-card:last-child {
+        border-right: none;
+    }
+
+    .stat-number {
+        font-size: 20px;
+        font-weight: bold;
+        display: block;
+        margin-bottom: 4px;
+    }
+
+    .legend {
+        padding: 12px 20px;
+        border-bottom: 3px solid black;
+        font-size: 11px;
+        background: white;
+        display: flex;
+        gap: 20px;
+    }
+
+    .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .legend-symbol {
+        width: 16px;
+        height: 12px;
+    }
+
+    .legend-symbol.simplepractice {
+        background: white;
+        border: 2px solid #ccc;
+        border-left: 6px solid #4285f4;
+    }
+
+    .legend-symbol.google-calendar {
+        background: white;
+        border: 3px dashed #34a853;
+    }
+
+    .legend-symbol.outlook {
+        background: #fbbc04;
+        border: 2px solid #fbbc04;
+    }
+
+    .calendar-container {
+        position: relative;
+        flex: 1;
+        overflow: hidden;
+    }
+
+    .calendar-grid {
+        display: grid;
+        grid-template-columns: 80px repeat(7, 1fr);
+        background: white;
+        height: 100%;
+    }
+
+    .time-header {
+        background: white;
+        color: black;
+        padding: 15px 8px;
+        text-align: center;
+        font-weight: bold;
+        font-size: 14px;
+        border-right: 2px solid black;
+        border-bottom: 3px solid black;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .day-header {
+        background: white;
+        color: black;
+        padding: 10px 8px;
+        text-align: center;
+        font-weight: bold;
+        border-right: 2px solid #000;
+        border-bottom: 3px solid black;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .day-header:last-child {
+        border-right: none;
+    }
+
+    .day-name {
+        font-size: 12px;
+        margin-bottom: 3px;
+        text-transform: uppercase;
+    }
+
+    .day-date {
+        font-size: 16px;
+    }
+
+    .time-slot {
+        background: #f8f8f8;
+        padding: 5px;
+        text-align: center;
+        font-size: 10px;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-right: 2px solid black;
+        border-bottom: 1px solid #ddd;
+        height: 30px;
+    }
+
+    .time-slot.hour {
+        background: #eeeeee !important;
+        border-bottom: 2px solid black;
+        font-size: 11px;
+    }
+
+    .calendar-cell {
+        background: white;
+        border-right: 2px solid #000;
+        border-bottom: 1px solid #ccc;
+        position: relative;
+        height: 30px;
+    }
+
+    .calendar-cell:last-child {
+        border-right: none;
+    }
+
+    .calendar-cell.hour {
+        border-bottom: 2px solid #000;
+    }
+
+    /* Appointment overlay system */
+    .appointment-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 10;
+    }
+
+    .appointment-block {
+        position: absolute;
+        background: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 9px;
+        font-weight: bold;
+        text-align: center;
+        padding: 2px;
+        color: #000;
+        text-transform: uppercase;
+        z-index: 15;
+    }
+
+    .appointment-block.simplepractice {
+        background-color: white;
+        border: 2px solid #ccc;
+        border-left: 6px solid #4285f4;
+    }
+
+    .appointment-block.google-calendar {
+        background-color: white;
+        border: 2px dashed #34a853;
+    }
+
+    /* Daily view specific styles */
+    .daily-container {
+        max-width: 800px;
+        margin: 0 auto;
+        background: white;
+        border: 3px solid black;
+        min-height: calc(100vh - 1in);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .daily-stats {
+        padding: 15px 20px;
+        border-bottom: 3px solid black;
+        display: flex;
+        justify-content: space-between;
+        background: white;
+    }
+
+    .stat-item {
+        text-align: center;
+        font-size: 12px;
+    }
+
+    .schedule-grid {
+        display: flex;
+        border-collapse: collapse;
+        flex: 1;
+    }
+
+    .time-column {
+        width: 80px;
+        border-right: 2px solid black;
+    }
+
+    .daily-time-slot {
+        height: 45px;
+        border-bottom: 1px solid black;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: bold;
+        background: #f8f8f8;
+    }
+
+    .daily-time-slot.hour {
+        background: #eeeeee !important;
+        border-bottom: 2px solid black;
+        font-size: 14px;
+    }
+
+    .appointments-column {
+        flex: 1;
+        position: relative;
+    }
+
+    .appointment-slot {
+        height: 45px;
+        border-bottom: 1px solid black;
+        position: relative;
+        background: white;
+    }
+
+    .appointment-slot.hour {
+        border-bottom: 2px solid black;
+        background: #eeeeee !important;
+    }
+
+    .appointment {
+        position: absolute;
+        left: 8px;
+        right: 8px;
+        background: white;
+        padding: 4px 6px;
+        font-size: 10px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        overflow: hidden;
+        border: 2px solid #000;
+    }
+
+    .appointment.simplepractice {
+        background: #7db3ff;
+        border-color: #4285f4;
+    }
+
+    .appointment.google-calendar {
+        background: #90ee90;
+        border: 2px dashed #34a853;
+    }
+
+    .appointment-title {
+        font-weight: bold;
+        font-size: 11px;
+        text-transform: uppercase;
+    }
+
+    .appointment-time {
+        font-size: 9px;
+        font-weight: normal;
+    }
+
+    /* Navigation styles */
+    .page {
+        display: none;
+    }
+
+    .page.active {
+        display: block;
+    }
+
+    .print-button {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #4285f4;
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+        z-index: 1000;
+        font-family: Arial, sans-serif;
+    }
+
+    .print-button:hover {
+        background: #3367d6;
+    }
+
+    @media print {
+        .print-button {
+            display: none !important;
+        }
+
+        .page {
+            display: block !important;
+        }
+
+        /* reMarkable Paper Pro optimizations */
+        body {
+            font-size: 12px;
+            line-height: 1.2;
+        }
+
+        /* Weekly overview optimized for reMarkable landscape */
+        #weekly-overview .planner-container {
+            width: 100%;
+            height: 8in;
+            max-width: none;
+            margin: 0;
+        }
+
+        #weekly-overview .time-slot {
+            font-size: 9px;
+            padding: 2px;
+            height: 20px;
+        }
+
+        #weekly-overview .calendar-cell {
+            height: 20px;
+        }
+
+        #weekly-overview .day-header {
+            padding: 8px 4px;
+            font-size: 12px;
+        }
+
+        #weekly-overview .day-name {
+            font-size: 10px;
+        }
+
+        #weekly-overview .day-date {
+            font-size: 14px;
+        }
+
+        #weekly-overview .appointment-block {
+            font-size: 8px;
+            padding: 1px;
+            border-width: 2px;
+        }
+
+        #weekly-overview .appointment-block.simplepractice {
+            border-left-width: 4px;
+        }
+
+        /* Daily pages optimized for reMarkable portrait */
+        .daily-container {
+            width: 100%;
+            height: 10.5in;
+            max-width: none;
+            margin: 0;
+        }
+
+        .daily-time-slot {
+            height: 35px;
+            font-size: 11px;
+        }
+
+        .appointment-slot {
+            height: 35px;
+        }
+
+        .appointment {
+            font-size: 9px;
+            padding: 3px 5px;
+            border-width: 2px;
+        }
+
+        .appointment.simplepractice {
+            border-left-width: 4px;
+        }
+
+        /* Ensure colors are preserved for reMarkable Paper Pro */
+        .calendar-cell.hour, .time-slot.hour, .daily-time-slot.hour, .appointment-slot.hour {
+            background-color: #f0f0f0 !important;
+        }
+
+        .appointment, .appointment-block {
+            background-color: white !important;
+        }
+
+        .appointment.simplepractice, .appointment-block.simplepractice {
+            border-color: #ccc !important;
+            border-left-color: #4285f4 !important;
+        }
+
+        .appointment.google-calendar, .appointment-block.google-calendar {
+            border-color: #34a853 !important;
+        }
+
+        .legend-symbol.simplepractice {
+            border-color: #ccc !important;
+            border-left-color: #4285f4 !important;
+        }
+
+        .legend-symbol.google-calendar {
+            border-color: #34a853 !important;
+        }
+
+        .legend-symbol.outlook {
+            background-color: #fbbc04 !important;
+            border-color: #fbbc04 !important;
+        }
+    }
+</style>
+```
+
+</head>
+<body>
+    <button class="print-button" onclick="printWeeklyPackage()">Print/Save as PDF</button>
+
+```
+<!-- Page 1: Weekly Overview -->
+<div class="page active" id="weekly-overview">
+    <div class="planner-container">
+        <div class="header">
+            <h1>Weekly Planner</h1>
+            <div class="week-info">July 7-13, 2025 • Week 28</div>
+        </div>
+
+        <div class="week-stats">
+            <div class="stat-card">
+                <span class="stat-number">33</span>
+                Total Appointments
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">33.8h</span>
+                Scheduled Time
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">4.8h</span>
+                Daily Average
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">134h</span>
+                Available Time
+            </div>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item">
+                <span class="legend-symbol simplepractice"></span>
+                <span>SimplePractice</span>
+            </div>
+            <div class="legend-item">
+                <span class="legend-symbol google-calendar"></span>
+                <span>Google Calendar</span>
+            </div>
+            <div class="legend-item">
+                <span class="legend-symbol outlook"></span>
+                <span>Holidays in United States</span>
+            </div>
+        </div>
+
+        <div class="calendar-container">
+            <div class="calendar-grid" id="calendarGrid">
+                <!-- Headers -->
+                <div class="time-header">TIME</div>
+                <div class="day-header"><div class="day-name">MON</div><div class="day-date">7</div></div>
+                <div class="day-header"><div class="day-name">TUE</div><div class="day-date">8</div></div>
+                <div class="day-header"><div class="day-name">WED</div><div class="day-date">9</div></div>
+                <div class="day-header"><div class="day-name">THU</div><div class="day-date">10</div></div>
+                <div class="day-header"><div class="day-name">FRI</div><div class="day-date">11</div></div>
+                <div class="day-header"><div class="day-name">SAT</div><div class="day-date">12</div></div>
+                <div class="day-header"><div class="day-name">SUN</div><div class="day-date">13</div></div>
+            </div>
+            <div class="appointment-overlay" id="appointmentOverlay"></div>
+        </div>
+
+        <div class="footer">
+            <a onclick="navigateToPage('weekly-overview')">Weekly Overview</a> |
+            <a onclick="navigateToPage('monday')">Monday →</a> |
+            <a onclick="navigateToPage('tuesday')">Tuesday</a> |
+            <a onclick="navigateToPage('wednesday')">Wednesday</a> |
+            <a onclick="navigateToPage('thursday')">Thursday</a> |
+            <a onclick="navigateToPage('friday')">Friday</a> |
+            <a onclick="navigateToPage('saturday')">Saturday</a> |
+            <a onclick="navigateToPage('sunday')">Sunday</a>
+        </div>
+    </div>
+</div>
+
+<!-- Page 2: Monday, July 7, 2025 -->
+<div class="page" id="monday">
+    <div class="daily-container">
+        <div class="header">
+            <h1>Daily Planner</h1>
+            <div class="date-info">Monday, July 7, 2025</div>
+            <div class="navigation">Week 28 • Day 1 of 7 • Page 2 of 8</div>
+        </div>
+
+        <div class="daily-stats">
+            <div class="stat-item">
+                <span class="stat-number">6</span>
+                Appointments
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">6.0h</span>
+                Scheduled
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">18.0h</span>
+                Available
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">75%</span>
+                Free Time
+            </div>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item">
+                <span class="legend-symbol simplepractice"></span>SimplePractice
+            </div>
+        </div>
+
+        <div class="schedule-grid">
+            <div class="time-column" id="mondayTimeColumn"></div>
+            <div class="appointments-column" id="mondayAppointments"></div>
+        </div>
+
+        <div class="footer">
+            <a onclick="navigateToPage('weekly-overview')">← Weekly Overview</a> |
+            <a onclick="navigateToPage('tuesday')">Tuesday →</a> |
+            <a onclick="navigateToPage('sunday')">← Sunday</a>
+        </div>
+    </div>
+</div>
+
+<!-- Page 3: Tuesday, July 8, 2025 -->
+<div class="page" id="tuesday">
+    <div class="daily-container">
+        <div class="header">
+            <h1>Daily Planner</h1>
+            <div class="date-info">Tuesday, July 8, 2025</div>
+            <div class="navigation">Week 28 • Day 2 of 7 • Page 3 of 8</div>
+        </div>
+
+        <div class="daily-stats">
+            <div class="stat-item">
+                <span class="stat-number">8</span>
+                Appointments
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">8.0h</span>
+                Scheduled
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">16.0h</span>
+                Available
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">67%</span>
+                Free Time
+            </div>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item">
+                <span class="legend-symbol simplepractice"></span>SimplePractice
+            </div>
+            <div class="legend-item">
+                <span class="legend-symbol google-calendar"></span>Google Calendar
+            </div>
+        </div>
+
+        <div class="schedule-grid">
+            <div class="time-column" id="tuesdayTimeColumn"></div>
+            <div class="appointments-column" id="tuesdayAppointments"></div>
+        </div>
+
+        <div class="footer">
+            <a onclick="navigateToPage('weekly-overview')">← Weekly Overview</a> |
+            <a onclick="navigateToPage('monday')">← Monday</a> |
+            <a onclick="navigateToPage('wednesday')">Wednesday →</a>
+        </div>
+    </div>
+</div>
+
+<!-- Page 4: Wednesday, July 9, 2025 -->
+<div class="page" id="wednesday">
+    <div class="daily-container">
+        <div class="header">
+            <h1>Daily Planner</h1>
+            <div class="date-info">Wednesday, July 9, 2025</div>
+            <div class="navigation">Week 28 • Day 3 of 7 • Page 4 of 8</div>
+        </div>
+
+        <div class="daily-stats">
+            <div class="stat-item">
+                <span class="stat-number">8</span>
+                Appointments
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">8.0h</span>
+                Scheduled
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">16.0h</span>
+                Available
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">67%</span>
+                Free Time
+            </div>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item">
+                <span class="legend-symbol simplepractice"></span>SimplePractice
+            </div>
+        </div>
+
+        <div class="schedule-grid">
+            <div class="time-column" id="wednesdayTimeColumn"></div>
+            <div class="appointments-column" id="wednesdayAppointments"></div>
+        </div>
+
+        <div class="footer">
+            <a onclick="navigateToPage('weekly-overview')">← Weekly Overview</a> |
+            <a onclick="navigateToPage('tuesday')">← Tuesday</a> |
+            <a onclick="navigateToPage('thursday')">Thursday →</a>
+        </div>
+    </div>
+</div>
+
+<!-- Page 5: Thursday, July 10, 2025 -->
+<div class="page" id="thursday">
+    <div class="daily-container">
+        <div class="header">
+            <h1>Daily Planner</h1>
+            <div class="date-info">Thursday, July 10, 2025</div>
+            <div class="navigation">Week 28 • Day 4 of 7 • Page 5 of 8</div>
+        </div>
+
+        <div class="daily-stats">
+            <div class="stat-item">
+                <span class="stat-number">5</span>
+                Appointments
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">5.0h</span>
+                Scheduled
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">19.0h</span>
+                Available
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">79%</span>
+                Free Time
+            </div>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item">
+                <span class="legend-symbol simplepractice"></span>SimplePractice
+            </div>
+        </div>
+
+        <div class="schedule-grid">
+            <div class="time-column" id="thursdayTimeColumn"></div>
+            <div class="appointments-column" id="thursdayAppointments"></div>
+        </div>
+
+        <div class="footer">
+            <a onclick="navigateToPage('weekly-overview')">← Weekly Overview</a> |
+            <a onclick="navigateToPage('wednesday')">← Wednesday</a> |
+            <a onclick="navigateToPage('friday')">Friday →</a>
+        </div>
+    </div>
+</div>
+
+<!-- Page 6: Friday, July 11, 2025 -->
+<div class="page" id="friday">
+    <div class="daily-container">
+        <div class="header">
+            <h1>Daily Planner</h1>
+            <div class="date-info">Friday, July 11, 2025</div>
+            <div class="navigation">Week 28 • Day 5 of 7 • Page 6 of 8</div>
+        </div>
+
+        <div class="daily-stats">
+            <div class="stat-item">
+                <span class="stat-number">1</span>
+                Appointments
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">1.0h</span>
+                Scheduled
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">23.0h</span>
+                Available
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">96%</span>
+                Free Time
+            </div>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item">
+                <span class="legend-symbol simplepractice"></span>SimplePractice
+            </div>
+        </div>
+
+        <div class="schedule-grid">
+            <div class="time-column" id="fridayTimeColumn"></div>
+            <div class="appointments-column" id="fridayAppointments"></div>
+        </div>
+
+        <div class="footer">
+            <a onclick="navigateToPage('weekly-overview')">← Weekly Overview</a> |
+            <a onclick="navigateToPage('thursday')">← Thursday</a> |
+            <a onclick="navigateToPage('saturday')">Saturday →</a>
+        </div>
+    </div>
+</div>
+
+<!-- Page 7: Saturday, July 12, 2025 -->
+<div class="page" id="saturday">
+    <div class="daily-container">
+        <div class="header">
+            <h1>Daily Planner</h1>
+            <div class="date-info">Saturday, July 12, 2025</div>
+            <div class="navigation">Week 28 • Day 6 of 7 • Page 7 of 8</div>
+        </div>
+
+        <div class="daily-stats">
+            <div class="stat-item">
+                <span class="stat-number">0</span>
+                Appointments
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">0.0h</span>
+                Scheduled
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">24.0h</span>
+                Available
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">100%</span>
+                Free Time
+            </div>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item">
+                <span class="legend-symbol simplepractice"></span>SimplePractice
+            </div>
+        </div>
+
+        <div class="schedule-grid">
+            <div class="time-column" id="saturdayTimeColumn"></div>
+            <div class="appointments-column" id="saturdayAppointments"></div>
+        </div>
+
+        <div class="footer">
+            <a onclick="navigateToPage('weekly-overview')">← Weekly Overview</a> |
+            <a onclick="navigateToPage('friday')">← Friday</a> |
+            <a onclick="navigateToPage('sunday')">Sunday →</a>
+        </div>
+    </div>
+</div>
+
+<!-- Page 8: Sunday, July 13, 2025 -->
+<div class="page" id="sunday">
+    <div class="daily-container">
+        <div class="header">
+            <h1>Daily Planner</h1>
+            <div class="date-info">Sunday, July 13, 2025</div>
+            <div class="navigation">Week 28 • Day 7 of 7 • Page 8 of 8</div>
+        </div>
+
+        <div class="daily-stats">
+            <div class="stat-item">
+                <span class="stat-number">0</span>
+                Appointments
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">0.0h</span>
+                Scheduled
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">24.0h</span>
+                Available
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">100%</span>
+                Free Time
+            </div>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item">
+                <span class="legend-symbol simplepractice"></span>SimplePractice
+            </div>
+        </div>
+
+        <div class="schedule-grid">
+            <div class="time-column" id="sundayTimeColumn"></div>
+            <div class="appointments-column" id="sundayAppointments"></div>
+        </div>
+
+        <div class="footer">
+            <a onclick="navigateToPage('weekly-overview')">← Weekly Overview</a> |
+            <a onclick="navigateToPage('saturday')">← Saturday</a> |
+            <a onclick="navigateToPage('monday')">Monday →</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Appointment data with correct durations - 1 hour = 2 slots, 1.5 hours = 3 slots
+    const appointments = [
+        // Monday - Column 1
+        { day: 1, startTime: '08:00', endTime: '09:00', name: 'DAN RE: SUPERVISION', type: 'simplepractice' },
+        { day: 1, startTime: '09:00', endTime: '10:00', name: 'SHERRIFA HOSSEIN APPOINTMENT', type: 'simplepractice' },
+        { day: 1, startTime: '10:00', endTime: '11:00', name: 'NANCY GROSSMAN APPOINTMENT', type: 'simplepractice' },
+        { day: 1, startTime: '11:00', endTime: '12:00', name: 'AMBERLY COMEAU APPOINTMENT', type: 'simplepractice' },
+        { day: 1, startTime: '12:00', endTime: '13:00', name: 'MARYELLEN DERKENBRINK, SR. POST VISIT', type: 'simplepractice' },
+        { day: 1, startTime: '14:00', endTime: '15:00', name: 'ANGELICA RUDEN APPOINTMENT', type: 'simplepractice' },
+        { day: 1, startTime: '16:00', endTime: '17:00', name: 'NOAH SILVERMAN APPOINTMENT', type: 'simplepractice' },
+        { day: 1, startTime: '17:00', endTime: '18:00', name: 'SARAH PALLADINO APPOINTMENT', type: 'simplepractice' },
+        { day: 1, startTime: '18:00', endTime: '19:30', name: 'DAVID GROSSMAN APPOINTMENT', type: 'simplepractice' },
+        { day: 1, startTime: '20:00', endTime: '21:00', name: 'STEVEN DELUCA APPOINTMENT', type: 'simplepractice' },
+
+        // Tuesday - Column 2
+        { day: 2, startTime: '08:00', endTime: '09:00', name: 'COFFEE WITH NORA', type: 'google-calendar' },
+        { day: 2, startTime: '10:00', endTime: '11:00', name: 'CALL WITH BLAKE', type: 'google-calendar' },
+        { day: 2, startTime: '16:00', endTime: '17:00', name: 'BRIANNA BRICKMAN APPOINTMENT', type: 'simplepractice' },
+        { day: 2, startTime: '17:00', endTime: '18:00', name: 'GAVIN PERNA APPOINTMENT', type: 'simplepractice' },
+        { day: 2, startTime: '18:00', endTime: '19:00', name: 'VALENTINA GILDODA APPOINTMENT', type: 'simplepractice' },
+        { day: 2, startTime: '19:00', endTime: '20:00', name: 'VIVIAN MEADOR APPOINTMENT', type: 'simplepractice' },
+        { day: 2, startTime: '20:00', endTime: '21:00', name: 'OWEN LENNON APPOINTMENT', type: 'simplepractice' },
+        { day: 2, startTime: '21:00', endTime: '22:00', name: 'DAVID GROSSMAN APPOINTMENT', type: 'simplepractice' },
+
+        // Wednesday - Column 3
+        { day: 3, startTime: '07:30', endTime: '08:30', name: 'RUBEN SPILBERG APPOINTMENT', type: 'simplepractice' },
+        { day: 3, startTime: '09:30', endTime: '10:30', name: 'KRISTI ROOK APPOINTMENT', type: 'simplepractice' },
+        { day: 3, startTime: '13:00', endTime: '14:00', name: 'AVA MOSKOWITZ APPOINTMENT', type: 'simplepractice' },
+        { day: 3, startTime: '14:30', endTime: '15:30', name: 'LUKE KNOX APPOINTMENT', type: 'simplepractice' },
+        { day: 3, startTime: '16:00', endTime: '17:00', name: 'FREDDY RODRIGUEZ APPOINTMENT', type: 'simplepractice' },
+        { day: 3, startTime: '17:00', endTime: '18:00', name: 'GAVIN FLACH APPOINTMENT', type: 'simplepractice' },
+        { day: 3, startTime: '18:00', endTime: '19:00', name: 'NICO LUNGINO APPOINTMENT', type: 'simplepractice' },
+        { day: 3, startTime: '19:00', endTime: '20:00', name: 'NICK DABREU APPOINTMENT', type: 'simplepractice' },
+
+        // Thursday - Column 4
+        { day: 4, startTime: '07:00', endTime: '08:00', name: 'RICHIE HAYES APPOINTMENT', type: 'simplepractice' },
+        { day: 4, startTime: '08:00', endTime: '09:00', name: 'JOHN BEST APPOINTMENT', type: 'simplepractice' },
+        { day: 4, startTime: '11:00', endTime: '12:00', name: 'PAUL BENJAMIN APPOINTMENT', type: 'simplepractice' },
+        { day: 4, startTime: '13:00', endTime: '14:00', name: 'NOAH SILVERMAN APPOINTMENT', type: 'simplepractice' },
+        { day: 4, startTime: '16:00', endTime: '17:00', name: 'TRENDALL STOREY APPOINTMENT', type: 'simplepractice' },
+
+        // Friday - Column 5
+        { day: 5, startTime: '10:00', endTime: '11:00', name: 'CALVIN HILL APPOINTMENT', type: 'simplepractice' },
+    ];
+
+    function createTimeSlots() {
+        const grid = document.getElementById('calendarGrid');
+        const times = [];
+        
+        // Generate time slots from 06:00 to 23:30
+        for (let hour = 6; hour <= 23; hour++) {
+            for (let minute = 0; minute < 60; minute += 30) {
+                const timeStr = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+                times.push(timeStr);
+            }
+        }
+
+        times.forEach((time, index) => {
+            const isHour = time.endsWith(':00');
+            
+            // Time slot label - optimized for Canvas Color E Ink Gallery 3
+            const timeSlot = document.createElement('div');
+            timeSlot.className = `time-slot ${isHour ? 'hour' : ''}`;
+            timeSlot.textContent = time;
+            if (isHour) {
+                timeSlot.style.backgroundColor = '#F0F0F0'; // Optimized for E Ink Gallery 3
+                timeSlot.style.color = '#000000';
+            }
+            grid.appendChild(timeSlot);
+
+            // 7 day columns - optimized for reMarkable Paper Pro Canvas Color
+            for (let day = 1; day <= 7; day++) {
+                const cell = document.createElement('div');
+                cell.className = `calendar-cell ${isHour ? 'hour' : ''}`;
+                if (isHour) {
+                    cell.style.backgroundColor = '#F0F0F0'; // Consistent hour highlighting
+                }
+                cell.dataset.time = time;
+                cell.dataset.day = day;
+                cell.dataset.index = index;
+                grid.appendChild(cell);
+            }
+        });
+    }
+
+    function createWeeklyAppointmentBlocks() {
+        const overlay = document.getElementById('appointmentOverlay');
+        const grid = document.getElementById('calendarGrid');
+        
+        // Wait for grid to render on Canvas Color display
+        setTimeout(() => {
+            const gridRect = grid.getBoundingClientRect();
+            const firstCell = grid.querySelector('.calendar-cell');
+            if (!firstCell) return;
+            
+            const columnWidth = (gridRect.width - 80) / 7;
+            const rowHeight = 36; // Optimized for 2160 x 1620 resolution
+            
+            appointments.forEach(apt => {
+                const startPos = timeToPosition(apt.startTime);
+                const endPos = timeToPosition(apt.endTime);
+                const duration = endPos - startPos;
+                
+                const block = document.createElement('div');
+                block.className = `appointment-block ${apt.type}`;
+                block.textContent = apt.name;
+                
+                const left = 80 + (apt.day - 1) * columnWidth + 3;
+                const top = 80 + startPos * rowHeight + 3; // Account for larger headers
+                const width = columnWidth - 8;
+                const height = duration * rowHeight - 6;
+                
+                block.style.left = `${left}px`;
+                block.style.top = `${top}px`;
+                block.style.width = `${width}px`;
+                block.style.height = `${height}px`;
+                
+                // Apply Canvas Color optimized styling
+                if (apt.type === 'simplepractice') {
+                    block.style.backgroundColor = 'white';
+                    block.style.border = '3px solid #666666';
+                    block.style.borderLeft = '10px solid #0066CC'; // Canvas Color blue
+                    block.style.color = '#000000';
+                } else if (apt.type === 'google-calendar') {
+                    block.style.backgroundColor = 'white';
+                    block.style.border = '4px dashed #008844'; // Canvas Color green
+                    block.style.color = '#000000';
+                }
+                
+                overlay.appendChild(block);
+            });
+        }, 150); // Longer delay for Canvas Color rendering
+    }
+
+    function timeToPosition(timeStr) {
+        const [hours, minutes] = timeStr.split(':').map(Number);
+        const totalMinutes = (hours - 6) * 60 + minutes;
+        return totalMinutes / 30;
+    }
+
+    function createWeeklyAppointmentBlocks() {
+        const overlay = document.getElementById('appointmentOverlay');
+        const grid = document.getElementById('calendarGrid');
+        
+        // Wait for grid to render
+        setTimeout(() => {
+            const gridRect = grid.getBoundingClientRect();
+            const firstCell = grid.querySelector('.calendar-cell');
+            if (!firstCell) return;
+            
+            const columnWidth = (gridRect.width - 80) / 7;
+            const rowHeight = 30;
+            
+            appointments.forEach(apt => {
+                const startPos = timeToPosition(apt.startTime);
+                const endPos = timeToPosition(apt.endTime);
+                const duration = endPos - startPos;
+                
+                const block = document.createElement('div');
+                block.className = `appointment-block ${apt.type}`;
+                block.textContent = apt.name;
+                
+                const left = 80 + (apt.day - 1) * columnWidth + 2;
+                const top = 60 + startPos * rowHeight + 2; // 60px for header
+                const width = columnWidth - 6;
+                const height = duration * rowHeight - 4;
+                
+                block.style.left = `${left}px`;
+                block.style.top = `${top}px`;
+                block.style.width = `${width}px`;
+                block.style.height = `${height}px`;
+                
+                overlay.appendChild(block);
+            });
+        }, 100);
+    }
+
+    function createDailySchedule(day, containerId, appointmentsId) {
+        const timeColumn = document.getElementById(containerId);
+        const appointmentsColumn = document.getElementById(appointmentsId);
+        
+        if (!timeColumn || !appointmentsColumn) return;
+
+        // Generate time slots from 06:00 to 23:30 - optimized for reMarkable
+        for (let hour = 6; hour <= 23; hour++) {
+            for (let minute = 0; minute < 60; minute += 30) {
+                const timeStr = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+                const isHour = minute === 0;
+                
+                // Time slot - optimized for reMarkable readability
+                const timeSlot = document.createElement('div');
+                timeSlot.className = `daily-time-slot ${isHour ? 'hour' : ''}`;
+                timeSlot.textContent = timeStr;
+                if (isHour) {
+                    timeSlot.style.backgroundColor = '#f0f0f0';
+                }
+                timeColumn.appendChild(timeSlot);
+                
+                // Appointment slot - optimized for reMarkable
+                const appointmentSlot = document.createElement('div');
+                appointmentSlot.className = `appointment-slot ${isHour ? 'hour' : ''}`;
+                appointmentSlot.dataset.time = timeStr;
+                if (isHour) {
+                    appointmentSlot.style.backgroundColor = '#f0f0f0';
+                }
+                appointmentsColumn.appendChild(appointmentSlot);
+            }
+        }
+
+        // Add appointments for this day - with proper colors for reMarkable
+        const dayAppointments = appointments.filter(apt => apt.day === day);
+        dayAppointments.forEach(apt => {
+            const startPos = timeToPosition(apt.startTime);
+            const endPos = timeToPosition(apt.endTime);
+            const duration = endPos - startPos;
+            
+            const appointment = document.createElement('div');
+            appointment.className = `appointment ${apt.type}`;
+            appointment.innerHTML = `
+                <div class="appointment-title">${apt.name}</div>
+                <div class="appointment-time">${apt.startTime} - ${apt.endTime}</div>
+            `;
+            
+            const top = startPos * 50; // 50px per slot for reMarkable readability
+            const height = duration * 50 - 6;
+            
+            appointment.style.top = `${top}px`;
+            appointment.style.height = `${height}px`;
+            
+            // Apply proper colors for reMarkable Paper Pro
+            if (apt.type === 'simplepractice') {
+                appointment.style.border = '2px solid #ccc';
+                appointment.style.borderLeft = '8px solid #4285f4';
+                appointment.style.background = 'white';
+            } else if (apt.type === 'google-calendar') {
+                appointment.style.border = '3px dashed #34a853';
+                appointment.style.background = 'white';
+            }
+            
+            appointmentsColumn.appendChild(appointment);
+        });
+    }
+
+    // Navigation between pages
+    function navigateToPage(pageId) {
+        const pages = document.querySelectorAll('.page');
+        pages.forEach(page => page.classList.remove('active'));
+        
+        const targetPage = document.getElementById(pageId);
+        if (targetPage) {
+            targetPage.classList.add('active');
+        }
+    }
+
+    // Keyboard navigation
+    document.addEventListener('keydown', function(event) {
+        const currentPage = document.querySelector('.page.active');
+        const currentId = currentPage.id;
+        
+        const pageOrder = ['weekly-overview', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+        const currentIndex = pageOrder.indexOf(currentId);
+        
+        if (event.key === 'ArrowRight' || event.key === 'PageDown') {
+            const nextIndex = (currentIndex + 1) % pageOrder.length;
+            navigateToPage(pageOrder[nextIndex]);
+            event.preventDefault();
+        } else if (event.key === 'ArrowLeft' || event.key === 'PageUp') {
+            const prevIndex = currentIndex === 0 ? pageOrder.length - 1 : currentIndex - 1;
+            navigateToPage(pageOrder[prevIndex]);
+            event.preventDefault();
+        } else if (event.key === 'Home') {
+            navigateToPage('weekly-overview');
+            event.preventDefault();
+        }
+    });
+
+    // Print function
+    function printWeeklyPackage() {
+        window.print();
+    }
+
+    // Initialize the planner optimized for reMarkable Paper Pro Canvas Color
+    document.addEventListener('DOMContentLoaded', function() {
+        createTimeSlots();
+        createWeeklyAppointmentBlocks();
+        
+        // Create daily schedules optimized for E Ink Gallery 3
+        createDailySchedule(1, 'mondayTimeColumn', 'mondayAppointments');
+        createDailySchedule(2, 'tuesdayTimeColumn', 'tuesdayAppointments');
+        createDailySchedule(3, 'wednesdayTimeColumn', 'wednesdayAppointments');
+        createDailySchedule(4, 'thursdayTimeColumn', 'thursdayAppointments');
+        createDailySchedule(5, 'fridayTimeColumn', 'fridayAppointments');
+        createDailySchedule(6, 'saturdayTimeColumn', 'saturdayAppointments');
+        createDailySchedule(7, 'sundayTimeColumn', 'sundayAppointments');
+        
+        // Recalculate positions on resize for Canvas Color display
+        window.addEventListener('resize', () => {
+            const overlay = document.getElementById('appointmentOverlay');
+            if (overlay) {
+                overlay.innerHTML = '';
+                createWeeklyAppointmentBlocks();
+            }
+        });
+    });
+</script>
+```
+
+</body>
+</html>

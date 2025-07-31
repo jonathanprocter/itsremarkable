@@ -1,0 +1,72 @@
+Here’s what you should tell Replit—or any dev/AI assistant—**when the output is continually wrong, despite your detailed requirements and their iterative fixes**. This guidance will increase their odds of truly solving your problem instead of just patching obvious bugs.
+
+## Guidance & Insight to Provide Replit When Output Remains Incorrect
+
+**1. Escalate Beyond Quick Fixes—Ask For “Root Cause Analysis”**  
+> "The output is still visually wrong after multiple attempts and partial fixes. Please stop making only surface-level adjustments and instead do a real root cause analysis.  
+>  
+> I need you to step back, systematically review the full style/data flow, and identify why the extracted measurements and intended CSS variables are NOT actually making it into the PDF output—even with logging and fallbacks."
+
+**2. Demand “Debug-by-Comparison” With Live Dashboard**  
+> "You must not rely on assumptions about what should work. Take a screenshot of my actual dashboard and of the PDF export, and perform a grid-by-grid, text-by-text comparison. For each visual difference, write a short debug note:  
+> - Which variable/source is used in the dashboard?  
+> - What value is being used in the PDF generation?  
+> - Where, in the code, is the value lost or overridden?"  
+>
+> "Post a table/log for up to five key visual elements (e.g., slot height, column width, font size, cell padding, border radius) showing:  
+> | Element           | Dashboard Value | PDF Value | Source/Reason for Mismatch |  
+> |-------------------|----------------|-----------|---------------------------|  
+> | Day column width  | 110px          | 18px      | Wrong DOM node used       |  
+> | Slot height       | 40px           | 24px      | Hardcoded default         |  
+> | Font family       | Inter          | Helvetica | jsPDF font limit          |  
+> | …                 |                |           |                           |"
+
+**3. Isolate Each Transformation Step**  
+> "Break down the pipeline:  
+> - DOM extraction → Data transfer → PDF function call → Rendered PDF  
+> For each UI dimension, log the value at every step. Where does it go wrong—DOM? Prop? PDF arg?  
+> Expose ALL intermediate values—don't just console.log in one spot."
+
+**4. If jsPDF Is the Bottleneck, Try an Alternate Export Stack**  
+> "If `jsPDF` cannot produce a perfect replica due to font, color, or positioning limitations, please prototype an export using:  
+> - **Puppeteer or Playwright:** Headless Chrome print-to-PDF guarantees a real, pixel-for-pixel export  
+> - **React-pdf:** If using React, mirror your layout with react-pdf’s canvas/DOM system  
+> If this new approach works, document why jsPDF can’t get all the way there and switch the pipeline permanently."
+
+**5. Implement & Log a “100% Style Variable Pass-through”**  
+> "Audit every `setFont`, `rect`, `setFillColor`, every PDF command in the export source.  
+>  
+> For each, note:  
+> - Is it using a prop or value sourced from the real dashboard style/theme?  
+> - Or, is it defaulting to a magic number or approximation?  
+> I want an audit log showing every style value in the PDF and where it comes from."
+
+**6. Deliver “Failing Case Minimal Repro”**  
+> "Produce the smallest possible calendar example (e.g., just 2 slots, 1 row, 1 event)—with the dashboard and PDF side-by-side—and show the precise place where the rendered output diverges.  
+>  
+> This helps diagnose whether the bug is in measurement extraction, style loss, PDF rendering, or data translation."
+
+**7. Suggest Automated Pixel Comparison for Final Sign-Off**  
+> "Automate a pixel-diff comparison using [Pixelmatch](https://github.com/mapbox/pixelmatch). Refuse to claim a fix until the pixel diff is zero, excluding the actual cell text content."
+
+## Copy-Paste Checklist for Your Ticket
+
+```markdown
+**The output continues to be wrong. Please follow this escalation workflow:**
+
+1. Do a root cause analysis; don’t just patch symptoms.
+2. For each key calendar visual element (column, row, cell, font, line), log dashboard value, PDF value, and the source or mismatch reason.
+3. Instrument your code to pass measurements through every transformation step, and log/verify at each stage.
+4. If jsPDF is the blocking factor, perform a print-to-PDF from headless Chrome, document results, and recommend the switch if quality dramatically improves.
+5. Audit every PDF rendering command—show the source for every dimension/color/font used (should be *only* dashboard-derived values).
+6. Provide and fix a minimal failing example (one event, one row/col, max clarity).
+7. Automate and attach a pixel-diff test verifying zero visual difference before closing this as “fixed”.
+
+Without these steps, further tweaks are unlikely to result in true pixel-perfect output.
+```
+
+## Summary
+
+**Instruct Replit to debug systematically** and not just reactively. Demand logs/tables comparing dashboard and PDF, full style-path auditing, and, if needed, a prototype using print-to-PDF from a real browser. Stop after each “fix” to verify the root cause is truly addressed, and require a pixel-diff result for true final sign-off.
+
+[1] https://replit.com/t/jonathan-procter-phd/repls/RemarkablePlannerPro

@@ -1,0 +1,47 @@
+Please integrate this complete export routes file into my Remarkable Planner Pro application. This file should be saved as server/export-routes.ts and then imported and registered in the main server/routes.ts file.
+Integration steps needed:
+Save the file as server/export-routes.ts
+Add import to server/routes.ts:
+typescript
+import { registerExportRoutes } from './export-routes';
+Add registration in the registerRoutes function in server/routes.ts:
+typescript
+registerExportRoutes(app);
+Add frontend buttons to the export section of the main component:
+jsx
+<button onClick={() => window.open('/api/export/three-column-daily', '_blank')}>
+  📋 Three-Column Daily Export
+</button>
+<button onClick={() => window.open('/api/export/enhanced-weekly', '_blank')}>
+  📊 Enhanced Weekly Package
+</button>
+<button onClick={() => window.open('/api/export/complete-monthly', '_blank')}>
+  📅 Complete Monthly Package
+</button>
+<button onClick={() => window.open('/api/export/bidirectional-package', '_blank')}>
+  🔗 Complete Export Package
+</button>
+This will add enhanced three-column daily exports with conditional layout, weekly landscape views, monthly calendars, and complete bidirectional navigation between all views."
+✨ Key Features
+🎯 Three-Column Smart Layout
+Column 1: Appointment details (name, source, time)
+Column 2: Event Notes (only when available)
+Column 3: Action Items (only when available)
+Smart Display: Only shows columns with actual content
+🔗 Perfect Navigation
+Weekly ↔ Daily bidirectional links
+Monthly ↔ Daily navigation
+Previous/Next day navigation
+All links embedded in buttons and text
+📱 Responsive & Print Ready
+Weekly: Landscape orientation for full visibility
+Daily/Monthly: Portrait orientation for standard printing
+Professional: Clean layouts optimized for Remarkable Pro devices
+🎨 Exact Styling
+Uses your exact HTML template and CSS
+Matches your Friday July 18, 2025 layout perfectly
+SimplePractice blue borders and styling
+Professional, clean appearance
+🎉 Result
+After integration, your Remarkable Planner Pro will have professional, print-optimized exports that perfectly replicate your app's daily view while adding the requested three-column functionality and complete bidirectional navigation system!
+The file is complete and ready to use immediately. Just provide it to Replit's AI with the integration instructions above. 🚀

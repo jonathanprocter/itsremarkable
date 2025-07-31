@@ -1,0 +1,137 @@
+# Environment Configuration Guide for OAuth Authentication
+
+## Required Environment Variables
+
+Create a `.env` file in your server root with the following variables:
+
+```bash
+# Google OAuth Configuration
+GOOGLE_CLIENT_ID=your_google_client_id_here
+GOOGLE_CLIENT_SECRET=your_google_client_secret_here
+GOOGLE_REDIRECT_URI=http://localhost:5000/api/auth/google/callback
+
+# Optional: Pre-existing tokens for testing
+GOOGLE_ACCESS_TOKEN=your_existing_access_token
+GOOGLE_REFRESH_TOKEN=your_existing_refresh_token
+
+# Session Configuration
+SESSION_SECRET=your_secure_session_secret_here
+
+# Database (optional but recommended for production)
+MONGODB_URI=mongodb://localhost:27017/your_database_name
+
+# Application URLs
+FRONTEND_URL=http://localhost:5000
+NODE_ENV=development
+PORT=5000
+```
+
+## Google Cloud Console Setup
+
+1. **Create a new project** or select existing project in Google Cloud Console
+2. **Enable APIs**:
+   - Google Calendar API
+   - Google+ API (for user info)
+3. **Create OAuth 2.0 credentials**:
+   - Go to "Credentials" > "Create Credentials" > "OAuth 2.0 Client ID"
+   - Application type: "Web application"
+   - Authorized redirect URIs: `http://localhost:5000/api/auth/google/callback`
+   - For production: Add your production domain
+
+## Common Issues and Solutions
+
+### Issue 1: "invalid_grant" error
+**Cause**: Expired or invalid refresh tokens
+**Solution**: 
+- Clear browser cookies/session
+- Re-authenticate through `/api/auth/google`
+- Ensure `prompt: 'consent'` in OAuth URL generation
+
+### Issue 2: Session not persisting
+**Cause**: Incorrect CORS or cookie configuration
+**Solution**:
+- Ensure `credentials: 'include'` in all fetch requests
+- Set proper CORS configuration with `credentials: true`
+- Use consistent domain for frontend and backend
+
+### Issue 3: "redirect_uri_mismatch"
+**Cause**: Redirect URI doesn't match Google Console configuration
+**Solution**:
+- Ensure exact match between `.env` and Google Console
+- Include protocol (http/https)
+- No trailing slashes
+
+### Issue 4: Development vs Production tokens
+**Cause**: Using placeholder/dev tokens instead of real ones
+**Solution**:
+- Remove any hardcoded 'dev-' or 'test-' tokens
+- Use environment variables for real tokens
+- Implement proper token validation
+
+## Testing the OAuth Flow
+
+1. **Start the server**: `npm run dev`
+2. **Check health**: `GET /health`
+3. **Test auth status**: `GET /api/auth/status`
+4. **Initiate OAuth**: Navigate to `/api/auth/google`
+5. **Complete flow**: Allow permissions in Google
+6. **Verify tokens**: `GET /api/auth/debug`
+
+## Production Considerations
+
+1. **Use HTTPS** for all OAuth redirects
+2. **Set secure session configuration**:
+   ```javascript
+   cookie: {
+     secure: true,
+     httpOnly: true,
+     sameSite: 'none'
+   }
+   ```
+3. **Use persistent session store** (MongoDB/Redis)
+4. **Set proper CORS origins** (no wildcards)
+5. **Implement rate limiting** for auth endpoints
+6. **Use strong session secrets**
+7. **Enable Google OAuth consent screen** for production
+
+## Debugging Tips
+
+1. **Check browser network tab** for failed requests
+2. **Monitor server logs** for OAuth errors
+3. **Use `/api/auth/debug`** endpoint to inspect tokens
+4. **Clear browser storage** if sessions seem corrupted
+5. **Verify environment variables** are loaded correctly
+
+## Security Best Practices
+
+1. **Never expose client secrets** in frontend code
+2. **Use HTTPS** in production
+3. **Implement CSRF protection**
+4. **Set appropriate token expiration**
+5. **Log security events**
+6. **Regularly rotate secrets**
+7. **Implement rate limiting**
+
+## File Structure
+
+```
+server/
+├── index.ts          # Main server with session config
+├── routes.ts         # OAuth and API routes
+├── authUtils.ts      # Authentication utilities
+└── .env              # Environment variables
+
+client/src/components/sidebar/
+└── GoogleCalendarIntegration.tsx  # Frontend component
+```
+
+## Quick Fix Checklist
+
+- [ ] Environment variables are set correctly
+- [ ] Google Console OAuth credentials match redirect URI
+- [ ] Session middleware is configured with proper settings
+- [ ] CORS is enabled with credentials
+- [ ] Frontend uses `credentials: 'include'` in fetch calls
+- [ ] No dev/test tokens in production
+- [ ] Error handling redirects to re-authentication
+- [ ] Token refresh logic handles expired tokens

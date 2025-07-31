@@ -1,0 +1,86 @@
+/**
+ * Session Cookie Fixer - Forces frontend to use authenticated backend session.
+ * This class provides methods to manipulate session cookies for maintaining an authenticated session state.
+ */
+
+export class SessionFixer {
+  private static readonly AUTHENTICATED_SESSION = 'gBvnYGiTDicIU7Udon_c5TdzlgtHhdNU';
+  private static readonly SESSION_COOKIE_NAME = 'remarkable.sid';
+
+  /**
+   * Force the frontend to use the authenticated backend session by setting a specific session cookie.
+   */
+  static forceUseAuthenticatedSession(): void {
+    console.log('🔧 FORCING USE OF AUTHENTICATED SESSION');
+    
+    this.clearAllSessionCookies();
+    this.setAuthenticatedSessionCookie();
+    this.reloadPage();
+  }
+
+  /**
+   * Clears all session cookies.
+   */
+  private static clearAllSessionCookies(): void {
+    document.cookie.split(";").forEach(cookie => {
+      const name = cookie.split("=")[0].trim();
+      document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`;
+    });
+    
+    console.log('🧹 Cleared all session cookies');
+  }
+
+  /**
+   * Sets the authenticated session cookie.
+   */
+  private static setAuthenticatedSessionCookie(): void {
+    const sessionValue = `s%3A${this.AUTHENTICATED_SESSION}.4GDBmZtU6BzV0jBKRj1PNKgdyBHfJE8kOCsFjBEhqeI`;
+    document.cookie = `${this.SESSION_COOKIE_NAME}=${sessionValue}; path=/; max-age=${30*24*60*60}; SameSite=Lax`;
+    
+    console.log('✅ Set authenticated session cookie:', sessionValue);
+  }
+
+  /**
+   * Reloads the page to apply the new session state.
+   */
+  private static reloadPage(): void {
+    console.log('🔄 Reloading page to use authenticated session...');
+    window.location.reload();
+  }
+
+  /**
+   * Checks if the current session is the authenticated one.
+   * @returns {boolean} True if using the authenticated session, false otherwise.
+   */
+  static isUsingAuthenticatedSession(): boolean {
+    return document.cookie.split(';').some(cookie => {
+      const [name, value] = cookie.trim().split('=');
+      return name === this.SESSION_COOKIE_NAME && value.includes(this.AUTHENTICATED_SESSION);
+    });
+  }
+
+  /**
+   * Checks the authentication status of the current session with the backend.
+   * @returns {Promise<boolean>} A promise that resolves to true if the current session is authenticated, false otherwise.
+   */
+  static async checkCurrentSessionAuth(): Promise<boolean> {
+    try {
+      const response = await fetch('/api/auth/status', {
+        credentials: 'include',
+        headers: { 'Cache-Control': 'no-cache' }
+      });
+      
+      if (!response.ok) throw new Error('Failed to fetch auth status');
+
+      const data = await response.json();
+      console.log('🔍 Current session auth check:', data);
+      return data.isAuthenticated === true;
+    } catch (error) {
+      console.error('❌ Auth check failed:', error);
+      return false;
+    }
+  }
+}
+
+// Make available globally
+(window as any).SessionFixer = SessionFixer;

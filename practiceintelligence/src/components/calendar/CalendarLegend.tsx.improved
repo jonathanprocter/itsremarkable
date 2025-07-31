@@ -1,0 +1,58 @@
+x
+import React from 'react';
+
+type FilterType = 'simplepractice' | 'google' | 'personal';
+
+interface CalendarLegendProps {
+  filters: Record<FilterType, boolean>;
+  onFilterChange: (filters: Record<FilterType, boolean>) => void;
+}
+
+/**
+ * Component to render and manage calendar filters.
+ * @param {CalendarLegendProps} props - The props for the component.
+ * @returns {JSX.Element} The CalendarLegend component.
+ */
+export const CalendarLegend: React.FC<CalendarLegendProps> = ({ filters, onFilterChange }) => {
+  /**
+   * Toggles the state of a filter.
+   * @param {FilterType} filterType - The type of filter to toggle.
+   */
+  const handleFilterToggle = (filterType: FilterType) => {
+    onFilterChange({
+      ...filters,
+      [filterType]: !filters[filterType],
+    });
+  };
+
+  /**
+   * Renders a filter checkbox and label.
+   * @param {FilterType} filterType - The type of filter.
+   * @param {string} label - The label for the filter.
+   * @param {string} colorClass - The tailwind color class for the filter.
+   * @returns {JSX.Element} The filter checkbox and label.
+   */
+  const renderFilter = (filterType: FilterType, label: string, colorClass: string) => (
+    <div className="flex items-center space-x-2">
+      <input
+        type="checkbox"
+        id={filterType}
+        checked={filters[filterType]}
+        onChange={() => handleFilterToggle(filterType)}
+        className={`w-4 h-4 text-${colorClass}-600 rounded focus:ring-${colorClass}-500`}
+      />
+      <label htmlFor={filterType} className="flex items-center space-x-2 text-sm">
+        <div className={`w-3 h-3 bg-${colorClass}-50 border-2 border-${colorClass}-500`} style={{ borderLeft: `4px solid currentColor` }}></div>
+        <span className={`text-${colorClass}-700 font-medium`}>{label}</span>
+      </label>
+    </div>
+  );
+
+  return (
+    <div className="space-y-3">
+      {renderFilter('simplepractice', 'SimplePractice', 'blue')}
+      {renderFilter('google', 'Google Calendar', 'green')}
+      {renderFilter('personal', 'Holidays', 'yellow')}
+    </div>
+  );
+};

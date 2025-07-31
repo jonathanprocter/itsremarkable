@@ -1,0 +1,377 @@
+# Replit Setup Guide for Pixel-Perfect PDF Export
+
+## Prerequisites
+
+### 1. Install Required Dependencies
+
+Add these to your `package.json`:
+
+```json
+{
+  "dependencies": {
+    "html2canvas": "^1.4.1",
+    "jspdf": "^2.5.1",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0"
+  }
+}
+```
+
+Run in Replit console:
+```bash
+npm install html2canvas jspdf @types/react @types/react-dom
+```
+
+### 2. File Structure
+
+Create this structure in your Replit project:
+
+```
+src/
+├── components/
+│   ├── DailySchedulePDFExport.tsx
+│   ├── DailySchedulePDF.css
+│   └── PDFGeneratorService.ts
+├── types/
+│   └── schedule.ts
+└── utils/
+    └── dateHelpers.ts
+```
+
+## Integration Steps
+
+### Step 1: Create Type Definitions
+
+Create `src/types/schedule.ts`:
+
+```typescript
+export interface Appointment {
+  id: string;
+  title: string;
+  startTime: string;
+  endTime: string;
+  status: 'confirmed' | 'clinician_canceled' | 'client_canceled';
+  clientName: string;
+  duration: number;
+}
+
+export interface DailyScheduleData {
+  date: string;
+  appointments: Appointment[];
+  totalAppointments: number;
+  scheduledHours: number;
+  availableHours: number;
+  freeTimePercentage: number;
+}
+```
+
+### Step 2: Update Your Existing Component
+
+In your main calendar component (likely `DailyView.tsx` or similar):
+
+```typescript
+import React, { useState } from 'react';
+import { DailyScheduleData } from '../types/schedule';
+import { generatePDFFromComponent, transformScheduleData } from '../components/PDFGeneratorService';
+import DailySchedulePDFExport from '../components/DailySchedulePDFExport';
+
+const DailyView: React.FC = () => {
+  const [isExporting, setIsExporting] = useState(false);
+  
+  // Your existing data
+  const scheduleData = {
+    date: '2025-07-18',
+    appointments: [
+      {
+        id: '1',
+        title: 'Richie Hayes Appointment',
+        startTime: '07:00',
+        endTime: '08:00',
+        status: 'confirmed',
+        clientName: 'Richie Hayes',
+        duration: 1
+      },
+      {
+        id: '2',
+        title: 'John Best Appointment',
+        startTime: '08:00',
+        endTime: '09:00',
+        status: 'clinician_canceled',
+        clientName: 'John Best',
+        duration: 1
+      },
+      // ... more appointments
+    ]
+  };
+
+  const handleExportPDF = async () => {
+    setIsExporting(true);
+    try {
+      const transformedData = transformScheduleData(scheduleData);
+      
+      // Create temporary container
+      const container = document.createElement('div');
+      container.id = 'pdf-export-temp';
+      container.style.position = 'absolute';
+      container.style.left = '-9999px';
+      container.style.width = '1200px';
+      container.style.backgroundColor = '#ffffff';
+      document.body.appendChild(container);
+
+      // Render PDF component
+      const { createRoot } = require('react-dom/client');
+      const root = createRoot(container);
+      
+      await new Promise<void>((resolve) => {
+        root.render(
+          <DailySchedulePDFExport data={transformedData} />,
+          resolve
+        );
+      });
+
+      // Wait for rendering
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      // Generate PDF
+      await generatePDFFromComponent('pdf-export-temp', `schedule-${transformedData.date}.pdf`);
+
+      // Cleanup
+      document.body.removeChild(container);
+      
+    } catch (error) {
+      console.error('Export failed:', error);
+      alert('Failed to export PDF. Please try again.');
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  return (
+    <div>
+      {/* Your existing calendar UI */}
+      <button 
+        onClick={handleExportPDF}
+        disabled={isExporting}
+        className="export-btn"
+      >
+        {isExporting ? 'Exporting...' : 'Export PDF'}
+      </button>
+    </div>
+  );
+};
+```
+
+### Step 3: Configure Replit
+
+Create or update `.replit` file:
+
+```toml
+[nix]
+channel = "stable-22_11"
+
+[deployment]
+run = "npm start"
+deploymentTarget = "cloudrun"
+
+[[ports]]
+localPort = 3000
+externalPort = 80
+```
+
+Create `replit.nix`:
+
+```nix
+{ pkgs }: {
+  deps = [
+    pkgs.nodejs-18_x
+    pkgs.nodePackages.npm
+    pkgs.nodePackages.typescript
+  ];
+}
+```
+
+### Step 4: Environment Configuration
+
+Create `.env` file:
+
+```env
+REACT_APP_EXPORT_MODE=production
+REACT_APP_PDF_QUALITY=high
+```
+
+## Common Issues & Solutions
+
+### Issue 1: Canvas Security Errors
+
+**Problem**: "Tainted canvases may not be exported" error
+
+**Solution**: Add CORS headers to your Replit configuration:
+
+```javascript
+// In your main App.tsx or index.tsx
+const configureCanvas = () => {
+  // Allow cross-origin canvas operations
+  const meta = document.createElement('meta');
+  meta.httpEquiv = 'Content-Security-Policy';
+  meta.content = "img-src 'self' data: blob:; default-src 'self'";
+  document.head.appendChild(meta);
+};
+
+configureCanvas();
+```
+
+### Issue 2: Fonts Not Loading
+
+**Problem**: PDF exports with different fonts than expected
+
+**Solution**: Preload fonts in your `index.html`:
+
+```html
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+```
+
+### Issue 3: Component Not Rendering
+
+**Problem**: PDF is blank or incomplete
+
+**Solution**: Add explicit dimensions and ensure rendering completion:
+
+```typescript
+// In PDFGeneratorService.ts, update the generatePDFFromComponent function:
+export const generatePDFFromComponent = async (elementId: string, filename: string = 'daily-schedule.pdf'): Promise<void> => {
+  const element = document.getElementById(elementId);
+  if (!element) {
+    throw new Error(`Element with id '${elementId}' not found`);
+  }
+
+  // Force layout recalculation
+  element.style.width = '1200px';
+  element.style.minHeight = '800px';
+  
+  // Wait for all images and resources to load
+  await new Promise(resolve => {
+    const images = element.querySelectorAll('img');
+    let loadedCount = 0;
+    
+    if (images.length === 0) {
+      resolve(undefined);
+      return;
+    }
+    
+    images.forEach(img => {
+      if (img.complete) {
+        loadedCount++;
+        if (loadedCount === images.length) resolve(undefined);
+      } else {
+        img.onload = () => {
+          loadedCount++;
+          if (loadedCount === images.length) resolve(undefined);
+        };
+      }
+    });
+  });
+
+  // Your existing canvas code...
+};
+```
+
+### Issue 4: Replit Deployment Issues
+
+**Problem**: PDF export doesn't work after deployment
+
+**Solution**: Check Replit console for missing dependencies:
+
+```bash
+# In Replit console
+npm list html2canvas jspdf
+npm audit fix
+npm run build
+```
+
+## Testing in Replit
+
+### 1. Development Testing
+
+```bash
+# Start development server
+npm start
+
+# In browser console, test PDF generation:
+window.testPDFExport = async () => {
+  const testData = {
+    date: '2025-07-18',
+    appointments: [/* your test data */],
+    totalAppointments: 8,
+    scheduledHours: 8,
+    availableHours: 2,
+    freeTimePercentage: 67
+  };
+  
+  // Test data transformation
+  console.log('Transformed data:', transformScheduleData(testData));
+  
+  // Test PDF generation
+  await generatePDFFromComponent('your-component-id', 'test.pdf');
+};
+```
+
+### 2. Production Testing
+
+Deploy to Replit and test with:
+
+```javascript
+// Add to your component for debugging
+const debugPDFExport = () => {
+  console.log('PDF Export Debug Info:');
+  console.log('Element exists:', !!document.getElementById('pdf-export-temp'));
+  console.log('html2canvas available:', typeof html2canvas);
+  console.log('jsPDF available:', typeof jsPDF);
+};
+```
+
+## Performance Optimization
+
+### 1. Lazy Loading
+
+```typescript
+const PDFExportButton = lazy(() => import('./PDFExportButton'));
+
+// Usage
+<Suspense fallback={<div>Loading...</div>}>
+  <PDFExportButton data={scheduleData} />
+</Suspense>
+```
+
+### 2. Caching
+
+```typescript
+const cachedPDFGeneration = useMemo(() => {
+  return debounce(generatePDFFromComponent, 1000);
+}, []);
+```
+
+## Final Checklist
+
+- [ ] All dependencies installed
+- [ ] File structure created
+- [ ] CSS properly imported
+- [ ] Type definitions match your data
+- [ ] CORS configured for canvas
+- [ ] Fonts preloaded
+- [ ] Error handling implemented
+- [ ] Testing completed in Replit
+- [ ] Production deployment verified
+
+## Support
+
+If you encounter issues:
+
+1. Check Replit console for errors
+2. Verify all dependencies are installed
+3. Test the PDF component in isolation
+4. Check browser developer tools for canvas/rendering errors
+5. Ensure your data matches the expected interface
+
+The key to success is ensuring your PDF export uses the **exact same styled components** as your modal view, with proper CSS that renders correctly in the PDF context.

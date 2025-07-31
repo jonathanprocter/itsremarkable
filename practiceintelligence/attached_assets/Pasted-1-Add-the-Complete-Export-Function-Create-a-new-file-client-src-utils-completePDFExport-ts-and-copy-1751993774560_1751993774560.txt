@@ -1,0 +1,60 @@
+1. Add the Complete Export Function
+Create a new file client/src/utils/completePDFExport.ts and copy the first artifact I created. This will handle all the data extraction properly.
+2. Replace Your Export Handler
+In your client/src/pages/planner.tsx file, replace the handleExportAction function with the one from the second artifact.
+3. Update Your Export Component
+Replace your ExportToPDF component with the third artifact to get debugging options.
+4. Test the Fix
+
+First, use the Debug Export: Click "🔍 Test Export (Debug)" - this will:
+
+Log ALL your event data to the browser console
+Download a test text file
+Show you exactly what data is being captured
+
+
+Check the Console: Open your browser's developer tools (F12) and look at the console output when you click the test export. You should see:
+=== EXPORT DATA TEST ===
+Input events: [number]
+Selected date: [date]
+Generated data: [object with all your appointments]
+
+Verify the Text Export: The downloaded text file should show ALL your appointments like:
+DAILY PLANNER
+Monday, July 8, 2025
+==================================================
+
+Total Appointments: 11
+
+APPOINTMENTS:
+--------------------------------------------------
+1. 08:00-09:00
+   Dan re: Supervision
+   Source: Google Calendar | Duration: 1hr
+
+2. 09:00-10:00
+   Sherrita Hossein Appointment
+   Source: Google Calendar | Duration: 1hr
+
+[... and so on for all 11 appointments]
+
+
+5. Common Issues to Check
+If you're still not getting all appointments:
+
+Calendar Filters: Check that all your calendars are selected in the sidebar
+Date Range: Make sure you're exporting the right date
+Event Loading: Try the "Refresh Events" button first
+
+6. Debug Commands
+Add these to your browser console to debug:
+javascript// Check current events
+console.log('Current events:', window.currentEvents);
+
+// Check selected calendars  
+console.log('Selected calendars:', window.selectedCalendars);
+
+// Check date
+console.log('Selected date:', window.selectedDate);
+The new export system will capture ALL your appointment data properly instead of just the partial data you were getting before. The debug export will show you exactly what's happening so we can fix any remaining issues!
+Try the "🔍 Test Export (Debug)" button first and let me know what you see in the console and downloaded file.

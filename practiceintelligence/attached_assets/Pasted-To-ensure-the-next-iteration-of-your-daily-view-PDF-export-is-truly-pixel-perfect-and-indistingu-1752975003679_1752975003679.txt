@@ -1,0 +1,115 @@
+To ensure the **next iteration of your daily view PDF export is truly pixel-perfect** and indistinguishable from your browser view, you should provide Replit (or any AI/code assistant) with the following, all in one prompt or ticket:
+
+## 1. **A Live Sample Event/Appointment JSON**
+
+Paste an **actual** event object (from your API, mock, or network call—see example below).  
+This should be the exact same shape as used by the daily view, with all expected fields (including nested notes/actionItems as arrays if that’s what you use).
+
+```json
+{
+  "id": "calvin-hill-appt",
+  "title": "Calvin Hill Appointment",
+  "description": "Annual check-in",
+  "startTime": "2025-07-19T10:00:00.000Z",
+  "endTime": "2025-07-19T11:00:00.000Z",
+  "source": "simplepractice",
+  "color": "#6495ED",
+  "notes": [
+    "Bring insurance paperwork",
+    "Arrive 10 minutes early"
+  ],
+  "actionItems": [
+    "Collect copay",
+    "Update medical record"
+  ],
+  "status": "scheduled",
+  "location": "telehealth"
+}
+```
+
+## 2. **The Actual JSX/HTML Markup for One Event Block**
+
+Copy from your `DailyView.tsx` (or subcomponent) the code that **renders a single appointment**—including all important class names and structure that make up the visual block.  
+_(This is what is actually rendered to the browser.)_
+
+```jsx
+
+  
+    10:00
+    {event.title}
+  
+  
+    Notes
+    {event.notes.map(note => {note})}
+  
+  
+    Action Items
+    {event.actionItems.map(item => {item})}
+  
+
+```
+
+## 3. **The CSS for Appointment Blocks**
+
+Copy the **full CSS** (from `index.css` or wherever relevant) for everything needed to render the appointment EXACTLY as it looks in your browser.
+
+```css
+.appointment.simplepractice {
+  background: #FFFFFF !important;
+  color: black !important;
+  border: 2px solid #6495ED !important;
+  border-left: 8px solid #6495ED !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+}
+.appointment-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+  align-items: start;
+  height: 100%;
+  padding: 4px;
+}
+.appointment-notes-header,
+.appointment-actions-header {
+  font-size: 12px;
+  font-weight: bold;
+  margin-bottom: 3px;
+  text-decoration: underline;
+  text-align: left;
+}
+.appointment-left .appointment-time {
+  font-size: 24px !important;
+  font-weight: bold !important;
+  color: #000 !important;
+  opacity: 1 !important;
+}
+.time-slot {
+  min-height: 40px;
+}
+```
+
+## 4. **Screenshots (Optional but Highly Recommended!)**
+
+- Attach a browser screenshot of the appointment as you see it in the daily view.
+- Attach a screenshot of the **most recent PDF** (showing discrepancies).
+
+## 5. **Describe What’s Still Off (if you know)**
+
+For example:  
+- “Left border color is correct but thickness is off.”  
+- “PDF font is sans-serif, but browser uses system-ui.”  
+- “Text wrapping doesn’t match.”  
+- “Slot heights or event vertical alignment are not correct.”
+
+## 6. **Summary Instructions For Perfection**
+
+> “Use this event JSON, JSX block, and CSS to create a PDF that is visually indistinguishable from the browser. Every detail (fonts, colors, borders, alignments, spacing, slot heights, etc.) must match exactly.  
+> Do NOT perform any timezone conversion.  
+> The PDF is not ‘good enough’ unless it is idempotent to a screenshot of the daily view in Chrome.”
+
+**Paste all of the above into your issue, discussion, or prompt. This is what makes a product/dev team (or AI assistant) most likely to close the last 1–2% accuracy gap for a truly pixel-perfect export.**
+
+If you need help assembling any of the items above, just say which one and I'll give you exact steps to capture/copy it!
+
+[1] https://replit.com/@jonathanprocter/RemarkablePlannerPro-1

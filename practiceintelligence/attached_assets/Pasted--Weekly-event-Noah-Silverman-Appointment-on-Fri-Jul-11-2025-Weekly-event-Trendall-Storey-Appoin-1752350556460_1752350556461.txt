@@ -1,0 +1,60 @@
+✅ Weekly event: Noah Silverman Appointment on Fri Jul 11 2025
+✅ Weekly event: Trendall Storey Appointment on Fri Jul 11 2025
+✅ Weekly event: Calvin Hill Appointment on Sat Jul 12 2025
+✅ Weekly event: Sarah Palladino Appointment on Mon Jul 07 2025
+✅ Weekly event: Gavin Fisch Appointment on Thu Jul 10 2025
+✅ Weekly event: Paul Benjamin Appointment on Wed Jul 09 2025
+✅ Weekly event: Ava Moskowitz Appointment on Thu Jul 10 2025
+✅ Weekly event: Jennifer McNally Appointment on Fri Jul 11 2025
+✅ Weekly event: David Grossman Appointment on Sat Jul 12 2025
+✅ Weekly event: Haircut & Beard on Tue Jul 08 2025
+✅ Weekly event: Valentina Gjidoda Appointment on Thu Jul 10 2025
+✅ Weekly event: call Blake on Wed Jul 09 2025
+✅ Weekly event: Appointment with David Grossman on Wed Jul 09 2025
+✅ Weekly event: Gavin Fisch Appointment on Thu Jul 10 2025
+✅ Weekly event: Brianna Brickman Appointment on Wed Jul 09 2025
+❌ Dynamic Daily Planner PDF export failed: 
+TypeError {}
+
+Error message: event.endTime.getTime is not a function
+Error stack: TypeError: event.endTime.getTime is not a function
+    at https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/utils/dynamicDailyPlannerGenerator.ts:75:39
+    at Array.reduce (<anonymous>)
+    at DynamicDailyPlannerGenerator.calculateStatistics (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/utils/dynamicDailyPlannerGenerator.ts:74:54)
+    at DynamicDailyPlannerGenerator.generateCompleteDailyPlannerHTML (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/utils/dynamicDailyPlannerGenerator.ts:225:29)
+    at exportDynamicDailyPlannerPDF (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/utils/dynamicDailyPlannerPDF.ts:24:28)
+    at async handleExportPDF (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/pages/planner.tsx:165:11)
+at https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/utils/dynamicDailyPlannerGenerator.ts:75:39
+at Array.reduce (&lt;anonymous&gt;)
+at DynamicDailyPlannerGenerator.calculateStatistics (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/utils/dynamicDailyPlannerGenerator.ts:74:54)
+at DynamicDailyPlannerGenerator.generateCompleteDailyPlannerHTML (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/utils/dynamicDailyPlannerGenerator.ts:225:29)
+at exportDynamicDailyPlannerPDF (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/utils/dynamicDailyPlannerPDF.ts:24:28)
+at async handleExportPDF (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/pages/planner.tsx:165:11)
+at t.value (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:17465)
+at new t (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:12630)
+at t.value (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:32766)
+at https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:34400
+Type error - likely HTML2Canvas or jsPDF issue
+Export failed: 
+Error {}
+
+✅ Cleaned 1600 hour time slot: 16:00 -> 16:00
+🎯 Creating TRULY pixel-perfect weekly PDF using dashboard styles...
+📸 Step 1: Capturing dashboard screenshot for visual comparison...
+🎯 Starting pixel-perfect visual comparison...
+📸 Capturing dashboard screenshot for pixel comparison...
+✅ Cleaned 1600 hour time slot: 16:00 -> 16:00
+✅ Dashboard screenshot captured successfully
+🔍 Extracting exact dashboard styles...
+🔍 Inspecting DOM structure...
+📋 Available classes: 
+(20) ["focus-indicators", "__chobitsu-hide__", "fixed", "top-0", "z-[100]", "flex", "max-h-screen", "w-full", "flex-col-reverse", "p-4", "sm:bottom-0", "sm:right-0", "sm:top-auto", "sm:flex-col", "md:max-w-[420px]", "group", "pointer-events-auto", "relative", "items-center", "justify-between"]
+📋 Available IDs: 
+(6) ["spHTMLFormElementPrototypeScript", "eruda", "root", "simplepractice", "google", "personal"]
+✅ Found element with: [class*="time"]
+✅ Found 21 elements with: [class*="day"]
+✅ Found 36 elements with: [class*="slot"]
+✅ Found 129 elements with: [class*="appointment"]
+✅ Found element with: [class*="calendar"]
+✅ Found element with: h1, h2, h3
+⚠️ Grid width too small, using standard proportions

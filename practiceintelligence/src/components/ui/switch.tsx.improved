@@ -1,0 +1,37 @@
+import React, { forwardRef } from "react";
+import { Root, Thumb } from "@radix-ui/react-switch";
+
+import { cn } from "@/lib/utils";
+
+type SwitchProps = React.ComponentPropsWithoutRef<typeof Root>;
+
+/**
+ * A switch component built with Radix UI primitives, providing a customizable toggle interface.
+ * @param {SwitchProps} props - The props to pass to the Switch component.
+ * @param {React.Ref<React.ElementRef<typeof Root>>} ref - Ref forwarded to the Switch root element.
+ * @returns {React.ReactElement} The Switch component.
+ */
+const Switch = forwardRef<React.ElementRef<typeof Root>, SwitchProps>(
+  ({ className, ...props }, ref) => (
+    <Root
+      ref={ref}
+      className={cn(
+        "peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50",
+        "data-state=checked:bg-primary data-state=unchecked:bg-input",
+        className
+      )}
+      {...props}
+    >
+      <Thumb
+        className={cn(
+          "pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform",
+          "data-state=checked:translate-x-5 data-state=unchecked:translate-x-0"
+        )}
+      />
+    </Root>
+  )
+);
+
+Switch.displayName = "Switch";
+
+export { Switch };

@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weekly Overview - July 14-20, 2025</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f5f5;
+        }
+
+        .weekly-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border: 2px solid #333;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .header {
+            background: #f8f9fa;
+            padding: 15px 20px;
+            border-bottom: 1px solid #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .date-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .daily-view-btn {
+            background: #e9ecef;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 5px 10px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            color: #333;
+        }
+        
+        .daily-view-btn:hover {
+            background: #dee2e6;
+        }
+        
+        .week-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 0;
+        }
+        
+        .subtitle {
+            font-size: 14px;
+            color: #666;
+            font-style: italic;
+            margin: 5px 0 0 0;
+        }
+        
+        .service-icons {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        
+        .service-icon {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: #333;
+        }
+        
+        .icon {
+            width: 14px;
+            height: 14px;
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+        
+        .simplepractice { background: #4285f4; }
+        .google { background: #34a853; }
+        .holidays { background: #fbbc04; }
+        
+        .week-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+            background: #333;
+            border-top: 1px solid #333;
+        }
+        
+        .day-column {
+            background: white;
+            min-height: 600px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .day-header {
+            background: #f8f9fa;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            text-align: center;
+            cursor: pointer;
+            text-decoration: none;
+            color: #333;
+        }
+        
+        .day-header:hover {
+            background: #e9ecef;
+        }
+        
+        .day-name {
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 2px;
+        }
+        
+        .day-date {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .day-content {
+            flex: 1;
+            padding: 5px;
+            position: relative;
+        }
+        
+        .appointment-block {
+            background: white;
+            border: 1px solid #6c9bd1;
+            border-left: 4px solid #4285f4;
+            border-radius: 2px;
+            padding: 4px 6px;
+            margin-bottom: 3px;
+            font-size: 10px;
+            cursor: pointer;
+            text-decoration: none;
+            color: #000;
+            display: block;
+        }
+        
+        .appointment-block:hover {
+            background: #f8f9fa;
+        }
+        
+        .appointment-title {
+            font-weight: bold;
+            margin-bottom: 1px;
+            line-height: 1.2;
+        }
+        
+        .appointment-time {
+            font-size: 9px;
+            color: #666;
+        }
+        
+        .footer {
+            background: #f8f9fa;
+            padding: 15px 20px;
+            border-top: 1px solid #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .nav-btn {
+            background: #e9ecef;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 8px 15px;
+            font-size: 12px;
+            cursor: pointer;
+            text-decoration: none;
+            color: #333;
+        }
+        
+        .nav-btn:hover {
+            background: #dee2e6;
+        }
+        
+        .monthly-view-btn {
+            background: #e9ecef;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 8px 15px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            color: #333;
+        }
+        
+        .monthly-view-btn:hover {
+            background: #dee2e6;
+        }
+        
+        @media print {
+            body {
+                background-color: white;
+                padding: 0;
+            }
+            
+            .weekly-container {
+                box-shadow: none;
+                border: 1px solid #333;
+            }
+            
+            @page {
+                size: landscape;
+                margin: 0.5in;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="weekly-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="date-section">
+                <a href="daily_export_enhanced.html" class="daily-view-btn">
+                    📅 Current Daily Layout
+                </a>
+                <div>
+                    <h1 class="week-title">Week of July 14-20, 2025</h1>
+                    <p class="subtitle">Weekly Overview</p>
+                </div>
+            </div>
+            <div class="service-icons">
+                <div class="service-icon">
+                    <div class="icon simplepractice"></div>
+                    <span>SimplePractice</span>
+                </div>
+                <div class="service-icon">
+                    <div class="icon google"></div>
+                    <span>Google Calendar</span>
+                </div>
+                <div class="service-icon">
+                    <div class="icon holidays"></div>
+                    <span>Holidays in United States</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Weekly Grid -->
+        <div class="week-grid">
+            <!-- Monday, July 14 -->
+            <div class="day-column">
+                <a href="monday_july14_2025.html" class="day-header">
+                    <div class="day-name">Monday</div>
+                    <div class="day-date">July 14</div>
+                </a>
+                <div class="day-content">
+                    <a href="monday_july14_2025.html#appointment1" class="appointment-block">
+                        <div class="appointment-title">Team Meeting</div>
+                        <div class="appointment-time">09:00-10:00</div>
+                    </a>
+                    <a href="monday_july14_2025.html#appointment2" class="appointment-block">
+                        <div class="appointment-title">Client Review</div>
+                        <div class="appointment-time">14:00-15:00</div>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Tuesday, July 15 -->
+            <div class="day-column">
+                <a href="tuesday_july15_2025.html" class="day-header">
+                    <div class="day-name">Tuesday</div>
+                    <div class="day-date">July 15</div>
+                </a>
+                <div class="day-content">
+                    <a href="tuesday_july15_2025.html#appointment1" class="appointment-block">
+                        <div class="appointment-title">Dr. Smith Consultation</div>
+                        <div class="appointment-time">10:00-11:00</div>
+                    </a>
+                    <a href="tuesday_july15_2025.html#appointment2" class="appointment-block">
+                        <div class="appointment-title">Project Planning</div>
+                        <div class="appointment-time">15:30-16:30</div>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Wednesday, July 16 -->
+            <div class="day-column">
+                <a href="wednesday_july16_2025.html" class="day-header">
+                    <div class="day-name">Wednesday</div>
+                    <div class="day-date">July 16</div>
+                </a>
+                <div class="day-content">
+                    <a href="wednesday_july16_2025.html#appointment1" class="appointment-block">
+                        <div class="appointment-title">Training Session</div>
+                        <div class="appointment-time">08:00-09:30</div>
+                    </a>
+                    <a href="wednesday_july16_2025.html#appointment2" class="appointment-block">
+                        <div class="appointment-title">Budget Review</div>
+                        <div class="appointment-time">13:00-14:00</div>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Thursday, July 17 -->
+            <div class="day-column">
+                <a href="thursday_july17_2025.html" class="day-header">
+                    <div class="day-name">Thursday</div>
+                    <div class="day-date">July 17</div>
+                </a>
+                <div class="day-content">
+                    <a href="thursday_july17_2025.html#appointment1" class="appointment-block">
+                        <div class="appointment-title">Strategy Meeting</div>
+                        <div class="appointment-time">09:30-11:00</div>
+                    </a>
+                    <a href="thursday_july17_2025.html#appointment2" class="appointment-block">
+                        <div class="appointment-title">Client Call</div>
+                        <div class="appointment-time">16:00-17:00</div>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Friday, July 18 (Current Day) -->
+            <div class="day-column">
+                <a href="daily_export_enhanced.html" class="day-header" style="background: #e3f2fd;">
+                    <div class="day-name">Friday</div>
+                    <div class="day-date">July 18</div>
+                </a>
+                <div class="day-content">
+                    <a href="daily_export_enhanced.html#richie-hayes" class="appointment-block">
+                        <div class="appointment-title">Richie Hayes</div>
+                        <div class="appointment-time">07:00-08:00</div>
+                    </a>
+                    <a href="daily_export_enhanced.html#john-best" class="appointment-block">
+                        <div class="appointment-title">John Best</div>
+                        <div class="appointment-time">08:00-09:00</div>
+                    </a>
+                    <a href="daily_export_enhanced.html#max-hafker" class="appointment-block">
+                        <div class="appointment-title">Max Hafker</div>
+                        <div class="appointment-time">09:00-10:00</div>
+                    </a>
+                    <a href="daily_export_enhanced.html#sarah-palladino" class="appointment-block">
+                        <div class="appointment-title">Sarah Palladino</div>
+                        <div class="appointment-time">11:00-12:00</div>
+                    </a>
+                    <a href="daily_export_enhanced.html#noah-silverman" class="appointment-block">
+                        <div class="appointment-title">Noah Silverman</div>
+                        <div class="appointment-time">13:00-14:00</div>
+                    </a>
+                    <a href="daily_export_enhanced.html#trendall-storey" class="appointment-block">
+                        <div class="appointment-title">Trendall Storey</div>
+                        <div class="appointment-time">16:00-17:00</div>
+                    </a>
+                    <a href="daily_export_enhanced.html#michael-bower" class="appointment-block">
+                        <div class="appointment-title">Michael Bower & Bob</div>
+                        <div class="appointment-time">17:00-18:00</div>
+                    </a>
+                    <a href="daily_export_enhanced.html#brianna-brickman" class="appointment-block">
+                        <div class="appointment-title">Brianna Brickman</div>
+                        <div class="appointment-time">18:00-19:00</div>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Saturday, July 19 -->
+            <div class="day-column">
+                <a href="saturday_july19_2025.html" class="day-header">
+                    <div class="day-name">Saturday</div>
+                    <div class="day-date">July 19</div>
+                </a>
+                <div class="day-content">
+                    <a href="saturday_july19_2025.html#appointment1" class="appointment-block">
+                        <div class="appointment-title">Weekend Workshop</div>
+                        <div class="appointment-time">10:00-12:00</div>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Sunday, July 20 -->
+            <div class="day-column">
+                <a href="sunday_july20_2025.html" class="day-header">
+                    <div class="day-name">Sunday</div>
+                    <div class="day-date">July 20</div>
+                </a>
+                <div class="day-content">
+                    <!-- No appointments -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="footer">
+            <a href="weekly_july7_2025.html" class="nav-btn">← Previous Week</a>
+            <a href="monthly_july_2025.html" class="monthly-view-btn">
+                📅 Monthly View
+            </a>
+            <a href="weekly_july21_2025.html" class="nav-btn">Next Week →</a>
+        </div>
+    </div>
+</body>
+</html>
+

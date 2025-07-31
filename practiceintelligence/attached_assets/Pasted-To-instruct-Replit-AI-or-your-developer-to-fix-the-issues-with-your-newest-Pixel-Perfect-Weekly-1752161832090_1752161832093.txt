@@ -1,0 +1,77 @@
+To instruct Replit AI (or your developer) to fix the issues with your **newest “Pixel Perfect Weekly” PDF export**, use the following tailored checklist and prompt. This will guide them to address real-world visual mismatches rather than just data mapping:
+
+## Replit AI/Dev Instructions: PDF Styling Fixes for True Pixel-Perfect Output
+
+> **Context:**  
+> The attached/output PDF labeled “Pixel Perfect Weekly” is still *not visually identical* to the live dashboard/calendar in the browser. Font, grid, spacing, column widths, typography, and event cell styling are not an exact match to the dashboard.  
+> My highest requirement: when the dashboard view and weekly PDF are displayed side-by-side at 100% zoom, they should be indistinguishable, with not even 1px of difference in any UI element.
+
+**Please follow this step-by-step:**
+
+1. **Direct Visual Overlay Process**
+   - Open the dashboard/calendar for the corresponding week in a browser at 100% zoom.
+   - Take a full-page screenshot of this view.
+   - Overlay this screenshot with the PDF export in an image editor (Figma, Photoshop, or browser dev tools).
+   - Highlight and document any and all differences in:
+     - Font family, size, weight, and color
+     - Row heights and column widths
+     - Alignment (vertical and horizontal)
+     - Borders and grid line thickness
+     - Cell padding/margins
+     - Event color-coding, icons, and labels
+
+2. **Source of Styling**
+   - All style values for the PDF output must be **directly sourced from the dashboard’s CSS/theme variables** (e.g., from Tailwind, MUI theme, SCSS variables, or computed styles).
+   - Avoid “close guesses” or hardcoded px values.  
+   - If using jsPDF, define all `setFont`, `setFontSize`, `setTextColor`, grid, and layout dimensions from the *actual style variables* or computed CSS.
+
+   ```js
+   // Pseudocode Example:
+   import theme from '../dashboard/theme';
+   pdf.setFont(theme.fontFamily, 'normal');
+   pdf.setFontSize(theme.fontSizeBase);
+   pdf.setTextColor(theme.colors.textMain);
+   // Use theme.spacing, border, and layout config for tables and boxes.
+   ```
+
+3. **Typography and Word Wrapping**
+   - PDF event titles currently appear truncated, clipped, or ellipsized—**match the dashboard’s text overflow/wrap logic exactly**.
+   - Ensure “Appointment” labels and times use the correct line spacing, weight, and overflow, matching browser behavior (e.g., CSS `text-overflow: ellipsis`, break points).
+
+4. **Column and Row Sizing**
+   - Ensure each table/grid column *and* row uses **the exact width/height as in the dashboard**.
+   - Compare the dashboard’s and PDF’s TIMELINE and EVENT cell sizes pixel-for-pixel.  
+   - Use browser dev tools on the calendar page to extract `offsetWidth`, `offsetHeight`, or computed grid sizes.
+
+5. **Color and Icon Fidelity**
+   - Apply the precise color hex codes from your live site’s variables for event sources and grid lines.
+   - Match icons and special markers directly (SVG, emoji) if used on the dashboard.
+
+6. **Automated Pixel Diff (Visual Regression)**
+   - Run a pixel-level comparison (using [Pixelmatch](https://github.com/mapbox/pixelmatch), [Resemble.js](https://rsmbl.github.io/Resemble.js/)) between a browser screenshot and the exported PDF page to identify all mismatch areas.
+   - Any difference (except for actual event data) is a styling bug to fix.
+
+7. **Consider HTML-to-PDF Export if Needed**
+   - If jsPDF is not capable of true rendering fidelity, implement a headless Chrome/Puppeteer print-to-PDF workflow that prints an exact print-optimized HTML view of the dashboard.  
+   - This guarantees *pixel-level* reproduction.
+
+8. **Repeat Until Passes Blinded QA**
+   - Upon each code change, repeat the overlay and pixel diff until the PDF and dashboard are visually indistinguishable.
+   - Do not sign off or close the task until any visible difference is eliminated.
+
+## Example Instructions for Your Ticket/Comment
+
+> The new PDF export labeled “Pixel Perfect” still does NOT visually match my browser calendar weekly view. Please:
+>
+> 1. Overlay a screenshot of my dashboard next to the PDF output and document **every spacing, font, alignment, and sizing difference**.
+> 2. **Extract and apply all style/grid/font values from my dashboard CSS/theme** directly (DO NOT approximate/eyeball).
+> 3. For event fields, ensure line-wrapping, label truncation, and bolded/italic text follow the HTML rendering to the letter.
+> 4. Use color hex and border thickness from my existing HTML/CSS.  
+> 5. If jsPDF cannot achieve this, use Puppeteer or Chrome’s print-to-PDF on a print-optimized HTML view as the export path.
+> 6. Run a pixel-diff tool (like Pixelmatch) to confirm, and fix until there are 0px visual differences left.
+>
+> Final product: **PDF = dashboard screenshot (visually indistinguishable at 100% zoom).**
+
+**If you include these directions with your ticket and any reference screenshots or theme files, a developer (or AI) will have the context and requirements to produce a truly pixel-perfect export!**
+
+[1] file:///Users/jonathanprocter/Downloads/Pixel_Perfect_Weekly_2025-07-07.pdf

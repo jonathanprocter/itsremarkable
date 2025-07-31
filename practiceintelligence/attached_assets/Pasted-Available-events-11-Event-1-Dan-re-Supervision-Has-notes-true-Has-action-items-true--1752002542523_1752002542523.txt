@@ -1,0 +1,132 @@
+Available events: 11
+
+--- Event 1: "Dan re: Supervision" ---
+Has notes: true
+Has action items: true
+Position: X=83, Y=198, Width=484, Height=75
+Expanded layout: true
+Original title: "Dan re: Supervision"
+Display title: "Dan re: Supervision"
+Drew single-line title: "Dan re: Supervision"
+🎯 handleExportAction called successfully
+🔥 onExportCurrentView called successfully
+=== DAILY PDF EXPORT ERROR ===
+Error details: 
+ReferenceError {}
+message: "titleLines is not defined"
+stack: "ReferenceError: titleLines is not defined↵ at https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/utils/htmlTemplatePDF.ts:726:36↵ at Array.forEach (<anonymous>)↵ at drawRemarkableDailyAppointments (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/utils/htmlTemplatePDF.ts:606:13)↵ at drawDailyGrid (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/utils/htmlTemplatePDF.ts:517:3)↵ at exportHTMLTemplatePDF (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/utils/htmlTemplatePDF.ts:222:5)↵ at exportDailyToPDF (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/pages/planner.tsx:47:11)↵ at handleExportAction (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/pages/planner.tsx:357:19)↵ at onExportCurrentView (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/pages/planner.tsx:829:15)↵ at onClick (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/components/sidebar/ExportToPDF.tsx:165:17)↵ at HTMLUnknownElement.callCallback2 (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-WERSD76P.js?v=cab11667:3674:22)"
+get stack: ƒ ()
+set stack: ƒ ()
+[[Prototype]]: Object
+
+Error stack: ReferenceError: titleLines is not defined
+    at https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/utils/htmlTemplatePDF.ts:726:36
+    at Array.forEach (<anonymous>)
+    at drawRemarkableDailyAppointments (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/utils/htmlTemplatePDF.ts:606:13)
+    at drawDailyGrid (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/utils/htmlTemplatePDF.ts:517:3)
+    at exportHTMLTemplatePDF (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/utils/htmlTemplatePDF.ts:222:5)
+    at exportDailyToPDF (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/pages/planner.tsx:47:11)
+    at handleExportAction (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/pages/planner.tsx:357:19)
+    at onExportCurrentView (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/pages/planner.tsx:829:15)
+    at onClick (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/components/sidebar/ExportToPDF.tsx:165:17)
+    at HTMLUnknownElement.callCallback2 (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-WERSD76P.js?v=cab11667:3674:22)
+=== DAILY EXPORT CASE ERROR ===
+Error details: 
+ReferenceError {}
+message: "titleLines is not defined"
+stack: "ReferenceError: titleLines is not defined↵ at https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/utils/htmlTemplatePDF.ts:726:36↵ at Array.forEach (<anonymous>)↵ at drawRemarkableDailyAppointments (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/utils/htmlTemplatePDF.ts:606:13)↵ at drawDailyGrid (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/utils/htmlTemplatePDF.ts:517:3)↵ at exportHTMLTemplatePDF (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/utils/htmlTemplatePDF.ts:222:5)↵ at exportDailyToPDF (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/pages/planner.tsx:47:11)↵ at handleExportAction (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/pages/planner.tsx:357:19)↵ at onExportCurrentView (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/pages/planner.tsx:829:15)↵ at onClick (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/components/sidebar/ExportToPDF.tsx:165:17)↵ at HTMLUnknownElement.callCallback2 (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-WERSD76P.js?v=cab11667:3674:22)"
+get stack: ƒ ()
+set stack: ƒ ()
+[[Prototype]]: Object
+
+Error stack: ReferenceError: titleLines is not defined
+    at https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/utils/htmlTemplatePDF.ts:726:36
+    at Array.forEach (<anonymous>)
+    at drawRemarkableDailyAppointments (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/utils/htmlTemplatePDF.ts:606:13)
+    at drawDailyGrid (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/utils/htmlTemplatePDF.ts:517:3)
+    at exportHTMLTemplatePDF (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/utils/htmlTemplatePDF.ts:222:5)
+    at exportDailyToPDF (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/pages/planner.tsx:47:11)
+    at handleExportAction (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/pages/planner.tsx:357:19)
+    at onExportCurrentView (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/pages/planner.tsx:829:15)
+    at onClick (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/components/sidebar/ExportToPDF.tsx:165:17)
+    at HTMLUnknownElement.callCallback2 (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-WERSD76P.js?v=cab11667:3674:22)
+🔧 ExportToPDF component rendered
+🔧 onExportCurrentView: function
+🔧 onExportDailyView: function
+Event: Independence Day on Fri Jul 04 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 David Grossman Appointment on Mon Jun 30 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Ava Moskowitz Appointment on Mon Jun 30 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: Coffee with Nora on Tue Jul 01 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Valentina Gjidoda Appointment on Tue Jul 01 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: Call with Blake on Tue Jul 01 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Maryellen Dankenbrink Appointment on Tue Jul 01 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Max Hafker Appointment on Tue Jul 01 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Vivian Meador Appointment on Tue Jul 01 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Krista Flood Appointment on Wed Jul 02 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Brian Kolsch Appointment on Wed Jul 02 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Luke Knox Appointment on Wed Jul 02 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Chris Balabanick Appointment on Wed Jul 02 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Gavin Perna Appointment on Wed Jul 02 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Max Moskowitz Appointment on Wed Jul 02 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Owen Lennon Appointment on Wed Jul 02 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 David Grossman Appointment on Wed Jul 02 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Ruben Spilberg Appointment on Thu Jul 03 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Gavin Fisch Appointment on Thu Jul 03 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Kristi Rook Appointment on Thu Jul 03 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Sarah Palladino Appointment on Thu Jul 03 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Noah Silverman Appointment on Thu Jul 03 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 John Best Appointment on Thu Jul 03 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Freddy Rodriguez Appointment on Thu Jul 03 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Hector Mendez Appointment on Thu Jul 03 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Nico Luppino Appointment on Thu Jul 03 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: Brianna Brickman Appointment on Fri Jul 04 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: Billy Aymami's birthday on Tue Jul 01 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: David Grossman Appointment on Mon Jul 07 2025, Selected: Mon Jul 07 2025, Matches: true
+Event: Steven Deluca Appointment on Mon Jul 07 2025, Selected: Mon Jul 07 2025, Matches: true
+Event: Coffee with Nora on Tue Jul 08 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: Call with Blake on Tue Jul 08 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: Valentina Gjidoda Appointment on Tue Jul 08 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: Vivian Meador Appointment on Tue Jul 08 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: Brianna Brickman Appointment on Wed Jul 09 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: Gavin Perna Appointment on Wed Jul 09 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: Max Moskowitz Appointment on Wed Jul 09 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: Owen Lennon Appointment on Wed Jul 09 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: David Grossman Appointment on Wed Jul 09 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: Ruben Spilberg Appointment on Thu Jul 10 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: Kristi Rook Appointment on Thu Jul 10 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: Ava Moskowitz Appointment on Thu Jul 10 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: Luke Knox Appointment on Thu Jul 10 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: Freddy Rodriguez Appointment on Thu Jul 10 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: Nico Luppino Appointment on Thu Jul 10 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: Nick Dabreu Appointment on Thu Jul 10 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: Richie Hayes Appointment on Fri Jul 11 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: John Best Appointment on Fri Jul 11 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: Paul Benjamin Appointment on Fri Jul 11 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: Noah Silverman Appointment on Fri Jul 11 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: Trendall Storey Appointment on Fri Jul 11 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: Calvin Hill Appointment on Sat Jul 12 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 David Grossman Appointment on Mon Jun 23 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Sarah Palladino Appointment on Mon Jun 23 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: Coffee with Nora on Tue Jun 24 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Valentina Gjidoda Appointment on Tue Jun 24 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Vivian Meador Appointment on Tue Jun 24 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Krista Flood Appointment on Wed Jun 25 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Amberly Comeau Appointment on Wed Jun 25 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Caitlin Dunn Appointment on Wed Jun 25 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Noah Silverman Appointment on Wed Jun 25 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Gavin Perna Appointment on Wed Jun 25 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Max Moskowitz Appointment on Wed Jun 25 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 David Grossman Appointment on Wed Jun 25 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Ruben Spilberg Appointment on Thu Jun 26 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Kristi Rook Appointment on Thu Jun 26 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Maryellen Dankenbrink Appointment on Thu Jun 26 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Luke Knox Appointment on Thu Jun 26 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Ava Moskowitz Appointment on Thu Jun 26 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: Call Blake on Thu Jun 26 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Hector Mendez Appointment on Thu Jun 26 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Freddy Rodriguez Appointment on Thu Jun 26 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Sherrifa Hoosein Appointment on Thu Jun 26 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Nico Luppino Appointment on Thu Jun 26 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Jennifer McNally Appointment on Thu Jun 26 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 David Grossman Appointment on Thu Jun 26 2025, Selected: Mon Jul 07 2025, Matches: false
+Event: 🔒 Richie Hayes Appointment on Fri Jun 27 2025, Selected: Mon Jul 07 2025, Matches: false

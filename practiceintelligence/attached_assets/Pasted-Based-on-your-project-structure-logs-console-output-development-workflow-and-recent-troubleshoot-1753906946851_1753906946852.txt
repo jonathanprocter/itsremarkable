@@ -1,0 +1,84 @@
+Based on your project structure, logs, console output, development workflow, and recent troubleshooting steps, here are the **key issues that still need to be addressed** for your application to be fully functional with all Google, SimplePractice, PDF export, calendar sync, and AI workflow features completely integrated and working:
+
+## 1. **Authentication & Session Persistence**
+
+- **Session Not Persisting:**  
+  Your logs and behavior indicate that after Google OAuth, the user is not recognized as authenticated (401 errors persist, repeated "Authentication Required" messages).  
+  > **To fix:**  
+  - Ensure that the OAuth callback updates the session with the correct user object (never hardcode IDs).
+  - Verify that the `express-session` or cookie middleware is configured properly for `.replit.dev` and development.  
+  - Set cookies as `secure: false` (or based on `process.env.NODE_ENV`), `httpOnly: false` or `true` as appropriate, and `sameSite: 'lax'` or `'none'` as the environment requires.
+  - Always use the actual user id from the database and avoid hardcoded IDs (see below).
+
+## 2. **User Management & User ID Consistency**
+
+- **User ID Mismatch:**  
+  Persistent problems with using a default user ID (`1`) but the DB may return a different (e.g., `2`) ID. Event and sync endpoints can fail if they tie to a non-existent or wrong user.  
+  > **To fix:**  
+  - Always query and operate by a unique attribute (username/email), never assuming the ID.
+  - Refactor all database operations (fetch, create events) to use the dynamically resolved user ID.
+  - Make sure every part of session/user logic (including Passport serialization/deserialization) uses the correct ID and profile.
+
+## 3. **Database Initialization & Error Handling**
+
+- **Failed User Creation/Constraint Violations:**  
+  Foreign key errors indicate user event creation is attempted for missing users, or new users are not properly initialized in the database.  
+  > **To fix:**  
+  - Make DB insertion/resolution of "default user" (or OAuth-based user) atomic and idempotent—never duplicate, always upsert.
+  - Add robust error handling/logging for all DB operations—track when/why user/event creation fails.
+
+## 4. **OAuth Token Refresh and Storage**
+
+- **Missing Refresh Tokens:**  
+  Your tokens may expire and the frontend may not be able to re-authenticate without forcing a user login.  
+  > **To fix:**  
+  - Ensure the OAuth request includes the right `access_type='offline'` and `prompt='consent'` to get and store refresh tokens.
+  - Store refresh tokens securely in your DB (not just memory/session).
+  - Implement background refresh or silent login on session expiry.
+
+## 5. **WebSocket/HMR/Frontend Dev Experience**
+
+- **Vite HMR Errors:**  
+  WebSocket connection failures are disrupting live reload/dev experience.  
+  > **To fix:**  
+  - Make sure Vite is configured to use a free port (`5174` or otherwise) that matches your dev environment.
+  - Confirm WebSocket proxy or CORS settings are correct in `vite.config.js` (especially true on Replit).
+
+## 6. **API/Endpoint Routing and Integration**
+
+- **Endpoint Routing Mismatches:**  
+  Sometimes `/api/auth/status` or others may reference the wrong session or user.  
+  > **To fix:**  
+  - Ensure every protected endpoint uses the current authenticated user from session, not a hardcoded ID.
+  - Confirm that after OAuth, your client always refreshes user state from the backend.
+
+## 7. **Full Feature Integration Checks**
+
+- **Google Calendar/Drive & SimplePractice:**  
+  Even after auth/session fixes, the sync and export features must work for the *currently authenticated user*.  
+  > **To fix:**  
+  - Test calendar event fetching, event creation/deletion, PDF export to Google Drive, and data synchronization for the just-logged-in user.
+  - Ensure that events and exports are not cross-user-mixed—a unique authenticated user only sees their data.
+
+## 8. **Application Secrets & Deployment**
+
+- Make sure that all `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, DB credentials, and session secrets are set in Replit Secrets (never hardcoded in `.env` for public repos).
+- Review and finalize all Mary doc configs for OAuth URIs and callback paths (see your `CURRENT_OAUTH_URLS.md` and deployment `.md` files).
+
+## 9. **Testing & Edge Cases**
+
+- **Sign in, sign out, switch accounts**
+- **Expiring tokens and silent refresh**
+- **Multiple users on the same install/domain**
+- **Mobile compatibility/auth flow**
+
+## 10. **Cleanup & Documentation**
+
+- Remove redundant, unused, or hardcoded test users and events from your DB.
+- Finalize user-facing documentation and troubleshooting for any non-obvious deployment or consent screen quirks (see your various `*_AUDIT.md` and `*_STATUS.md` files).
+
+**If you address these areas—especially the session persistence, user ID consistency, and OAuth/session handshake bugs—your app will be fully functional and all "integrated" features should work as designed.** 
+
+If you need line-by-line help on any **specific file or function**, let me know which file you want to go through!
+
+[1] https://replit.com/@jonathanprocter/RPP

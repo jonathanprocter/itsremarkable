@@ -1,0 +1,432 @@
+// ============================================================
+// TARGETED FIXES FOR CURRENT REPLIT DAILY PLANNER IMPLEMENTATION
+// ============================================================
+
+// Based on the screenshot, here are the specific changes needed:
+
+// 1. EXTEND THE TIME GRID TO SHOW ALL APPOINTMENTS
+function expandTimeGrid() {
+    // Current grid only shows 06:00, need to extend to 23:00
+    const timeContainer = document.querySelector('.time-grid, .time-column');
+    
+    if (timeContainer) {
+        // Clear existing time slots
+        timeContainer.innerHTML = '';
+        
+        // Create complete time grid from 6:00 AM to 11:00 PM
+        const timeSlots = [];
+        for (let hour = 6; hour <= 23; hour++) {
+            timeSlots.push(`${hour.toString().padStart(2, '0')}:00`);
+            if (hour < 23) {
+                timeSlots.push(`${hour.toString().padStart(2, '0')}:30`);
+            }
+        }
+        
+        timeSlots.forEach(time => {
+            const timeSlot = document.createElement('div');
+            timeSlot.className = 'time-slot';
+            timeSlot.textContent = time;
+            timeContainer.appendChild(timeSlot);
+        });
+    }
+}
+
+// 2. ADD ALL MONDAY APPOINTMENTS TO THE GRID
+function addMondayAppointments() {
+    const appointmentsData = [
+        {
+            name: "Dan re: Supervision",
+            time: "08:00-09:00",
+            source: "Google Calendar",
+            startHour: 8,
+            duration: 60,
+            eventNotes: [
+                "I cancelled supervision due to COVID",
+                "We didn't schedule a follow-up for this week, and will continue next week during our usual time"
+            ],
+            actionItems: [
+                "Review his supervision notes from last week",
+                "Follow-up to see if there are any pressing issues/questions that I can help him navigate"
+            ]
+        },
+        {
+            name: "Sherrifa Hoosein",
+            time: "09:00-10:00",
+            source: "SimplePractice",
+            startHour: 9,
+            duration: 60,
+            eventNotes: [
+                "Client has been struggling with anxiety",
+                "Discussed coping strategies and breathing exercises",
+                "Made progress on identifying triggers"
+            ],
+            actionItems: [
+                "Assign homework: daily mood tracking",
+                "Schedule follow-up in 2 weeks",
+                "Review treatment plan progress"
+            ]
+        },
+        {
+            name: "Nancy Grossman",
+            time: "10:00-11:00",
+            source: "SimplePractice",
+            startHour: 10,
+            duration: 60
+        },
+        {
+            name: "Amberly Comeau",
+            time: "11:00-12:00",
+            source: "SimplePractice",
+            startHour: 11,
+            duration: 60
+        },
+        {
+            name: "Maryellen Dankenbrink",
+            time: "12:00-13:00",
+            source: "SimplePractice",
+            startHour: 12,
+            duration: 60
+        },
+        {
+            name: "Angelica Ruden",
+            time: "14:00-15:00",
+            source: "SimplePractice",
+            startHour: 14,
+            duration: 60
+        },
+        {
+            name: "Nico Luppino", // No emoji
+            time: "15:00-16:00",
+            source: "SimplePractice",
+            startHour: 15,
+            duration: 60
+        },
+        {
+            name: "Noah Silverman",
+            time: "16:00-17:00",
+            source: "SimplePractice",
+            startHour: 16,
+            duration: 60
+        },
+        {
+            name: "Sarah Palladino",
+            time: "17:00-18:00",
+            source: "SimplePractice",
+            startHour: 17,
+            duration: 60
+        },
+        {
+            name: "David Grossman",
+            time: "18:30-20:00",
+            source: "SimplePractice",
+            startHour: 18.5,
+            duration: 90
+        },
+        {
+            name: "Steven Deluca",
+            time: "20:00-21:00",
+            source: "SimplePractice",
+            startHour: 20,
+            duration: 60
+        }
+    ];
+    
+    // Find or create appointments container
+    let appointmentsContainer = document.querySelector('.appointments-container');
+    if (!appointmentsContainer) {
+        appointmentsContainer = document.createElement('div');
+        appointmentsContainer.className = 'appointments-container';
+        appointmentsContainer.style.position = 'relative';
+        appointmentsContainer.style.marginLeft = '80px'; // Space for time column
+        document.querySelector('.daily-planner-content, .main-content').appendChild(appointmentsContainer);
+    }
+    
+    // Clear existing appointments
+    appointmentsContainer.innerHTML = '';
+    
+    // Add each appointment
+    appointmentsData.forEach(apt => {
+        const appointmentElement = createAppointmentElement(apt);
+        appointmentsContainer.appendChild(appointmentElement);
+    });
+}
+
+// 3. CREATE APPOINTMENT ELEMENT WITH PROPER NOTES POSITIONING
+function createAppointmentElement(appointment) {
+    const element = document.createElement('div');
+    element.className = 'appointment';
+    
+    // Calculate position based on start time (each hour = 60px)
+    const topPosition = (appointment.startHour - 6) * 60; // Starting from 6 AM
+    const height = (appointment.duration / 60) * 60; // Duration in pixels
+    
+    // Adjust height if appointment has notes
+    const hasNotes = appointment.eventNotes || appointment.actionItems;
+    const adjustedHeight = hasNotes ? height + 80 : height; // Extra space for notes
+    
+    element.style.cssText = `
+        position: absolute;
+        top: ${topPosition}px;
+        left: 8px;
+        right: 8px;
+        height: ${adjustedHeight}px;
+        background: #f9fafb;
+        border: 2px solid #d1d5db;
+        border-radius: 8px;
+        padding: 8px 12px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        overflow: hidden;
+    `;
+    
+    // Create appointment content with notes at top
+    let notesHTML = '';
+    if (appointment.eventNotes) {
+        notesHTML += `
+            <div class="event-notes" style="margin-bottom: 8px; font-size: 10px;">
+                <strong style="display: block; color: #374151; text-transform: uppercase; font-size: 9px; margin-bottom: 4px;">Event Notes</strong>
+                <ul style="margin: 0 0 0 12px; padding: 0;">
+                    ${appointment.eventNotes.map(note => `<li style="color: #4b5563; margin-bottom: 2px;">${note}</li>`).join('')}
+                </ul>
+            </div>
+        `;
+    }
+    
+    if (appointment.actionItems) {
+        notesHTML += `
+            <div class="action-items" style="margin-bottom: 8px; font-size: 10px;">
+                <strong style="display: block; color: #374151; text-transform: uppercase; font-size: 9px; margin-bottom: 4px;">Action Items</strong>
+                <ul style="margin: 0 0 0 12px; padding: 0;">
+                    ${appointment.actionItems.map(item => `<li style="color: #4b5563; margin-bottom: 2px;">${item}</li>`).join('')}
+                </ul>
+            </div>
+        `;
+    }
+    
+    element.innerHTML = `
+        ${notesHTML}
+        <div class="appointment-main" style="margin-top: ${hasNotes ? '0' : '8px'};">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px;">
+                <span style="font-weight: 600; font-size: 14px; color: #1f2937;">${appointment.name}</span>
+                <span style="font-size: 11px; color: #6b7280; font-weight: 500;">${appointment.time}</span>
+            </div>
+            <div style="font-size: 10px; color: #9ca3af; font-style: italic;">${appointment.source}</div>
+        </div>
+    `;
+    
+    // Add hover effects
+    element.addEventListener('mouseenter', () => {
+        element.style.background = '#f3f4f6';
+        element.style.borderColor = '#9ca3af';
+        element.style.transform = 'translateX(2px)';
+        element.style.boxShadow = '0 2px 6px rgba(0,0,0,0.15)';
+    });
+    
+    element.addEventListener('mouseleave', () => {
+        element.style.background = '#f9fafb';
+        element.style.borderColor = '#d1d5db';
+        element.style.transform = 'translateX(0)';
+        element.style.boxShadow = 'none';
+    });
+    
+    return element;
+}
+
+// 4. IMPROVE THE NAVIGATION BUTTONS
+function enhanceNavigation() {
+    // Update the "Back to Week" button styling
+    const backToWeekBtn = document.querySelector('button:contains("Back to Week")') || 
+                          document.querySelector('[onclick*="week"], [onclick*="Week"]');
+    
+    if (backToWeekBtn) {
+        backToWeekBtn.innerHTML = '📅 Weekly Overview';
+        backToWeekBtn.style.cssText = `
+            background: #f0f0f0;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            padding: 10px 16px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        `;
+    }
+    
+    // Style the arrow navigation buttons
+    const navButtons = document.querySelectorAll('button');
+    navButtons.forEach(btn => {
+        if (btn.textContent.includes('←') || btn.textContent.includes('→')) {
+            btn.style.cssText = `
+                background: #f0f0f0;
+                border: 2px solid #ccc;
+                border-radius: 8px;
+                padding: 8px 12px;
+                font-size: 14px;
+                cursor: pointer;
+                transition: all 0.2s ease;
+            `;
+        }
+    });
+}
+
+// 5. ADD PROPER CSS STYLING
+function addCalendarCSS() {
+    const style = document.createElement('style');
+    style.textContent = `
+        .daily-planner {
+            max-width: 1404px;
+            margin: 0 auto;
+            background: white;
+            font-family: Arial, sans-serif;
+        }
+        
+        .time-slot {
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #666;
+            border-bottom: 1px solid #e8e9ea;
+            background: #f8f9fa;
+        }
+        
+        .time-slot:nth-child(even) {
+            background: #f0f1f2;
+        }
+        
+        .appointments-container {
+            min-height: 1080px; /* 18 hours * 60px */
+            border-left: 2px solid #e0e0e0;
+        }
+        
+        .appointment:hover {
+            z-index: 10;
+        }
+        
+        /* Navigation button hover effects */
+        button:hover {
+            background: #e0e0e0 !important;
+            border-color: #999 !important;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        /* Hide the statistics for now */
+        .stats-container {
+            display: none;
+        }
+        
+        /* Responsive design for reMarkable */
+        @media screen and (max-width: 1404px) {
+            .daily-planner {
+                width: 100%;
+                padding: 0 10px;
+            }
+        }
+    `;
+    
+    document.head.appendChild(style);
+}
+
+// 6. MAIN INITIALIZATION FUNCTION
+function initializeDailyPlanner() {
+    console.log('Initializing daily planner...');
+    
+    // Apply all improvements
+    addCalendarCSS();
+    expandTimeGrid();
+    addMondayAppointments();
+    enhanceNavigation();
+    
+    console.log('Daily planner initialization complete!');
+}
+
+// 7. BIDIRECTIONAL LINKING (when weekly view is implemented)
+function setupDailyToWeeklyLinking() {
+    // Add click handler to "Weekly Overview" button
+    const weeklyBtn = document.querySelector('button:contains("📅 Weekly Overview")');
+    if (weeklyBtn) {
+        weeklyBtn.addEventListener('click', () => {
+            // Navigate to weekly view
+            if (window.showWeeklyView) {
+                window.showWeeklyView();
+            } else {
+                console.log('Navigate to weekly view');
+                // Implement navigation to weekly view here
+            }
+        });
+    }
+    
+    // Add double-click handler to appointments (optional)
+    document.querySelectorAll('.appointment').forEach(apt => {
+        apt.addEventListener('dblclick', () => {
+            // Navigate back to weekly view
+            if (window.showWeeklyView) {
+                window.showWeeklyView();
+            }
+        });
+    });
+}
+
+// 8. RUN INITIALIZATION
+// Auto-run when DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeDailyPlanner);
+} else {
+    initializeDailyPlanner();
+}
+
+// Make function available globally for manual trigger
+window.initializeDailyPlanner = initializeDailyPlanner;
+
+// ============================================================
+// INSTRUCTIONS FOR REPLIT CONSOLE:
+// ============================================================
+
+/*
+1. COPY and PASTE this entire code into your Replit JavaScript file
+
+2. RUN in console: initializeDailyPlanner()
+
+3. The code will:
+   - Extend the time grid to show 06:00-23:00
+   - Add all 11 Monday appointments in correct positions
+   - Put Event Notes and Action Items at TOP of appointments
+   - Style navigation buttons properly
+   - Fix appointment heights to prevent overlap
+
+4. For other days, modify the appointmentsData array with that day's appointments
+
+5. To test navigation: click the "📅 Weekly Overview" button
+*/
+
+// ============================================================
+// WEEKLY VIEW INTEGRATION HINT:
+// ============================================================
+
+// When you implement the weekly view, make sure appointments are clickable:
+function makeWeeklyAppointmentsClickable() {
+    const weeklyAppointments = document.querySelectorAll('.weekly-view .appointment');
+    weeklyAppointments.forEach(apt => {
+        apt.addEventListener('click', () => {
+            const day = apt.getAttribute('data-day') || 'monday';
+            showDailyView(day);
+        });
+    });
+}
+
+// Example function to show daily view from weekly
+function showDailyView(day) {
+    // Hide weekly view
+    document.querySelector('.weekly-view').style.display = 'none';
+    
+    // Show daily view
+    document.querySelector(`.daily-view[data-day="${day}"]`).style.display = 'block';
+    
+    // Initialize that day's appointments
+    if (day === 'monday') {
+        initializeDailyPlanner();
+    }
+    // Add similar initialization for other days
+}

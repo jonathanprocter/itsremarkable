@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weekly Package - July 7-13, 2025 - reMarkable Pro</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Times New Roman', serif;
+            background-color: white;
+            color: black;
+            line-height: 1.3;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* reMarkable Pro optimized print styles */
+        @page {
+            size: 8.5in 11in; /* reMarkable Pro dimensions */
+            margin: 0.4in;
+        }
+
+        @page :first {
+            size: 11in 8.5in; /* Landscape for weekly overview */
+            margin: 0.3in;
+        }
+
+        .page {
+            page-break-after: always;
+            min-height: 100vh;
+            background: white;
+        }
+
+        .page:last-child {
+            page-break-after: avoid;
+        }
+
+        .planner-container {
+            max-width: 100%;
+            margin: 0 auto;
+            background: white;
+            border: 3px solid black; /* Thicker border for e-ink visibility */
+            min-height: calc(100vh - 0.8in);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            border-bottom: 4px solid black; /* Thicker for e-ink */
+            padding: 20px;
+            text-align: center;
+            background: white;
+        }
+
+        .header h1 {
+            font-size: 28px; /* Larger for e-ink readability */
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .week-info {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .week-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            border-bottom: 3px solid black;
+            background: #f8f8f8;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 20px;
+            border-right: 2px solid black;
+            font-size: 14px;
+        }
+
+        .stat-card:last-child {
+            border-right: none;
+        }
+
+        .stat-number {
+            font-size: 24px; /* Larger for e-ink */
+            font-weight: bold;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .legend {
+            padding: 15px 20px;
+            border-bottom: 3px solid black;
+            font-size: 12px;
+            background: #f8f8f8;
+        }
+
+        .legend-item {
+            display: inline-block;
+            margin-right: 30px;
+            margin-bottom: 6px;
+        }
+
+        .legend-symbol {
+            display: inline-block;
+            width: 20px;
+            height: 16px;
+            margin-right: 8px;
+            vertical-align: middle;
+            border: 2px solid black; /* Simplified for e-ink */
+        }
+
+        .legend-symbol.simplepractice {
+            background: #f0f0f0;
+            border-left: 6px solid black;
+        }
+
+        .legend-symbol.google-calendar {
+            background: white;
+            border: 2px dashed black;
+        }
+
+        .calendar-container {
+            position: relative;
+            overflow: hidden;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Optimized grid for reMarkable Pro with hourly blocks */
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: 100px repeat(7, 1fr); /* Wider time column */
+            grid-template-rows: 80px repeat(16, 60px); /* 16 hours from 6AM-10PM, 60px each for writing space */
+            background: white;
+            position: relative;
+            flex: 1;
+        }
+
+        .time-header {
+            background: #f0f0f0;
+            padding: 20px 10px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 16px;
+            border-right: 3px solid black;
+            border-bottom: 4px solid black;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .day-header {
+            background: #f0f0f0;
+            padding: 15px 10px;
+            text-align: center;
+            font-weight: bold;
+            border-right: 2px solid black;
+            border-bottom: 4px solid black;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .day-header:last-child {
+            border-right: none;
+        }
+
+        .day-name {
+            font-size: 14px;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .day-date {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        /* Hourly time slots - each covers full hour for writing space */
+        .time-slot {
+            background: #f8f8f8;
+            padding: 8px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-right: 3px solid black;
+            border-bottom: 2px solid black;
+            height: 60px; /* Full hour height for writing */
+        }
+
+        .calendar-cell {
+            background: white;
+            border-right: 2px solid #ccc;
+            border-bottom: 2px solid #ccc;
+            position: relative;
+            min-height: 60px; /* Full hour height */
+            /* Add subtle grid for writing */
+            background-image: 
+                linear-gradient(to bottom, transparent 49%, #eee 49%, #eee 51%, transparent 51%);
+        }
+
+        .calendar-cell:last-child {
+            border-right: none;
+        }
+
+        /* Appointment styling optimized for e-ink */
+        .appointment {
+            position: absolute;
+            left: 4px;
+            right: 4px;
+            padding: 3px 6px;
+            font-size: 9px;
+            line-height: 1.2;
+            overflow: hidden;
+            z-index: 10;
+            border-radius: 0; /* No rounded corners for e-ink */
+            background: white;
+            border: 2px solid black;
+        }
+
+        .appointment.simplepractice {
+            background: #f5f5f5;
+            border-left: 6px solid black;
+        }
+
+        .appointment.google-calendar {
+            background: white;
+            border: 2px dashed black;
+        }
+
+        .appointment-text {
+            font-weight: bold;
+            text-transform: uppercase;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: 8px;
+        }
+
+        .appointment-time {
+            font-size: 7px;
+            font-weight: normal;
+            margin-top: 1px;
+        }
+
+        /* Position appointments in hourly grid (6AM = index 1, 7AM = index 2, etc.) */
+        .appointment.time-06-00 { top: 80px; }   /* 6AM */
+        .appointment.time-07-00 { top: 140px; }  /* 7AM */
+        .appointment.time-08-00 { top: 200px; }  /* 8AM */
+        .appointment.time-09-00 { top: 260px; }  /* 9AM */
+        .appointment.time-10-00 { top: 320px; }  /* 10AM */
+        .appointment.time-11-00 { top: 380px; }  /* 11AM */
+        .appointment.time-12-00 { top: 440px; }  /* 12PM */
+        .appointment.time-13-00 { top: 500px; }  /* 1PM */
+        .appointment.time-14-00 { top: 560px; }  /* 2PM */
+        .appointment.time-15-00 { top: 620px; }  /* 3PM */
+        .appointment.time-16-00 { top: 680px; }  /* 4PM */
+        .appointment.time-17-00 { top: 740px; }  /* 5PM */
+        .appointment.time-18-00 { top: 800px; }  /* 6PM */
+        .appointment.time-19-00 { top: 860px; }  /* 7PM */
+        .appointment.time-20-00 { top: 920px; }  /* 8PM */
+        .appointment.time-21-00 { top: 980px; }  /* 9PM */
+
+        .appointment.duration-30 { height: 25px; }
+        .appointment.duration-60 { height: 50px; }
+        .appointment.duration-90 { height: 75px; }
+
+        /* Column positioning for reMarkable Pro */
+        .appointment.col-mon { left: 102px; width: calc((100% - 102px) / 7 - 6px); }
+        .appointment.col-tue { left: calc(102px + (100% - 102px) / 7); width: calc((100% - 102px) / 7 - 6px); }
+        .appointment.col-wed { left: calc(102px + 2 * (100% - 102px) / 7); width: calc((100% - 102px) / 7 - 6px); }
+        .appointment.col-thu { left: calc(102px + 3 * (100% - 102px) / 7); width: calc((100% - 102px) / 7 - 6px); }
+        .appointment.col-fri { left: calc(102px + 4 * (100% - 102px) / 7); width: calc((100% - 102px) / 7 - 6px); }
+        .appointment.col-sat { left: calc(102px + 5 * (100% - 102px) / 7); width: calc((100% - 102px) / 7 - 6px); }
+        .appointment.col-sun { left: calc(102px + 6 * (100% - 102px) / 7); width: calc((100% - 102px) / 7 - 6px); }
+
+        /* Daily page styles optimized for reMarkable Pro */
+        .daily-container {
+            max-width: 100%;
+            margin: 0 auto;
+            background: white;
+            border: 3px solid black;
+            min-height: calc(100vh - 0.8in);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .daily-stats {
+            padding: 20px;
+            border-bottom: 3px solid black;
+            display: flex;
+            justify-content: space-between;
+            background: #f8f8f8;
+        }
+
+        .stat-item {
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .schedule-grid {
+            display: flex;
+            border-collapse: collapse;
+            flex: 1;
+        }
+
+        .time-column {
+            width: 100px;
+            border-right: 3px solid black;
+        }
+
+        .daily-time-slot {
+            height: 80px; /* Larger for writing space */
+            border-bottom: 2px solid black;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: bold;
+            background: #f8f8f8;
+        }
+
+        .appointments-column {
+            flex: 1;
+            position: relative;
+        }
+
+        .appointment-slot {
+            height: 80px; /* Match time slots */
+            border-bottom: 2px solid black;
+            position: relative;
+            background: white;
+            /* Add writing lines */
+            background-image: repeating-linear-gradient(
+                transparent,
+                transparent 19px,
+                #eee 19px,
+                #eee 20px
+            );
+        }
+
+        .footer {
+            background: #f8f8f8;
+            padding: 20px;
+            text-align: center;
+            font-size: 12px;
+            border-top: 3px solid black;
+            margin-top: auto;
+        }
+
+        .footer a {
+            color: black;
+            text-decoration: underline;
+            margin: 0 15px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* reMarkable Pro print optimizations */
+        @media print {
+            .print-button, .print-info {
+                display: none !important;
+            }
+            
+            .page {
+                display: block !important;
+                page-break-after: always;
+                page-break-inside: avoid;
+            }
+            
+            .page:last-child {
+                page-break-after: auto;
+            }
+            
+            /* High contrast for e-ink */
+            .appointment.simplepractice {
+                background: #f0f0f0 !important;
+                border: 2px solid #000 !important;
+                border-left: 6px solid #000 !important;
+                -webkit-print-color-adjust: exact;
+                color-adjust: exact;
+            }
+            
+            .appointment.google-calendar {
+                background: white !important;
+                border: 2px dashed #000 !important;
+                -webkit-print-color-adjust: exact;
+                color-adjust: exact;
+            }
+            
+            /* Ensure proper sizing for reMarkable Pro */
+            #weekly-overview .calendar-grid {
+                height: calc(100vh - 200px);
+            }
+            
+            .planner-container {
+                height: 100vh;
+            }
+            
+            /* Page numbering for reMarkable Pro */
+            .page-number {
+                display: block !important;
+                position: fixed;
+                bottom: 0.2in;
+                right: 0.3in;
+                font-size: 10px;
+                color: #333;
+                font-weight: bold;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Page 1: Weekly Overview - Landscape -->
+    <div class="page active" id="weekly-overview">
+        <div class="planner-container">
+            <div class="header">
+                <h1>Weekly Planner</h1>
+                <div class="week-info">July 7-13, 2025 • Week 28</div>
+            </div>
+
+            <div class="week-stats">
+                <div class="stat-card">
+                    <span class="stat-number">33</span>
+                    Total Appointments
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">33.8h</span>
+                    Scheduled Time
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">4.8h</span>
+                    Daily Average
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">78.2h</span>
+                    Available Time
+                </div>
+            </div>
+
+            <div class="legend">
+                <span class="legend-item">
+                    <span class="legend-symbol simplepractice"></span>SimplePractice
+                </span>
+                <span class="legend-item">
+                    <span class="legend-symbol google-calendar"></span>Google Calendar
+                </span>
+            </div>
+
+            <div class="calendar-container">
+                <div class="calendar-grid">
+                    <!-- Headers -->
+                    <div class="time-header">TIME</div>
+                    <div class="day-header"><div class="day-name">MON</div><div class="day-date">7</div></div>
+                    <div class="day-header"><div class="day-name">TUE</div><div class="day-date">8</div></div>
+                    <div class="day-header"><div class="day-name">WED</div><div class="day-date">9</div></div>
+                    <div class="day-header"><div class="day-name">THU</div><div class="day-date">10</div></div>
+                    <div class="day-header"><div class="day-name">FRI</div><div class="day-date">11</div></div>
+                    <div class="day-header"><div class="day-name">SAT</div><div class="day-date">12</div></div>
+                    <div class="day-header"><div class="day-name">SUN</div><div class="day-date">13</div></div>
+
+                    <!-- Hourly time slots (6AM - 9PM) -->
+                    <div class="time-slot">06:00</div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+
+                    <div class="time-slot">07:00</div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+
+                    <div class="time-slot">08:00</div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+
+                    <div class="time-slot">09:00</div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+
+                    <div class="time-slot">10:00</div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+
+                    <div class="time-slot">11:00</div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+
+                    <div class="time-slot">12:00</div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+
+                    <div class="time-slot">13:00</div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+
+                    <div class="time-slot">14:00</div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+
+                    <div class="time-slot">15:00</div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+
+                    <div class="time-slot">16:00</div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+
+                    <div class="time-slot">17:00</div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+
+                    <div class="time-slot">18:00</div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+
+                    <div class="time-slot">19:00</div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+
+                    <div class="time-slot">20:00</div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+
+                    <div class="time-slot">21:00</div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+
+                    <!-- Sample appointments positioned in hourly blocks -->
+                    <!-- Monday appointments -->
+                    <div class="appointment simplepractice col-mon time-08-00 duration-30">
+                        <div class="appointment-text">DAN RE: S...</div>
+                        <div class="appointment-time">08:00-08:30</div>
+                    </div>
+                    <div class="appointment simplepractice col-mon time-09-00 duration-30">
+                        <div class="appointment-text">SHERIPA A...</div>
+                        <div class="appointment-time">09:00-09:30</div>
+                    </div>
+                    <div class="appointment simplepractice col-mon time-10-00 duration-30">
+                        <div class="appointment-text">NANCY GRO...</div>
+                        <div class="appointment-time">10:00-10:30</div>
+                    </div>
+
+                    <!-- Tuesday appointments -->
+                    <div class="appointment google-calendar col-tue time-08-00 duration-30">
+                        <div class="appointment-text">COFFEE WI...</div>
+                        <div class="appointment-time">08:00-08:30</div>
+                    </div>
+                    <div class="appointment google-calendar col-tue time-09-00 duration-60">
+                        <div class="appointment-text">VALEN & YA...</div>
+                        <div class="appointment-time">09:00-10:00</div>
+                    </div>
+
+                    <!-- Add more appointments as needed -->
+                </div>
+            </div>
+
+            <div class="footer">
+                <a onclick="navigateToPage('weekly-overview')">Weekly Overview</a> |
+                <a onclick="navigateToPage('monday')">Monday →</a> |
+                <a onclick="navigateToPage('tuesday')">Tuesday</a> |
+                <a onclick="navigateToPage('wednesday')">Wednesday</a> |
+                <a onclick="navigateToPage('thursday')">Thursday</a> |
+                <a onclick="navigateToPage('friday')">Friday</a> |
+                <a onclick="navigateToPage('saturday')">Saturday</a> |
+                <a onclick="navigateToPage('sunday')">Sunday</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Daily pages would follow similar pattern but optimized for portrait reMarkable Pro layout -->
+    <!-- Adding one sample daily page -->
+    <div class="page" id="monday">
+        <div class="daily-container">
+            <div class="header">
+                <h1>Daily Planner</h1>
+                <div class="week-info">Monday, July 7, 2025</div>
+            </div>
+
+            <div class="daily-stats">
+                <div class="stat-item">
+                    <span class="stat-number">5</span>
+                    Appointments
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">2.5h</span>
+                    Scheduled
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">21.5h</span>
+                    Available
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">90%</span>
+                    Free Time
+                </div>
+            </div>
+
+            <div class="schedule-grid">
+                <div class="time-column">
+                    <div class="daily-time-slot">06:00</div>
+                    <div class="daily-time-slot">07:00</div>
+                    <div class="daily-time-slot">08:00</div>
+                    <div class="daily-time-slot">09:00</div>
+                    <div class="daily-time-slot">10:00</div>
+                    <div class="daily-time-slot">11:00</div>
+                    <div class="daily-time-slot">12:00</div>
+                    <div class="daily-time-slot">13:00</div>
+                    <div class="daily-time-slot">14:00</div>
+                    <div class="daily-time-slot">15:00</div>
+                    <div class="daily-time-slot">16:00</div>
+                    <div class="daily-time-slot">17:00</div>
+                    <div class="daily-time-slot">18:00</div>
+                    <div class="daily-time-slot">19:00</div>
+                    <div class="daily-time-slot">20:00</div>
+                    <div class="daily-time-slot">21:00</div>
+                </div>
+
+                <div class="appointments-column">
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot"></div>
+                    <div class="appointment-slot"></div>
+                </div>
+            </div>
+
+            <div class="footer">
+                <a onclick="navigateToPage('weekly-overview')">← Weekly Overview</a> |
+                <a onclick="navigateToPage('tuesday')">Tuesday →</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Navigation between pages
+        function navigateToPage(pageId) {
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(page => page.classList.remove('active'));
+            
+            const targetPage = document.getElementById(pageId);
+            if (targetPage) {
+                targetPage.classList.add('active');
+            }
+        }
+
+        // reMarkable Pro optimized print function
+        function printReMarkablePDF() {
+            // Set up reMarkable Pro specific optimizations
+            document.body.classList.add('remarkable-printing');
+            
+            // Show all pages for printing
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(page => {
+                page.style.display = 'block';
+                page.classList.remove('active');
+            });
+            
+            // Print with reMarkable Pro settings
+            const printSettings = {
+                margins: 'minimum',
+                preferCSSPageSize: true,
+                printBackground: true
+            };
+            
+            window.print();
+            
+            // Restore after printing
+            setTimeout(() => {
+                document.body.classList.remove('remarkable-printing');
+                pages.forEach((page, index) => {
+                    if (index !== 0) page.style.display = 'none';
+                });
+                pages[0].classList.add('active');
+            }, 100);
+        }
+
+        // Keyboard navigation optimized for reMarkable Pro
+        document.addEventListener('keydown', function(event) {
+            const currentPage = document.querySelector('.page.active');
+            if (!currentPage) return;
+            
+            const currentId = currentPage.id;
+            const pageOrder = ['weekly-overview', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+            const currentIndex = pageOrder.indexOf(currentId);
+            
+            if (event.key === 'ArrowRight' || event.key === 'PageDown') {
+                event.preventDefault();
+                const nextIndex = (currentIndex + 1) % pageOrder.length;
+                navigateToPage(pageOrder[nextIndex]);
+            } else if (event.key === 'ArrowLeft' || event.key === 'PageUp') {
+                event.preventDefault();
+                const prevIndex = currentIndex === 0 ? pageOrder.length - 1 : currentIndex - 1;
+                navigateToPage(pageOrder[prevIndex]);
+            } else if (event.key === 'Home') {
+                event.preventDefault();
+                navigateToPage('weekly-overview');
+            } else if (event.ctrlKey && event.key === 'p') {
+                event.preventDefault();
+                printReMarkablePDF();
+            }
+        });
+
+        // Initialize reMarkable Pro optimizations
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add reMarkable Pro specific styles
+            const remarkableStyles = document.createElement('style');
+            remarkableStyles.textContent = `
+                .print-button {
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: #000;
+                    color: white;
+                    border: 2px solid #333;
+                    padding: 15px 25px;
+                    border-radius: 0;
+                    cursor: pointer;
+                    font-size: 14px;
+                    font-weight: bold;
+                    z-index: 1000;
+                    font-family: 'Times New Roman', serif;
+                }
+                
+                .print-button:hover {
+                    background: #333;
+                }
+                
+                .print-info {
+                    position: fixed;
+                    top: 80px;
+                    right: 20px;
+                    background: #000;
+                    color: white;
+                    padding: 10px 15px;
+                    border: 1px solid #333;
+                    font-size: 11px;
+                    z-index: 999;
+                    display: none;
+                    font-family: 'Times New Roman', serif;
+                }
+                
+                .print-button:hover + .print-info {
+                    display: block;
+                }
+                
+                @media print {
+                    .print-button, .print-info {
+                        display: none !important;
+                    }
+                }
+            `;
+            document.head.appendChild(remarkableStyles);
+            
+            // Create reMarkable Pro optimized print button
+            const printButton = document.createElement('button');
+            printButton.className = 'print-button';
+            printButton.textContent = '📋 reMarkable PDF';
+            printButton.onclick = printReMarkablePDF;
+            document.body.appendChild(printButton);
+            
+            // Add info tooltip
+            const printInfo = document.createElement('div');
+            printInfo.className = 'print-info';
+            printInfo.innerHTML = 'Optimized for reMarkable Pro<br>11.8" e-ink display<br>Hourly blocks for writing';
+            document.body.appendChild(printInfo);
+        });
+    </script>
+</body>
+</html>

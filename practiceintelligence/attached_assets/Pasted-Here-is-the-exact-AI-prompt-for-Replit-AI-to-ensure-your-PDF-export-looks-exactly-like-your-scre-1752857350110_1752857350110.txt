@@ -1,0 +1,39 @@
+Here is the **exact AI prompt** for Replit AI to ensure your PDF export looks exactly like your screenshot for daily view, and that weekly view remains minimal:
+
+My exported PDF planner must follow these rules:
+
+**DAILY VIEW:**
+- Every appointment box MUST look exactly like my appointment modal screenshot, for ALL cancelled appointments.
+  - If cancelled by clinician:
+    - Gray (#e9ecef) background and border
+    - “Clinician Canceled” badge in the top-right (identical style as the modal)
+    - Double strikethrough text on title and time (match modal)
+    - Reduced opacity/muted effect (as modal)
+  - If cancelled by client:
+    - Amber/yellow background and border (match modal)
+    - “Client Canceled” badge in the top-right (identical to modal)
+    - Double strikethrough text for title and time
+- For all appointments: Box layout, spacing, padding, border-radius, and font sizes must match the modal component exactly.
+- No repeats of “SIMPLEPRACTICE” or any redundant text in appointment boxes.
+- All meta (status, notes, etc.) must use the same style as the modal.
+- Times displayed and interpreted in Eastern Standard Time.
+- Remove all occurrences of “Paul Benjamin” at any Friday 11:00AM slot (all ghosts, all repeats).
+- All numbers and summary metrics at the top must be realistic (no negative or impossible values).
+
+**WEEKLY VIEW:**
+- Cancellations are shown ONLY with background color:
+  - Gray for clinician
+  - Yellow for client
+- NO modal style, NO badges, NO strikethrough, NO border changes beyond background color.
+- All other weekly view visuals remain as they currently are.
+
+**GLOBAL:**
+- The daily view must be pixel-perfect identical to the modal for all cancelled appointments (badge, text, color, box shape, spacing, everything).
+- Weekly layout must not be altered except for cancellation coloring.
+- All database changes and removals (like no “Paul Benjamin”) must persist in exports.
+
+Generate/export the PDF so ALL daily cancelled appointment boxes look indistinguishable from the modal, and weekly view remains clean, showing only color for cancellations. Only change what is described.
+
+---
+
+[1] https://replit.com/@jonathanprocter/RemarkablePlannerPro-1

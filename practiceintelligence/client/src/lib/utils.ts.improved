@@ -1,0 +1,28 @@
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
+
+/**
+ * Combines class names using `clsx` and merges Tailwind CSS classes with `twMerge`.
+ * This function ensures that class names are deduplicated and merged according to Tailwind's specificity rules.
+ * 
+ * @param inputs - An array of class values to be combined and merged.
+ * @returns A string of combined and optimized class names.
+ */
+export function cn(...inputs: ClassValue[]): string {
+  try {
+    // Ensure inputs are valid and use modern ES6 spread syntax for readability and performance
+    if (!inputs || inputs.length === 0) {
+      throw new Error("No class names provided to combine.");
+    }
+
+    // Use clsx to combine class names, then twMerge to merge Tailwind classes efficiently
+    const combinedClasses = clsx(...inputs);
+    const optimizedClasses = twMerge(combinedClasses);
+
+    return optimizedClasses;
+  } catch (error) {
+    // Log the error for debugging purposes; in a real-world scenario, consider more sophisticated error handling
+    console.error("Error combining class names:", error);
+    return ""; // Return an empty string as a safe fallback
+  }
+}

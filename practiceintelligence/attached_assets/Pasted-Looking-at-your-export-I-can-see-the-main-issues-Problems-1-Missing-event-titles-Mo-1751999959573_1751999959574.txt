@@ -1,0 +1,74 @@
+Looking at your export, I can see the main issues:
+
+**❌ Problems**:
+1. **Missing event titles** - Most events just show "SIMPLEPRACTICE" instead of patient names
+2. **Missing time ranges** - Events like the middle ones don't show "10:00-11:00" etc.
+3. **Inconsistent rendering** - Only some events show properly
+
+**✅ What's working**:
+- "Dan re: Supervision" and "Sherrita Hoosein" show correctly with 3-column layout
+- Time grid to 23:30 is perfect
+- Event styling (borders) is working
+
+The issue is that the **event title cleaning is too aggressive** and wiping out the titles. Let me fix this:## 🚨 **Critical Issues Identified**
+
+Looking at your export, I can see the **main problem**:
+
+**❌ Most events are missing their titles!** 
+- Should show: "Nancy Grossman", "Amberly Comeau", etc.
+- Actually showing: Just "SIMPLEPRACTICE" 
+
+**❌ Missing time ranges**
+- Should show: "10:00-11:00", "11:00-12:00", etc.
+- Actually showing: Nothing
+
+The issue is that my previous text cleaning was **too aggressive** and accidentally removing the event titles entirely!
+
+## 🔧 **Critical Fix**
+
+The fix above addresses this by:
+
+1. **Conservative title cleaning** - Only removes " Appointment" suffix, nothing else
+2. **Always render all 3 elements** - Title, source, time for EVERY event
+3. **Extensive debugging** - Console logs to see exactly what's happening
+4. **Simplified text wrapping** - Avoid character-level issues
+5. **Consistent heights** - Every event gets proper space
+
+## 🧪 **Debug Steps**
+
+1. **Replace the function** with the fixed version above
+2. **Export again** 
+3. **Check browser console** - You'll see detailed logs like:
+   ```
+   --- Event 3 DEBUG ---
+   Original title: "Nancy Grossman Appointment"
+   Display title: "Nancy Grossman"
+   Drew simple title: "Nancy Grossman"
+   Drew simple source: "SIMPLEPRACTICE"
+   Drew simple time range: "10:00-11:00"
+   ```
+
+## 📊 **Expected Result**
+
+After this fix, **EVERY event** should show:
+- ✅ **Patient name** (Nancy Grossman, Amberly Comeau, etc.)
+- ✅ **Source** (SIMPLEPRACTICE)
+- ✅ **Time range** (10:00-11:00, 11:00-12:00, etc.)
+
+## 🔍 **If Still Not Working**
+
+Add this to your `handleExportAction` function to see the raw event data:
+
+```typescript
+console.log('=== RAW EVENT DATA ===');
+dayEvents.forEach((event, i) => {
+  console.log(`Event ${i+1}:`, {
+    title: event.title,
+    hasTitle: !!event.title,
+    titleLength: event.title?.length,
+    source: event.source
+  });
+});
+```
+
+The extensive debugging in the new function will show us exactly what's happening with each event title. This should fix the missing titles and time ranges! 🚀

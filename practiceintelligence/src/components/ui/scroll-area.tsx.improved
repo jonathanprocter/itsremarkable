@@ -1,0 +1,50 @@
+import React, { forwardRef, ComponentPropsWithoutRef, ElementRef } from "react";
+import { Root, Viewport, Corner, ScrollAreaScrollbar, ScrollAreaThumb } from "@radix-ui/react-scroll-area";
+
+import { cn } from "@/lib/utils";
+
+/**
+ * A wrapper component for Radix UI's ScrollArea with custom styling.
+ * 
+ * @param props - The props to pass to the ScrollArea component.
+ * @param ref - Ref forwarding to access the DOM element.
+ */
+const ScrollArea = forwardRef<ElementRef<typeof Root>, ComponentPropsWithoutRef<typeof Root>>(
+  ({ className, children, ...props }, ref) => (
+    <Root ref={ref} className={cn("relative overflow-hidden", className)} {...props}>
+      <Viewport className="h-full w-full rounded-[inherit]">
+        {children}
+      </Viewport>
+      <ScrollBar />
+      <Corner />
+    </Root>
+  )
+);
+ScrollArea.displayName = "ScrollArea";
+
+/**
+ * Custom scrollbar component for the ScrollArea.
+ * 
+ * @param props - The props to pass to the ScrollAreaScrollbar component, including orientation.
+ * @param ref - Ref forwarding to access the DOM element.
+ */
+const ScrollBar = forwardRef<ElementRef<typeof ScrollAreaScrollbar>, ComponentPropsWithoutRef<typeof ScrollAreaScrollbar>>(
+  ({ className, orientation = "vertical", ...props }, ref) => (
+    <ScrollAreaScrollbar
+      ref={ref}
+      orientation={orientation}
+      className={cn(
+        "flex touch-none select-none transition-colors",
+        orientation === "vertical" ? "h-full w-2.5 border-l border-l-transparent p-[1px]" : "",
+        orientation === "horizontal" ? "h-2.5 flex-col border-t border-t-transparent p-[1px]" : "",
+        className
+      )}
+      {...props}
+    >
+      <ScrollAreaThumb className="relative flex-1 rounded-full bg-border" />
+    </ScrollAreaScrollbar>
+  )
+);
+ScrollBar.displayName = "ScrollBar";
+
+export { ScrollArea, ScrollBar };

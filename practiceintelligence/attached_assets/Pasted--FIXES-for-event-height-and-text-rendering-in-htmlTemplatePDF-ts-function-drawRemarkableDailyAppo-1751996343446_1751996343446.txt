@@ -1,0 +1,238 @@
+// FIXES for event height and text rendering in htmlTemplatePDF.ts
+
+function drawRemarkableDailyAppointments(pdf: jsPDF, selectedDate: Date, events: CalendarEvent[], gridStartY: number, dayColumnWidth: number, timeSlotHeight: number): void {
+  const { margin, timeColumnWidth } = REMARKABLE_DAILY_CONFIG;
+  
+  // Filter events for the selected day
+  const dayEvents = events.filter(event => {
+    const eventDate = new Date(event.startTime);
+    return eventDate.getFullYear() === selectedDate.getFullYear() &&
+           eventDate.getMonth() === selectedDate.getMonth() &&
+           eventDate.getDate() === selectedDate.getDate();
+  }).sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
+  
+  console.log(`Rendering ${dayEvents.length} events for ${selectedDate.toDateString()}`);
+  console.log('Time slot height:', timeSlotHeight);
+  
+  dayEvents.forEach((event, index) => {
+    const eventDate = new Date(event.startTime);
+    const endDate = new Date(event.endTime);
+    const startHour = eventDate.getHours();
+    const startMinute = eventDate.getMinutes();
+    const endHour = endDate.getHours();
+    const endMinute = endDate.getMinutes();
+    
+    // Calculate position based on 30-minute slots from 6:00
+    const startMinutesFrom6 = (startHour - 6) * 60 + startMinute;
+    const endMinutesFrom6 = (endHour - 6) * 60 + endMinute;
+    
+    // Convert to slot positions (each slot is 30 minutes)
+    const startSlot = Math.max(0, startMinutesFrom6 / 30);
+    const endSlot = Math.min(35, endMinutesFrom6 / 30);
+    
+    // FIXED: Ensure minimum event height for visibility and text
+    const durationSlots = Math.max(2, endSlot - startSlot); // Minimum 2 slots (1 hour) for text visibility
+    
+    if (startSlot < 0 || startSlot > 35) return;
+    
+    // Position calculation
+    const eventX = margin + timeColumnWidth + 3;
+    const eventY = gridStartY + (startSlot * timeSlotHeight) + 1;
+    const eventWidth = dayColumnWidth - 6;
+    
+    // FIXED: Minimum height for proper text display
+    const eventHeight = Math.max(45, (durationSlots * timeSlotHeight) - 2); // Minimum 45 points for 3 lines of text
+    
+    console.log(`Event ${index + 1}: ${event.title}`);
+    console.log(`Position: X=${eventX}, Y=${eventY}, Width=${eventWidth}, Height=${eventHeight}`);
+    console.log(`Duration slots: ${durationSlots}, Calculated height: ${eventHeight}`);
+    
+    // Determine event type
+    const isSimplePractice = event.source === 'simplepractice' || 
+                           event.title.toLowerCase().includes('appointment') ||
+                           event.calendarId?.includes('simplepractice') ||
+                           event.calendarId === '0np7sib5u30o7oc297j5pb259g';
+    
+    const isHoliday = event.title.toLowerCase().includes('holiday') ||
+                     event.calendarId === 'en.usa#holiday@group.v.calendar.google.com';
+    
+    const isGoogle = event.source === 'google' && !isSimplePractice && !isHoliday;
+    
+    // Draw event background (WHITE)
+    pdf.setFillColor(255, 255, 255);
+    pdf.rect(eventX, eventY, eventWidth, eventHeight, 'F');
+    
+    // Draw borders based on event type
+    if (isSimplePractice) {
+      // SimplePractice: Thick blue left border
+      pdf.setDrawColor(66, 133, 244);
+      pdf.setLineWidth(4);
+      pdf.line(eventX, eventY, eventX, eventY + eventHeight);
+      
+      // Thin gray border around the rest
+      pdf.setDrawColor(200, 200, 200);
+      pdf.setLineWidth(0.5);
+      pdf.line(eventX + 4, eventY, eventX + eventWidth, eventY); // top
+      pdf.line(eventX + eventWidth, eventY, eventX + eventWidth, eventY + eventHeight); // right
+      pdf.line(eventX, eventY + eventHeight, eventX + eventWidth, eventY + eventHeight); // bottom
+      
+    } else if (isGoogle) {
+      // Google Calendar: Dashed green border
+      pdf.setDrawColor(52, 168, 83);
+      pdf.setLineWidth(2);
+      pdf.setLineDash([4, 2]);
+      pdf.rect(eventX, eventY, eventWidth, eventHeight);
+      pdf.setLineDash([]);
+      
+    } else if (isHoliday) {
+      // Holiday: Yellow background
+      pdf.setFillColor(251, 188, 4);
+      pdf.rect(eventX, eventY, eventWidth, eventHeight, 'F');
+      pdf.setDrawColor(255, 152, 0);
+      pdf.setLineWidth(1);
+      pdf.rect(eventX, eventY, eventWidth, eventHeight);
+      
+    } else {
+      // Default: Gray border
+      pdf.setDrawColor(156, 163, 175);
+      pdf.setLineWidth(1);
+      pdf.rect(eventX, eventY, eventWidth, eventHeight);
+    }
+    
+    // FIXED: Event text with proper spacing and larger fonts
+    const textX = eventX + (isSimplePractice ? 8 : 6);
+    const textWidth = eventWidth - (isSimplePractice ? 12 : 8);
+    let currentY = eventY + 15; // Start text lower to ensure visibility
+    
+    console.log(`Text area: X=${textX}, starting Y=${currentY}, width=${textWidth}`);
+    
+    // 1. EVENT TITLE (Bold, larger font)
+    const cleanTitle = event.title.replace(/ Appointment$/, '').trim();
+    
+    // INCREASED font size for better visibility
+    pdf.setFontSize(11);
+    pdf.setFont('helvetica', 'bold');
+    pdf.setTextColor(0, 0, 0);
+    
+    console.log(`Drawing title: "${cleanTitle}"`);
+    
+    // Handle text wrapping
+    const titleLines = pdf.splitTextToSize(cleanTitle, textWidth);
+    const maxTitleLines = Math.min(titleLines.length, 2); // Max 2 lines for title
+    
+    for (let i = 0; i < maxTitleLines && currentY + 12 <= eventY + eventHeight - 20; i++) {
+      pdf.text(titleLines[i], textX, currentY);
+      console.log(`Drew title line ${i + 1}: "${titleLines[i]}" at Y=${currentY}`);
+      currentY += 12;
+    }
+    
+    // 2. SOURCE (Smaller, all caps, gray)
+    if (currentY + 10 <= eventY + eventHeight - 12) {
+      pdf.setFontSize(8);
+      pdf.setFont('helvetica', 'normal');
+      pdf.setTextColor(100, 100, 100);
+      
+      let sourceText = '';
+      if (isSimplePractice) {
+        sourceText = 'SIMPLEPRACTICE';
+      } else if (isGoogle) {
+        sourceText = 'GOOGLE CALENDAR';
+      } else if (isHoliday) {
+        sourceText = 'HOLIDAYS IN UNITED STATES';
+      } else {
+        sourceText = (event.source || 'MANUAL').toUpperCase();
+      }
+      
+      pdf.text(sourceText, textX, currentY);
+      console.log(`Drew source: "${sourceText}" at Y=${currentY}`);
+      currentY += 10;
+    }
+    
+    // 3. TIME RANGE (Bold)
+    if (currentY + 10 <= eventY + eventHeight - 5) {
+      pdf.setFontSize(9);
+      pdf.setFont('helvetica', 'bold');
+      pdf.setTextColor(0, 0, 0);
+      
+      const startTimeStr = eventDate.toLocaleTimeString('en-US', { 
+        hour: '2-digit', 
+        minute: '2-digit', 
+        hour12: false 
+      });
+      const endTimeStr = endDate.toLocaleTimeString('en-US', { 
+        hour: '2-digit', 
+        minute: '2-digit', 
+        hour12: false 
+      });
+      const timeRange = `${startTimeStr}-${endTimeStr}`;
+      
+      pdf.text(timeRange, textX, currentY);
+      console.log(`Drew time: "${timeRange}" at Y=${currentY}`);
+    }
+    
+    console.log(`Finished rendering event ${index + 1}`);
+  });
+}
+
+// ALSO UPDATE: Increase time slot height for better event visibility
+const REMARKABLE_DAILY_CONFIG = {
+  pageWidth: 507,
+  pageHeight: 677,
+  margin: 23,
+  
+  headerHeight: 57,
+  statsHeight: 43,
+  legendHeight: 28,
+  
+  get totalHeaderHeight() {
+    return this.headerHeight + this.statsHeight + this.legendHeight;
+  },
+  
+  timeColumnWidth: 71,
+  timeSlotHeight: 20, // INCREASED from 17 to 20 for better event spacing
+  
+  get gridStartY() {
+    return this.margin + this.totalHeaderHeight;
+  },
+  
+  get dayColumnWidth() {
+    return this.pageWidth - (this.margin * 2) - this.timeColumnWidth;
+  },
+  
+  fonts: {
+    title: 16,
+    subtitle: 10,
+    stats: 8,
+    timeSlot: 7,
+    eventTitle: 11,    // INCREASED
+    eventSource: 8,    // INCREASED
+    eventTime: 9       // INCREASED
+  },
+  
+  colors: {
+    black: [0, 0, 0],
+    white: [255, 255, 255],
+    lightGray: [245, 245, 245],
+    mediumGray: [200, 200, 200],
+    darkGray: [100, 100, 100],
+    simplePracticeBlue: [66, 133, 244],
+    googleGreen: [52, 168, 83],
+    holidayYellow: [251, 188, 4]
+  }
+};
+
+// DEBUGGING: Add this to see exactly what events are being processed
+// Add this to your handleExportAction function in planner.tsx:
+/*
+console.log('=== EVENTS FOR EXPORT DEBUG ===');
+dayEvents.forEach((event, index) => {
+  console.log(`Event ${index + 1}:`, {
+    title: event.title,
+    source: event.source,
+    calendarId: event.calendarId,
+    startTime: event.startTime.toLocaleString(),
+    endTime: event.endTime.toLocaleString(),
+    duration: `${((event.endTime.getTime() - event.startTime.getTime()) / (1000 * 60))} minutes`
+  });
+});
+*/

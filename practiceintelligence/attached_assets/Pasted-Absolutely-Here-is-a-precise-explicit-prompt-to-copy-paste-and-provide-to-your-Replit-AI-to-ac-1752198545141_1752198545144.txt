@@ -1,0 +1,55 @@
+Absolutely. Here is a **precise, explicit prompt to copy-paste and provide to your Replit AI** to achieve the exact changes you want for your “pixel-perfect” daily planner PDF export:
+
+## VERBATIM INSTRUCTIONS FOR REPLIT AI
+
+**1. Header Adjustments**
+- Make the header smaller and visually balanced; do NOT let it dominate the top of the export.
+- Date and “appointments today” summary should be in a single horizontal row just beneath the title, aligning left with the calendar table.
+- The "Weekly" button should appear clearly above or to the left of the header, looking like the real dashboard button (distinct, outlined, properly labeled "Back to week" or "Weekly Overview").
+
+**2. Event Rendering & Sizing**
+- All appointment events MUST appear *inside* the appointment grid/cell, not floating outside or overlapping the table lines.
+- Increase the font size for the event summary (name, time, and source) so the appointment content visually fills and “owns” the appointment slot/row.
+- Do NOT crowd events, but maximize their use of vertical and horizontal space within cells—padding should be minimal.
+- The appointment rows should expand vertically if event title/time requires.
+
+**3. Remove Empty Notes/Actions**
+- “Event Notes” and “Action Items” **must only display** if they have actual note/action content for that appointment.
+- If there are no notes or actions for an event (e.g., Sherrifa Hoosein), do NOT render empty “Event Notes”/“Action Items” headers/fields—omit them completely for that row.
+
+**4. Timeline Divider**
+- Add a **vertical dividing line** (solid, #222 or matching dashboard), just like the WEEKLY view, between the left time column and the event cell area.
+- This vertical line should extend the full visible table height and be visually identical to the weekly and dashboard views (not too thick or faint).
+
+**5. Calendar Legend**
+- The legend (SimplePractice, Google Calendar, Holidays in United States) should appear right under the header, styled as aligned badges or a colored bar (like the dashboard), **not** as a bulleted list or out-of-place text.
+- Use the actual dashboard colors and icons for each legend entry (SimplePractice = blue, Google Calendar = green, Holidays = yellow/orange).
+
+**6. General Layout**
+- The appointment grid/table must have clear, straight lines—do NOT allow event text to bleed outside of boxes.
+- All times should appear in the left column, right-aligned and vertically centered, with clear separation from the main event cell.
+- Ensure all boundaries, column widths, and font weights match the live dashboard and weekly export exactly.
+
+**7. Responsive Sizing & Spacing**
+- Appointment font and box should scale to use available grid space, filling the cell more completely, but do NOT allow text to overflow or overlap cell lines.
+
+**8. Margins, Spacing, and Print**
+- Margins between “header/summary/legend” and the table/grid should be minimal and consistent with the live UI.
+- Maintain correct portrait orientation for daily view export.
+
+**9. PDF Export Checklist**
+- After export, verify:
+    - The header is compact and styled like the dashboard
+    - All appointments are inside their boxes, are bolder/larger, and there is no “Event Notes/Action Items” unless populated
+    - The vertical time divider matches weekly/dashboard style
+    - The legend looks right and is just below the header
+    - All alignment, font, and cell lines match the on-screen daily dashboard
+
+**NOTE:**  
+If possible, render and compare a side-by-side image of the daily dashboard and daily PDF export to confirm complete visual fidelity before considering the change “done”.
+
+Copy and paste the above **exactly** into your Replit AI or development agent. If you have a place to upload a screenshot or include a PDF example, do so and reference it as the “ground truth”.
+
+Let me know if you need a tailored CSS/HTML snippet for any of these steps!
+
+[1] file:///Users/jonathanprocter/Downloads/pixel-perfect-daily-planner-2025-07-07%20(1).pdf

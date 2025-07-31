@@ -1,0 +1,61 @@
+"use client";
+
+import React, { createContext, useContext, forwardRef, ElementRef, ComponentPropsWithoutRef } from "react";
+import * as ToggleGroupPrimitive from "@radix-ui/react-toggle-group";
+import { VariantProps } from "class-variance-authority";
+
+import { cn } from "@/lib/utils";
+import { toggleVariants } from "@/components/ui/toggle";
+
+interface ToggleGroupContextValue extends VariantProps<typeof toggleVariants> {}
+
+const ToggleGroupContext = createContext<ToggleGroupContextValue>({
+  size: "default",
+  variant: "default",
+});
+
+interface ToggleGroupProps extends ComponentPropsWithoutRef<typeof ToggleGroupPrimitive.Root>, VariantProps<typeof toggleVariants> {}
+
+const ToggleGroup = forwardRef<ElementRef<typeof ToggleGroupPrimitive.Root>, ToggleGroupProps>(
+  ({ className, variant = "default", size = "default", children, ...props }, ref) => (
+    <ToggleGroupPrimitive.Root
+      ref={ref}
+      className={cn("flex items-center justify-center gap-1", className)}
+      {...props}
+    >
+      <ToggleGroupContext.Provider value={{ variant, size }}>
+        {children}
+      </ToggleGroupContext.Provider>
+    </ToggleGroupPrimitive.Root>
+  )
+);
+
+ToggleGroup.displayName = "ToggleGroup";
+
+interface ToggleGroupItemProps extends ComponentPropsWithoutRef<typeof ToggleGroupPrimitive.Item>, VariantProps<typeof toggleVariants> {}
+
+const ToggleGroupItem = forwardRef<ElementRef<typeof ToggleGroupPrimitive.Item>, ToggleGroupItemProps>(
+  ({ className, children, variant, size, ...props }, ref) => {
+    const context = useContext(ToggleGroupContext);
+
+    return (
+      <ToggleGroupPrimitive.Item
+        ref={ref}
+        className={cn(
+          toggleVariants({
+            variant: variant || context.variant,
+            size: size || context.size,
+          }),
+          className
+        )}
+        {...props}
+      >
+        {children}
+      </ToggleGroupPrimitive.Item>
+    );
+  }
+);
+
+ToggleGroupItem.displayName = "ToggleGroupItem";
+
+export { ToggleGroup, ToggleGroupItem };

@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weekly Planner - Jul 7-13, Week 28</title>
+    <style>
+        body {
+            font-family: 'Times New Roman', serif;
+            margin: 0;
+            padding: 15px;
+            background: white;
+            color: black;
+            font-size: 11px;
+            line-height: 1.1;
+            width: 100vw;
+            box-sizing: border-box;
+        }
+        
+        .planner-container {
+            width: 100%;
+            max-width: none;
+            margin: 0;
+            overflow-x: auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 12px;
+        }
+        
+        .header h1 {
+            font-size: 20px;
+            font-weight: bold;
+            margin: 0;
+            letter-spacing: 1.5px;
+        }
+        
+        .header .week-info {
+            font-size: 14px;
+            margin: 3px 0;
+        }
+        
+        .stats-container {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+            border: 2px solid black;
+        }
+        
+        .stat-box {
+            flex: 1;
+            text-align: center;
+            padding: 6px;
+            border-right: 1px solid black;
+        }
+        
+        .stat-box:last-child {
+            border-right: none;
+        }
+        
+        .stat-number {
+            font-size: 16px;
+            font-weight: bold;
+            display: block;
+        }
+        
+        .stat-label {
+            font-size: 9px;
+            margin-top: 1px;
+        }
+        
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin: 8px 0;
+            font-size: 10px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .legend-box {
+            width: 12px;
+            height: 12px;
+            border: 1px solid black;
+        }
+        
+        .simple-practice {
+            background: white;
+            border: 2px solid #6495ED;
+            border-left: 4px solid #6495ED;
+        }
+        
+        .google-calendar {
+            background: white;
+            border: 2px dashed #4CAF50;
+        }
+        
+        .holidays {
+            background: #ffd700;
+        }
+        
+        .calendar-table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 2px solid black;
+            table-layout: fixed;
+        }
+        
+        .calendar-table td,
+        .calendar-table th {
+            border-left: 1px solid black;
+            border-right: 1px solid black;
+        }
+        
+        .time-header, .day-header {
+            background: white;
+            border-top: 1px solid black;
+            border-bottom: 1px solid black;
+            border-left: 1px solid black;
+            border-right: 1px solid black;
+            text-align: center;
+            font-weight: bold;
+            padding: 6px 3px;
+            vertical-align: middle;
+        }
+        
+        .time-header {
+            width: 70px;
+            font-size: 13px;
+            border-right: 2px solid black;
+        }
+        
+        .day-header {
+            font-size: 13px;
+            padding: 8px 4px;
+            letter-spacing: 0.3px;
+            width: calc((100% - 70px) / 7);
+            border-left: 2px solid black;
+            border-right: 1px solid black;
+        }
+        
+        .day-header:first-of-type {
+            border-left: 1px solid black;
+        }
+        
+        .day-header:last-of-type {
+            border-right: 1px solid black;
+        }
+        
+        .day-number {
+            font-size: 22px;
+            font-weight: bold;
+            margin-top: 2px;
+            display: block;
+        }
+        
+        .time-slot {
+            border-top: 1px solid black;
+            border-bottom: 1px solid black;
+            border-left: 1px solid black;
+            border-right: 2px solid black;
+            text-align: center;
+            vertical-align: middle;
+            font-weight: bold;
+            padding: 1px;
+            width: 70px;
+            font-size: 9px;
+            display: table-cell;
+        }
+        
+        .time-slot.hour-row {
+            background: #f5f5f5;
+        }
+        
+        .time-hour {
+            font-size: 11px;
+        }
+        
+        .time-half {
+            font-size: 9px;
+            color: #666;
+        }
+        
+        .hour-row {
+            background: #f5f5f5;
+        }
+        
+        .appointment-cell {
+            border-top: 1px solid black;
+            border-bottom: 1px solid black;
+            border-left: 2px solid black;
+            border-right: 1px solid black;
+            vertical-align: top;
+            padding: 0;
+            height: 22px;
+            position: relative;
+            width: calc((100% - 70px) / 7);
+        }
+        
+        .appointment-cell:first-of-type {
+            border-left: 1px solid black;
+        }
+        
+        .appointment-cell:last-of-type {
+            border-right: 1px solid black;
+        }
+        
+        .appointment-cell.hour-row {
+            background: #f5f5f5;
+        }
+        
+        .appointment {
+            font-size: 7px;
+            line-height: 0.9;
+            height: 100%;
+            padding: 1px 1px;
+            overflow: hidden;
+        }
+        
+        .appointment-time {
+            font-size: 6px;
+            color: #333;
+            font-weight: normal;
+        }
+        
+        .appointment-name {
+            font-weight: bold;
+            margin-top: 0;
+            font-size: 7px;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            hyphens: auto;
+        }
+        
+        /* Specific styling for different appointment types */
+        .simple-practice-appt {
+            background: white;
+            border: 2px solid #6495ED;
+            border-left: 4px solid #6495ED;
+        }
+        
+        .google-calendar-appt {
+            background: white;
+            border: 2px dashed #4CAF50;
+        }
+        
+        .appointment-span {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 10;
+        }
+        
+        .span-1 { height: 21px; }
+        .span-2 { height: 42px; }
+        .span-3 { height: 63px; }
+        .span-4 { height: 84px; }
+        
+        /* reMarkable Paper Pro Landscape Optimization */
+        @media screen and (max-width: 2272px) and (orientation: landscape) {
+            body {
+                padding: 10px;
+                font-size: 10px;
+            }
+            
+            .header h1 {
+                font-size: 18px;
+            }
+            
+            .appointment-cell {
+                height: 20px;
+                border-left: 2px solid black;
+                border-right: 1px solid black;
+            }
+            
+            .appointment-cell:first-of-type {
+                border-left: 1px solid black;
+            }
+            
+            .appointment-cell:last-of-type {
+                border-right: 1px solid black;
+            }
+            
+            .appointment {
+                font-size: 7px;
+            }
+            
+            .appointment-name {
+                font-size: 7px;
+            }
+            
+            .appointment-time {
+                font-size: 6px;
+            }
+            
+            .span-1 { height: 19px; }
+            .span-2 { height: 38px; }
+            .span-3 { height: 57px; }
+            .span-4 { height: 76px; }
+        }
+        
+        /* Ensure crisp rendering on high-DPI displays like reMarkable */
+        @media (-webkit-min-device-pixel-ratio: 2) {
+            .calendar-table,
+            .appointment-cell,
+            .time-slot {
+                border-width: 1px;
+            }
+            
+            .appointment-cell {
+                border-left: 2px solid black;
+                border-right: 1px solid black;
+            }
+            
+            .appointment-cell:first-of-type {
+                border-left: 1px solid black;
+            }
+            
+            .appointment-cell:last-of-type {
+                border-right: 1px solid black;
+            }
+            
+            .calendar-table td,
+            .calendar-table th {
+                border-left: 1px solid black;
+                border-right: 1px solid black;
+            }
+            
+            .simple-practice-appt {
+                border-width: 1px;
+                border-left-width: 3px;
+            }
+            
+            .google-calendar-appt {
+                border: 1px dashed #4CAF50;
+            }
+            
+            .time-slot {
+                vertical-align: middle;
+                display: table-cell;
+            }
+        }
+        
+        /* Print optimization for reMarkable PDF export */
+        @media print {
+            body {
+                margin: 0;
+                padding: 8px;
+                font-size: 10px;
+            }
+            
+            .planner-container {
+                page-break-inside: avoid;
+            }
+            
+            .calendar-table {
+                page-break-inside: avoid;
+            }
+            
+            .calendar-table td,
+            .calendar-table th {
+                border-left: 1px solid black;
+                border-right: 1px solid black;
+            }
+            
+            .appointment-cell {
+                height: 18px;
+                border-top: 1px solid black;
+                border-bottom: 1px solid black;
+                border-left: 2px solid black;
+                border-right: 1px solid black;
+            }
+            
+            .appointment-cell:first-of-type {
+                border-left: 1px solid black;
+            }
+            
+            .appointment-cell:last-of-type {
+                border-right: 1px solid black;
+            }
+            
+            .time-slot {
+                border-right: 2px solid black;
+                border-top: 1px solid black;
+                border-bottom: 1px solid black;
+                border-left: 1px solid black;
+            }
+            
+            .appointment {
+                font-size: 9px;
+            }
+            
+            .appointment-name {
+                font-size: 9px;
+            }
+            
+            .google-calendar-appt {
+                border: 1px dashed #4CAF50;
+            }
+            
+            .span-1 { height: 18px; }
+            .span-2 { height: 37px; }
+            .span-3 { height: 56px; }
+            .span-4 { height: 75px; }
+        }
+        
+        /* Landscape orientation specific optimizations */
+        @media screen and (orientation: landscape) {
+            .calendar-table {
+                font-size: 0.9em;
+            }
+            
+            .calendar-table td,
+            .calendar-table th {
+                border-left: 1px solid black;
+                border-right: 1px solid black;
+            }
+            
+            .time-header {
+                width: 65px;
+                border-right: 2px solid black;
+            }
+            
+            .appointment-cell {
+                width: calc((100% - 65px) / 7);
+                border-top: 1px solid black;
+                border-bottom: 1px solid black;
+                border-left: 1px solid black;
+                border-right: 1px solid black;
+            }
+            
+            .appointment-cell.hour-row {
+                border-left: 1.5px solid black;
+                border-right: 1.5px solid black;
+            }
+            
+            .time-slot {
+                border-right: 2px solid black;
+                border-top: 1px solid black;
+                border-bottom: 1px solid black;
+                border-left: 1px solid black;
+            }
+            
+            .google-calendar-appt {
+                border: 2px dashed #4CAF50;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="planner-container">
+        <div class="header">
+            <h1>WEEKLY PLANNER</h1>
+            <div class="week-info">Jul 7-13 • Week 28</div>
+        </div>
+        
+        <div class="stats-container">
+            <div class="stat-box">
+                <span class="stat-number">33</span>
+                <div class="stat-label">Total Appointments</div>
+            </div>
+            <div class="stat-box">
+                <span class="stat-number">33.8h</span>
+                <div class="stat-label">Scheduled Time</div>
+            </div>
+            <div class="stat-box">
+                <span class="stat-number">4.8h</span>
+                <div class="stat-label">Daily Average</div>
+            </div>
+            <div class="stat-box">
+                <span class="stat-number">89h</span>
+                <div class="stat-label">Available Time</div>
+            </div>
+        </div>
+        
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-box simple-practice"></div>
+                <span>SimplePractice</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box google-calendar"></div>
+                <span>Google Calendar</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box holidays"></div>
+                <span>Holidays in United States</span>
+            </div>
+        </div>
+        
+        <table class="calendar-table">
+            <thead>
+                <tr>
+                    <th class="time-header">TIME</th>
+                    <th class="day-header">MON<br><span class="day-number">7</span></th>
+                    <th class="day-header">TUE<br><span class="day-number">8</span></th>
+                    <th class="day-header">WED<br><span class="day-number">9</span></th>
+                    <th class="day-header">THU<br><span class="day-number">10</span></th>
+                    <th class="day-header">FRI<br><span class="day-number">11</span></th>
+                    <th class="day-header">SAT<br><span class="day-number">12</span></th>
+                    <th class="day-header">SUN<br><span class="day-number">13</span></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="time-slot time-hour hour-row">06:00</td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row"></td>
+                </tr>
+                <tr>
+                    <td class="time-slot time-half">06:30</td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                </tr>
+                <tr>
+                    <td class="time-slot time-hour hour-row">07:00</td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row">
+                        <div class="appointment simple-practice-appt span-2 appointment-span">
+                            <div class="appointment-time">07:00</div>
+                            <div class="appointment-name">Richie Hayes</div>
+                        </div>
+                    </td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row"></td>
+                </tr>
+                <tr>
+                    <td class="time-slot time-half">07:30</td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell">
+                        <div class="appointment simple-practice-appt span-2 appointment-span">
+                            <div class="appointment-time">07:30</div>
+                            <div class="appointment-name">Ruben Spilberg</div>
+                        </div>
+                    </td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                </tr>
+                <tr>
+                    <td class="time-slot time-hour hour-row">08:00</td>
+                    <td class="appointment-cell hour-row">
+                        <div class="appointment simple-practice-appt span-2 appointment-span">
+                            <div class="appointment-time">08:00</div>
+                            <div class="appointment-name">Dan re: Supervision</div>
+                        </div>
+                    </td>
+                    <td class="appointment-cell hour-row">
+                        <div class="appointment google-calendar-appt span-2 appointment-span">
+                            <div class="appointment-time">08:00</div>
+                            <div class="appointment-name">Coffee with Nora</div>
+                        </div>
+                    </td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row">
+                        <div class="appointment simple-practice-appt span-2 appointment-span">
+                            <div class="appointment-time">08:00</div>
+                            <div class="appointment-name">John Best</div>
+                        </div>
+                    </td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row"></td>
+                </tr>
+                <tr>
+                    <td class="time-slot time-half">08:30</td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                </tr>
+                <tr>
+                    <td class="time-slot time-hour hour-row">09:00</td>
+                    <td class="appointment-cell hour-row">
+                        <div class="appointment google-calendar-appt span-2 appointment-span">
+                            <div class="appointment-time">09:00</div>
+                            <div class="appointment-name">Sherifa Hossein</div>
+                        </div>
+                    </td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row"></td>
+                </tr>
+                <tr>
+                    <td class="time-slot time-half">09:30</td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell">
+                        <div class="appointment simple-practice-appt span-2 appointment-span">
+                            <div class="appointment-time">09:30</div>
+                            <div class="appointment-name">Kristi Rook</div>
+                        </div>
+                    </td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                </tr>
+                <tr>
+                    <td class="time-slot time-hour hour-row">10:00</td>
+                    <td class="appointment-cell hour-row">
+                        <div class="appointment simple-practice-appt span-2 appointment-span">
+                            <div class="appointment-time">10:00</div>
+                            <div class="appointment-name">Nancy Grossman</div>
+                        </div>
+                    </td>
+                    <td class="appointment-cell hour-row">
+                        <div class="appointment google-calendar-appt span-2 appointment-span">
+                            <div class="appointment-time">10:00</div>
+                        </div>
+                    </td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row">
+                        <div class="appointment simple-practice-appt span-2 appointment-span">
+                            <div class="appointment-time">10:00</div>
+                            <div class="appointment-name">Calvin Hill</div>
+                        </div>
+                    </td>
+                    <td class="appointment-cell hour-row"></td>
+                </tr>
+                <tr>
+                    <td class="time-slot time-half">10:30</td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                </tr>
+                <tr>
+                    <td class="time-slot time-hour hour-row">11:00</td>
+                    <td class="appointment-cell hour-row">
+                        <div class="appointment simple-practice-appt span-2 appointment-span">
+                            <div class="appointment-time">11:00</div>
+                            <div class="appointment-name">Amberly Comeau</div>
+                        </div>
+                    </td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row">
+                        <div class="appointment simple-practice-appt span-2 appointment-span">
+                            <div class="appointment-time">11:00</div>
+                            <div class="appointment-name">Paul Benjamin</div>
+                        </div>
+                    </td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row"></td>
+                </tr>
+                <tr>
+                    <td class="time-slot time-half">11:30</td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                </tr>
+                <tr>
+                    <td class="time-slot time-hour hour-row">12:00</td>
+                    <td class="appointment-cell hour-row">
+                        <div class="appointment google-calendar-appt span-2 appointment-span">
+                            <div class="appointment-time">12:00</div>
+                            <div class="appointment-name">Maryellen Dankenbrink</div>
+                        </div>
+                    </td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row"></td>
+                </tr>
+                <tr>
+                    <td class="time-slot time-half">12:30</td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                </tr>
+                <tr>
+                    <td class="time-slot time-hour hour-row">13:00</td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row">
+                        <div class="appointment simple-practice-appt span-2 appointment-span">
+                            <div class="appointment-time">13:00</div>
+                            <div class="appointment-name">Ava Moskowitz</div>
+                        </div>
+                    </td>
+                    <td class="appointment-cell hour-row">
+                        <div class="appointment simple-practice-appt span-2 appointment-span">
+                            <div class="appointment-time">13:00</div>
+                            <div class="appointment-name">Noah Silverman</div>
+                        </div>
+                    </td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row"></td>
+                </tr>
+                <tr>
+                    <td class="time-slot time-half">13:30</td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                </tr>
+                <tr>
+                    <td class="time-slot time-hour hour-row">14:00</td>
+                    <td class="appointment-cell hour-row">
+                        <div class="appointment simple-practice-appt span-2 appointment-span">
+                            <div class="appointment-time">14:00</div>
+                            <div class="appointment-name">Angelica Ruden</div>
+                        </div>
+                    </td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row"></td>
+                </tr>
+                <tr>
+                    <td class="time-slot time-half">14:30</td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell">
+                        <div class="appointment simple-practice-appt span-2 appointment-span">
+                            <div class="appointment-time">14:30</div>
+                            <div class="appointment-name">Luke Knox</div>
+                        </div>
+                    </td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                </tr>
+                <tr>
+                    <td class="time-slot time-hour hour-row">15:00</td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row"></td>
+                </tr>
+                <tr>
+                    <td class="time-slot time-half">15:30</td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                </tr>
+                <tr>
+                    <td class="time-slot time-hour hour-row">16:00</td>
+                    <td class="appointment-cell hour-row">
+                        <div class="appointment simple-practice-appt span-2 appointment-span">
+                            <div class="appointment-time">16:00</div>
+                            <div class="appointment-name">Noah Silverman</div>
+                        </div>
+                    </td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row">
+                        <div class="appointment simple-practice-appt span-2 appointment-span">
+                            <div class="appointment-time">16:00</div>
+                            <div class="appointment-name">Brianna Brickman</div>
+                        </div>
+                    </td>
+                    <td class="appointment-cell hour-row">
+                        <div class="appointment simple-practice-appt span-2 appointment-span">
+                            <div class="appointment-time">16:00</div>
+                            <div class="appointment-name">Freddy Rodriguez</div>
+                        </div>
+                    </td>
+                    <td class="appointment-cell hour-row">
+                        <div class="appointment simple-practice-appt span-2 appointment-span">
+                            <div class="appointment-time">16:00</div>
+                            <div class="appointment-name">Trendall Storey</div>
+                        </div>
+                    </td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row"></td>
+                </tr>
+                <tr>
+                    <td class="time-slot time-half">16:30</td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                </tr>
+                <tr>
+                    <td class="time-slot time-hour hour-row">17:00</td>
+                    <td class="appointment-cell hour-row">
+                        <div class="appointment simple-practice-appt span-2 appointment-span">
+                            <div class="appointment-time">17:00</div>
+                            <div class="appointment-name">Sarah Palladino</div>
+                        </div>
+                    </td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row">
+                        <div class="appointment simple-practice-appt span-2 appointment-span">
+                            <div class="appointment-time">17:00</div>
+                            <div class="appointment-name">Gavin Perna</div>
+                        </div>
+                    </td>
+                    <td class="appointment-cell hour-row">
+                        <div class="appointment simple-practice-appt span-2 appointment-span">
+                            <div class="appointment-time">17:00</div>
+                            <div class="appointment-name">Gavin Fisch</div>
+                        </div>
+                    </td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row"></td>
+                </tr>
+                <tr>
+                    <td class="time-slot time-half">17:30</td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                </tr>
+                <tr>
+                    <td class="time-slot time-hour hour-row">18:00</td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row">
+                        <div class="appointment simple-practice-appt span-2 appointment-span">
+                            <div class="appointment-time">18:00</div>
+                            <div class="appointment-name">Valentina Gjdoda</div>
+                        </div>
+                    </td>
+                    <td class="appointment-cell hour-row">
+                        <div class="appointment simple-practice-appt span-2 appointment-span">
+                            <div class="appointment-time">18:00</div>
+                            <div class="appointment-name">Max Moskowitz</div>
+                        </div>
+                    </td>
+                    <td class="appointment-cell hour-row">
+                        <div class="appointment simple-practice-appt span-2 appointment-span">
+                            <div class="appointment-time">18:00</div>
+                            <div class="appointment-name">Nico Luppino</div>
+                        </div>
+                    </td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row"></td>
+                </tr>
+                <tr>
+                    <td class="time-slot time-half">18:30</td>
+                    <td class="appointment-cell">
+                        <div class="appointment simple-practice-appt span-3 appointment-span">
+                            <div class="appointment-time">18:30</div>
+                            <div class="appointment-name">David Grossman</div>
+                        </div>
+                    </td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                </tr>
+                <tr>
+                    <td class="time-slot time-hour hour-row">19:00</td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row">
+                        <div class="appointment simple-practice-appt span-2 appointment-span">
+                            <div class="appointment-time">19:00</div>
+                            <div class="appointment-name">Vivian Meador</div>
+                        </div>
+                    </td>
+                    <td class="appointment-cell hour-row">
+                        <div class="appointment simple-practice-appt span-2 appointment-span">
+                            <div class="appointment-time">19:00</div>
+                            <div class="appointment-name">Owen Lennon</div>
+                        </div>
+                    </td>
+                    <td class="appointment-cell hour-row">
+                        <div class="appointment simple-practice-appt span-2 appointment-span">
+                            <div class="appointment-time">19:00</div>
+                            <div class="appointment-name">Nick Dabreu</div>
+                        </div>
+                    </td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row"></td>
+                </tr>
+                <tr>
+                    <td class="time-slot time-half">19:30</td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                </tr>
+                <tr>
+                    <td class="time-slot time-hour hour-row">20:00</td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row"></td>
+                </tr>
+                <tr>
+                    <td class="time-slot time-half">20:30</td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                </tr>
+                <tr>
+                    <td class="time-slot time-hour hour-row">21:00</td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row"></td>
+                </tr>
+                <tr>
+                    <td class="time-slot time-half">21:30</td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                </tr>
+                <tr>
+                    <td class="time-slot time-hour hour-row">22:00</td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row"></td>
+                </tr>
+                <tr>
+                    <td class="time-slot time-half">22:30</td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                </tr>
+                <tr>
+                    <td class="time-slot time-hour hour-row">23:00</td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row"></td>
+                    <td class="appointment-cell hour-row"></td>
+                </tr>
+                <tr>
+                    <td class="time-slot time-half">23:30</td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                    <td class="appointment-cell"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

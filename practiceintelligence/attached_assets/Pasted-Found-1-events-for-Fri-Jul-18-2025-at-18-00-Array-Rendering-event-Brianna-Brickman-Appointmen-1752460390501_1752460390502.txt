@@ -1,0 +1,87 @@
+Found 1 events for Fri Jul 18 2025 at 18:00 
+Array [{…}]
+Rendering event Brianna Brickman Appointment at 18:00 - isFirstSlot: true
+📊 Brianna Brickman Appointment: 60 minutes -> 56px height (contained within grid lines)
+Found 1 events for Mon Jul 14 2025 at 18:30 
+Array [{…}]
+Rendering event David Grossman Appointment at 18:30 - isFirstSlot: true
+📊 David Grossman Appointment: 90 minutes -> 86px height (contained within grid lines)
+Found 1 events for Wed Jul 16 2025 at 18:30 
+Array [{…}]
+Rendering event Max Moskowitz Appointment at 18:30 - isFirstSlot: false
+Found 1 events for Thu Jul 17 2025 at 18:30 
+Array [{…}]
+Rendering event Nico Luppino Appointment at 18:30 - isFirstSlot: false
+Found 1 events for Fri Jul 18 2025 at 18:30 
+Array [{…}]
+Rendering event Brianna Brickman Appointment at 18:30 - isFirstSlot: false
+Found 1 events for Mon Jul 14 2025 at 19:00 
+Array [{…}]
+Rendering event David Grossman Appointment at 19:00 - isFirstSlot: false
+Found 1 events for Tue Jul 15 2025 at 19:00 
+Array [{…}]
+Rendering event Vivian Meador Appointment at 19:00 - isFirstSlot: true
+📊 Vivian Meador Appointment: 60 minutes -> 56px height (contained within grid lines)
+Found 1 events for Wed Jul 16 2025 at 19:00 
+Array [{…}]
+Rendering event Owen Lennon Appointment at 19:00 - isFirstSlot: true
+📊 Owen Lennon Appointment: 60 minutes -> 56px height (contained within grid lines)
+Found 1 events for Mon Jul 14 2025 at 19:30 
+Array [{…}]
+Rendering event David Grossman Appointment at 19:30 - isFirstSlot: false
+Found 1 events for Tue Jul 15 2025 at 19:30 
+Array [{…}]
+Rendering event Vivian Meador Appointment at 19:30 - isFirstSlot: false
+Found 1 events for Wed Jul 16 2025 at 19:30 
+Array [{…}]
+Rendering event Owen Lennon Appointment at 19:30 - isFirstSlot: false
+Found 1 events for Wed Jul 16 2025 at 20:00 
+Array [{…}]
+Rendering event David Grossman Appointment at 20:00 - isFirstSlot: true
+📊 David Grossman Appointment: 90 minutes -> 86px height (contained within grid lines)
+Found 1 events for Wed Jul 16 2025 at 20:30 
+Array [{…}]
+Rendering event David Grossman Appointment at 20:30 - isFirstSlot: false
+Found 1 events for Wed Jul 16 2025 at 21:00 
+Array [{…}]
+Rendering event David Grossman Appointment at 21:00 - isFirstSlot: false
+🎯 Test functions registered: 
+Object {testDailyExport: "function", testDynamicDailyExport: "function", testButtonClick: "function", testSimplePDF: "function", testDirectPDF: "function"}
+❌ Failed to load enhancement script: 
+Error {}
+
+at t.value (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:17465)
+at new t (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:12630)
+at t.value (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:32766)
+at https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:34400
+❌ Failed to load enhancement script: 
+Error {}
+
+at t.value (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:17465)
+at new t (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:12630)
+at t.value (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:32766)
+at https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:34400
+📊 Event breakdown: 
+Object {total: 2046, simplepractice: 298, google: 1748, manual: 0}
+📅 Your appointments date range: 
+Object {earliest: "Thu Dec 21 2023", latest: "Wed Dec 31 2025", sampleDates: Array(5), currentlyViewing: "Mon Jul 14 2025"}
+🔍 SimplePractice Status: 
+Object {isLoading: false, hasError: false, error: undefined, eventsFound: 298, calendarsFound: 3}
+Found 1 events for Mon Jul 14 2025 at 07:00 
+Array [{…}]
+Rendering event Angelica Ruden Appointment at 07:00 - isFirstSlot: true
+📊 Angelica Ruden Appointment: 60 minutes -> 56px height (contained within grid lines)
+🔍 DETAILED: Angelica Ruden Appointment: 60 minutes -> 56px height
+Found 1 events for Fri Jul 18 2025 at 07:00 
+Array [{…}]
+Rendering event Richie Hayes Appointment at 07:00 - isFirstSlot: true
+📊 Richie Hayes Appointment: 60 minutes -> 56px height (contained within grid lines)
+Found 1 events for Mon Jul 14 2025 at 07:30 
+Array [{…}]
+Rendering event Angelica Ruden Appointment at 07:30 - isFirstSlot: false
+Found 1 events for Thu Jul 17 2025 at 07:30 
+Array [{…}]
+Rendering event Ruben Spilberg Appointment at 07:30 - isFirstSlot: true
+📊 Ruben Spilberg Appointment: 60 minutes -> 56px height (contained within grid lines)
+Found 1 events for Fri Jul 18 2025 at 07:30 
+Array [{…}]

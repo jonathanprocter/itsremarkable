@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendar - Friday, July 18, 2025</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f5f5;
+        }
+
+        .calendar-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border: 2px solid #333;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .header {
+            background: #f8f9fa;
+            padding: 15px 20px;
+            border-bottom: 1px solid #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .date-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .weekly-overview-btn {
+            background: #e9ecef;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 5px 10px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            color: #333;
+        }
+        
+        .weekly-overview-btn:hover {
+            background: #dee2e6;
+        }
+        
+        .date-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 0;
+        }
+        
+        .subtitle {
+            font-size: 14px;
+            color: #666;
+            font-style: italic;
+            margin: 5px 0 0 0;
+        }
+        
+        .service-icons {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        
+        .service-icon {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: #333;
+        }
+        
+        .icon {
+            width: 14px;
+            height: 14px;
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+        
+        .simplepractice { background: #4285f4; }
+        .google { background: #34a853; }
+        .holidays { background: #fbbc04; }
+        
+        .stats-bar {
+            background: #f8f9fa;
+            padding: 15px 20px;
+            border-bottom: 1px solid #333;
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+        }
+        
+        .stat {
+            flex: 1;
+        }
+        
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 0;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            margin: 2px 0 0 0;
+        }
+        
+        .calendar-grid {
+            position: relative;
+        }
+        
+        .time-slot {
+            height: 30px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            position: relative;
+        }
+        
+        .time-slot.hour {
+            border-bottom: 1px solid #ccc;
+            background: #e9ecef;
+        }
+        
+        .time-slot.half-hour {
+            background: white;
+        }
+        
+        .time-label {
+            width: 80px;
+            font-size: 11px;
+            font-weight: bold;
+            text-align: center;
+            border-right: 1px solid #333;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        .time-slot.hour .time-label {
+            background: #e9ecef;
+        }
+        
+        .time-slot.half-hour .time-label {
+            background: white;
+        }
+        
+        .time-content {
+            flex: 1;
+            height: 30px;
+            position: relative;
+        }
+        
+        .appointment {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            right: 3px;
+            height: 56px;
+            background: white;
+            border: 1px solid #6c9bd1;
+            border-left: 4px solid #4285f4;
+            border-radius: 2px;
+            padding: 4px 8px;
+            color: #000;
+            font-size: 11px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+        }
+        
+        .appointment-container {
+            position: absolute;
+            left: 81px;
+            right: 0;
+            height: 60px;
+            z-index: 10;
+        }
+        
+        /* Three-column layout for appointments */
+        .appointment-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            padding-right: 8px;
+        }
+        
+        .appointment-notes {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            padding: 0 8px;
+            border-left: 1px solid #ddd;
+        }
+        
+        .appointment-actions {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            padding-left: 8px;
+            border-left: 1px solid #ddd;
+        }
+        
+        .appointment-title {
+            font-weight: bold;
+            margin-bottom: 2px;
+            font-size: 11px;
+            line-height: 1.2;
+            color: #000;
+        }
+        
+        .appointment-subtitle {
+            font-size: 8px;
+            text-transform: uppercase;
+            color: #999;
+            margin-bottom: 3px;
+            font-weight: normal;
+        }
+        
+        .appointment-time {
+            font-weight: bold;
+            font-size: 16px;
+            line-height: 1.2;
+            color: #000;
+        }
+        
+        .section-header {
+            font-weight: bold;
+            font-size: 9px;
+            color: #333;
+            margin-bottom: 2px;
+        }
+        
+        .section-content {
+            font-size: 8px;
+            color: #666;
+            line-height: 1.3;
+        }
+        
+        /* Single column layout for appointments without notes/actions */
+        .appointment.single-column {
+            flex-direction: column;
+        }
+        
+        .appointment.single-column .appointment-main {
+            flex: none;
+            padding-right: 0;
+        }
+        
+        .footer {
+            background: #f8f9fa;
+            padding: 15px 20px;
+            border-top: 1px solid #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .nav-btn {
+            background: #e9ecef;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 8px 15px;
+            font-size: 12px;
+            cursor: pointer;
+            text-decoration: none;
+            color: #333;
+        }
+        
+        .nav-btn:hover {
+            background: #dee2e6;
+        }
+        
+        .weekly-overview-footer {
+            background: #e9ecef;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 8px 15px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            color: #333;
+        }
+        
+        .weekly-overview-footer:hover {
+            background: #dee2e6;
+        }
+        
+        @media print {
+            body {
+                background-color: white;
+                padding: 0;
+            }
+            
+            .calendar-container {
+                box-shadow: none;
+                border: 1px solid #333;
+            }
+            
+            .nav-btn, .weekly-overview-btn, .weekly-overview-footer {
+                cursor: default;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="calendar-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="date-section">
+                <a href="weekly_overview.html" class="weekly-overview-btn">
+                    📅 Weekly Overview
+                </a>
+                <div>
+                    <h1 class="date-title">Friday, July 18, 2025</h1>
+                    <p class="subtitle">9 appointments</p>
+                </div>
+            </div>
+            <div class="service-icons">
+                <div class="service-icon">
+                    <div class="icon simplepractice"></div>
+                    <span>SimplePractice</span>
+                </div>
+                <div class="service-icon">
+                    <div class="icon google"></div>
+                    <span>Google Calendar</span>
+                </div>
+                <div class="service-icon">
+                    <div class="icon holidays"></div>
+                    <span>Holidays in United States</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Bar -->
+        <div class="stats-bar">
+            <div class="stat">
+                <div class="stat-number">9</div>
+                <div class="stat-label">Appointments</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">9.0h</div>
+                <div class="stat-label">Scheduled</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">15.0h</div>
+                <div class="stat-label">Available</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">63%</div>
+                <div class="stat-label">Free Time</div>
+            </div>
+        </div>
+        
+        <!-- Calendar Grid -->
+        <div class="calendar-grid" style="position: relative;">
+            <!-- 06:00 -->
+            <div class="time-slot hour">
+                <div class="time-label">06:00</div>
+                <div class="time-content"></div>
+            </div>
+            <div class="time-slot half-hour">
+                <div class="time-label">06:30</div>
+                <div class="time-content"></div>
+            </div>
+            
+            <!-- 07:00 - Richie Hayes (with notes and actions) -->
+            <div class="time-slot hour">
+                <div class="time-label">07:00</div>
+                <div class="time-content"></div>
+                <div class="appointment-container" style="position: absolute; top: 0; left: 81px; right: 0; height: 60px;">
+                    <div class="appointment">
+                        <div class="appointment-main">
+                            <div class="appointment-title">Richie Hayes Appointment</div>
+                            <div class="appointment-subtitle">SIMPLEPRACTICE</div>
+                            <div class="appointment-time">07:00-08:00</div>
+                        </div>
+                        <div class="appointment-notes">
+                            <div class="section-header">Event Notes</div>
+                            <div class="section-content">• Mood improvement noted</div>
+                        </div>
+                        <div class="appointment-actions">
+                            <div class="section-header">Action Items</div>
+                            <div class="section-content">• Follow up next week</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="time-slot half-hour">
+                <div class="time-label">07:30</div>
+                <div class="time-content"></div>
+            </div>
+            
+            <!-- 08:00 - John Best (actions only) -->
+            <div class="time-slot hour">
+                <div class="time-label">08:00</div>
+                <div class="time-content"></div>
+                <div class="appointment-container" style="position: absolute; top: 0; left: 81px; right: 0; height: 60px;">
+                    <div class="appointment">
+                        <div class="appointment-main">
+                            <div class="appointment-title">John Best Appointment</div>
+                            <div class="appointment-subtitle">SIMPLEPRACTICE</div>
+                            <div class="appointment-time">08:00-09:00</div>
+                        </div>
+                        <div class="appointment-actions">
+                            <div class="section-header">Action Items</div>
+                            <div class="section-content">• Review goals</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="time-slot half-hour">
+                <div class="time-label">08:30</div>
+                <div class="time-content"></div>
+            </div>
+            
+            <!-- 09:00 - Max Hafker (notes only) -->
+            <div class="time-slot hour">
+                <div class="time-label">09:00</div>
+                <div class="time-content"></div>
+                <div class="appointment-container" style="position: absolute; top: 0; left: 81px; right: 0; height: 60px;">
+                    <div class="appointment">
+                        <div class="appointment-main">
+                            <div class="appointment-title">Max Hafker Appointment</div>
+                            <div class="appointment-subtitle">SIMPLEPRACTICE</div>
+                            <div class="appointment-time">09:00-10:00</div>
+                        </div>
+                        <div class="appointment-notes">
+                            <div class="section-header">Event Notes</div>
+                            <div class="section-content">• Career discussion</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="time-slot half-hour">
+                <div class="time-label">09:30</div>
+                <div class="time-content"></div>
+            </div>
+            
+            <!-- 10:00 -->
+            <div class="time-slot hour">
+                <div class="time-label">10:00</div>
+                <div class="time-content"></div>
+            </div>
+            <div class="time-slot half-hour">
+                <div class="time-label">10:30</div>
+                <div class="time-content"></div>
+            </div>
+            
+            <!-- 11:00 - Sarah Palladino (no notes or actions) -->
+            <div class="time-slot hour">
+                <div class="time-label">11:00</div>
+                <div class="time-content"></div>
+                <div class="appointment-container" style="position: absolute; top: 0; left: 81px; right: 0; height: 60px;">
+                    <div class="appointment single-column">
+                        <div class="appointment-main">
+                            <div class="appointment-title">Sarah Palladino Appointment</div>
+                            <div class="appointment-subtitle">SIMPLEPRACTICE</div>
+                            <div class="appointment-time">11:00-12:00</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="time-slot half-hour">
+                <div class="time-label">11:30</div>
+                <div class="time-content"></div>
+            </div>
+            
+            <!-- 12:00 -->
+            <div class="time-slot hour">
+                <div class="time-label">12:00</div>
+                <div class="time-content"></div>
+            </div>
+            <div class="time-slot half-hour">
+                <div class="time-label">12:30</div>
+                <div class="time-content"></div>
+            </div>
+            
+            <!-- 13:00 - Noah Silverman (with notes and actions) -->
+            <div class="time-slot hour">
+                <div class="time-label">13:00</div>
+                <div class="time-content"></div>
+                <div class="appointment-container" style="position: absolute; top: 0; left: 81px; right: 0; height: 60px;">
+                    <div class="appointment">
+                        <div class="appointment-main">
+                            <div class="appointment-title">Noah Silverman Appointment</div>
+                            <div class="appointment-subtitle">SIMPLEPRACTICE</div>
+                            <div class="appointment-time">13:00-14:00</div>
+                        </div>
+                        <div class="appointment-notes">
+                            <div class="section-header">Event Notes</div>
+                            <div class="section-content">• Trauma processing</div>
+                        </div>
+                        <div class="appointment-actions">
+                            <div class="section-header">Action Items</div>
+                            <div class="section-content">• Continue EMDR</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="time-slot half-hour">
+                <div class="time-label">13:30</div>
+                <div class="time-content"></div>
+            </div>
+            
+            <!-- 14:00 -->
+            <div class="time-slot hour">
+                <div class="time-label">14:00</div>
+                <div class="time-content"></div>
+            </div>
+            <div class="time-slot half-hour">
+                <div class="time-label">14:30</div>
+                <div class="time-content"></div>
+            </div>
+            
+            <!-- 15:00 -->
+            <div class="time-slot hour">
+                <div class="time-label">15:00</div>
+                <div class="time-content"></div>
+            </div>
+            <div class="time-slot half-hour">
+                <div class="time-label">15:30</div>
+                <div class="time-content"></div>
+            </div>
+            
+            <!-- 16:00 - Trendall Storey (actions only) -->
+            <div class="time-slot hour">
+                <div class="time-label">16:00</div>
+                <div class="time-content"></div>
+                <div class="appointment-container" style="position: absolute; top: 0; left: 81px; right: 0; height: 60px;">
+                    <div class="appointment">
+                        <div class="appointment-main">
+                            <div class="appointment-title">Trendall Storey Appointment</div>
+                            <div class="appointment-subtitle">SIMPLEPRACTICE</div>
+                            <div class="appointment-time">16:00-17:00</div>
+                        </div>
+                        <div class="appointment-actions">
+                            <div class="section-header">Action Items</div>
+                            <div class="section-content">• Complete assessment</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="time-slot half-hour">
+                <div class="time-label">16:30</div>
+                <div class="time-content"></div>
+            </div>
+            
+            <!-- 17:00 - Michael Bower & Bob Delmond (notes only) -->
+            <div class="time-slot hour">
+                <div class="time-label">17:00</div>
+                <div class="time-content"></div>
+                <div class="appointment-container" style="position: absolute; top: 0; left: 81px; right: 0; height: 60px;">
+                    <div class="appointment">
+                        <div class="appointment-main">
+                            <div class="appointment-title">Michael Bower & Bob Delmond Appointment</div>
+                            <div class="appointment-subtitle">SIMPLEPRACTICE</div>
+                            <div class="appointment-time">17:00-18:00</div>
+                        </div>
+                        <div class="appointment-notes">
+                            <div class="section-header">Event Notes</div>
+                            <div class="section-content">• Couples session</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="time-slot half-hour">
+                <div class="time-label">17:30</div>
+                <div class="time-content"></div>
+            </div>
+            
+            <!-- 18:00 - Brianna Brickman (no notes or actions) -->
+            <div class="time-slot hour">
+                <div class="time-label">18:00</div>
+                <div class="time-content"></div>
+                <div class="appointment-container" style="position: absolute; top: 0; left: 81px; right: 0; height: 60px;">
+                    <div class="appointment single-column">
+                        <div class="appointment-main">
+                            <div class="appointment-title">Brianna Brickman Appointment</div>
+                            <div class="appointment-subtitle">SIMPLEPRACTICE</div>
+                            <div class="appointment-time">18:00-19:00</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="time-slot half-hour">
+                <div class="time-label">18:30</div>
+                <div class="time-content"></div>
+            </div>
+            
+            <!-- Rest of the time slots with proper alternating backgrounds -->
+            <div class="time-slot hour">
+                <div class="time-label">19:00</div>
+                <div class="time-content"></div>
+            </div>
+            <div class="time-slot half-hour">
+                <div class="time-label">19:30</div>
+                <div class="time-content"></div>
+            </div>
+            <div class="time-slot hour">
+                <div class="time-label">20:00</div>
+                <div class="time-content"></div>
+            </div>
+            <div class="time-slot half-hour">
+                <div class="time-label">20:30</div>
+                <div class="time-content"></div>
+            </div>
+            <div class="time-slot hour">
+                <div class="time-label">21:00</div>
+                <div class="time-content"></div>
+            </div>
+            <div class="time-slot half-hour">
+                <div class="time-label">21:30</div>
+                <div class="time-content"></div>
+            </div>
+            <div class="time-slot hour">
+                <div class="time-label">22:00</div>
+                <div class="time-content"></div>
+            </div>
+            <div class="time-slot half-hour">
+                <div class="time-label">22:30</div>
+                <div class="time-content"></div>
+            </div>
+            <div class="time-slot hour">
+                <div class="time-label">23:00</div>
+                <div class="time-content"></div>
+            </div>
+            <div class="time-slot half-hour">
+                <div class="time-label">23:30</div>
+                <div class="time-content"></div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="footer">
+            <a href="thursday_july17_2025.html" class="nav-btn">← Thursday</a>
+            <a href="weekly_overview.html" class="weekly-overview-footer">
+                📅 Weekly Overview
+            </a>
+            <a href="saturday_july19_2025.html" class="nav-btn">Saturday →</a>
+        </div>
+    </div>
+</body>
+</html>
+

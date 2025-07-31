@@ -1,0 +1,70 @@
+Here is an ultra-explicit, developer-focused prompt for Replit AI or any developer. **Copy and paste the full text below** (attach your provided HTML file as the reference) to guarantee that your PDF export will finally match your HTML, with zero test/ghost appointments and pixel-perfect visual styling.
+
+## PROMPT FOR REPLIT AI: ABSOLUTE HTML-DRIVEN DAILY PDF EXPORT
+
+### Context & Objective
+
+I have attached my reference HTML daily template (`daily_calendar_replica_1752805954118.html`).  
+The PDF export must—not just “should”—be a **pixel-perfect visual match** for this HTML.  
+Current output is better but is still not visually identical. We must now enforce strict HTML → PDF **parity** with no ghost, test, or out-of-spec events, and perfect section placement.
+
+### Absolute Requirements
+
+#### 1. **HTML as Single Source of Truth**
+- **Recreate every visual detail** of the attached HTML template in the PDF:
+    - Section order, typography, row heights, header/footer, spacing, stat bar, legend, time grid, event colors/boxes, alternating backgrounds, etc.
+- Space, position, font, colors, grid, icons—**everything must match**.
+- If actual font used in HTML isn’t available in jsPDF, use the closest PDF-safe option AND adjust spacing to maintain visual equivalence.
+
+#### 2. **Appointment Filtering**
+- Only show appointments that appear in the actual planner for that day—**no test events, ghost events, or hidden/placeholder appointments.**
+    - Remove anything with titles containing “test”, “test-appointment”, “event test”, “ghost”, or that’s blank.
+    - Remove any ghost/phantom records such as “Paul Benjamin”, even if present in raw data but not supposed to show.
+- ALL filtering logic must run *before* array mapping, layout, and rendering.
+- Debug log filtered event list each run for review.
+
+#### 3. **Visual Section Fidelity**
+- The **header**, **stats bar**, **legend**, **time grid**, **appointments**, and **footer** must be in the same order, with the **same proportions, margins, and internal layout**.
+- All visual cues (flags, gridlines, colors, row alternatives, legend ordering) must **match the HTML exactly**—do NOT interpret or “adapt” the layout.
+
+#### 4. **Zero Overlap, No Encoding Artifacts**
+- No overlapping events, ever.
+- No test, ghost, or blank events, ever.
+- No emoji, unicode artifacts, or “O=Ý” type encoding failures, ever.
+
+#### 5. **Implementation Strategy**
+- Use **absolute X/Y positioning and dimension constants** referenced from the HTML/CSS.
+- For every event row/cell, use exactly the measured height/width from HTML.
+- Text must wrap or truncate *within* its event box—never overflow.
+- If content overflows, show an ellipsis “…”, just as in the web version.
+
+#### 6. **Pre-commit Visual QA**
+- Before you submit, place the PDF and a screenshot of the HTML template side-by-side.
+- Tick off this checklist:
+    - [ ] All sections in the same order
+    - [ ] All margins, spacing, and font sizes/weights identical (±2px tolerance at most)
+    - [ ] No test, ghost, or unwanted events
+    - [ ] Navigation/footer, stats, legend, etc, visually identical
+    - [ ] No encoding or font artifacts
+
+**If any visual difference remains after this comparison, adjust calculations/constants and rerun!**
+
+#### 7. **Commit Message**
+```
+fix(pdf): Enforce pixel-perfect HTML template match for Daily PDF export; zero ghost/test events, with full visual QA proof
+```
+
+**Process:**
+1. Reference `daily_calendar_replica_1752805954118.html` as the baseline for every measurement and style.
+2. Clean ALL appointment data as described above.
+3. Regenerate both device sizes and visually validate before completing the PR.
+
+### Attachments
+- [X] `daily_calendar_replica_1752805954118.html` (REFERENCE)
+
+Paste this, attach the HTML, and require side-by-side output proof.  
+**This will guarantee the PDF is finally correct AND future-proofed.**
+
+If you want an even stricter QA protocol, let me know!
+
+[1] https://replit.com/@jonathanprocter/RemarkablePlannerPro-1

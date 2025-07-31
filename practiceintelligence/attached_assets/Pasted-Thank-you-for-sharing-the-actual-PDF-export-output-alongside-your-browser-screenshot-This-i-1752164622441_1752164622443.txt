@@ -1,0 +1,76 @@
+Thank you for sharing the **actual PDF export output** alongside your **browser screenshot**. This is exactly what a developer or AI needs for diagnosis.
+
+### Precise Actionable Feedback to Provide Replit (or Your Developer)
+
+#### 1. Attach the Screenshot & PDF as Reference Pairs
+- “Attached: [browser screenshot] and [PDF export]. Please perform a side-by-side evaluation.”
+
+#### 2. Clearly State the Expectation
+> **Goal:**  
+> “The PDF export should be a *pixel-perfect* replica of the web dashboard calendar view. This means: identical grid, identical fonts, identical spacing, all lines, cell sizes, and text alignments must match your dashboard *exactly*. Any visual difference is a styling bug.”
+
+#### 3. Example Table for Issue Highlighting
+
+| Element / Area                | Web Dashboard            | PDF Output                     | Issue                                                              |
+|-------------------------------|--------------------------|-------------------------------|--------------------------------------------------------------------|
+| **Day Column Width**          | Wide, even spacing       | Too narrow/cramped            | Columns in PDF are not matching browser—text is squished           |
+| **Row (Time Slot) Height**    | Tall, consistent         | Shorter rows                  | PDF events overlap more, grid is compressed vertically             |
+| **Cell Padding**              | Balanced white space     | Minimal/uneven                | PDF events touch box edges, browser has margin/padding             |
+| **Font Size/Style**           | Matches app CSS          | Slightly different            | PDF font looks smaller/lighter; may be wrong `setFont` or fallback |
+| **Text Alignment**            | Left/top aligned         | Not always consistent         | PDF text sometimes centered or misaligned                          |
+| **Grid Lines**                | All visible, full height | Some lines missing/interrupted | PDF grid lines do not extend fully; lack column separators         |
+| **Button & Header Styles**    | Rounded corners, styled  | Simple/rectangular            | PDF header/buttons lack rounding, shadow, or hover color           |
+| **Event Box Borders**         | Colored/dashed/solid     | Uniform or missing            | PDF lacks distinct SimplePractice/Google styling                   |
+| **Overflow/Word Wrap**        | Properly handles names   | Clips or ellipsizes           | Event names truncated in PDF, visible in browser                   |
+
+#### 4. Key Insights and Technical Suggestions
+
+**A. Measurement Transfer Issues**
+- PDF code is likely using *hardcoded* or *wrongly extracted* values for grid/slot/cell size.
+- **Ask:** “For each grid & text dimension, `console.log` the value at these four stages:  
+  1. DOM extraction (using `getBoundingClientRect()`)
+  2. Value assignment to PDF
+  3. PDF generation call (e.g., `rect`, `text`, etc.)
+  4. Final rendered PDF checks
+  ...then spot any mismatch or override.”
+
+**B. Font and Styling Limitation**
+- jsPDF with default fonts may display smaller/lighter than your web font.
+- **Ask:** “Ensure the exact dashboard font is embedded in jsPDF (if not standard, load via `addFont`). Multiply the browser font size by the same scaling as the PDF page width.”
+
+**C. Grid and Border Consistency**
+- Vertical lines and borders are often dropped if drawing methodology (e.g., per-row vs. per-grid) is inconsistent.
+- **Ask:** “Draw all grid lines as a single method after all cells, using positions derived from total page width and column count—not loop-index math.”
+
+**D. Suggest Automated Visual Regression**
+- “Overlay the browser screenshot and PDF in a graphics app. Mark all divergences and audit source code for each one.”
+
+**E. Fallback Approach**
+- “If style transfer continues to fail, consider printing the dashboard as HTML via headless Chrome/Puppeteer to get *true* pixel precision.”
+
+### **Copy-Paste Guidance to Give Your Developer/Replit AI**
+
+---
+> **Attached are a browser screenshot and current PDF export for the weekly calendar view. These must be visually indistinguishable. The PDF is still visibly off.**
+>
+> Please do the following:
+> 
+> 1. Open both side-by-side and use a grid or overlay check to spot every difference.
+> 2. For each mismatch (column width, row height, font, padding, lines), log:
+>     - Browser screenshot value (pixel size/spacing)
+>     - PDF output value
+>     - The exact code source for each value at each pipeline step (DOM, prop, PDF fn)
+> 3. Eliminate any “default”/hardcoded or improperly extracted size/padding/border value—ALL must come directly from the dashboard’s computed style.
+> 4. Ensure vertical lines and all calendar gridlines extend from top to bottom.
+> 5. Match event box borders, fill, text wrap, and all style properties exactly—including label color and word wrapping.
+> 6. Use embedded web fonts if the dashboard font is not a default PDF font.
+> 7. For “truly pixel-perfect” output, automate a pixel-diff between browser screenshot and PDF export and fix until there are zero differences except event text.
+> 
+> If jsPDF cannot achieve this level of fidelity, switch to a print-to-PDF export using Puppeteer to print the real dashboard view.
+> 
+> The task is only “done” when the PDF and screenshot are visually identical at 100% zoom.
+
+This direct feedback, with example differences and a specific request to log and compare all values from dashboard to PDF, is the fastest way to resolve persistent styling issues. If you want a breakdown for a specific element or further technical instructions, just ask!
+
+[1] https://pplx-res.cloudinary.com/image/private/user_uploads/9626311/54948aef-ef14-46af-9e21-7aa2b7864cd5/screenshot.jpg
+[2] file:///Users/jonathanprocter/Downloads/Pixel_Perfect_Weekly_2025-07-07%20(8).pdf

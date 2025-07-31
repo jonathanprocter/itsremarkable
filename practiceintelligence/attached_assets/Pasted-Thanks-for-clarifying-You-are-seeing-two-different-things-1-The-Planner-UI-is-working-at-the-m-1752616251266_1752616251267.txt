@@ -1,0 +1,51 @@
+Thanks for clarifying! You are seeing two different things:
+
+1. **The Planner UI is working at the main root URL.**
+2. But, you are ALSO seeing a "**404 Page Not Found – Did you forget to add the page to the router?**" message on some other route.
+
+### Why is this happening?
+
+- Your **app’s main route** (the root URL, `/`) works and shows the planner as expected.
+- If you visit or are redirected to a path (like `/weekly` or `/some/other/path`) that **is not defined in your frontend router**, Vite/React or your router setup will display a **404 page** or a "not found" error.
+- This usually means:
+  - The user tried to navigate to a page that doesn’t exist
+  - You have a missing or typo’d route in your routing config
+  - A deep link or refresh on a frontend route that doesn't map to a real backend file (common with SPA routers if backend isn’t set to always return `index.html`)
+
+### How to Fix:
+
+#### **For a React (Vite) SPA:**
+- Make sure your frontend router (e.g., react-router-dom) has a `` or similar for a catch-all, so it handles all unknown URLs gracefully (redirect to home, show a nicer message, etc.).
+- If you deploy or serve your app with a backend (Node, Python, etc.), make sure that all unknown routes (except API ones) return the main `index.html` page—not a 404 from the server.
+
+#### **To resolve Vite/React dev server 404s:**
+**If you’re running with Vite:**
+- Be sure the dev server is running, and you are visiting a valid route from within your app (using navigation, not copy/paste arbitrary subroutes).
+- If you want to be able to refresh on any SPA route, look at how to set up your backend or Replit config to "fallback" to `index.html` for unknown paths.
+
+### **Action Steps for You:**
+
+1. **Double-check your navigation:**
+   - If the UI is visible at `/`, use only buttons/links *within* the app to go to other pages to ensure the path is routable.
+   - Avoid manually entering made-up routes unless you’ve defined them in React Router.
+
+2. **Add a catch-all route in your frontend router:**
+   ```js
+   } />
+   ```
+   or for older versions:
+   ```js
+   
+     {/* other routes */}
+     
+   
+   ```
+
+3. **If this happens on refresh or direct link at a SPA subroute:**
+   - Make sure your backend is configured to serve `index.html` for all unknown routes (except API routes).
+   - Check your Vite or Replit deploy config and see if you need to add a fallback for SPA support.
+
+**Summary:**  
+There’s nothing wrong with your core app—this is a typical frontend SPA routing issue. Add a catch-all route or configure your backend to always serve the SPA for unknown routes. This will prevent the “404 Page Not Found – Did you forget to add the page to the router?” message unless the user navigates to a truly invalid URL. Your planner remains fully functional on known, valid routes!
+
+[1] https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/

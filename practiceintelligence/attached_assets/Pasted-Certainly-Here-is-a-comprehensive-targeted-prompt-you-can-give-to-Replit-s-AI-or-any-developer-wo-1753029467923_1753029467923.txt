@@ -1,0 +1,44 @@
+Certainly! Here is a comprehensive, targeted prompt you can give to Replit’s AI (or any developer working on your project) that combines all the issues identified and all key instructions for fixing them:
+
+### Comprehensive Prompt for Fixing Daily Calendar PDF Export
+
+My exported daily calendar PDF has several critical layout and visibility issues that must be resolved for a professional, readable result. Please address and fix all of the following:
+
+**1. Full Timeline and Content Render**
+- The PDF must display the **entire day’s timeline—from the first to the very last slot (e.g., 06:00 to 23:30)—with no content cut off or missing at the bottom.**
+- Increase the export page height (or use dynamic height) so all appointment rows, including late evening slots, are shown and nothing is truncated.
+
+**2. Visual Continuity and Layout**
+- The **left time-of-day column** should maintain a **consistent, light grey background** for all time rows—never dark blue or any other color. The background should extend seamlessly from the top to the bottom of the day.
+- **All appointment cards must align exactly with their scheduled time rows** in the grid. For example, a 17:00 appointment should start precisely at the 17:00 time row, and appointment box heights should correspond with their durations.
+- **Eliminate large unused white spaces** and ensure the time grid and appointment sections are tightly aligned.
+
+**3. Remove Overlays and Prevent Obstructions**
+- **Remove any bottom overlays, white strips, or fixed-position/floating containers that block late or bottom appointments.** Nothing should overlay or obscure time slots or appointment content at the end of the day.
+- Set the background or any decorative lower containers to fully transparent, or ensure they render beneath the main grid and appointment layers.
+
+**4. Appointment and UI Rendering**
+- Appointments should not float, overlap, or be spaced away from their time slots. Use precise vertical alignment and proportional sizing.
+- All **header/stats areas should only appear once** at the top of the PDF—never repeated due to accidental page breaks.
+
+**5. Action Buttons and Footer**
+- The **bottom navigation or action buttons** (such as “Weekly Overview”) must be included at the bottom of the exported PDF, **never omitted or cropped**.  
+- Carefully review any print/media queries, conditional rendering, or code that might hide buttons or footers—these must be visible and included in the PDF output.  
+- If suppressing screen-only UI, make sure only clearly irrelevant elements are omitted; everything needed for context and navigation must be present.
+
+**6. General**
+- Double-check that all calendar content, headers, grids, appointments, and footers are rendered as one **unbroken, scrollable single-page layout**, unless physically impossible (then, fit as much as possible with no content cropped).
+- Remove any code such as `{!isPrinting && ...}` or CSS like `@media print { display: none }` that unintentionally hides important content or UI elements from the PDF export.
+- Always allow page/container height to expand as needed to include all content.
+
+**Implementation Clues:**
+- If using `react-pdf`, adjust `Page` or `View` height, remove forced breaks, use `fixed` or `wrap` props carefully, and don’t hide UI on PDF renders.
+- If using HTML/CSS print-to-PDF, audit for hidden elements and ensure styles are correct for print.
+- If rendering by Puppeteer or headless browser, ensure the viewport is set tall enough and no JS/CSS conditions hide part of the UI.
+
+**Summary:**  
+**Render the entire day in one continuous PDF page with no missing content, visually align all appointments to their correct times, maintain the proper background colors, and ensure the bottom UI/buttons are present and visible. Remove all white overlays and prevent anything from being blocked or truncated.**
+
+Copy and paste this prompt directly into Replit's AI or provide to your developer for a comprehensive, actionable fix! If you specify your rendering tool, I can also customize the technical steps further.
+
+[1] file:///Users/jonathanprocter/Downloads/daily-calendar-2025-07-16%20(27).pdf

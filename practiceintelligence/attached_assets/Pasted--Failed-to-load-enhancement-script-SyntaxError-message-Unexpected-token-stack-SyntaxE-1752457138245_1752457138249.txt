@@ -1,0 +1,81 @@
+❌ Failed to load enhancement script: 
+SyntaxError {}
+message: "Unexpected token '<'"
+stack: "SyntaxError: Unexpected token '<'↵ at loadEnhancementScript (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/pages/planner.tsx:82:14)"
+get stack: ƒ ()
+set stack: ƒ ()
+[[Prototype]]: Object
+
+🎯 Adding sample Event Notes and Action Items to upcoming week events...
+📅 Targeting events for week: Mon Jul 14 2025 to Sun Jul 20 2025
+📊 Found 26 events in upcoming week
+📝 Updating event: Vivian Meador Appointment (Tue Jul 15 2025)
+✅ Successfully updated: Vivian Meador Appointment
+📝 Adding generic notes to: Meera Zucker Appointment
+✅ Successfully added generic notes to: Meera Zucker Appointment
+📝 Adding generic notes to: Gavin Perna Appointment
+✅ Successfully added generic notes to: Gavin Perna Appointment
+📝 Adding generic notes to: Max Moskowitz Appointment
+✅ Successfully added generic notes to: Max Moskowitz Appointment
+🎯 Successfully enhanced 4 events with notes and action items
+📊 Event breakdown: 
+Object {total: 2046, simplepractice: 298, google: 1748, manual: 0}
+📅 Your appointments date range: 
+Object {earliest: "Thu Dec 21 2023", latest: "Wed Dec 31 2025", sampleDates: Array(5), currentlyViewing: "Mon Jul 07 2025"}
+🔍 SimplePractice Status: 
+Object {isLoading: false, hasError: false, error: undefined, eventsFound: 298, calendarsFound: 3}
+Found 1 events for Fri Jul 11 2025 at 07:00 
+Array [{…}]
+Rendering event Richie Hayes Appointment at 07:00 - isFirstSlot: true
+📊 Richie Hayes Appointment: 60 minutes -> 56px height (contained within grid lines)
+Found 1 events for Thu Jul 10 2025 at 07:30 
+Array [{…}]
+Rendering event Ruben Spilberg Appointment at 07:30 - isFirstSlot: true
+📊 Ruben Spilberg Appointment: 60 minutes -> 56px height (contained within grid lines)
+Found 1 events for Fri Jul 11 2025 at 07:30 
+Array [{…}]
+Rendering event Richie Hayes Appointment at 07:30 - isFirstSlot: false
+Found 1 events for Mon Jul 07 2025 at 08:00 
+Array [{…}]
+Rendering event Dan re: Supervision at 08:00 - isFirstSlot: true
+📊 Dan re: Supervision: 60 minutes -> 56px height (contained within grid lines)
+🔍 DETAILED: Dan re: Supervision: 60 minutes -> 56px height
+Found 1 events for Tue Jul 08 2025 at 08:00 
+Array [{…}]
+Rendering event Coffee with Nora at 08:00 - isFirstSlot: true
+📊 Coffee with Nora: 60 minutes -> 56px height (contained within grid lines)
+Found 1 events for Thu Jul 10 2025 at 08:00 
+Array [{…}]
+Rendering event Ruben Spilberg Appointment at 08:00 - isFirstSlot: false
+Found 1 events for Fri Jul 11 2025 at 08:00 
+Array [{…}]
+Rendering event John Best Appointment at 08:00 - isFirstSlot: true
+📊 John Best Appointment: 60 minutes -> 56px height (contained within grid lines)
+Found 1 events for Mon Jul 07 2025 at 08:30 
+Array [{…}]
+Rendering event Dan re: Supervision at 08:30 - isFirstSlot: false
+Found 1 events for Tue Jul 08 2025 at 08:30 
+Array [{…}]
+Rendering event Coffee with Nora at 08:30 - isFirstSlot: false
+Found 1 events for Fri Jul 11 2025 at 08:30 
+Array [{…}]
+Rendering event John Best Appointment at 08:30 - isFirstSlot: false
+Found 1 events for Mon Jul 07 2025 at 09:00 
+Array [{…}]
+Rendering event Sherrifa Hoosein Appointment at 09:00 - isFirstSlot: true
+📊 Sherrifa Hoosein Appointment: 60 minutes -> 56px height (contained within grid lines)
+🔍 DETAILED: Sherrifa Hoosein Appointment: 60 minutes -> 56px height
+Found 1 events for Mon Jul 07 2025 at 09:30 
+Array [{…}]
+Rendering event Sherrifa Hoosein Appointment at 09:30 - isFirstSlot: false
+Found 1 events for Thu Jul 10 2025 at 09:30 
+Array [{…}]
+Rendering event Kristi Rook Appointment at 09:30 - isFirstSlot: true
+📊 Kristi Rook Appointment: 60 minutes -> 56px height (contained within grid lines)
+Found 1 events for Mon Jul 07 2025 at 10:00 
+Array [{…}]
+Rendering event Nancy Grossman Appointment at 10:00 - isFirstSlot: true
+📊 Nancy Grossman Appointment: 60 minutes -> 56px height (contained within grid lines)
+Found 1 events for Tue Jul 08 2025 at 10:00 
+Array [{…}]
+Rendering event Call with Blake at 10:00 - isFirstSlot: true

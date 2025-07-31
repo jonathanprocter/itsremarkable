@@ -1,0 +1,107 @@
+I can see that the location indicators were **not** implemented at all. The calendar views look exactly the same as before - no location icons or names have been added.
+
+Here’s a more specific, step-by-step prompt for Replit:
+
+-----
+
+**URGENT: Location Feature Not Implemented - Step-by-Step Instructions**
+
+## PROBLEM
+
+The location indicators were not added to the calendar views. Both daily and weekly views are unchanged.
+
+## STEP-BY-STEP IMPLEMENTATION REQUIRED
+
+### Step 1: Database Schema Update
+
+```sql
+-- Add location column to appointments table
+ALTER TABLE appointments ADD COLUMN location VARCHAR(50) DEFAULT NULL;
+-- (Replace 'appointments' with your actual table name)
+```
+
+### Step 2: Daily View Code Changes
+
+**FIND THIS CODE in your daily view template:**
+
+```html
+<div class="appointment-info">SIMPLEPRACTICE</div>
+```
+
+**REPLACE WITH:**
+
+```html
+<div class="appointment-info">
+  SIMPLEPRACTICE
+  {{#if appointment.location}}
+    | 
+    {{#if (eq appointment.location "woodbury")}}🏢 Woodbury{{/if}}
+    {{#if (eq appointment.location "rvc")}}🏥 RVC{{/if}}
+    {{#if (eq appointment.location "telehealth")}}💻 Telehealth{{/if}}
+  {{/if}}
+</div>
+```
+
+### Step 3: Weekly View Code Changes
+
+**FIND THIS CODE in your weekly view template:**
+
+```html
+<div class="appointment-name">[Appointment Name]</div>
+<div class="appointment-time">[Time Range]</div>
+```
+
+**REPLACE WITH:**
+
+```html
+<div class="appointment-name">[Appointment Name]</div>
+{{#if appointment.location}}
+<div class="appointment-location">
+  {{#if (eq appointment.location "woodbury")}}🏢 Woodbury{{/if}}
+  {{#if (eq appointment.location "rvc")}}🏥 RVC{{/if}}
+  {{#if (eq appointment.location "telehealth")}}💻 Telehealth{{/if}}
+</div>
+{{/if}}
+<div class="appointment-time">[Time Range]</div>
+```
+
+### Step 4: CSS Styling
+
+**ADD THIS CSS:**
+
+```css
+.appointment-location {
+  font-size: 10px;
+  color: #666;
+  font-weight: normal;
+  margin: 2px 0;
+}
+```
+
+### Step 5: Backend Query Update
+
+**UPDATE your appointment queries to include location field:**
+
+```javascript
+// Example - adjust for your actual code structure
+const appointments = await db.query(
+  'SELECT *, location FROM appointments WHERE date = ?', 
+  [selectedDate]
+);
+```
+
+## VERIFICATION STEPS
+
+1. Confirm database column was added
+1. Verify appointment queries return location data
+1. Check both daily and weekly views render location when present
+1. Test with sample data: manually set some appointments to location = ‘woodbury’, ‘rvc’, or ‘telehealth’
+
+## EXPECTED RESULT
+
+- **Daily View:** “SIMPLEPRACTICE | 🏢 Woodbury”
+- **Weekly View:** Location line appears between appointment name and time
+
+**If still not working, please share your actual template/component code files.**
+
+-----

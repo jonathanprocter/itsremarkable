@@ -1,0 +1,66 @@
+To help Replit AI (or any developer) make your PDF export truly **pixel perfect**, you should give them highly specific, practical advice focused on aligning the PDF output’s exact visual structure, style, and spacing to the browser dashboard. Here’s how to get the best results:
+
+## Actionable Guidance to Add to Your Request
+
+1. **Direct Comparison Is Required**  
+   Request that Replit:
+   - Open your actual dashboard/calendar view in a browser at 100% zoom.
+   - Overlay a screenshot of your dashboard with the PDF export using a graphics tool (Figma, Photoshop, or even browser dev tools).
+   - Document every visual difference, even 1-pixel spacing, font weight, padding, etc.
+
+2. **Synchronize All Style Values to Source of Truth**
+   - **All spacing, font, color, and border values in the PDF export must come directly from your dashboard’s CSS/theme variables (not hardcoded approximations).**
+   - If your styling is stored in Tailwind, Chakra, Material UI theme, or SCSS variables, point them to that theme file or component.
+   - Explicitly state: “Do not use guesswork in sizing/spacing—only import or reference the exact values from my dashboard code.”
+
+3. **Font and Typography Matching**
+   - Check that the font **family, size, weight, and color** match 100%.  
+   - Import your dashboard font into jsPDF using font embedding if it is not a built-in PDF font. (jsPDF can load custom fonts via `.ttf`.)
+   - Ask for **pixel-level text positioning** (adjusting `baseline`, character spacing, and wrapping as needed).
+
+4. **Precision in Grid and Alignment**
+   - Reiterate: “Every column, row, and grid line in the PDF must align with the browser version.”
+   - Spacing around/within cells, alignment of event boxes, widget placement—should come from the WYSIWYG dashboard grid.
+   - Request use of **computed CSS values or browser rendering metrics** to determine exact sizes and offsets.
+
+5. **Use Automated Pixel-Diff Testing**
+   - Suggest implementing [Pixelmatch](https://github.com/mapbox/pixelmatch) or [Resemble.js](https://rsmbl.github.io/Resemble.js/) to perform a pixel-by-pixel comparison of a screenshot of the dashboard and the PDF export for visual regression testing.
+
+6. **Export via Browser if Needed**
+   - If fidelity is still lacking, request conversion to an export approach using Puppeteer or Chrome’s built-in print-to-PDF of a hidden “print” HTML view, rather than hand-drawn PDFs in jsPDF.
+   - This ensures perfect reproduction, as browsers render the visuals directly.
+
+7. **Provide Example Code/Instructions**  
+   If you use Tailwind or CSS-in-JS:
+   ```js
+   // Example: Import your theme for PDF sizing
+   import theme from './theme.js'
+   pdf.setFont(theme.fontFamily, 'normal');
+   pdf.setFontSize(theme.fontSizeBase);
+   pdf.setTextColor(theme.textPrimary);
+   // ...use theme.spacing.m, theme.colors.border, etc.
+   ```
+   Or recommend extracting computed style in the browser with:
+   ```js
+   getComputedStyle(document.querySelector('selector')).paddingLeft
+   ```
+
+8. **Success Criteria Statement**  
+   “A stakeholder should not be able to distinguish a printout of the dashboard from a printout of the PDF export when both are printed at 100%. Any remaining difference is a bug to be fixed.”
+
+## Sample Message to Include
+
+> **The attached/exported ‘pixel perfect’ PDF is not visually identical to my dashboard. To achieve true pixel perfection, please:**
+>
+> 1. Use screenshot overlays of the dashboard and the PDF for repeatable A/B testing.
+> 2. Extract and synchronize ALL grid spacing, font choices, color codes, and border widths directly from my app’s CSS/theme/style sources—no approximations or guesses.
+> 3. For fonts, embed the exact family/typeface used on the dashboard in the PDF; use jsPDF’s custom font loading if needed.
+> 4. For widget/box alignment and cell spacing, use the computed CSS values (e.g., inspect with browser dev tools) as the source of truth.
+> 5. Where PDF drawing libraries fall short, consider exporting via headless Chrome’s print-to-PDF or a dedicated React-pdf/HTML-to-PDF workflow that leverages DOM rendering.
+> 6. Run an automated pixel-diff test on dashboard screenshot vs. PDF page.
+>
+> My definition of DONE: When overlaying a dashboard screenshot and the PDF page, there is no visible styling, alignment, or font difference—only real data changes.
+
+**The more you point the dev/AI at CSS sources, emphasize visual overlay QA, and insist on using the same variables in both dashboard and export, the closer to pixel-perfect you will get!**
+
+[1] file:///Users/jonathanprocter/Downloads/Pixel_Perfect_Weekly_7-7-2025.pdf

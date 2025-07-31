@@ -1,0 +1,50 @@
+x
+import React, { useState } from 'react';
+import { Button } from './ui/button';
+
+/**
+ * Button component for handling Google OAuth login in development environments.
+ */
+export const DevLoginButton: React.FC = () => {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  /**
+   * Handles the Google login process.
+   */
+  const handleGoogleLogin = async (): Promise<void> => {
+    setIsLoading(true);
+    try {
+      const refreshResponse = await fetch('/api/auth/refresh-token', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include', // Ensure cookies are sent with the request for session handling
+      });
+
+      if (refreshResponse.ok) {
+        console.log('✅ Tokens refreshed successfully');
+        window.location.reload();
+        return;
+      }
+
+      console.log('🔄 Redirecting to fresh Google OAuth...');
+      window.location.assign('/api/auth/google'); // Use assign for better testability and future-proofing
+    } catch (error) {
+      console.error('❌ Authentication error:', error);
+      window.location.assign('/api/auth/google');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <Button
+      onClick={handleGoogleLogin}
+      disabled={isLoading}
+      className="bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50"
+    >
+      {isLoading ? 'Authenticating...' : 'Sign in with Google'}
+    </Button>
+  );
+};

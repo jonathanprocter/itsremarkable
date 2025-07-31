@@ -1,0 +1,51 @@
+import React, { useState, ChangeEvent, FunctionComponent } from 'react';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+
+interface DailyNotesProps {
+  notes: string;
+  onSaveNotes: (notes: string) => void;
+}
+
+/**
+ * Component for displaying and editing daily notes.
+ * @param {DailyNotesProps} props - The props for the component.
+ * @returns {React.ReactElement} The DailyNotes component.
+ */
+export const DailyNotes: FunctionComponent<DailyNotesProps> = ({ notes, onSaveNotes }) => {
+  const [currentNotes, setCurrentNotes] = useState<string>(notes);
+
+  /**
+   * Handles saving the current notes.
+   */
+  const handleSave = (): void => {
+    onSaveNotes(currentNotes);
+  };
+
+  /**
+   * Handles changes to the textarea for notes.
+   * @param {ChangeEvent<HTMLTextAreaElement>} e - The change event from the textarea.
+   */
+  const handleChange = (e: ChangeEvent<HTMLTextAreaElement>): void => {
+    setCurrentNotes(e.target.value);
+  };
+
+  return (
+    <div className="sidebar-section">
+      <h3 className="text-sm font-semibold mb-3 text-gray-900">Daily Notes</h3>
+      <Textarea
+        value={currentNotes}
+        onChange={handleChange}
+        placeholder="Daily reflections, goals, and notes..."
+        className="w-full h-20 resize-none"
+      />
+      <Button 
+        onClick={handleSave}
+        className="w-full mt-2 bg-blue-600 hover:bg-blue-700"
+        size="sm"
+      >
+        Save Notes
+      </Button>
+    </div>
+  );
+};

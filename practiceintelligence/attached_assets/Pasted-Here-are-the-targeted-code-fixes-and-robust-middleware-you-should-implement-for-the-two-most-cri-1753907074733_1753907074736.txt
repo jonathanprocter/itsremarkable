@@ -1,0 +1,134 @@
+Here are the **targeted code fixes** and robust middleware you should implement for the two most critical error areas: **authentication/session persistence** and **user ID consistency**. This code assumes your secrets (`GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `SESSION_SECRET`) are set in environment variables or Replit's Secrets tab. The email address is **only used for reference**—credentials will not be hardcoded.
+
+## 1. **Express Session & Cookie Setup (server/index.ts)**
+
+**Make sure your session setup is robust for dev/prod, and never hardcode cookie params.**
+```js
+// server/index.ts (or your main express setup)
+const session = require("express-session");
+
+app.use(session({
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production", // only true on production HTTPS
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    maxAge: 1000 * 60 * 60 * 24 * 30, // 30 days
+  }
+}));
+```
+*If you use `cookie-session` or similar, apply the same logic.*
+
+## 2. **OAuth Setup (server/minimal-oauth.ts)**
+
+**Always request refresh tokens for persistent authentication:**
+```js
+passport.use(new GoogleStrategy({
+  clientID: process.env.GOOGLE_CLIENT_ID,
+  clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+  callbackURL: CALLBACK_URL, // Should match your deployed domain/callback
+  scope: [
+    "https://www.googleapis.com/auth/calendar",
+    "https://www.googleapis.com/auth/drive.file",
+    "profile",
+    "email"
+  ],
+  accessType: "offline", //  {
+  // Find or create user in DB by email
+  const email = profile.emails && profile.emails[0] && profile.emails[0].value;
+  if (!email) return done(new Error("Email not found in Google profile"));
+  
+  let user = await db.findUserByEmail(email);
+  if (!user) {
+    user = await db.createUser({ email, googleId: profile.id, name: profile.displayName });
+  }
+  // Save tokens/refreshToken as needed
+  await db.saveGoogleTokens(user.id, accessToken, refreshToken);
+
+  return done(null, user); // pass user object
+}));
+```
+
+## 3. **User Serialization/Deserialization (userId Consistency)**
+```js
+passport.serializeUser((user, done) => {
+  done(null, user.id); // always store the actual unique DB user ID!
+});
+
+passport.deserializeUser(async (id, done) => {
+  const user = await db.getUserById(id);
+  done(null, user);
+});
+```
+
+## 4. **User Fetch/Creation Logic**
+**Never hardcode user IDs, always upsert by unique email:**
+```js
+// db.findUserByEmail(email) should return user or null
+// db.createUser({ email, ... }) creates & returns a fully-real user object, never just ID
+```
+
+## 5. **Event Creation and Fetch: Always Use Authenticated User**
+```js
+app.get("/api/events", ensureAuthenticated, async (req, res) => {
+  if (!req.user || !req.user.id) return res.status(401).json({ error: "Not authenticated" });
+  const events = await db.fetchEventsForUser(req.user.id);
+  res.json(events);
+});
+```
+
+**Middleware:**
+```js
+function ensureAuthenticated(req, res, next) {
+  if (req.isAuthenticated && req.isAuthenticated() && req.user) return next();
+  res.status(401).json({ error: "User not authenticated" });
+}
+```
+
+## 6. **Force Fix Endpoint (for dev rescue)**
+```js
+app.post("/api/auth/force-fix", async (req, res) => {
+  // Try to create or get the right user for testing (e.g., your email)
+  let user = await db.findUserByEmail("jonathan.procter@gmail.com");
+  if (!user) {
+    user = await db.createUser({
+      email: "jonathan.procter@gmail.com",
+      name: "Jonathan Procter",
+      googleId: "dev-fake-id"
+    });
+  }
+  req.login(user, err => {
+    if (err) return res.status(500).json({ success: false, error: err });
+    res.json({ success: true, user });
+  });
+});
+```
+
+## 7. **Frontend: Always Poll `/api/auth/status` Post-OAuth**
+```js
+// In client-side code (or Redux thunk)
+fetch("/api/auth/status", { credentials: 'include' })
+  .then(res => res.json())
+  .then(data => {
+    if (data.authenticated && data.user) {
+      // Store user, render planner
+    } else {
+      // Show login/reauth screen
+    }
+  });
+```
+---
+
+**Summary of Critical Points:**
+- *NEVER* hardcode a user ID—always operate by real user sessions
+- Always upsert/find users by email, and always use the `.id` returned as key in DB/tokens/events
+- Request refresh tokens every OAuth exchange
+- Configure session middleware with proper secure/cookie flags for your dev/prod environment
+- All API endpoints and fetches must use the authenticated/serialized user from session (not a static value)
+- If you need a "reset/fix" endpoint for dev, always log in or create a user and attach it to the session
+
+If you have questions about placing these blocks in your actual files (`server/minimal-oauth.ts`, `server/index.ts`, etc.), let me know and I’ll provide a sample for your code tree!
+
+[1] https://replit.com/@jonathanprocter/RPP

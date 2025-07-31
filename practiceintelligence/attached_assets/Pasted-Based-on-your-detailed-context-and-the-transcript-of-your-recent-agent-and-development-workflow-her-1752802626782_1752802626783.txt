@@ -1,0 +1,100 @@
+Based on your detailed context and the transcript of your recent agent and development workflow, here’s a structured approach:
+
+**What I See in the Most Recent Agent Output and Current Problems**
+
+- Agent claims: Dual-format PDF is implemented, with automatic device detection for reMarkable Pro (507x677pt) and fallback to US Letter (612x792pt).
+- You report: PDF export still “isn’t aligning or matching”—the layout is broken, appointments overlap, and it does not visually match your original HTML template.
+- The underlying issue: The exported PDF’s layout, spacing, and visual sections (header, stats, grid, legend, appointments) are NOT faithfully mirroring your intended design, especially in the compact portrait mode for reMarkable Pro.
+
+**Key Things to Check or Fix**
+
+- **PDF canvas size**: Make sure the jsPDF instance is being initialized with exactly the correct size (pts for both reMarkable and US Letter).
+- **CSS/Style fidelity**: All font sizes, paddings, margins, and line-heights from the HTML template must be explicitly ported to the jsPDF drawing commands. No implicit scaling or guessing.
+- **Absolute/relative positioning**: PDF generation code should place each major block (header, stats, timeline, time grid, legend, footer) with explicit `y` coordinates and heights, matching your HTML/CSS “box model”.
+- **Dynamic content scaling or clipping**: Events must be drawn (1) inside dedicated grid cells and (2) never overflow, overlap, or draw past page margins. Recalculate event heights and columns based on the number of events per slot.
+- **Device detection logic**: Confirm it’s reliably switching between formats, not arbitrarily using the default.
+
+**You Should Provide THIS Prompt and Code to Replit AI:**
+
+**Prompt for Replit AI:**
+```
+Carefully review my HTML daily planner template and enforce a pixel-perfect PDF export using jsPDF for both the reMarkable Paper Pro (portrait, 507x677pt) AND US Letter (portrait, 612x792pt). The generated PDF must:
+
+- Faithfully reproduce section order and spacing: header, stats, time grid, appointments (each in grid cell), legend, footer.
+- On reMarkable, fit the content to use all available portrait space without any overflow or horizontal scrolling.
+- All elements: fonts, colors, borders, and padding should be strictly based on my HTML/CSS (do NOT “auto scale”).
+- Time slots and events must never overlap, and each event must render exactly within its slot.
+- Device detection must auto-switch to correct format.
+- Provide a full, clean export function in `client/src/utils/htmlTemplateDailyExport.ts`, accepting the daily data object and target device, generating and downloading the PDF.
+
+**Input:** My HTML daily planner template, sample event data
+
+**Output:** A corrected jsPDF export function implementing all requirements above. Also, output a sample Replit commit message for these updates AND a one-sentence QA checklist I can use.
+```
+
+**Key Code Changes for jsPDF Export (replace this section in `htmlTemplateDailyExport.ts`):**
+
+```typescript
+import jsPDF from 'jspdf';
+
+// Device portrait points
+const SIZES = {
+  remarkable: { width: 507, height: 677 },
+  usLetter: { width: 612, height: 792 }
+};
+
+/**
+ * Detect device type and return correct size
+ */
+function detectDevice(): 'remarkable' | 'usLetter' {
+  // Replace with actual device check; fallback to usLetter for desktop/browser
+  return window.innerWidth  {
+    const slotY = y + SLOT_HEIGHT * idx;
+    // Draw time label
+    doc.text(slot, MARGIN, slotY + SLOT_HEIGHT / 2);
+    // Draw line/grid if needed
+    doc.line(MARGIN, slotY, width - MARGIN, slotY);
+
+    // Events for this slot
+    (events[slot] || []).forEach((event, j) => {
+      const x = MARGIN + 52 + j * 90;
+      doc.setFillColor(event.type === 'SimplePractice' ? '#a5d6ff' : event.type === 'Google' ? '#aefcc3' : '#fffccc');
+      doc.roundedRect(x, slotY + 2, 80, SLOT_HEIGHT - 4, 4, 4, 'F');
+      doc.setTextColor('#333');
+      doc.text(event.title, x + 4, slotY + SLOT_HEIGHT / 2, { maxWidth: 72 });
+    });
+  });
+
+  y += SLOT_HEIGHT * timeSlots.length + 8;
+
+  // LEGEND
+  doc.setFontSize(SLOT_FONT);
+  doc.text('Legend: Psych = SimplePractice, GCal = Google Calendar, Holiday = Yellow', MARGIN, y);
+
+  y += 16;
+  // FOOTER
+  doc.setFontSize(device === 'remarkable' ? 9 : 11);
+  doc.text(
+    `Exported: ${new Date().toLocaleDateString()} — For personal use only.`,
+    width / 2, 
+    height - MARGIN,
+    { align: 'center' }
+  );
+
+  doc.save(
+    `daily-template-${date || new Date().toISOString().slice(0, 10)}.pdf`
+  );
+}
+```
+
+**Sample Commit Message:**
+```
+feat(export): Pixel-perfect dual-format Daily Template PDF for reMarkable & US Letter, strict alignment per HTML template, no overlapping appointments
+```
+
+**One-sentence QA Checklist:**  
+> Export sample daily PDF on both reMarkable and desktop, and visually verify every header, events grid, legend, and font aligns exactly as in the original HTML template without overlap or truncation.
+
+Paste the prompt, above code, and checklist directly into your Replit AI chat for a deterministic and production-grade solution! If you’d like, I can also review the core HTML snippet here for more granular layout instructions.
+
+[1] https://replit.com/@jonathanprocter/RemarkablePlannerPro-1

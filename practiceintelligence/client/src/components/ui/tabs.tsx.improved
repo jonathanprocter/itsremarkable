@@ -1,0 +1,63 @@
+x
+import React, { forwardRef } from "react";
+import { Root, List, Trigger, Content } from "@radix-ui/react-tabs";
+
+import { cn } from "@/lib/utils";
+
+/**
+ * Tabs component leveraging Radix UI primitives for accessibility and flexibility.
+ */
+const Tabs = Root;
+
+/**
+ * TabsList component with enhanced styling and forwardRef for better React handling.
+ */
+const TabsList = forwardRef<HTMLDivElement, React.ComponentPropsWithoutRef<typeof List>>(
+  (props, ref) => (
+    <List
+      ref={ref}
+      className={cn(
+        "inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground",
+        props.className
+      )}
+      {...props}
+    />
+  ),
+);
+TabsList.displayName = "TabsList";
+
+/**
+ * TabsTrigger component with enhanced styling and forwardRef for better React handling.
+ */
+const TabsTrigger = forwardRef<HTMLButtonElement, React.ComponentPropsWithoutRef<typeof Trigger>>(
+  (props, ref) => (
+    <Trigger
+      ref={ref}
+      className={cn(
+        "inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm",
+        props.className
+      )}
+      {...props}
+    />
+  ),
+);
+TabsTrigger.displayName = "TabsTrigger";
+
+/**
+ * TabsContent component with enhanced styling and forwardRef for better React handling.
+ */
+const TabsContent = forwardRef<HTMLDivElement, React.ComponentPropsWithoutRef<typeof Content>>(
+  (props, ref) => (
+    <Content
+      ref={ref}
+      className={cn(
+        "mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+        props.className
+      )}
+      {...props}
+    />
+  ),
+);
+TabsContent.displayName = "TabsContent";
+
+export { Tabs, TabsList, TabsTrigger, TabsContent };

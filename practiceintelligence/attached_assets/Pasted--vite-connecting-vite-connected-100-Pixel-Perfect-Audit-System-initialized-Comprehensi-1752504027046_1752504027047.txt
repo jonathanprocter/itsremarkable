@@ -1,0 +1,53 @@
+[vite] connecting...
+[vite] connected.
+🎯 100% Pixel-Perfect Audit System initialized
+🔍 Comprehensive Audit System initialized
+📊 Event breakdown: 
+Object {total: 0, simplepractice: 0, google: 0, manual: 0}
+🔍 SimplePractice Status: 
+Object {isLoading: true, hasError: false, error: undefined, eventsFound: 0, calendarsFound: 0}
+🎯 Test functions registered: 
+Object {testDailyExport: "function", testDynamicDailyExport: "function", testButtonClick: "function", testSimplePDF: "function", testDirectPDF: "function"}
+🎯 Debug functions ready: debugColumnWidths() and debugColumnWidthsDetailed()
+📊 Event breakdown: 
+Object {total: 0, simplepractice: 0, google: 0, manual: 0}
+🔍 SimplePractice Status: 
+Object {isLoading: true, hasError: false, error: undefined, eventsFound: 0, calendarsFound: 0}
+🎯 Test functions registered: 
+Object {testDailyExport: "function", testDynamicDailyExport: "function", testButtonClick: "function", testSimplePDF: "function", testDirectPDF: "function"}
+📊 Event breakdown: 
+Object {total: 0, simplepractice: 0, google: 0, manual: 0}
+🔍 SimplePractice Status: 
+Object {isLoading: true, hasError: false, error: undefined, eventsFound: 0, calendarsFound: 0}
+🎯 Test functions registered: 
+Object {testDailyExport: "function", testDynamicDailyExport: "function", testButtonClick: "function", testSimplePDF: "function", testDirectPDF: "function"}
+❌ Google Calendar events fetch failed: 
+Error {}
+
+at t.value (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:17465)
+at new t (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:12630)
+at t.value (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:32766)
+at https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:34400
+📊 Event breakdown: 
+Object {total: 0, simplepractice: 0, google: 0, manual: 0}
+🔍 SimplePractice Status: 
+Object {isLoading: true, hasError: false, error: undefined, eventsFound: 0, calendarsFound: 0}
+🎯 Test functions registered: 
+Object {testDailyExport: "function", testDynamicDailyExport: "function", testButtonClick: "function", testSimplePDF: "function", testDirectPDF: "function"}
+📁 Audit script returned HTML, skipping
+📊 Event breakdown: 
+Object {total: 1518, simplepractice: 0, google: 1518, manual: 0}
+📅 Your appointments date range: 
+Object {earliest: "Tue Dec 31 2024", latest: "Wed Dec 31 2025", sampleDates: Array(5), currentlyViewing: "Mon Jul 07 2025"}
+🔍 SimplePractice Status: 
+Object {isLoading: true, hasError: false, error: undefined, eventsFound: 0, calendarsFound: 0}
+🎯 Test functions registered: 
+Object {testDailyExport: "function", testDynamicDailyExport: "function", testButtonClick: "function", testSimplePDF: "function", testDirectPDF: "function"}
+📊 Event breakdown: 
+Object {total: 2790, simplepractice: 0, google: 2790, manual: 0}
+📅 Your appointments date range: 
+Object {earliest: "Tue Dec 31 2024", latest: "Wed Dec 31 2025", sampleDates: Array(5), currentlyViewing: "Mon Jul 07 2025"}
+🔍 SimplePractice Status: 
+Object {isLoading: false, hasError: false, error: undefined, eventsFound: 1272, calendarsFound: 1}
+🎯 Test functions registered: 
+Object {testDailyExport: "function", testDynamicDailyExport: "function", testButtonClick: "function", testSimplePDF: "function", testDirectPDF: "function"}

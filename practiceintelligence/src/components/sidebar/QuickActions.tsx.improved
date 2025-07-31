@@ -1,0 +1,85 @@
+x
+import React from 'react';
+import { Button } from '@/components/ui/button';
+
+interface QuickActionsProps {
+  onGoToToday: () => void;
+  onGoToDate: () => void;
+  onRefreshEvents: () => void;
+  onSyncCalendarEvents: () => void;
+  onSyncNotes: () => void;
+}
+
+/**
+ * Renders a set of quick action buttons for various calendar operations.
+ * @param props The actions to be performed by each button.
+ */
+export const QuickActions: React.FC<QuickActionsProps> = ({
+  onGoToToday,
+  onGoToDate,
+  onRefreshEvents,
+  onSyncCalendarEvents,
+  onSyncNotes,
+}) => (
+  <div className="sidebar-section">
+    <h3 className="text-sm font-semibold mb-3 text-gray-900">Quick Actions</h3>
+    <div className="space-y-2">
+      <ActionButton
+        variant="outline"
+        onClick={onGoToToday}
+        label="Go to Today"
+      />
+      <ActionButton
+        variant="outline"
+        onClick={onGoToDate}
+        label="Go to Date"
+      />
+      <ActionButton
+        variant="outline"
+        onClick={onRefreshEvents}
+        label="Refresh Events"
+      />
+      <ActionButton
+        variant="solid"
+        onClick={onSyncCalendarEvents}
+        label="Sync Calendar Events"
+        extraClasses="bg-green-600 hover:bg-green-700 text-white"
+      />
+      <ActionButton
+        variant="outline"
+        onClick={onSyncNotes}
+        label="Sync Notes to Calendar"
+      />
+    </div>
+  </div>
+);
+
+interface ActionButtonProps {
+  variant: 'outline' | 'solid';
+  onClick: () => void;
+  label: string;
+  extraClasses?: string;
+}
+
+/**
+ * Renders a button for a specific action within the Quick Actions component.
+ * @param variant The style variant of the button.
+ * @param onClick The function to call when the button is clicked.
+ * @param label The text label of the button.
+ * @param extraClasses Additional CSS classes for styling the button.
+ */
+const ActionButton: React.FC<ActionButtonProps> = ({
+  variant,
+  onClick,
+  label,
+  extraClasses = '',
+}) => (
+  <Button
+    variant={variant}
+    onClick={onClick}
+    className={`w-full ${extraClasses}`}
+    size="sm"
+  >
+    {label}
+  </Button>
+);

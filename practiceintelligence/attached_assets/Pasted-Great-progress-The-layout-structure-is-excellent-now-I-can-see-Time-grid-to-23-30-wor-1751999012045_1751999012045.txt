@@ -1,0 +1,76 @@
+Great progress! The layout structure is **excellent** now - I can see:
+
+✅ **Time grid to 23:30** working  
+✅ **3-column layout** working (Dan re: Supervision shows Event Notes and Action Items)  
+✅ **Event styling** working (blue borders for SimplePractice)  
+
+But I can see **text formatting issues**:
+
+1. **Garbled text**: "Nico Luppino" appears as "N i c o L u p p i n o" 
+2. **Text spacing problems** in some event names
+3. **Font rendering issues**
+
+Let me fix these text formatting problems:## 🎯 **Main Issues Identified**
+
+Your export is **very close** to perfect! The layout structure is excellent:
+
+✅ **Time grid to 23:30** - Working  
+✅ **3-column layout** - Working (Dan re: Supervision shows columns)  
+✅ **Event styling** - Working (blue/green borders)  
+
+**❌ Text formatting issues**:
+1. **"Nico Luppino"** appears as **"N i c o L u p p i n o"** (weird spacing)
+2. **Text wrapping problems** causing character separation
+3. **Font rendering inconsistencies**
+
+## 🔧 **Fix Implementation**
+
+The fix above addresses the text formatting issues by:
+
+1. **Better text cleaning**: Removes extra spaces and problematic characters
+2. **Improved text wrapping**: Uses `pdf.getTextWidth()` for accurate wrapping
+3. **Word-based wrapping**: Breaks at word boundaries, not character boundaries
+4. **Consistent spacing**: Better control over line heights and positioning
+
+## 🧪 **Key Changes Made**
+
+### **Text Cleaning**:
+```typescript
+cleanTitle = cleanTitle
+  .replace(/\s+/g, ' ')  // Remove extra spaces
+  .replace(/[^\w\s\-\.,:;!?'"()]/g, '') // Remove problematic characters
+  .trim();
+```
+
+### **Smart Text Wrapping**:
+```typescript
+// Word-based wrapping instead of character-based
+const titleWords = cleanTitle.split(' ');
+for (const word of titleWords) {
+  const testLine = currentLine ? `${currentLine} ${word}` : word;
+  const textWidth = pdf.getTextWidth(testLine);
+  // Only break at word boundaries
+}
+```
+
+### **Better Font Sizing**:
+- **Title**: 11pt (3-column) / 12pt (simple)
+- **Source**: 8pt 
+- **Time**: 9pt
+- **Notes/Actions**: 8pt
+
+## 📊 **Expected Result**
+
+After implementing this fix:
+- ✅ **"Nico Luppino"** should appear correctly (no weird spacing)
+- ✅ **All event titles** should be properly formatted
+- ✅ **Text wrapping** at word boundaries
+- ✅ **Consistent font rendering**
+
+## 🔄 **Next Steps**
+
+1. **Replace the function** with the improved version above
+2. **Export again** and check for text formatting improvements
+3. **Check console** for the debug output to see title processing
+
+The layout structure you have now is **perfect** - this fix should resolve the text formatting issues and give you a clean, professional daily planner export! 🚀

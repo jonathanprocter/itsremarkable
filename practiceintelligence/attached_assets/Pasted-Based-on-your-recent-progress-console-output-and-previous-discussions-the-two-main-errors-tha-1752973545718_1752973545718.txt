@@ -1,0 +1,34 @@
+Based on your recent progress, console output, and previous discussions, the **two main errors** that kept your PDF export from achieving parity were:
+
+### 1. **Timezone Conversion Error**
+- **Symptom:** Calvin Hill’s appointment appeared at 6:00 AM in the PDF, but should have been at 10:00 AM.
+- **Root Cause:**  
+  - The appointment times were misinterpreted due to unnecessary or incorrect timezone conversion logic.
+  - Your source event data was already in the correct local time (Eastern), but the code was treating it as UTC and subtracting hours, resulting in an incorrect, earlier time.
+- **Resolution:**  
+  - Stop converting times if the source data is already in the correct timezone.
+  - The export logic should use the parsed Date as-is, avoiding double adjustments or subtracting additional hours.
+
+### 2. **Event Styling/Layout Discrepancy**
+- **Symptom:**  
+  - Event blocks (Calvin’s appointment) in the PDF did not match the appearance of the browser’s daily view.
+  - Issues included a colored (blue) background instead of white, incorrect text colors, missing or improperly styled notes/action items, incorrect width/height, or not spanning the correct time range.
+- **Root Cause:**  
+  - The PDF export code used a different HTML/CSS structure from the browser daily view for events.
+  - Differences in background color, box-shadow, borders, and text styling prevented the export from being visually accurate.
+- **Resolution:**  
+  - Update the event card CSS/HTML for the PDF export to use:
+    - White background (`background: #fff`)
+    - Colored **left border** matching the event source
+    - Proper text color and font
+    - All notes and action items fully visible, styled as they are in the browser daily view
+
+**In summary:**  
+- **Error 1:** Timezone conversion/subtraction applied when not needed  
+- **Error 2:** Styling didn't match browser (event blocks, colors, layout, details)
+
+Once you fixed the unnecessary timezone adjustment and applied the correct event styles (white background, dark text, notes/action items), your PDF export should now accurately match the daily view.
+
+If you want further help tracking down *exact* line changes or want sample fixes, let me know!
+
+[1] https://replit.com/@jonathanprocter/RemarkablePlannerPro-1

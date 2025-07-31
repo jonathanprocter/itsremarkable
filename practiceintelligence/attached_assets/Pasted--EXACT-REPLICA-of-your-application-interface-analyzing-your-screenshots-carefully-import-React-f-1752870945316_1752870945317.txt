@@ -1,0 +1,417 @@
+// EXACT REPLICA of your application interface - analyzing your screenshots carefully
+import React from 'react';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
+
+interface AppointmentData {
+  id: string;
+  startTime: string;
+  endTime: string;
+  clientName: string;
+  status: 'confirmed' | 'clinician_canceled' | 'client_canceled';
+}
+
+const TrueApplicationReplica: React.FC<{ appointments: AppointmentData[] }> = ({ appointments }) => {
+  // Generate time slots matching your app exactly
+  const generateTimeSlots = () => {
+    const slots = [];
+    for (let hour = 6; hour <= 19; hour++) {
+      // Top of hour (shaded)
+      slots.push({
+        time: `${hour.toString().padStart(2, '0')}:00`,
+        isTopOfHour: true
+      });
+      // Half hour (not shaded)
+      if (hour < 19) {
+        slots.push({
+          time: `${hour.toString().padStart(2, '0')}:30`,
+          isTopOfHour: false
+        });
+      }
+    }
+    return slots;
+  };
+
+  const timeSlots = generateTimeSlots();
+  
+  // Map appointments to time slots
+  const appointmentsByTime = appointments.reduce((acc, apt) => {
+    acc[apt.startTime] = apt;
+    return acc;
+  }, {} as Record<string, AppointmentData>);
+
+  return (
+    <div style={{
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+      backgroundColor: '#ffffff',
+      width: '100%',
+      maxWidth: '1200px',
+      margin: '0 auto',
+      padding: '16px'
+    }}>
+      {/* EXACT Header Layout from your app */}
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'flex-start',
+        marginBottom: '16px',
+        padding: '0 8px'
+      }}>
+        {/* Left side - Date and appointment count */}
+        <div>
+          <h1 style={{
+            fontSize: '28px',
+            fontWeight: '600',
+            margin: '0',
+            color: '#1f2937',
+            lineHeight: '1.2'
+          }}>
+            Friday, July 18, 2025
+          </h1>
+          <p style={{
+            fontSize: '14px',
+            color: '#6b7280',
+            margin: '4px 0 0 0'
+          }}>
+            8 appointments
+          </p>
+        </div>
+
+        {/* Right side - Metrics in vertical layout like your app */}
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'flex-end',
+          gap: '2px'
+        }}>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '40px'
+          }}>
+            <div style={{ textAlign: 'center' }}>
+              <div style={{
+                fontSize: '24px',
+                fontWeight: '600',
+                color: '#1f2937',
+                lineHeight: '1'
+              }}>8</div>
+              <div style={{
+                fontSize: '11px',
+                color: '#6b7280',
+                textAlign: 'center',
+                marginTop: '2px'
+              }}>Appointments</div>
+            </div>
+            <div style={{ textAlign: 'center' }}>
+              <div style={{
+                fontSize: '24px',
+                fontWeight: '600',
+                color: '#1f2937',
+                lineHeight: '1'
+              }}>8.0h</div>
+              <div style={{
+                fontSize: '11px',
+                color: '#6b7280',
+                textAlign: 'center',
+                marginTop: '2px'
+              }}>Scheduled</div>
+            </div>
+            <div style={{ textAlign: 'center' }}>
+              <div style={{
+                fontSize: '24px',
+                fontWeight: '600',
+                color: '#1f2937',
+                lineHeight: '1'
+              }}>4.0h</div>
+              <div style={{
+                fontSize: '11px',
+                color: '#6b7280',
+                textAlign: 'center',
+                marginTop: '2px'
+              }}>Available</div>
+            </div>
+            <div style={{ textAlign: 'center' }}>
+              <div style={{
+                fontSize: '24px',
+                fontWeight: '600',
+                color: '#1f2937',
+                lineHeight: '1'
+              }}>33%</div>
+              <div style={{
+                fontSize: '11px',
+                color: '#6b7280',
+                textAlign: 'center',
+                marginTop: '2px'
+              }}>Free Time</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Calendar Grid - EXACT match to your interface */}
+      <div style={{
+        border: '1px solid #e5e7eb',
+        borderRadius: '8px',
+        overflow: 'hidden',
+        backgroundColor: '#ffffff'
+      }}>
+        {timeSlots.map((slot, index) => {
+          const appointment = appointmentsByTime[slot.time];
+          
+          return (
+            <div
+              key={slot.time}
+              style={{
+                display: 'flex',
+                minHeight: '44px',
+                backgroundColor: slot.isTopOfHour ? '#f9fafb' : '#ffffff', // Shading for top of hour
+                borderBottom: index < timeSlots.length - 1 ? '1px solid #e5e7eb' : 'none'
+              }}
+            >
+              {/* Time column - exact styling from your app */}
+              <div style={{
+                width: '80px',
+                padding: '12px 16px',
+                fontSize: '13px',
+                fontWeight: '500',
+                color: '#374151',
+                backgroundColor: slot.isTopOfHour ? '#f3f4f6' : '#f9fafb',
+                borderRight: '1px solid #e5e7eb',
+                display: 'flex',
+                alignItems: 'center'
+              }}>
+                {slot.time}
+              </div>
+
+              {/* Appointment area */}
+              <div style={{
+                flex: 1,
+                padding: '8px 16px',
+                display: 'flex',
+                alignItems: 'center',
+                backgroundColor: slot.isTopOfHour ? '#f9fafb' : '#ffffff'
+              }}>
+                {appointment && (
+                  <div style={{
+                    position: 'relative',
+                    width: '100%',
+                    padding: '12px 16px',
+                    backgroundColor: appointment.status === 'clinician_canceled' ? '#f1f5f9' : '#ffffff',
+                    border: '1px solid #e2e8f0',
+                    borderRadius: '6px',
+                    borderLeft: appointment.status === 'clinician_canceled' 
+                      ? '4px solid #94a3b8' 
+                      : '4px solid #3b82f6',
+                    boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)'
+                  }}>
+                    {/* Clinician Canceled Badge - EXACT styling from your app */}
+                    {appointment.status === 'clinician_canceled' && (
+                      <span style={{
+                        position: 'absolute',
+                        top: '8px',
+                        right: '12px',
+                        fontSize: '10px',
+                        fontWeight: '600',
+                        padding: '4px 8px',
+                        borderRadius: '4px',
+                        backgroundColor: '#64748b',
+                        color: '#ffffff',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.5px'
+                      }}>
+                        CLINICIAN CANCELED
+                      </span>
+                    )}
+
+                    {/* Appointment content */}
+                    <div style={{
+                      paddingRight: appointment.status === 'clinician_canceled' ? '140px' : '0'
+                    }}>
+                      <div style={{
+                        fontSize: '14px',
+                        fontWeight: '600',
+                        color: appointment.status === 'clinician_canceled' ? '#64748b' : '#1e293b',
+                        marginBottom: '4px',
+                        textDecoration: appointment.status === 'clinician_canceled' ? 'line-through' : 'none',
+                        textDecorationColor: '#ef4444',
+                        textDecorationThickness: '2px'
+                      }}>
+                        {appointment.clientName}
+                      </div>
+                      <div style={{
+                        fontSize: '12px',
+                        color: appointment.status === 'clinician_canceled' ? '#94a3b8' : '#64748b',
+                        fontWeight: '500',
+                        textDecoration: appointment.status === 'clinician_canceled' ? 'line-through' : 'none',
+                        textDecorationColor: '#ef4444',
+                        textDecorationThickness: '1.5px'
+                      }}>
+                        {appointment.startTime}-{appointment.endTime}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Bottom buttons section - like your app */}
+      <div style={{
+        marginTop: '24px',
+        padding: '16px 0',
+        borderTop: '1px solid #e5e7eb',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center'
+      }}>
+        <div style={{
+          display: 'flex',
+          gap: '12px'
+        }}>
+          <button style={{
+            padding: '8px 16px',
+            backgroundColor: '#f3f4f6',
+            color: '#374151',
+            border: '1px solid #d1d5db',
+            borderRadius: '6px',
+            fontSize: '13px',
+            fontWeight: '500',
+            cursor: 'pointer'
+          }}>
+            Previous
+          </button>
+          <button style={{
+            padding: '8px 16px',
+            backgroundColor: '#3b82f6',
+            color: '#ffffff',
+            border: 'none',
+            borderRadius: '6px',
+            fontSize: '13px',
+            fontWeight: '500',
+            cursor: 'pointer'
+          }}>
+            Today
+          </button>
+          <button style={{
+            padding: '8px 16px',
+            backgroundColor: '#f3f4f6',
+            color: '#374151',
+            border: '1px solid #d1d5db',
+            borderRadius: '6px',
+            fontSize: '13px',
+            fontWeight: '500',
+            cursor: 'pointer'
+          }}>
+            Next
+          </button>
+        </div>
+
+        <div style={{
+          fontSize: '13px',
+          color: '#6b7280'
+        }}>
+          Weekly Overview
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Enhanced PDF generation
+export const generateTrueReplicaPDF = async (appointments: AppointmentData[]) => {
+  console.log('Generating TRUE replica PDF...');
+  
+  try {
+    const container = document.createElement('div');
+    container.id = 'true-replica-container';
+    container.style.position = 'absolute';
+    container.style.left = '-9999px';
+    container.style.top = '0';
+    container.style.width = '1200px';
+    container.style.backgroundColor = '#ffffff';
+    document.body.appendChild(container);
+
+    const React = await import('react');
+    const { createRoot } = await import('react-dom/client');
+    
+    const root = createRoot(container);
+    
+    await new Promise<void>((resolve) => {
+      root.render(
+        React.createElement(TrueApplicationReplica, { appointments }),
+        resolve
+      );
+    });
+
+    await new Promise(resolve => setTimeout(resolve, 2000));
+
+    const canvas = await html2canvas(container, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: '#ffffff',
+      width: 1200,
+      height: container.scrollHeight
+    });
+
+    const imgData = canvas.toDataURL('image/png', 1.0);
+    const pdf = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: 'a4'
+    });
+
+    const pdfWidth = 210;
+    const imgWidth = pdfWidth - 20;
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+    pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
+    pdf.save('true-application-replica.pdf');
+
+    document.body.removeChild(container);
+    console.log('TRUE replica PDF generated!');
+
+  } catch (error) {
+    console.error('PDF generation failed:', error);
+    throw error;
+  }
+};
+
+// Export component
+export const TrueReplicaButton: React.FC<{ appointments: AppointmentData[] }> = ({ appointments }) => {
+  const [isExporting, setIsExporting] = React.useState(false);
+
+  const handleExport = async () => {
+    setIsExporting(true);
+    try {
+      await generateTrueReplicaPDF(appointments);
+      alert('TRUE replica PDF exported!');
+    } catch (error) {
+      console.error('Export failed:', error);
+      alert('Export failed. Check console.');
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  return (
+    <button
+      onClick={handleExport}
+      disabled={isExporting}
+      style={{
+        padding: '10px 20px',
+        backgroundColor: isExporting ? '#9ca3af' : '#3b82f6',
+        color: '#ffffff',
+        border: 'none',
+        borderRadius: '6px',
+        fontSize: '14px',
+        fontWeight: '600',
+        cursor: isExporting ? 'not-allowed' : 'pointer'
+      }}
+    >
+      {isExporting ? 'Generating TRUE Replica...' : 'Export TRUE Application Replica'}
+    </button>
+  );
+};

@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Calendar</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f5f5;
+        }
+
+```
+    .calendar-container {
+        max-width: 800px;
+        margin: 0 auto;
+        background: white;
+        border: 2px solid #333;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    .header {
+        background: #f8f9fa;
+        padding: 15px 20px;
+        border-bottom: 1px solid #333;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .date-section {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+    
+    .weekly-overview-btn {
+        background: #e9ecef;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        padding: 5px 10px;
+        font-size: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+    }
+
+    .weekly-overview-text {
+        display: flex;
+        flex-direction: column;
+        line-height: 1.1;
+    }
+    
+    .date-title {
+        font-size: 24px;
+        font-weight: bold;
+        margin: 0;
+        line-height: 1.2;
+    }
+    
+    .date-subtitle {
+        font-size: 16px;
+        color: #333;
+        margin: 2px 0;
+        line-height: 1.2;
+    }
+    
+    .subtitle {
+        font-size: 14px;
+        color: #666;
+        font-style: italic;
+        margin: 2px 0 0 0;
+    }
+    
+    .service-icons {
+        display: flex;
+        gap: 20px;
+        align-items: center;
+    }
+    
+    .service-icon {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 13px;
+        color: #333;
+    }
+    
+    .icon {
+        width: 14px;
+        height: 14px;
+        border-radius: 2px;
+        flex-shrink: 0;
+    }
+    
+    .simplepractice { 
+        background: white;
+        border: 1px solid #6c9bd1;
+        border-left: 4px solid #4285f4;
+    }
+    .google { 
+        background: transparent;
+        border: 2px dashed #34a853;
+    }
+    .holidays { background: #fbbc04; }
+    
+    .stats-bar {
+        background: #f8f9fa;
+        padding: 15px 20px;
+        border-bottom: 1px solid #333;
+        display: flex;
+        justify-content: space-around;
+        text-align: center;
+    }
+    
+    .stat {
+        flex: 1;
+    }
+    
+    .stat-number {
+        font-size: 24px;
+        font-weight: bold;
+        margin: 0;
+    }
+    
+    .stat-label {
+        font-size: 12px;
+        color: #666;
+        margin: 2px 0 0 0;
+    }
+    
+    .calendar-grid {
+        position: relative;
+        min-height: 400px;
+    }
+    
+    .time-slot {
+        height: 30px;
+        border-bottom: 1px solid #e0e0e0;
+        display: flex;
+        position: relative;
+    }
+    
+    .time-slot.hour {
+        border-bottom: 1px solid #ccc;
+        background: #e9ecef;
+    }
+    
+    .time-slot.half-hour {
+        background: white;
+    }
+    
+    .time-label {
+        width: 80px;
+        font-size: 11px;
+        font-weight: bold;
+        text-align: center;
+        border-right: 1px solid #333;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+    
+    .time-slot.hour .time-label {
+        background: #e9ecef;
+    }
+    
+    .time-slot.half-hour .time-label {
+        background: white;
+    }
+    
+    .time-content {
+        flex: 1;
+        height: 30px;
+        position: relative;
+    }
+    
+    .appointment {
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        right: 3px;
+        height: 56px;
+        background: white;
+        border: 1px solid #6c9bd1;
+        border-left: 4px solid #4285f4;
+        border-radius: 2px;
+        padding: 4px 8px;
+        color: #000;
+        font-size: 11px;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        z-index: 10;
+    }
+
+    .appointment.google {
+        border: 2px dashed #34a853;
+        border-left: 2px dashed #34a853;
+    }
+
+    .appointment.personal {
+        border: 1px solid #999;
+        border-left: 4px solid #999;
+    }
+    
+    .appointment-container {
+        position: absolute;
+        left: 81px;
+        right: 0;
+        height: 60px;
+        z-index: 10;
+    }
+    
+    .appointment-title {
+        font-weight: bold;
+        margin-bottom: 1px;
+        font-size: 11px;
+        line-height: 1.2;
+        color: #000;
+    }
+    
+    .appointment-subtitle {
+        font-size: 8px;
+        text-transform: uppercase;
+        color: #999;
+        margin-bottom: 2px;
+        font-weight: normal;
+    }
+    
+    .appointment-time {
+        font-weight: bold;
+        font-size: 16px;
+        line-height: 1.2;
+        color: #000;
+    }
+    
+    .footer {
+        background: #f8f9fa;
+        padding: 15px 20px;
+        border-top: 1px solid #333;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .nav-btn {
+        background: #e9ecef;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        padding: 8px 15px;
+        font-size: 12px;
+        cursor: pointer;
+    }
+    
+    .nav-btn:hover {
+        background: #dee2e6;
+    }
+    
+    .weekly-overview-footer {
+        background: #e9ecef;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        padding: 8px 15px;
+        font-size: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+    }
+
+    .weekly-overview-footer .weekly-overview-text {
+        display: flex;
+        flex-direction: column;
+        line-height: 1.1;
+    }
+
+    .add-appointment-btn {
+        background: #28a745;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        padding: 5px 10px;
+        font-size: 12px;
+        cursor: pointer;
+        margin-left: 10px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .add-appointment-btn:hover {
+        background: #218838;
+    }
+
+    .add-appointment-text {
+        display: flex;
+        flex-direction: column;
+        line-height: 1.1;
+    }
+
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
+    }
+
+    .modal-content {
+        background-color: white;
+        margin: 15% auto;
+        padding: 20px;
+        border-radius: 8px;
+        width: 300px;
+    }
+
+    .modal-content h3 {
+        margin-top: 0;
+    }
+
+    .modal-content input, .modal-content select {
+        width: 100%;
+        padding: 8px;
+        margin: 5px 0;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+
+    .modal-buttons {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+        margin-top: 15px;
+    }
+
+    .modal-buttons button {
+        padding: 8px 16px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .save-btn {
+        background: #007bff;
+        color: white;
+    }
+
+    .cancel-btn {
+        background: #6c757d;
+        color: white;
+    }
+</style>
+```
+
+</head>
+<body>
+    <div class="calendar-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="date-section">
+                <div class="weekly-overview-btn" onclick="showWeeklyOverview()">
+                    <span>📅</span>
+                    <div class="weekly-overview-text">
+                        <div>Weekly</div>
+                        <div>Overview</div>
+                    </div>
+                </div>
+                <div>
+                    <h1 class="date-title" id="dateTitle">Loading...</h1>
+                    <div class="date-subtitle" id="dateSubtitle">Loading...</div>
+                    <p class="subtitle" id="appointmentCount">Loading...</p>
+                </div>
+            </div>
+            <div class="service-icons">
+                <div class="service-icon">
+                    <div class="icon simplepractice"></div>
+                    <span>SimplePractice</span>
+                </div>
+                <div class="service-icon">
+                    <div class="icon google"></div>
+                    <span>Google Calendar</span>
+                </div>
+                <div class="service-icon">
+                    <div class="icon holidays"></div>
+                    <span>Holidays in United States</span>
+                </div>
+                <button class="add-appointment-btn" onclick="showAddAppointmentModal()">
+                    <span>+</span>
+                    <div class="add-appointment-text">
+                        <div>Add</div>
+                        <div>Appointment</div>
+                    </div>
+                </button>
+            </div>
+        </div>
+
+```
+    <!-- Stats Bar -->
+    <div class="stats-bar">
+        <div class="stat">
+            <div class="stat-number" id="totalAppointments">0</div>
+            <div class="stat-label">Appointments</div>
+        </div>
+        <div class="stat">
+            <div class="stat-number" id="scheduledHours">0.0h</div>
+            <div class="stat-label">Scheduled</div>
+        </div>
+        <div class="stat">
+            <div class="stat-number" id="availableHours">0.0h</div>
+            <div class="stat-label">Available</div>
+        </div>
+        <div class="stat">
+            <div class="stat-number" id="freeTimePercent">0%</div>
+            <div class="stat-label">Free Time</div>
+        </div>
+    </div>
+    
+    <!-- Calendar Grid -->
+    <div class="calendar-grid" id="calendarGrid">
+        <!-- Generated dynamically -->
+    </div>
+    
+    <!-- Footer -->
+    <div class="footer">
+        <button class="nav-btn" id="prevDayBtn" onclick="navigateDay(-1)">← Previous Day</button>
+        <div class="weekly-overview-footer" onclick="showWeeklyOverview()">
+            <span>📅</span>
+            <div class="weekly-overview-text">
+                <div>Weekly</div>
+                <div>Overview</div>
+            </div>
+        </div>
+        <button class="nav-btn" id="nextDayBtn" onclick="navigateDay(1)">Next Day →</button>
+    </div>
+</div>
+
+<!-- Add Appointment Modal -->
+<div id="appointmentModal" class="modal">
+    <div class="modal-content">
+        <h3>Add New Appointment</h3>
+        <input type="text" id="appointmentTitle" placeholder="Appointment Title" required>
+        <input type="text" id="appointmentLocation" placeholder="Location" required>
+        <input type="time" id="appointmentStartTime" required>
+        <input type="time" id="appointmentEndTime" required>
+        <select id="appointmentType">
+            <option value="simplepractice">SimplePractice</option>
+            <option value="google">Google Calendar</option>
+            <option value="personal">Personal</option>
+        </select>
+        <div class="modal-buttons">
+            <button class="cancel-btn" onclick="hideAddAppointmentModal()">Cancel</button>
+            <button class="save-btn" onclick="saveAppointment()">Save</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Current date state
+    let currentDate = new Date();
+    
+    // Sample appointment data structure
+    const appointmentData = {
+        // Sample data for different dates
+        '2025-07-18': [
+            { title: 'Richie Hayes Appointment', startTime: '07:00', endTime: '08:00', type: 'simplepractice', location: '🏢 Office' },
+            { title: 'John Best Appointment', startTime: '08:00', endTime: '09:00', type: 'simplepractice', location: '🏢 Office' },
+            { title: 'Max Hafker Appointment', startTime: '09:00', endTime: '10:00', type: 'simplepractice', location: '🏢 Office' },
+            { title: 'Sarah Palladino Appointment', startTime: '11:00', endTime: '12:00', type: 'simplepractice', location: '🏢 Office' },
+            { title: 'Noah Silverman Appointment', startTime: '13:00', endTime: '14:00', type: 'simplepractice', location: '🏢 Office' },
+            { title: 'Trendall Storey Appointment', startTime: '16:00', endTime: '17:00', type: 'simplepractice', location: '🏢 Office' },
+            { title: 'Michael Bower & Bob Delmond Appointment', startTime: '17:00', endTime: '18:00', type: 'simplepractice', location: '🏢 Office' },
+            { title: 'Brianna Brickman Appointment', startTime: '18:00', endTime: '19:00', type: 'simplepractice', location: '🏢 Office' },
+            { title: 'Team Meeting', startTime: '19:00', endTime: '20:00', type: 'google', location: '🏢 Conference Room' }
+        ],
+        '2025-07-17': [
+            { title: 'Test Location RVC', startTime: '11:00', endTime: '12:00', type: 'google', location: '🏢 RVC' },
+            { title: 'Test Location Telehealth', startTime: '12:00', endTime: '13:00', type: 'google', location: '📱 TELEHEALTH' },
+            { title: 'Telehealth Test Appointment', startTime: '13:00', endTime: '14:00', type: 'google', location: '📱 TELEHEALTH' },
+            { title: 'COFFEE WITH NORA', startTime: '16:00', endTime: '17:00', type: 'simplepractice', location: '☕ Coffee Shop' }
+        ],
+        '2025-07-19': [
+            { title: 'Weekend Consultation', startTime: '10:00', endTime: '11:00', type: 'simplepractice', location: '🏢 Office' },
+            { title: 'Family Time', startTime: '15:00', endTime: '17:00', type: 'personal', location: '🏠 Home' }
+        ]
+    };
+
+    // Initialize calendar
+    function initCalendar() {
+        updateCalendarDisplay();
+    }
+
+    // Format date for display
+    function formatDateForDisplay(date) {
+        const weekday = date.toLocaleDateString('en-US', { weekday: 'long' });
+        const dateStr = date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+        return { weekday, dateStr };
+    }
+
+    // Format date for data key
+    function formatDateForData(date) {
+        return date.toISOString().split('T')[0];
+    }
+
+    // Get appointments for current date
+    function getCurrentAppointments() {
+        const dateKey = formatDateForData(currentDate);
+        return appointmentData[dateKey] || [];
+    }
+
+    // Calculate statistics
+    function calculateStats(appointments) {
+        const totalAppointments = appointments.length;
+        const scheduledHours = appointments.reduce((total, apt) => {
+            const start = new Date(`2000-01-01T${apt.startTime}`);
+            const end = new Date(`2000-01-01T${apt.endTime}`);
+            return total + (end - start) / (1000 * 60 * 60);
+        }, 0);
+        
+        const totalWorkingHours = 16; // 6 AM to 10 PM
+        const availableHours = totalWorkingHours - scheduledHours;
+        const freeTimePercent = Math.round((availableHours / totalWorkingHours) * 100);
+        
+        return {
+            totalAppointments,
+            scheduledHours: scheduledHours.toFixed(1),
+            availableHours: availableHours.toFixed(1),
+            freeTimePercent
+        };
+    }
+
+    // Generate time slots
+    function generateTimeSlots() {
+        const slots = [];
+        for (let hour = 6; hour <= 23; hour++) {
+            // Hour slot
+            slots.push({
+                time: `${hour.toString().padStart(2, '0')}:00`,
+                isHour: true,
+                slotIndex: slots.length
+            });
+            
+            // Half-hour slot
+            if (hour < 23) {
+                slots.push({
+                    time: `${hour.toString().padStart(2, '0')}:30`,
+                    isHour: false,
+                    slotIndex: slots.length
+                });
+            }
+        }
+        return slots;
+    }
+
+    // Convert time to slot index
+    function timeToSlotIndex(timeString) {
+        const [hours, minutes] = timeString.split(':').map(Number);
+        const hourIndex = (hours - 6) * 2;
+        const minuteOffset = minutes >= 30 ? 1 : 0;
+        return hourIndex + minuteOffset;
+    }
+
+    // Update calendar display
+    function updateCalendarDisplay() {
+        const appointments = getCurrentAppointments();
+        const stats = calculateStats(appointments);
+        const dateDisplay = formatDateForDisplay(currentDate);
+        
+        // Update header
+        document.getElementById('dateTitle').textContent = dateDisplay.weekday;
+        document.getElementById('dateSubtitle').textContent = dateDisplay.dateStr;
+        document.getElementById('appointmentCount').textContent = `${appointments.length} appointments`;
+        
+        // Update stats
+        document.getElementById('totalAppointments').textContent = stats.totalAppointments;
+        document.getElementById('scheduledHours').textContent = `${stats.scheduledHours}h`;
+        document.getElementById('availableHours').textContent = `${stats.availableHours}h`;
+        document.getElementById('freeTimePercent').textContent = `${stats.freeTimePercent}%`;
+        
+        // Update navigation buttons
+        const prevDate = new Date(currentDate);
+        prevDate.setDate(prevDate.getDate() - 1);
+        const nextDate = new Date(currentDate);
+        nextDate.setDate(nextDate.getDate() + 1);
+        
+        document.getElementById('prevDayBtn').textContent = `← ${prevDate.toLocaleDateString('en-US', { weekday: 'long' })}`;
+        document.getElementById('nextDayBtn').textContent = `${nextDate.toLocaleDateString('en-US', { weekday: 'long' })} →`;
+        
+        // Generate calendar grid
+        generateCalendarGrid(appointments);
+    }
+
+    // Generate calendar grid
+    function generateCalendarGrid(appointments) {
+        const grid = document.getElementById('calendarGrid');
+        grid.innerHTML = '';
+        
+        const timeSlots = generateTimeSlots();
+        
+        // Create appointment position map
+        const appointmentPositions = new Map();
+        appointments.forEach(appointment => {
+            const startSlot = timeToSlotIndex(appointment.startTime);
+            appointmentPositions.set(startSlot, appointment);
+        });
+        
+        // Generate time slots
+        timeSlots.forEach((slot, index) => {
+            const slotDiv = document.createElement('div');
+            slotDiv.className = `time-slot ${slot.isHour ? 'hour' : 'half-hour'}`;
+            slotDiv.style.position = 'relative';
+            
+            const timeLabel = document.createElement('div');
+            timeLabel.className = 'time-label';
+            timeLabel.textContent = slot.time;
+            
+            const timeContent = document.createElement('div');
+            timeContent.className = 'time-content';
+            
+            slotDiv.appendChild(timeLabel);
+            slotDiv.appendChild(timeContent);
+            
+            // Add appointment if it starts at this slot
+            if (appointmentPositions.has(index)) {
+                const appointment = appointmentPositions.get(index);
+                const appointmentContainer = document.createElement('div');
+                appointmentContainer.className = 'appointment-container';
+                appointmentContainer.style.position = 'absolute';
+                appointmentContainer.style.top = '0';
+                appointmentContainer.style.left = '81px';
+                appointmentContainer.style.right = '0';
+                appointmentContainer.style.height = '60px';
+                appointmentContainer.style.zIndex = '10';
+                
+                const appointmentDiv = document.createElement('div');
+                appointmentDiv.className = `appointment ${appointment.type}`;
+                
+                const title = document.createElement('div');
+                title.className = 'appointment-title';
+                title.textContent = appointment.title;
+                
+                const subtitle = document.createElement('div');
+                subtitle.className = 'appointment-subtitle';
+                const typeText = appointment.type === 'simplepractice' ? 'SIMPLEPRACTICE' : 
+                               appointment.type === 'google' ? 'GOOGLE CALENDAR' : 
+                               'PERSONAL';
+                subtitle.textContent = `${typeText} | ${appointment.location}`;
+                
+                const time = document.createElement('div');
+                time.className = 'appointment-time';
+                time.textContent = `${appointment.startTime}-${appointment.endTime}`;
+                
+                appointmentDiv.appendChild(title);
+                appointmentDiv.appendChild(subtitle);
+                appointmentDiv.appendChild(time);
+                
+                appointmentContainer.appendChild(appointmentDiv);
+                slotDiv.appendChild(appointmentContainer);
+            }
+            
+            grid.appendChild(slotDiv);
+        });
+    }
+
+    // Navigate to different day
+    function navigateDay(direction) {
+        const newDate = new Date(currentDate);
+        newDate.setDate(newDate.getDate() + direction);
+        currentDate = newDate;
+        updateCalendarDisplay();
+    }
+
+    // Show weekly overview (placeholder)
+    function showWeeklyOverview() {
+        alert('Weekly Overview feature coming soon!');
+    }
+
+    // Show add appointment modal
+    function showAddAppointmentModal() {
+        document.getElementById('appointmentModal').style.display = 'block';
+    }
+
+    // Hide add appointment modal
+    function hideAddAppointmentModal() {
+        document.getElementById('appointmentModal').style.display = 'none';
+        // Clear form
+        document.getElementById('appointmentTitle').value = '';
+        document.getElementById('appointmentLocation').value = '';
+        document.getElementById('appointmentStartTime').value = '';
+        document.getElementById('appointmentEndTime').value = '';
+        document.getElementById('appointmentType').value = 'simplepractice';
+    }
+
+    // Save appointment
+    function saveAppointment() {
+        const title = document.getElementById('appointmentTitle').value;
+        const location = document.getElementById('appointmentLocation').value;
+        const startTime = document.getElementById('appointmentStartTime').value;
+        const endTime = document.getElementById('appointmentEndTime').value;
+        const type = document.getElementById('appointmentType').value;
+        
+        if (!title || !location || !startTime || !endTime) {
+            alert('Please fill in all required fields');
+            return;
+        }
+        
+        if (startTime >= endTime) {
+            alert('End time must be after start time');
+            return;
+        }
+        
+        const dateKey = formatDateForData(currentDate);
+        if (!appointmentData[dateKey]) {
+            appointmentData[dateKey] = [];
+        }
+        
+        appointmentData[dateKey].push({
+            title,
+            location,
+            startTime,
+            endTime,
+            type
+        });
+        
+        // Sort appointments by start time
+        appointmentData[dateKey].sort((a, b) => a.startTime.localeCompare(b.startTime));
+        
+        hideAddAppointmentModal();
+        updateCalendarDisplay();
+    }
+
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+        const modal = document.getElementById('appointmentModal');
+        if (event.target === modal) {
+            hideAddAppointmentModal();
+        }
+    }
+
+    // Initialize calendar on page load
+    window.onload = function() {
+        initCalendar();
+    };
+</script>
+```
+
+</body>
+</html>

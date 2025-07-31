@@ -1,0 +1,65 @@
+Here’s a highly targeted, developer-focused Replit AI prompt—grounded in your latest deployment and the precise problems you’re still seeing:
+
+## Replit AI Prompt: Pixel-Perfect Daily Template PDF Fix
+
+**Context:**  
+My project (RemarkablePlannerPro) now generates a Daily Template PDF export, but  
+- The exported PDF, while much improved, *still doesn’t faithfully match* my original HTML in professional layout, spacing, and style.  
+- Key issues observed: some text and block alignment is still off or inconsistent with the web version. Visual hierarchy could be tighter. I want absolute pixel parity with my HTML daily view.
+
+### Your Objective
+
+**Rewrite and polish the PDF export logic so that it matches my original HTML daily layout, with no visual misalignments, spacing inconsistencies, or style drift—across both reMarkable portrait (507x677pt) and US Letter (612x792pt) sizes.**
+
+### What To Do
+
+#### 1. **Start from My HTML!**
+Carefully review the original HTML/CSS daily planner view (header, stats bar, grid, legend, events, and footer). Your PDF output **must match this pixel-for-pixel**:  
+- Copy *all* spacing, cell sizing, paddings, font heights/weights/colors
+- Keep the grid visually identical: Time slots, alternating backgrounds, explicit grid lines
+
+#### 2. **Section-by-Section Instructions**
+- **Header:** At the top, bold, centered, large font, with appropriate top margin.
+- **Stats Bar:** 
+  - Place directly under the header with matching horizontal padding
+  - Use the same font size, color, and arrangement as in the HTML
+  - Bar should be visually grouped—do NOT scatter across PDF
+- **Legend:** Visually match placement, colors, icons, and spacing from the webpage. Should be immediately after stats, clear and hard-to-miss.
+- **Time Grid + Events:**
+  - Each time slot (e.g. 06:00, 06:30 … 23:30) = its own consistently sized row; row heights and times must be identical to the web view
+  - If multiple events occur in a slot, they should never overlap—stack or align side-by-side, but always clearly within their slot’s bounds
+  - Appointment blocks: background, borders, icons, font color and size must match HTML, not a generic default!
+  - All text must fit inside its box; long names are truncated with “…”
+- **Footer:** Sits at the bottom, separated by a clear line, always visually consistent with the web template
+
+#### 3. **Device Mode & Responsiveness**
+- Portrait only, but *all* elements must fit perfectly on either reMarkable or US Letter (auto-scaling font sizes, row heights, and margins as needed).
+- Never shrink text below legibility for e-ink—if overflow, gracefully clip or reduce lower-priority details, never distort layout.
+
+#### 4. **Absolute Positioning**  
+Do NOT let jsPDF’s auto-text features “guess” line breaks or positions.  
+- Calculate X/Y for every section, row, label, and appointment using explicit spacing values from the CSS
+- Create utility constants so all spacing is modular and maintainable (e.g., TIME_ROW_HEIGHT, HEADER_MARGIN, etc.)
+
+#### 5. **Zero Overlaps, No Random Artifacts**
+- Ensure no visual elements touch or overlap
+- Every row and event must line up perfectly  
+- Remove any garbage/unprintable characters or artifacts that sometimes appear in the export
+
+#### 6. **Rigorous QA Loop**
+- Before finalizing, generate and **visually compare PDF and web HTML** side by side—adjust as many times as needed until there is absolute layout parity
+- Manual review: Print test on reMarkable and US Letter, validate pixel-perfect alignment and visual clarity
+
+**Commit Message Example:**  
+```
+fix(pdf): Absolute layout fidelity between Daily Template PDF and web planner, no overlaps, all sections pixel-perfect for reMarkable and US Letter
+```
+
+### Bonus:  
+If possible, export both sizes and attach screenshots in Replit’s PR. List any minor differences, and only ship when the exported PDF passes a precise side-by-side visual QA.
+
+**Paste this entire instruction in Replit’s “Ask Agent” or as a Git commit comment for any engineer working on your planner’s PDF export. Attach your HTML/CSS files as a reference. Insist on absolute visual match!**
+
+Let me know if you want example jsPDF constants or styles to include.
+
+[1] https://replit.com/@jonathanprocter/RemarkablePlannerPro-1

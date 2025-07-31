@@ -1,0 +1,281 @@
+// REPLACE THE FOLLOWING FUNCTIONS IN YOUR planner.tsx FILE:
+
+// 1. REPLACE handleSyncCalendarEvents function (around line 450)
+const handleSyncCalendarEvents = async () => {
+  if (!user) {
+    toast({ 
+      title: 'Authentication Required', 
+      description: 'Please authenticate with Google Calendar first',
+      variant: 'destructive' 
+    });
+    return;
+  }
+
+  try {
+    toast({ title: 'Syncing calendar events...' });
+
+    // Use the token restoration endpoint
+    const tokenResponse = await fetch('/api/auth/force-env-tokens', {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    });
+
+    if (!tokenResponse.ok) {
+      throw new Error('Token restoration failed');
+    }
+
+    const tokenResult = await tokenResponse.json();
+    console.log('✅ Token restoration result:', tokenResult);
+
+    // Force refresh both event sources
+    await queryClient.invalidateQueries({ queryKey: ['/api/events'] });
+    await queryClient.invalidateQueries({ queryKey: ['/api/calendar/events'] });
+
+    // Refetch both queries
+    await queryClient.refetchQueries({ queryKey: ['/api/events'] });
+    await queryClient.refetchQueries({ queryKey: ['/api/calendar/events'] });
+
+    toast({ 
+      title: 'Calendar events synced successfully',
+      description: `Found ${allEvents.length} total events`
+    });
+  } catch (error) {
+    console.error('Failed to sync calendar events:', error);
+    toast({ 
+      title: 'Failed to sync calendar events', 
+      variant: 'destructive',
+      description: 'Please try reconnecting to Google Calendar'
+    });
+    
+    // Redirect to OAuth if token issues persist
+    window.location.href = '/api/auth/google';
+  }
+};
+
+// 2. ADD NEW handleTokenRestoration function (add this as a new function)
+const handleTokenRestoration = async () => {
+  try {
+    console.log('🔧 Attempting token restoration...');
+    
+    toast({ title: 'Fixing authentication...' });
+
+    const response = await fetch('/api/auth/force-env-tokens', {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      
+      if (errorData.requiresReauth) {
+        toast({
+          title: 'Re-authentication Required',
+          description: 'Please log in with Google again',
+          variant: 'destructive'
+        });
+        window.location.href = '/api/auth/google';
+        return;
+      }
+      
+      throw new Error(`Token restoration failed: ${response.status}`);
+    }
+
+    const result = await response.json();
+    console.log('✅ Token restoration result:', result);
+
+    // Force refresh all queries after token restoration
+    await queryClient.invalidateQueries();
+    await queryClient.refetchQueries();
+
+    toast({
+      title: 'Authentication Fixed',
+      description: 'OAuth tokens have been restored successfully',
+    });
+
+    return result;
+  } catch (error) {
+    console.error('❌ Token restoration failed:', error);
+    toast({
+      title: 'Token Restoration Failed',
+      description: 'Please try logging out and logging back in',
+      variant: 'destructive'
+    });
+    
+    // Redirect to OAuth as fallback
+    window.location.href = '/api/auth/google';
+  }
+};
+
+// 3. REPLACE the events query (around line 180) with improved retry logic
+const { data: events = [], isLoading: eventsLoading, error: eventsError } = useQuery({
+  queryKey: ['/api/events'],
+  queryFn: async () => {
+    try {
+      const response = await fetch('/api/events', {
+        credentials: 'include',
+        headers: {
+          'Cache-Control': 'no-cache'
+        }
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          // Instead of session cookie retry, trigger token restoration
+          console.log('🔧 401 error detected, attempting token restoration...');
+          
+          const tokenResponse = await fetch('/api/auth/force-env-tokens', {
+            method: 'POST',
+            credentials: 'include'
+          });
+          
+          if (tokenResponse.ok) {
+            console.log('✅ Token restoration successful, retrying events fetch...');
+            // Retry the original request
+            const retryResponse = await fetch('/api/events', {
+              credentials: 'include',
+              headers: { 'Cache-Control': 'no-cache' }
+            });
+            
+            if (retryResponse.ok) {
+              const data = await retryResponse.json();
+              return Array.isArray(data) ? data : [];
+            }
+          }
+        }
+        console.log('⚠️ Events API response not ok, using fallback');
+        return [];
+      }
+
+      const data = await response.json();
+      return Array.isArray(data) ? data : [];
+    } catch (error) {
+      console.error('⚠️ Events fetch failed:', error);
+      return [];
+    }
+  },
+  enabled: true,
+  staleTime: 5 * 60 * 1000,
+  refetchInterval: 30 * 60 * 1000,
+  retry: 1, // Reduce retries since we have token restoration
+  retryDelay: 2000,
+});
+
+// 4. REPLACE Google Calendar events query (around line 280) with improved retry logic
+const { data: googleCalendarData, isLoading: isLoadingGoogleEvents, error: googleCalendarError } = useQuery({
+  queryKey: ['/api/calendar/events'],
+  queryFn: async () => {
+    const startDate = new Date(2024, 0, 1).toISOString();
+    const endDate = new Date(2025, 11, 31).toISOString();
+
+    try {
+      const response = await fetch(`/api/calendar/events?start=${startDate}&end=${endDate}`, {
+        credentials: 'include',
+        headers: {
+          'Cache-Control': 'no-cache'
+        }
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          // Attempt token restoration
+          console.log('🔧 Google Calendar 401 error, attempting token restoration...');
+          
+          const tokenResponse = await fetch('/api/auth/force-env-tokens', {
+            method: 'POST',
+            credentials: 'include'
+          });
+          
+          if (tokenResponse.ok) {
+            console.log('✅ Token restoration successful, retrying Google Calendar fetch...');
+            const retryResponse = await fetch(`/api/calendar/events?start=${startDate}&end=${endDate}`, {
+              credentials: 'include',
+              headers: { 'Cache-Control': 'no-cache' }
+            });
+            
+            if (retryResponse.ok) {
+              const data = await retryResponse.json();
+              return {
+                events: Array.isArray(data.events) ? data.events : [],
+                calendars: Array.isArray(data.calendars) ? data.calendars : []
+              };
+            }
+          }
+        }
+        console.log('⚠️ Google Calendar API response not ok, using fallback');
+        return { events: [], calendars: [] };
+      }
+
+      const data = await response.json();
+      return {
+        events: Array.isArray(data.events) ? data.events : [],
+        calendars: Array.isArray(data.calendars) ? data.calendars : []
+      };
+    } catch (error) {
+      console.error('⚠️ Google Calendar fetch failed:', error);
+      return { events: [], calendars: [] };
+    }
+  },
+  retry: 1,
+  retryDelay: 2000,
+  refetchOnWindowFocus: false,
+  staleTime: 5 * 60 * 1000,
+  enabled: true,
+});
+
+// 5. REPLACE the "Force Load All Events" button (around line 950) with this:
+<Button 
+  variant="outline" 
+  onClick={handleTokenRestoration}
+  className="w-full bg-green-500 hover:bg-green-600 text-white"
+  size="sm"
+>
+  🔧 FIX AUTHENTICATION NOW
+</Button>
+
+// 6. ADD a new button for token refresh (add this after the FIX AUTHENTICATION button)
+<Button 
+  variant="outline" 
+  onClick={async () => {
+    try {
+      toast({ title: 'Refreshing tokens...' });
+      
+      const response = await fetch('/api/auth/refresh-tokens', {
+        method: 'POST',
+        credentials: 'include'
+      });
+      
+      if (response.ok) {
+        const result = await response.json();
+        console.log('✅ Token refresh result:', result);
+        
+        // Refresh queries after token refresh
+        await queryClient.invalidateQueries();
+        await queryClient.refetchQueries();
+        
+        toast({
+          title: 'Tokens Refreshed',
+          description: 'Access tokens have been refreshed successfully',
+        });
+      } else {
+        throw new Error('Token refresh failed');
+      }
+    } catch (error) {
+      console.error('❌ Token refresh failed:', error);
+      toast({
+        title: 'Token Refresh Failed',
+        description: 'Please try the authentication fix instead',
+        variant: 'destructive'
+      });
+    }
+  }}
+  className="w-full bg-blue-500 hover:bg-blue-600 text-white"
+  size="sm"
+>
+  🔄 Refresh Tokens
+</Button>

@@ -1,0 +1,51 @@
+To help ensure your calendars are syncing in your Replit project (RemarkablePlannerPro), here’s what you should typically provide and check for the AI or integration system to work correctly:
+
+**1. Google Calendar API Credentials:**
+- You need to provide valid Google API credentials (Client ID and Client Secret) via environment variables or a configuration file.
+- The OAuth2 client must be set up for the correct redirect URIs (matching your deployment, e.g., https://howremarkable.replit.app/auth/google).
+
+**2. OAuth Tokens:**
+- The user (you) must authenticate with Google and authorize calendar access.
+- Your app must securely store and refresh access and refresh tokens.
+
+**3. User Email Association:**
+- The authenticated user (Google account email) should be linked to any internal user/session system in your app, so the correct calendar is synced for the right user.
+
+**4. Calendar Permissions:**
+- Make sure your OAuth consent screen and API scope are set for at least `https://www.googleapis.com/auth/calendar`.
+- If not, you won’t be able to read/write events.
+
+**5. Error Handling and Feedback:**
+- The app should clearly log or display:
+  - If the user is authenticated.
+  - If token refresh fails.
+  - If any API call to Google Calendar fails, with the relevant error message.
+
+**What you can provide/input:**
+- When prompted in the UI, click to connect your Google account and authorize access.
+- If manually configuring, provide:
+  - The Google Client ID/Secret.
+  - Any tokens or codes requested during OAuth setup.
+  - The Google account you want to sync with.
+- Review environment variables/settings in Replit to ensure they match the expected naming in your app (`GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, etc.).
+- If there’s a UI for “Connect calendar” or “Sync with Google,” use it and follow all prompts to completion.
+
+**What the AI or app needs to see for successful sync:**
+- “Authenticated” status for your account.
+- “Tokens valid” confirmation in logs.
+- No errors from Google Calendar API calls.
+
+**Debug/checklist if syncing fails:**
+- Re-authorize Google access (use the “Sign in with Google” or connect button again).
+- Check logs for error states like “invalid_grant,” “token expired,” or “insufficient permissions.”
+- Verify you’re logged in as the right Google user.
+
+**Where to check in your current app:**
+- From your current page, look for logs or indicators like:
+  - “Session user authenticated: jonathan.procter@gmail.com”
+  - “hasValidTokens: true”
+- If these are present and no Google API errors are in the logs, syncing should work.
+
+If you want more specific troubleshooting, let me know what error or status message you see when you try to sync—or if there’s a UI flow you’re unsure about!
+
+[1] https://replit.com/t/jonathan-procter-phd/repls/RemarkablePlannerPro

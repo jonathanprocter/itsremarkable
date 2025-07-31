@@ -1,0 +1,198 @@
+Below is a **complete, robust Google OAuth and authentication solution** for your Replit-based planner app. This code will:
+
+- Ensure all API endpoints return JSON, never HTML, to the frontend.
+- Handle Google OAuth login, callback, and token refresh.
+- Automatically handle dynamic Replit domains and callback URLs.
+- Provide testing endpoints and diagnostics for AI agents and manual debugging.
+- Properly store all events from Google and SimplePractice, preserving live sync and reliable access.
+
+This includes:
+- **Express.js backend routes** for authentication, callback, and token debugging.
+- **Middleware** to ensure valid tokens/session.
+- **Frontend React utility** to kick off OAuth and verify status.
+- **Troubleshooting endpoints** to help both AI and human users.
+
+### 1. **server/routes.ts (TypeScript/JavaScript Express routes)**
+
+```ts
+import express from 'express';
+import passport from 'passport';
+import { ensureAuthenticated, refreshGoogleTokenIfNeeded, getTokenStatus, saveEventsToDb } from './authUtils';
+
+const router = express.Router();
+
+// --- 1. API status: Always responds in JSON ---
+router.get('/api/auth/status', async (req, res) => {
+  const status = await getTokenStatus(req); // Custom utility
+  res.json(status);
+});
+
+// --- 2. Start OAuth flow ---
+router.get('/api/auth/google', passport.authenticate('google', {
+  scope: [
+    'https://www.googleapis.com/auth/calendar.readonly',
+    'profile',
+    'email'
+  ],
+  prompt: 'consent',
+  accessType: 'offline'
+}));
+
+// --- 3. Google OAuth callback ---
+router.get('/api/auth/google/callback',
+  passport.authenticate('google', { failureRedirect: '/' }),
+  async (req, res) => {
+    // Tokens stored in req.user, req.session by passport
+    res.redirect('/'); // or your app's dashboard
+  }
+);
+
+// --- 4. Force Google token refresh, if needed ---
+router.post('/api/auth/google/force-refresh', ensureAuthenticated, async (req, res) => {
+  try {
+    await refreshGoogleTokenIfNeeded(req, res);
+    res.json({ success: true, message: 'Token refreshed.' });
+  } catch (err) {
+    res.status(500).json({ error: err.message || 'Unable to refresh token' });
+  }
+});
+
+// --- 5. Live sync endpoint (store events in DB) ---
+router.post('/api/sync/calendar', ensureAuthenticated, async (req, res) => {
+  try {
+    // you may want to call Google Calendar API here with user's tokens
+    const events = await fetchAllGoogleCalendarEvents(req.user);
+    await saveEventsToDb(events, req.user.id);
+    res.json({ success: true, count: events.length });
+  } catch (err) {
+    res.status(500).json({ error: err.message || 'Unable to sync events' });
+  }
+});
+
+// --- 6. All invalid API routes return JSON, not HTML ---
+router.use('/api', (req, res) => {
+  res.status(404).json({
+    error: true,
+    status: 404,
+    code: 'error.notFound',
+    message: 'API endpoint not found'
+  });
+});
+
+// --- 7. Frontend SPA fallback (after all API routes) ---
+router.use('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../client/build/index.html'));
+});
+
+export default router;
+```
+
+### 2. **server/authUtils.ts (authentication/session helpers, for TypeScript/JS)**
+
+```ts
+import { OAuth2Client } from 'google-auth-library';
+
+export async function getTokenStatus(req) {
+  if (!req.isAuthenticated() || !req.user) {
+    return { authenticated: false, hasValidTokens: false };
+  }
+  // Optionally check for token expiry and user profile
+  return {
+    authenticated: true,
+    hasValidTokens: !!req.user.tokens,
+    email: req.user.email,
+    user: req.user
+  };
+}
+
+export function ensureAuthenticated(req, res, next) {
+  if (req.isAuthenticated && req.isAuthenticated()) return next();
+  res.status(401).json({ error: 'Not authenticated.' });
+}
+
+export async function refreshGoogleTokenIfNeeded(req, res) {
+  // Pseudocode - Replace with your real token refresh logic!
+  if (!req.user.tokens) throw new Error('No stored tokens.');
+  const client = new OAuth2Client(...); // Fill with your credentials, load from ENV
+  if (isTokenExpired(req.user.tokens)) {
+    const { tokens } = await client.refreshToken(req.user.tokens.refresh_token);
+    req.user.tokens = tokens;
+    // Save to your session/store/db
+  }
+  return req.user.tokens;
+}
+
+export async function saveEventsToDb(events, userId) {
+  // Save to your DB of choice, e.g., Prisma, Sequelize, MongoDB, etc.
+  // Should distinguish between event sources (google/simplepractice) using calendarId/source
+}
+```
+
+### 3. **client/src/components/auth/GoogleAuthFix.tsx (React Button/Diagnostics)**
+```jsx
+import React, { useState } from 'react';
+
+export default function GoogleAuthFix() {
+  const [status, setStatus] = useState(null);
+
+  // Test authentication status
+  async function testAuth() {
+    const res = await fetch('/api/auth/status', { credentials: 'include' });
+    const data = await res.json();
+    setStatus(data);
+  }
+
+  // Start Google OAuth
+  function doOAuth() {
+    window.location.href = '/api/auth/google';
+  }
+
+  // Force token refresh
+  async function forceRefresh() {
+    await fetch('/api/auth/google/force-refresh', { method: 'POST', credentials: 'include' });
+    await testAuth();
+  }
+
+  return (
+    
+      Check Auth Status
+      Login with Google
+      Force Token Refresh
+      {status && (
+        
+          {JSON.stringify(status, null, 2)}
+        
+      )}
+    
+  );
+}
+```
+
+### 4. **Key Points/Agent Instructions**
+
+- All `/api` endpoints must always return JSON—not HTML, regardless of error.
+- Start all OAuth and calendar sync flows using the above endpoints.
+- All errors, success, and status should be displayed within your AuthMonitor/GoogleAuthFix React components.
+- If using Replit/redeploying, always update your OAuth credentials in Google Console to match the dynamically generated Replit subdomain.
+
+### 5. **Google Cloud Console Settings**
+
+- Make sure you add your current Replit deployment’s URL (all variants: `https://[project-id].worf.replit.dev`, etc.) to **Authorized Redirect URIs** in your Google Cloud Console credentials for OAuth2.
+- Example:
+  ```
+  https://474155cb-26cc-45e2-9759-28eaffdac638-00-20mxsrmp7mzl4.worf.replit.dev/api/auth/google/callback
+  ```
+
+### 6. **Troubleshooting**
+
+- Use `/api/auth/status` endpoint and the React component to verify authentication and token storage.
+- Initiate the flow at `/api/auth/google` and follow through; after auth, token will be available in session.
+- Use `/api/auth/google/force-refresh` and `/api/sync/calendar` as needed for manual/agent-driven tests.
+
+**Copy and adapt the above code into your Replit server (`routes.ts`, `authUtils.ts`) and client (`GoogleAuthFix.tsx`).  
+Update the Google credentials as needed and implement event storage in `saveEventsToDb`.**  
+With these changes, both you and the AI agent will be able to reliably test, debug, and use OAuth, ensuring error-free live and offline event sync for both Google and SimplePractice calendars.
+
+If you need a particular **database code example, custom Passport strategy code, or additional utility code, just ask!**
+
+[1] https://replit.com/@jonathanprocter/RemarkablePlannerPro-1

@@ -1,0 +1,91 @@
+Based on what you've shared and the latest output, your **OAuth callback is still failing to receive the authorization code**, which means that *Assistant did not fully fix it*—though some config progress is clear. Here's a breakdown of what's still wrong and how to fix it:
+
+**Symptoms you still see:**
+- `❌ No authorization code received`
+- Endless loop between needing fresh authentication, no valid tokens, and always falling back
+- Callback route hits, but Express cannot extract the `code` parameter
+
+**What’s likely wrong:**
+1. **Your Google Cloud Console redirect URI might still mismatch the callback URL your app is actually using.** This is a *common cause* and usually means the `redirect_uri` you send to Google during step 1 is not exactly the same (no extra whitespace, trailing slashes, mistakes with fragments/encoding, or different CASE) as is registered in the Google Cloud Console.
+
+2. **Callback handler is not correctly capturing the `code` parameter**. It's possible that your code expects `req.query.code` (Node/Express), but the frontend/router/express middleware might be interfering or there is an encoding or path mismatch.
+
+3. **Request flow problem**: Google's OAuth might be sending the callback, but your app is missing or mishandling it (like not parsing the query params, or the callback route is ambiguous or collides with other routes).
+
+4. **State management issue**: If you use a `state` parameter (recommended) but do not store or validate it correctly, Google will not provide the code and may fail for security reasons.
+
+**How you can fix it right now:**
+
+- **Double-check the Google Cloud Console OAuth client config:**
+  - `Authorized Redirect URIs` must include EXACTLY:
+    ```
+    https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/api/auth/callback
+    ```
+    (be 100% sure, no extra whitespace, no trailing slash unless in both places!)
+
+- **Check your app’s OAuth URL generation code**:
+  - When you call Google’s consent screen (`https://accounts.google.com/o/oauth2/v2/auth`…),
+    - Make sure the `redirect_uri` passed in the URL matches what’s in the console.
+    - Pass `access_type=offline`, `include_granted_scopes=true`, and a secure `state`.
+
+- **Check your `/api/auth/callback` handler**:  
+  In Express (or similar), your handler should look like:
+  ```js
+  app.get('/api/auth/callback', async (req, res) => {
+    const { code, state, error } = req.query; // ensures you grab query params
+    if (error) {
+      // handle error
+      return res.status(400).send("OAuth error: " + error);
+    }
+    if (!code) {
+      // log/request debug info
+      return res.status(400).send("No authorization code received");
+    }
+    // Exchange code for tokens using Google API
+    // ...
+  });
+  ```
+  - If you see no `code`, log the full `req.url` (including query) to verify what’s arriving.
+
+- **Double-check for frontend/router conflicts**:
+  - Sometimes, a frontend router (like React Router) can eat up the callback path before the backend sees it. Be sure `/api/auth/callback` is routed by Express and NOT your React static file server.
+
+- **Testing/Troubleshooting Steps**:
+  - Manually enter the callback URL in the browser after Google redirects to see if the `code` query param is present.
+  - Add debugging/logging: Log every request to `/api/auth/callback` and print `req.query` to the console.
+  - Compare `redirect_uri` in your Google OAuth request to what you catch in your backend logs.
+  - Try a curl POST to the token endpoint *manually* using a code received in the URL bar to check end-to-end.
+
+**Summary Table**
+
+| Symptom                                         | True Fix                                                     |
+|-------------------------------------------------|--------------------------------------------------------------|
+| No code param on callback request               | Exactly match & register redirect URI both sides             |
+| Loop “requiring new authentication/tokens”      | Ensure code is received, exchanged, and stored in session    |
+| Express handler sees no req.query.code          | Check path/case, query parsing, and logging; static file server not interfering |
+| State mismatch                                 | Correctly generate & store state param; send/compare to Google |
+| React/SPA router eating API routes              | All `/api/auth/callback` traffic must hit backend first      |
+
+**Bottom line:**  
+*No*, assistant has not fixed it yet since you're still missing the code at the callback—that is the critical piece. Focus on ensuring the redirect URI is **identical everywhere**, your callback route is owned by Express, and `req.query.code` is present and logged. That will solve the “No authorization code received” issue and unblock the rest of your OAuth flow[1][2][3].
+
+Let me know if you want specific code or config examples!
+
+[1] https://stackoverflow.com/questions/46146049/google-oauth-2-0-not-giving-back-authorization-code
+[2] https://developers.google.com/identity/protocols/oauth2/web-server
+[3] https://blog.codingblocks.com/2025/google-oauth-integration-guide-for-node-js-applications/
+[4] https://replit.com/t/jonathan-procter-phd/repls/RemarkablePlannerPro
+[5] https://developers.google.com/nest/device-access/reference/errors/authorization
+[6] https://www.googlecloudcommunity.com/gc/Community-Hub/Google-OAuth-2-0-Policy-Compliance-Error-during-token-exchange/m-p/802365
+[7] https://salesforce.stackexchange.com/questions/212350/google-oauth-and-authorization-code
+[8] https://github.com/jaredhanson/passport-google-oauth/issues/114
+[9] https://github.com/orgs/supabase/discussions/20353
+[10] https://stackoverflow.com/questions/34931847/invalid-request-with-missing-scope-using-google-passportjs-on-google-oauth2
+[11] https://salesforce.stackexchange.com/questions/412012/oauth-not-returning-authorization-code
+[12] http://gregtrowbridge.com/node-authentication-with-google-oauth-part1-sessions/
+[13] https://github.com/nextauthjs/next-auth/issues/656
+[14] https://github.com/googleapis/google-auth-library-nodejs/issues/620
+[15] https://support.google.com/webmasters/thread/327977060/getting-403-forbidden-error-on-test-google-oauth-login
+[16] https://dev.to/idrisakintobi/a-step-by-step-guide-to-google-oauth2-authentication-with-javascript-and-bun-4he7
+[17] https://community.n8n.io/t/no-oauth-callback-showing-for-google-credentials/71496
+[18] https://firebase.google.com/docs/auth/admin/errors

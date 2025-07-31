@@ -1,0 +1,40 @@
+📋 Available IDs: 
+(6) ["spHTMLFormElementPrototypeScript", "eruda", "root", "simplepractice", "google", "personal"]
+✅ Found element with: [class*="time"]
+✅ Found 21 elements with: [class*="day"]
+✅ Found 36 elements with: [class*="slot"]
+✅ Found 129 elements with: [class*="appointment"]
+✅ Found element with: [class*="calendar"]
+✅ Found element with: h1, h2, h3
+⚠️ Grid width too small, using standard proportions
+📐 Exact Dashboard Dimensions: 
+Object {timeColumn: {…}, dayColumn: {…}, timeSlot: {…}, event: {…}, grid: {…}, …}
+📊 Visual Comparison Results:
+   - Elements detected: 6/6
+   - Pixel-perfect score: 100%
+   - Recommendations: 5
+📐 Step 2: Extracting exact dashboard measurements...
+🖨️ Extracting print-optimized dashboard styles...
+⚠️ Grid width too small in print styles, using standard proportions
+📏 Print-Optimized Measurements: 
+Object {gridWidth: 166.484375, gridHeight: 20, timeColumnWidth: 80, timeColumnStyles: null, dayColumnWidth: 110, …}
+🎯 Step 3: Creating PDF with exact dashboard dimensions...
+🔍 Starting dashboard style extraction...
+✅ Dashboard measurements extracted: 
+Object {timeColumnWidth: 80, dayColumnWidth: 110, timeSlotHeight: 40, headerHeight: 60, containerWidth: 997, …}
+❌ Error creating truly pixel-perfect weekly PDF: 
+TypeError {}
+message: "Cannot read properties of undefined (reading 'margin')"
+stack: "TypeError: Cannot read properties of undefined (reading 'margin')↵ at createPDFConfig (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/utils/trulyPixelPerfectExport.ts:13:51)↵ at exportTrulyPixelPerfectWeeklyPDF (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/utils/trulyPixelPerfectExport.ts:143:24)↵ at async handleExportPDF (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/pages/planner.tsx:159:11)"
+get stack: ƒ ()
+set stack: ƒ ()
+[[Prototype]]: Object
+
+Export failed: 
+TypeError {}
+
+at t.value (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:17465)
+at new t (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:12630)
+at t.value (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:32766)
+at https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:34400
+✅ Cleaned 1600 hour time slot: 16:00 -> 16:00

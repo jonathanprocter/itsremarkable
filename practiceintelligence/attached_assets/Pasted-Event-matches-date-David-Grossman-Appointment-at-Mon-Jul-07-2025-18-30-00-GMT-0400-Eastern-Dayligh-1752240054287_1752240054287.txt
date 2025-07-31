@@ -1,0 +1,45 @@
+Event matches date: David Grossman Appointment at Mon Jul 07 2025 18:30:00 GMT-0400 (Eastern Daylight Time)
+Event matches date: Steven Deluca Appointment at Mon Jul 07 2025 20:00:00 GMT-0400 (Eastern Daylight Time)
+Event matches date: Nancy Grossman Appointment at Mon Jul 07 2025 10:00:00 GMT-0400 (Eastern Daylight Time)
+Event matches date: Amberly Comeau Appointment at Mon Jul 07 2025 11:00:00 GMT-0400 (Eastern Daylight Time)
+Event matches date: Maryellen Dankenbrink Appointment at Mon Jul 07 2025 12:00:00 GMT-0400 (Eastern Daylight Time)
+Event matches date: Angelica Ruden Appointment at Mon Jul 07 2025 14:00:00 GMT-0400 (Eastern Daylight Time)
+Event matches date: Noah Silverman Appointment at Mon Jul 07 2025 16:00:00 GMT-0400 (Eastern Daylight Time)
+Event matches date: Sarah Palladino Appointment at Mon Jul 07 2025 17:00:00 GMT-0400 (Eastern Daylight Time)
+Event matches date: 🔒 Nico Luppino Appointment at Mon Jul 07 2025 15:00:00 GMT-0400 (Eastern Daylight Time)
+Event matches date: Dan re: Supervision at Mon Jul 07 2025 08:00:00 GMT-0400 (Eastern Daylight Time)
+Event matches date: Sherrifa Hoosein Appointment at Mon Jul 07 2025 09:00:00 GMT-0400 (Eastern Daylight Time)
+Found 11 events for Mon Jul 07 2025
+❌ SIGNIFICANT ISSUES - PDF may not match dashboard accurately
+Generated export data: 
+Object {date: "Monday, July 7, 2025", appointments: Array(11), totalAppointments: 11, dailyNotes: ""}
+================================================================================
+=== EXPORT TYPE DEBUG ===
+Export type received: "Pixel Perfect Daily"
+Type length: 19
+Type === "Daily View": false
+=== PIXEL PERFECT DAILY PLANNER EXPORT ===
+Selected date: Mon Jul 07 2025
+Canvas: 2550×3300 pixels (8.5×11 inches at 300 DPI)
+Events for export: 313
+=== PIXEL PERFECT DAILY PLANNER EXPORT ===
+Date: Mon Jul 07 2025
+Canvas: 2550 × 3300 pixels
+DPI: 300
+Total events: 313
+Pixel perfect daily export error: 
+Error {}
+message: "Invalid arguments passed to jsPDF.rect"
+stack: "Error: Invalid arguments passed to jsPDF.rect↵ at E.y2.__private__.rect.y2.rect (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/jspdf.js?v=1228a55b:3044:76)↵ at drawPixelPerfectHeader (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/utils/pixelPerfectDailyExport.ts:227:7)↵ at exportPixelPerfectDailyPlanner (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/utils/pixelPerfectDailyExport.ts:545:3)↵ at handleExportAction (https://ed4c6ee6-c0f6-458f-9eac-1eadf0569a2c-00-387t3f5z7i1mm.kirk.replit.dev/src/pages/planner.tsx:445:19)"
+get stack: ƒ ()
+set stack: ƒ ()
+[[Prototype]]: Object
+
+🔧 ExportToPDF component rendered
+🔧 onExportCurrentView: function
+🔧 onExportDailyView: function
+✅ Cleaned 1600 hour time slot: 16:00 -> 16:00
+🔧 ExportToPDF component rendered
+🔧 onExportCurrentView: function
+🔧 onExportDailyView: function
+✅ Cleaned 1600 hour time slot: 16:00 -> 16:00

@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weekly Package - July 7-13, 2025</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Times New Roman', serif;
+            background-color: white;
+            color: black;
+            line-height: 1.2;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Print styles for PDF generation */
+        @page {
+            size: letter;
+            margin: 0.5in;
+        }
+
+        @page :first {
+            size: letter landscape;
+            margin: 0.3in;
+        }
+
+        .page {
+            page-break-after: always;
+            min-height: 100vh;
+        }
+
+        .page:last-child {
+            page-break-after: avoid;
+        }
+
+        .planner-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border: 2px solid black;
+            min-height: calc(100vh - 1in);
+        }
+
+        .header {
+            border-bottom: 3px solid black;
+            padding: 20px;
+            text-align: center;
+            background: white;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .week-info {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .week-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            border-bottom: 2px solid black;
+            background: #f8f8f8;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 15px;
+            border-right: 1px solid black;
+            font-size: 12px;
+        }
+
+        .stat-card:last-child {
+            border-right: none;
+        }
+
+        .stat-number {
+            font-size: 18px;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .legend {
+            padding: 12px 20px;
+            border-bottom: 2px solid black;
+            font-size: 10px;
+            background: #f8f8f8;
+        }
+
+        .legend-item {
+            display: inline-block;
+            margin-right: 20px;
+            margin-bottom: 4px;
+        }
+
+        .legend-symbol {
+            display: inline-block;
+            width: 14px;
+            height: 12px;
+            margin-right: 5px;
+            vertical-align: middle;
+        }
+
+        .legend-symbol.simplepractice {
+            background: #f5f5f5;
+            border: 2px solid #6495ED;
+            border-left: 6px solid #6495ED;
+        }
+
+        .legend-symbol.google-calendar {
+            background: #e0e0e0;
+            border: 2px dashed #666;
+        }
+
+        .calendar-container {
+            position: relative;
+            overflow: hidden;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: 80px repeat(7, 1fr);
+            grid-template-rows: 60px repeat(32, 35px);
+            background: white;
+            position: relative;
+        }
+
+        .time-header {
+            background: #f0f0f0;
+            padding: 15px 8px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 12px;
+            border-right: 2px solid black;
+            border-bottom: 3px solid black;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .day-header {
+            background: #f0f0f0;
+            padding: 10px 8px;
+            text-align: center;
+            font-weight: bold;
+            border-right: 1px solid black;
+            border-bottom: 3px solid black;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .day-header:last-child {
+            border-right: none;
+        }
+
+        .day-name {
+            font-size: 12px;
+            margin-bottom: 3px;
+            text-transform: uppercase;
+        }
+
+        .day-date {
+            font-size: 16px;
+        }
+
+        .time-slot {
+            background: #f8f8f8;
+            padding: 5px;
+            text-align: center;
+            font-size: 10px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-right: 2px solid black;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .time-slot.hour {
+            background: #f0f0f0;
+            border-bottom: 2px solid black;
+            font-size: 11px;
+        }
+
+        .calendar-cell {
+            background: white;
+            border-right: 1px solid #ddd;
+            border-bottom: 1px solid #ddd;
+            position: relative;
+            min-height: 35px;
+        }
+
+        .calendar-cell:last-child {
+            border-right: none;
+        }
+
+        .calendar-cell.hour {
+            border-bottom: 2px solid black;
+        }
+
+        /* Appointment styling */
+        .appointment {
+            position: absolute;
+            left: 2px;
+            right: 2px;
+            padding: 1px 3px;
+            font-size: 7px;
+            line-height: 1.1;
+            overflow: hidden;
+            z-index: 10;
+            border-radius: 2px;
+        }
+
+        .appointment.simplepractice {
+            background: #e8f0ff;
+            border: 1px solid #6495ED;
+            border-left: 3px solid #6495ED;
+        }
+
+        .appointment.google-calendar {
+            background: #f0f0f0;
+            border: 1px dashed #666;
+        }
+
+        .appointment-text {
+            font-weight: bold;
+            text-transform: uppercase;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .appointment-time {
+            font-size: 6px;
+            font-weight: normal;
+        }
+
+        /* Position appointments in grid */
+        .appointment.time-07-00 { top: 95px; }
+        .appointment.time-07-30 { top: 130px; }
+        .appointment.time-08-00 { top: 165px; }
+        .appointment.time-08-30 { top: 200px; }
+        .appointment.time-09-00 { top: 235px; }
+        .appointment.time-09-30 { top: 270px; }
+        .appointment.time-10-00 { top: 305px; }
+        .appointment.time-10-30 { top: 340px; }
+        .appointment.time-11-00 { top: 375px; }
+        .appointment.time-11-30 { top: 410px; }
+        .appointment.time-12-00 { top: 445px; }
+        .appointment.time-12-30 { top: 480px; }
+        .appointment.time-13-00 { top: 515px; }
+        .appointment.time-13-30 { top: 550px; }
+        .appointment.time-14-00 { top: 585px; }
+        .appointment.time-14-30 { top: 620px; }
+        .appointment.time-15-00 { top: 655px; }
+        .appointment.time-15-30 { top: 690px; }
+        .appointment.time-16-00 { top: 725px; }
+        .appointment.time-16-30 { top: 760px; }
+        .appointment.time-17-00 { top: 795px; }
+        .appointment.time-17-30 { top: 830px; }
+        .appointment.time-18-00 { top: 865px; }
+        .appointment.time-18-30 { top: 900px; }
+        .appointment.time-19-00 { top: 935px; }
+        .appointment.time-19-30 { top: 970px; }
+        .appointment.time-20-00 { top: 1005px; }
+        .appointment.time-20-30 { top: 1040px; }
+        .appointment.time-21-00 { top: 1075px; }
+
+        .appointment.duration-30 { height: 30px; }
+        .appointment.duration-60 { height: 65px; }
+        .appointment.duration-90 { height: 100px; }
+
+        /* Column positioning */
+        .appointment.col-mon { left: 82px; width: calc((100% - 82px) / 7 - 4px); }
+        .appointment.col-tue { left: calc(82px + (100% - 82px) / 7); width: calc((100% - 82px) / 7 - 4px); }
+        .appointment.col-wed { left: calc(82px + 2 * (100% - 82px) / 7); width: calc((100% - 82px) / 7 - 4px); }
+        .appointment.col-thu { left: calc(82px + 3 * (100% - 82px) / 7); width: calc((100% - 82px) / 7 - 4px); }
+        .appointment.col-fri { left: calc(82px + 4 * (100% - 82px) / 7); width: calc((100% - 82px) / 7 - 4px); }
+        .appointment.col-sat { left: calc(82px + 5 * (100% - 82px) / 7); width: calc((100% - 82px) / 7 - 4px); }
+        .appointment.col-sun { left: calc(82px + 6 * (100% - 82px) / 7); width: calc((100% - 82px) / 7 - 4px); }
+
+        .footer {
+            background: #f8f8f8;
+            padding: 15px 20px;
+            text-align: center;
+            font-size: 11px;
+            border-top: 2px solid black;
+            margin-top: auto;
+        }
+
+        .footer a {
+            color: black;
+            text-decoration: underline;
+            margin: 0 10px;
+            cursor: pointer;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <!-- Page 1: Weekly Overview -->
+    <div class="page active" id="weekly-overview">
+        <div class="planner-container">
+            <div class="header">
+                <h1>Weekly Planner</h1>
+                <div class="week-info">July 7-13, 2025 • Week 28</div>
+            </div>
+
+            <div class="week-stats">
+                <div class="stat-card">
+                    <span class="stat-number">47</span>
+                    Total Appointments
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">23.5h</span>
+                    Scheduled Time
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">3.4h</span>
+                    Daily Average
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">144.5h</span>
+                    Available Time
+                </div>
+            </div>
+
+            <div class="legend">
+                <span class="legend-item">
+                    <span class="legend-symbol simplepractice"></span>SimplePractice
+                </span>
+                <span class="legend-item">
+                    <span class="legend-symbol google-calendar"></span>Google Calendar
+                </span>
+            </div>
+
+            <div class="calendar-container">
+                <div class="calendar-grid">
+                    <!-- Headers -->
+                    <div class="time-header">TIME</div>
+                    <div class="day-header"><div class="day-name">MON</div><div class="day-date">7</div></div>
+                    <div class="day-header"><div class="day-name">TUE</div><div class="day-date">8</div></div>
+                    <div class="day-header"><div class="day-name">WED</div><div class="day-date">9</div></div>
+                    <div class="day-header"><div class="day-name">THU</div><div class="day-date">10</div></div>
+                    <div class="day-header"><div class="day-name">FRI</div><div class="day-date">11</div></div>
+                    <div class="day-header"><div class="day-name">SAT</div><div class="day-date">12</div></div>
+                    <div class="day-header"><div class="day-name">SUN</div><div class="day-date">13</div></div>
+
+                    <!-- Time slots and calendar cells -->
+                    <div class="time-slot">06:00</div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+
+                    <div class="time-slot">06:30</div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+
+                    <div class="time-slot hour">07:00</div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+
+                    <div class="time-slot">07:30</div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+
+                    <div class="time-slot hour">08:00</div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+
+                    <div class="time-slot">08:30</div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+
+                    <div class="time-slot hour">09:00</div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+
+                    <div class="time-slot">09:30</div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+
+                    <div class="time-slot hour">10:00</div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+
+                    <div class="time-slot">10:30</div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+
+                    <div class="time-slot hour">11:00</div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+
+                    <div class="time-slot">11:30</div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+
+                    <div class="time-slot hour">12:00</div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+
+                    <div class="time-slot">12:30</div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+
+                    <div class="time-slot hour">13:00</div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+
+                    <div class="time-slot">13:30</div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+
+                    <div class="time-slot hour">14:00</div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+
+                    <div class="time-slot">14:30</div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+
+                    <div class="time-slot hour">15:00</div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+
+                    <div class="time-slot">15:30</div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+
+                    <div class="time-slot hour">16:00</div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+
+                    <div class="time-slot">16:30</div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+
+                    <div class="time-slot hour">17:00</div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+
+                    <div class="time-slot">17:30</div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+
+                    <div class="time-slot hour">18:00</div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+
+                    <div class="time-slot">18:30</div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+
+                    <div class="time-slot hour">19:00</div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+
+                    <div class="time-slot">19:30</div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+
+                    <div class="time-slot hour">20:00</div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+
+                    <div class="time-slot">20:30</div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+
+                    <div class="time-slot hour">21:00</div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+                    <div class="calendar-cell hour"></div>
+
+                    <div class="time-slot">21:30</div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+                    <div class="calendar-cell"></div>
+
+                    <!-- Sample appointments positioned absolutely -->
+                    <!-- Monday appointments -->
+                    <div class="appointment simplepractice col-mon time-08-00 duration-30">
+                        <div class="appointment-text">DAN RE: SUPE...</div>
+                        <div class="appointment-time">08:00-08:30</div>
+                    </div>
+                    <div class="appointment simplepractice col-mon time-09-00 duration-60">
+                        <div class="appointment-text">SHERIPA HOO...</div>
+                        <div class="appointment-time">09:00-10:00</div>
+                    </div>
+                    <div class="appointment simplepractice col-mon time-10-00 duration-30">
+                        <div class="appointment-text">NANCY GROSSMAN</div>
+                        <div class="appointment-time">10:00-10:30</div>
+                    </div>
+
+                    <!-- Tuesday appointments -->
+                    <div class="appointment google-calendar col-tue time-08-00 duration-30">
+                        <div class="appointment-text">COFFEE WITH...</div>
+                        <div class="appointment-time">08:00-08:30</div>
+                    </div>
+                    <div class="appointment google-calendar col-tue time-09-00 duration-60">
+                        <div class="appointment-text">VALEN & YA...</div>
+                        <div class="appointment-time">09:00-10:00</div>
+                    </div>
+
+                    <!-- Wednesday appointments -->
+                    <div class="appointment google-calendar col-wed time-07-00 duration-30">
+                        <div class="appointment-text">HECTOR'S COU...</div>
+                        <div class="appointment-time">07:00-07:30</div>
+                    </div>
+                    <div class="appointment google-calendar col-wed time-08-00 duration-60">
+                        <div class="appointment-text">GA... & SH...</div>
+                        <div class="appointment-time">08:00-09:00</div>
+                    </div>
+
+                    <!-- Thursday appointments -->
+                    <div class="appointment google-calendar col-thu time-07-00 duration-60">
+                        <div class="appointment-text">RICHIE HAYES</div>
+                        <div class="appointment-time">07:00-08:00</div>
+                    </div>
+                    <div class="appointment google-calendar col-thu time-08-00 duration-30">
+                        <div class="appointment-text">JOHN BEST</div>
+                        <div class="appointment-time">08:00-08:30</div>
+                    </div>
+
+                    <!-- Friday appointments -->
+                    <div class="appointment google-calendar col-fri time-10-00 duration-30">
+                        <div class="appointment-text">CALVIN HILL</div>
+                        <div class="appointment-time">10:00-10:30</div>
+                    </div>
+
+                    <!-- Add more appointments as needed -->
+                </div>
+            </div>
+
+            <div class="footer">
+                <a onclick="navigateToPage('weekly-overview')">Weekly Overview</a> |
+                <a onclick="navigateToPage('monday')">Monday →</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Navigation between pages
+        function navigateToPage(pageId) {
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(page => page.classList.remove('active'));
+            
+            const targetPage = document.getElementById(pageId);
+            if (targetPage) {
+                targetPage.classList.add('active');
+            }
+        }
+
+        // Print function
+        function printWeeklyPackage() {
+            window.print();
+        }
+    </script>
+</body>
+</html>

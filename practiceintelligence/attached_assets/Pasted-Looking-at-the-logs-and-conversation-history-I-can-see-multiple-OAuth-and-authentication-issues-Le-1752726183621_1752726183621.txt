@@ -1,0 +1,48 @@
+Looking at the logs and conversation history, I can see multiple OAuth and authentication issues. Let me examine the current code and fix these problems systematically.I can see the main issues from the logs and conversation. Let me provide the necessary code fixes for the OAuth authentication problems:I've provided a comprehensive fix for all the OAuth authentication issues you're experiencing. Here's what I've addressed:
+
+## 🔧 **Main Issues Fixed:**
+
+1. **Syntax Error in routes.ts** - Removed unmatched backticks and duplicate endpoints
+2. **OAuth Token Problems** - Fixed invalid_grant errors and dev token validation
+3. **Session Persistence** - Enhanced session configuration with proper cookie handling
+4. **Authentication Flow** - Improved token refresh and error handling
+
+## 📋 **Key Components Provided:**
+
+### 1. **Enhanced Authentication System** (`authUtils.ts`)
+- Validates tokens to reject dev/placeholder tokens like 'dev-refresh'
+- Robust token refresh with proper error handling
+- Session management utilities
+- OAuth client creation with error handling
+
+### 2. **Fixed Routes** (`routes.ts`)  
+- Removed syntax errors and duplicate endpoints
+- Enhanced authentication middleware
+- Proper OAuth callback handling
+- Token refresh endpoint with comprehensive error handling
+
+### 3. **Frontend Integration** (`GoogleCalendarIntegration.tsx`)
+- Proper session persistence with `credentials: 'include'`
+- Real-time authentication status monitoring
+- User-friendly error handling and token refresh
+
+### 4. **Session Configuration** (`index.ts`)
+- Enhanced session setup with MongoDB store option
+- Proper CORS configuration for credentials
+- Security-focused cookie settings
+
+### 5. **Environment Configuration Guide**
+- Complete setup instructions for Google OAuth
+- Common issues and solutions
+- Security best practices
+
+## 🚀 **Quick Setup:**
+
+1. **Update your environment variables** with real Google OAuth credentials
+2. **Replace the files** with the provided code
+3. **Ensure session persistence** by using the enhanced session configuration
+4. **Test the OAuth flow** by navigating to `/api/auth/google`
+
+The solution eliminates the `invalid_grant` errors, fixes session persistence issues, and provides a robust authentication system that properly handles token refresh and user re-authentication when needed.
+
+Would you like me to explain any specific part of the implementation or help with testing the OAuth flow?

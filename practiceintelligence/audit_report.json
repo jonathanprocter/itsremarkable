@@ -1,0 +1,2768 @@
+{
+  "summary": {
+    "total_issues": 3,
+    "total_warnings": 261,
+    "silent_failures": 217,
+    "duplicate_code_blocks": 222
+  },
+  "issues": {
+    "auth": [],
+    "api": [
+      "Frontend calls non-existent endpoint: /api/live-sync/calendar/events?start=2025-01-01&end=2025-12-31",
+      "Frontend calls non-existent endpoint: /api/calendar/events?start=2025-01-01T00:00:00Z&end=2025-12-31T23:59:59Z",
+      "Frontend calls non-existent endpoint: /api/conflicts?resolved=false"
+    ]
+  },
+  "warnings": {
+    "session": [
+      "Unsafe session access in server/routes.ts"
+    ],
+    "async": [
+      "Async function registerRoutes in server/routes_broken.ts has no await",
+      "Async function forceGoogleCalendarSync in server/force-google-sync.ts has no await",
+      "Async function setupVite in server/vite.ts has no await",
+      "Async function simpleCalendarSync in server/simple-calendar-sync.ts has no await",
+      "Async function testGoogleTokens in server/test-google-tokens.ts has no await",
+      "Async function generateAIConceptualization in server/clientRoutes.ts has no await",
+      "Async function testGoogleCalendarAccess in server/routes.ts has no await",
+      "Async function comprehensiveTokenRefresh in server/routes.ts has no await",
+      "Async function handler in server/auth/refresh-tokens.ts has no await",
+      "Async function handler in server/auth/test-authentication.ts has no await",
+      "Async function throwIfResNotOk in client/src/lib/queryClient.ts has no await",
+      "Async function apiRequest in client/src/lib/queryClient.ts has no await",
+      "Async function runAuthenticationFix in client/src/utils/authenticationFix.ts has no await",
+      "Async function testGoogleCalendarAccess in client/src/utils/authenticationFix.ts has no await",
+      "Async function refreshAuthentication in client/src/utils/authenticationFix.ts has no await",
+      "Async function runDailyPlannerAudit in client/src/utils/dailyPlannerAudit.ts has no await",
+      "Async function captureScreenshot in client/src/utils/dashboardStyleExtractor.ts has no await",
+      "Async function runDynamicDailyAudit in client/src/utils/dynamicDailyAudit.ts has no await",
+      "Async function exportDynamicDailyPlannerPDF in client/src/utils/dynamicDailyPlannerPDF.ts has no await",
+      "Async function exportDynamicDailyPlannerHTML in client/src/utils/dynamicDailyPlannerPDF.ts has no await",
+      "Async function previewDynamicDailyPlanner in client/src/utils/dynamicDailyPlannerPDF.ts has no await",
+      "Async function exportEnhancedDailyPDF in client/src/utils/enhancedDailyPDFExport.ts has no await",
+      "Async function renderAndExportPDF in client/src/utils/enhancedDailyPDFExport.ts has no await",
+      "Async function auditAllExportFunctions in client/src/utils/findPerfectExport.ts has no await",
+      "Async function auditExportFunction in client/src/utils/findPerfectExport.ts has no await",
+      "Async function testAuditSystem in client/src/utils/findPerfectExport.ts has no await",
+      "Async function drawPixelPerfectLayout in client/src/utils/htmlTemplateDailyExport.ts has no await",
+      "Async function exportHTMLTemplateExactMatch in client/src/utils/htmlTemplateExactMatch.ts has no await",
+      "Async function exportHTMLTemplatePerfect in client/src/utils/htmlTemplatePerfectExport.ts has no await",
+      "Async function exportHTMLTemplatePerfectFixed in client/src/utils/htmlTemplatePerfectFixed.ts has no await",
+      "Async function createVectorWeeklyPDF in client/src/utils/liveDashboardCapture.ts has no await",
+      "Async function createVectorDailyPDF in client/src/utils/liveDashboardCapture.ts has no await",
+      "Async function createDailyPageInPDF in client/src/utils/liveDashboardCapture.ts has no await",
+      "Async function prepareContainerForCapture in client/src/utils/perfectDailyCalendarPDF.ts has no await",
+      "Async function restoreContainerState in client/src/utils/perfectDailyCalendarPDF.ts has no await",
+      "Async function ensureContentLoaded in client/src/utils/perfectDailyCalendarPDF.ts has no await",
+      "Async function createPDFFromCanvas in client/src/utils/perfectDailyCalendarPDF.ts has no await",
+      "Async function exportPerfectWeeklyPDF in client/src/utils/perfectDashboardExport.ts has no await",
+      "Async function exportPerfectDailyPDF in client/src/utils/perfectDashboardExport.ts has no await",
+      "Async function runPixelPerfectAudit in client/src/utils/pixelPerfectAudit.ts has no await",
+      "Async function extractVisualTruthTable in client/src/utils/pixelPerfectAudit.ts has no await",
+      "Async function exportPixelPerfectWeekly in client/src/utils/pixelPerfectDashboardExport.ts has no await",
+      "Async function exportPixelPerfectDaily in client/src/utils/pixelPerfectDashboardExport.ts has no await",
+      "Async function exportPixelPerfectPDF in client/src/utils/pixelPerfectPDFExportFixed.ts has no await",
+      "Async function extractDashboardMeasurements in client/src/utils/pixelPerfectPDFExportFixed.ts has no await",
+      "Async function generateWeeklyLayout in client/src/utils/remarkablePDFExactMatch.ts has no await",
+      "Async function generatePerfectLayout in client/src/utils/remarkableProPerfect.ts has no await",
+      "Async function generateExactCSSGrid in client/src/utils/remarkableProPerfectCSS.ts has no await",
+      "Async function runSimpleAuthFix in client/src/utils/simpleAuthFix.ts has no await",
+      "Async function testAuthenticationStatus in client/src/utils/simpleAuthFix.ts has no await",
+      "Async function forceCalendarSync in client/src/utils/simpleAuthFix.ts has no await",
+      "Async function exportSimplePDF in client/src/utils/simplePDFExport.ts has no await",
+      "Async function exportPixelPerfectTemplate in client/src/utils/htmlTemplatePixelPerfect.ts has no await",
+      "Async function generateWeeklyOverviewPage in client/src/utils/bidirectionalWeeklyPackage.ts has no await",
+      "Async function generateDailyPage in client/src/utils/bidirectionalWeeklyPackage.ts has no await",
+      "Async function exportBrowserReplicaPDF in client/src/utils/browserReplicaPDF.ts has no await",
+      "Async function fixAuthenticationSession in client/src/utils/authSessionFix.ts has no await",
+      "Async function checkAndFixAuthentication in client/src/utils/authSessionFix.ts has no await",
+      "Async function throwIfResNotOk in src/lib/queryClient.ts has no await",
+      "Async function apiRequest in src/lib/queryClient.ts has no await",
+      "Async function generateWeeklyOverviewPage in src/utils/bidirectionalWeeklyPackage.ts has no await",
+      "Async function generateDailyPage in src/utils/bidirectionalWeeklyPackage.ts has no await",
+      "Async function runDailyPlannerAudit in src/utils/dailyPlannerAudit.ts has no await",
+      "Async function captureScreenshot in src/utils/dashboardStyleExtractor.ts has no await",
+      "Async function runDynamicDailyAudit in src/utils/dynamicDailyAudit.ts has no await",
+      "Async function exportDynamicDailyPlannerPDF in src/utils/dynamicDailyPlannerPDF.ts has no await",
+      "Async function exportDynamicDailyPlannerHTML in src/utils/dynamicDailyPlannerPDF.ts has no await",
+      "Async function previewDynamicDailyPlanner in src/utils/dynamicDailyPlannerPDF.ts has no await",
+      "Async function auditAllExportFunctions in src/utils/findPerfectExport.ts has no await",
+      "Async function auditExportFunction in src/utils/findPerfectExport.ts has no await",
+      "Async function testAuditSystem in src/utils/findPerfectExport.ts has no await",
+      "Async function exportFixedDynamicDailyPlannerPDF in src/utils/fixedDynamicDailyPlannerPDF.ts has no await",
+      "Async function generateDailyPlannerLayout in src/utils/fixedDynamicDailyPlannerPDF.ts has no await",
+      "Async function drawHeader in src/utils/fixedDynamicDailyPlannerPDF.ts has no await",
+      "Async function drawLegend in src/utils/fixedDynamicDailyPlannerPDF.ts has no await",
+      "Async function drawTimeGrid in src/utils/fixedDynamicDailyPlannerPDF.ts has no await",
+      "Async function drawEvents in src/utils/fixedDynamicDailyPlannerPDF.ts has no await",
+      "Async function drawFooter in src/utils/fixedDynamicDailyPlannerPDF.ts has no await",
+      "Async function createVectorWeeklyPDF in src/utils/liveDashboardCapture.ts has no await",
+      "Async function createVectorDailyPDF in src/utils/liveDashboardCapture.ts has no await",
+      "Async function createDailyPageInPDF in src/utils/liveDashboardCapture.ts has no await",
+      "Async function exportPerfectWeeklyPDF in src/utils/perfectDashboardExport.ts has no await",
+      "Async function exportPerfectDailyPDF in src/utils/perfectDashboardExport.ts has no await",
+      "Async function runPixelPerfectAudit in src/utils/pixelPerfectAudit.ts has no await",
+      "Async function extractVisualTruthTable in src/utils/pixelPerfectAudit.ts has no await",
+      "Async function exportPixelPerfectWeekly in src/utils/pixelPerfectDashboardExport.ts has no await",
+      "Async function exportPixelPerfectDaily in src/utils/pixelPerfectDashboardExport.ts has no await",
+      "Async function exportPixelPerfectPDF in src/utils/pixelPerfectPDFExportFixed.ts has no await",
+      "Async function extractDashboardMeasurements in src/utils/pixelPerfectPDFExportFixed.ts has no await",
+      "Async function generateWeeklyLayout in src/utils/remarkablePDFExactMatch.ts has no await",
+      "Async function generatePerfectLayout in src/utils/remarkableProPerfect.ts has no await",
+      "Async function generateExactCSSGrid in src/utils/remarkableProPerfectCSS.ts has no await",
+      "Async function exportSimplePDF in src/utils/simplePDFExport.ts has no await",
+      "Async function testAuth in client/src/components/auth/GoogleAuthFix.tsx has no await",
+      "Async function forceRefresh in client/src/components/auth/GoogleAuthFix.tsx has no await",
+      "Async function forceSync in client/src/components/auth/GoogleAuthFix.tsx has no await",
+      "Async function addSampleNotesAndActionItems in add-sample-notes.js has no await",
+      "Async function auditPDFExport in browser-audit.js has no await",
+      "Async function runAuthenticationVerification in browser-auth-test.js has no await",
+      "Async function runBrowserTest in browser-comprehensive-test.js has no await",
+      "Async function completeValidationTest in complete-validation-test.js has no await",
+      "Async function executeComprehensiveAudit in comprehensive-audit-execution.js has no await",
+      "Async function runComprehensiveAuthFix in comprehensive-auth-fix.js has no await",
+      "Async function runComprehensiveTest in comprehensive-sync-test.js has no await",
+      "Async function debugAuthentication in debug-auth.js has no await",
+      "Async function testDeploymentReadyLiveSync in deployment-ready-live-sync.js has no await",
+      "Async function runDirectSyncTest in direct-sync-test.js has no await",
+      "Async function runFinalDeploymentTest in final-deployment-test.js has no await",
+      "Async function runFinalIntegrationTest in final-integration-test.js has no await",
+      "Async function generateFinalValidationReport in final-validation-report.js has no await",
+      "Async function validateCoreSystem in final-validation-report.js has no await",
+      "Async function validatePDFExport in final-validation-report.js has no await",
+      "Async function validatePixelPerfect in final-validation-report.js has no await",
+      "Async function validatePerformance in final-validation-report.js has no await",
+      "Async function validateErrorHandling in final-validation-report.js has no await",
+      "Async function validateUserExperience in final-validation-report.js has no await",
+      "Async function runFinalValidation in final-validation-test.js has no await",
+      "Async function fix404AndAuth in fix-404-and-auth.js has no await",
+      "Async function fixAuthenticationComplete in fix-auth-complete.js has no await",
+      "Async function forceGoogleCalendarSync in force-google-sync.js has no await",
+      "Async function testDeleteFunctionality in immediate-browser-test.js has no await",
+      "Async function testBasicSystem in live-audit-test.js has no await",
+      "Async function testDashboardMeasurements in live-audit-test.js has no await",
+      "Async function testHTMLGeneration in live-audit-test.js has no await",
+      "Async function testPerformance in live-audit-test.js has no await",
+      "Async function testErrorHandling in live-audit-test.js has no await",
+      "Async function runLiveAudit in live-audit-test.js has no await",
+      "Async function checkAuthStatus in live-sync-fix.js has no await",
+      "Async function fixAuthentication in live-sync-fix.js has no await",
+      "Async function testLiveSync in live-sync-fix.js has no await",
+      "Async function forceGoogleSync in live-sync-fix.js has no await",
+      "Async function runLiveSyncFix in live-sync-fix.js has no await",
+      "Async function fixOAuthIssues in oauth-fix-comprehensive.js has no await",
+      "Async function auditPDFExport in pdf-export-audit.js has no await",
+      "Async function runAuditValidation in run-audit-validation.js has no await",
+      "Async function runPixelPerfectDemo in run-pixel-perfect-demo.js has no await",
+      "Async function runSimpleAuthTest in simple-auth-test.js has no await",
+      "Async function syncCalendarNow in sync-calendar-now.js has no await",
+      "Async function runAuthTest in test-auth-fix.js has no await",
+      "Async function runAuthenticationVerification in test-auth-improvements.js has no await",
+      "Async function testAuthenticationSystem in test-auth-system.js has no await",
+      "Async function testCalendarLoading in test-calendar-loading.js has no await",
+      "Async function testComprehensiveAuth in test-comprehensive-auth.js has no await",
+      "Async function testDailyPDFExport in test-daily-export.js has no await",
+      "Async function testEnhancedPixelPerfect in test-enhanced-pixel-perfect.js has no await",
+      "Async function testEnvironmentTokens in test-env-tokens.js has no await",
+      "Async function testGoogleSubcalendars in test-google-subcalendars.js has no await",
+      "Async function testGoogleTokens in test-google-tokens.js has no await",
+      "Async function testComprehensiveFix in test-in-browser.js has no await",
+      "Async function testLiveSyncComprehensive in test-live-sync-comprehensive.js has no await",
+      "Async function testLiveSyncEndpoint in test-live-sync-endpoint.js has no await",
+      "Async function testAllAuthEndpoints in test-live-sync-endpoint.js has no await",
+      "Async function runAllTests in test-live-sync-endpoint.js has no await",
+      "Async function testOAuthCallback in test-oauth-callback-direct.js has no await",
+      "Async function testOAuthCallback in test-oauth-callback.js has no await",
+      "Async function testOAuthClientFix in test-oauth-client-fix.js has no await",
+      "Async function testOAuthConfiguration in test-oauth-configuration.js has no await",
+      "Async function testOAuthFlow in test-oauth-debug.js has no await",
+      "Async function testOAuthFix in test-oauth-fix-complete.js has no await",
+      "Async function testLiveOAuthFlow in test-oauth-flow-live.js has no await",
+      "Async function testOAuthFlow in test-oauth-flow.js has no await",
+      "Async function testOAuthTokenFix in test-oauth-token-fix.js has no await",
+      "Async function testOAuthConfiguration in test-oauth-update.js has no await",
+      "Async function verifyOAuthStatus in test-oauth-verification.js has no await",
+      "Async function testPDFExport in test-pdf-export.js has no await",
+      "Async function testPDFGeneration in test-pdf-generation.js has no await",
+      "Async function testSimplePracticeEvents in test-simplepractice-fix.js has no await",
+      "Async function testCalendarSync in test-sync-calendar.js has no await",
+      "Async function triggerAuditDemo in trigger-audit-demo.js has no await",
+      "Async function loadTestScripts in trigger-comprehensive-tests.js has no await",
+      "Async function executeAllTests in trigger-comprehensive-tests.js has no await",
+      "Async function runComprehensiveValidation in trigger-comprehensive-tests.js has no await",
+      "Async function validateExportImprovements in validate-export-improvements.js has no await",
+      "Async function deleteAvaAppointment in delete-ava-appointment.js has no await",
+      "Async function runComprehensiveBidirectionalTest in comprehensive-bidirectional-test.js has no await",
+      "Async function testExportFunction in comprehensive-bidirectional-test.js has no await",
+      "Async function simulateExportButtonClick in live-bidirectional-test.js has no await",
+      "Async function testOAuth403Fix in test-oauth-403-fix.js has no await",
+      "Async function testOAuthFlow in oauth-flow-test.js has no await",
+      "Async function testSessionPersistence in session-debug-fix.js has no await",
+      "Async function testCompleteOAuthFlow in comprehensive-oauth-test.js has no await",
+      "Async function S in server/public/assets/simplePDFExport-BW4DZzQY.js has no await",
+      "Async function LT in server/public/assets/index-DA3m5fIm.js has no await",
+      "Async function NT in server/public/assets/index-DA3m5fIm.js has no await",
+      "Async function l in server/public/assets/pixelPerfectAudit-C94DaunV.js has no await",
+      "Async function handleGoogleCalendarSync in dist/index.js has no await",
+      "Async function testGoogleAuth in dist/index.js has no await",
+      "Async function debugGoogleAuth in dist/index.js has no await",
+      "Async function forceGoogleCalendarSync in dist/index.js has no await",
+      "Async function refreshTokens in dist/index.js has no await",
+      "Async function registerRoutes in dist/index.js has no await",
+      "Async function setupVite in dist/index.js has no await",
+      "Async function handler in api/auth/force-env-tokens.js has no await"
+    ],
+    "error_handling": [
+      "Many console.error calls in server/routes_broken.ts: 46",
+      "Many console.error calls in server/clientRoutes.ts: 10",
+      "Many console.error calls in server/index.ts: 10",
+      "Many console.error calls in server/routes.ts: 39",
+      "Many console.error calls in server/minimal-oauth.ts: 15",
+      "Many console.error calls in client/src/hooks/useGoogleAuth.ts: 8",
+      "Many console.error calls in client/src/utils/dynamicDailyPlannerPDF.ts: 7",
+      "Many console.error calls in client/src/utils/pixelPerfectDailyExport.ts: 9",
+      "Many console.error calls in client/src/utils/consoleManager.ts: 6",
+      "Many console.error calls in src/hooks/useGoogleAuth.ts: 8",
+      "Many console.error calls in src/utils/dynamicDailyPlannerPDF.ts: 7",
+      "Many console.error calls in src/utils/pixelPerfectDailyExport.ts: 9",
+      "Many console.error calls in client/src/components/OAuthFixer.tsx: 18",
+      "Many console.error calls in client/src/components/sidebar/ExportToPDF.tsx: 7",
+      "Many console.error calls in client/src/pages/planner.tsx: 32",
+      "Many console.error calls in src/components/sidebar/ExportToPDF.tsx: 6",
+      "Many console.error calls in src/pages/planner.tsx: 28",
+      "Many console.error calls in live-sync-fix.js: 9",
+      "Many console.error calls in test-oauth-update.js: 6",
+      "Many console.error calls in debug_unified_export.js: 8",
+      "Many console.error calls in server/public/assets/index-DA3m5fIm.js: 59",
+      "Many console.error calls in dist/index.js: 41"
+    ],
+    "complexity": [
+      "High complexity in client/src/utils/htmlTemplatePDF.ts: 59.0 (19 functions, 0 classes, 1704 lines)",
+      "High complexity in src/utils/htmlTemplatePDF.ts: 60.2 (20 functions, 0 classes, 1620 lines)",
+      "High complexity in client/src/pages/planner.tsx: 104.8 (9 functions, 0 classes, 2675 lines)",
+      "High complexity in src/pages/planner.tsx: 74.0 (8 functions, 0 classes, 1902 lines)",
+      "High complexity in .cache/uv/archive-v0/UlxgPNGwjDrWp2yVWo9la/nipype/external/d3.js: 1308.6 (608 functions, 0 classes, 9256 lines)",
+      "High complexity in server/public/assets/index-DA3m5fIm.js: 2110.5 (1027 functions, 16 classes, 853 lines)",
+      "High complexity in server/public/assets/index.es-C81rq1qN.js: 675.2 (240 functions, 65 classes, 19 lines)",
+      "High complexity in dist/index.js: 84.6 (16 functions, 0 classes, 2557 lines)"
+    ],
+    "api": [
+      "Unused backend endpoint: /api/sync/test",
+      "Unused backend endpoint: /api/conflicts",
+      "Unused backend endpoint: /api/download/:filename",
+      "Unused backend endpoint: /api/events/status/test",
+      "Unused backend endpoint: /api/export/complete-monthly",
+      "Unused backend endpoint: /api/calendar/events",
+      "Unused backend endpoint: /api/conflicts/:id/resolve",
+      "Unused backend endpoint: /api/live-sync/calendar/events",
+      "Unused backend endpoint: /api/events/:id/status-history",
+      "Unused backend endpoint: /api/revenue",
+      "Unused backend endpoint: /api/events/:id",
+      "Unused backend endpoint: /api/auth/test-callback",
+      "Unused backend endpoint: /api/export/enhanced-weekly",
+      "Unused backend endpoint: /api/daily-notes",
+      "Unused backend endpoint: /api/events/status",
+      "Unused backend endpoint: /api/health",
+      "Unused backend endpoint: /api/clients/:id",
+      "Unused backend endpoint: /api/events/source/:sourceId",
+      "Unused backend endpoint: /api/calendar/events/:eventId",
+      "Unused backend endpoint: /api/revenue/analytics",
+      "Unused backend endpoint: /api/export/pymypdf-bidirectional",
+      "Unused backend endpoint: /api/events/stats",
+      "Unused backend endpoint: /api/daily-notes/:userId/:date",
+      "Unused backend endpoint: /api/auth/callback",
+      "Unused backend endpoint: /api/sync-calendar",
+      "Unused backend endpoint: /api/auth/test-authentication",
+      "Unused backend endpoint: /api/export/bidirectional-package",
+      "Unused backend endpoint: /api/auth/google",
+      "Unused backend endpoint: /api/clients/search/:query",
+      "Unused backend endpoint: /api/simplepractice/events",
+      "Unused backend endpoint: /api/conflicts/detect",
+      "Unused backend endpoint: /api/auth/test-session",
+      "Unused backend endpoint: /api/auth/google/callback",
+      "Unused backend endpoint: /api/export/three-column-daily",
+      "Unused backend endpoint: /api/auth/google/test",
+      "Unused backend endpoint: /api/auth/fix",
+      "Unused backend endpoint: /api/test/google-tokens"
+    ]
+  },
+  "silent_failures": [
+    "Promise without catch in server/minimal-oauth.ts at position 23754",
+    "Promise without catch in server/minimal-oauth.ts at position 26773",
+    "Promise without catch in client/src/utils/autonomousAuthAudit.ts at position 6769",
+    "Promise without catch in client/src/utils/dynamicDailyPlannerPDF.ts at position 2263",
+    "Promise without catch in client/src/utils/dynamicDailyPlannerPDF.ts at position 2779",
+    "Promise without catch in client/src/utils/perfectDailyCalendarPDF.ts at position 5756",
+    "Promise without catch in client/src/utils/perfectDailyCalendarPDF.ts at position 6405",
+    "Promise without catch in client/src/utils/perfectDailyCalendarPDF.ts at position 6783",
+    "Promise without catch in client/src/utils/perfectDailyCalendarPDF.ts at position 7056",
+    "Promise without catch in client/src/utils/perfectDailyCalendarPDF.ts at position 7255",
+    "Promise without catch in client/src/utils/perfectDailyCalendarPDF.ts at position 7340",
+    "Promise without catch in client/src/utils/pixelPerfectPDFExportFixed.ts at position 2607",
+    "Promise without catch in client/src/utils/exactWeeklyPackageExport.ts at position 1964",
+    "Promise without catch in client/src/utils/exactWeeklyPackageExport.ts at position 2567",
+    "Promise without catch in client/src/utils/browserReplicaPDF.ts at position 16629",
+    "Promise without catch in client/src/utils/templateExtractors.ts at position 17218",
+    "Promise without catch in client/src/utils/templateExtractorsNew.ts at position 18778",
+    "Fetch without error handling in client/src/utils/authSessionFix.ts: fetch('/api/auth/fix-session', {\n      method: 'PO...",
+    "Fetch without error handling in client/src/utils/sessionFixCommands.ts: fetch('/api/auth/fix-session', { method: 'POST' })...",
+    "Fetch without error handling in client/src/utils/sessionFixCommands.ts: fetch('/api/auth/quick-diag')...",
+    "Fetch without error handling in client/src/utils/authRecovery.ts: fetch('/api/auth/restore-session', { method: 'POST...",
+    "Fetch without error handling in src/lib/queryClient.ts: fetch(url, {\n    method,\n    headers: data ? { \"Co...",
+    "Promise without catch in src/utils/auditReportGenerator.ts at position 10712",
+    "Promise without catch in src/utils/auditReportGenerator.ts at position 11525",
+    "Promise without catch in src/utils/auditReportGenerator.ts at position 12307",
+    "Promise without catch in src/utils/auditSystemDemo.ts at position 11575",
+    "Promise without catch in src/utils/authenticationFix.ts at position 3689",
+    "Promise without catch in src/utils/authenticationFix.ts at position 3904",
+    "Promise without catch in src/utils/autonomousAuthAudit.ts at position 6769",
+    "Promise without catch in src/utils/dynamicDailyPlannerPDF.ts at position 2301",
+    "Promise without catch in src/utils/dynamicDailyPlannerPDF.ts at position 2839",
+    "Promise without catch in src/utils/exportDemo.ts at position 1904",
+    "Promise without catch in src/utils/pixelPerfectPDFExportFixed.ts at position 2607",
+    "Promise without catch in src/utils/simpleAuthFix.ts at position 1283",
+    "Promise without catch in src/utils/simpleAuthFix.ts at position 1858",
+    "Promise without catch in client/src/components/ApplicationReplicaPDF.tsx at position 11091",
+    "Promise without catch in client/src/components/FixedPDFExport.tsx at position 10486",
+    "Promise without catch in client/src/components/PerfectDailyReplicaPDF.tsx at position 23797",
+    "Promise without catch in client/src/components/integrations/CrossPlatformSync.tsx at position 4069",
+    "Fetch without error handling in client/src/pages/planner.tsx: fetch('/api/auth/quick-diag')...",
+    "Fetch without error handling in src/pages/planner.tsx: fetch('/api/events')...",
+    "Fetch without error handling in src/pages/planner.tsx: fetch(`/api/events/${event.id}`, {\n               ...",
+    "Promise without catch in src/pages/planner.tsx at position 73932",
+    "Promise without catch in src/pages/planner.tsx at position 73981",
+    "Fetch without error handling in add-sample-notes.js: fetch('/api/events')...",
+    "Fetch without error handling in browser-audit.js: fetch('/api/events')...",
+    "Promise without catch in browser-comprehensive-test.js at position 5865",
+    "Fetch without error handling in browser-test-final.js: fetch('/api/events', { \n  credentials: 'include',\n...",
+    "Promise without catch in browser-test-final.js at position 915",
+    "Promise without catch in browser-test-final.js at position 950",
+    "Fetch without error handling in complete-validation-test.js: fetch('/api/events', { \n      credentials: 'includ...",
+    "Fetch without error handling in complete-validation-test.js: fetch('/api/events', { \n      credentials: 'includ...",
+    "Fetch without error handling in complete-validation-test.js: fetch('/api/events', { credentials: 'include' })...",
+    "Promise without catch in complete-validation-test.js at position 4473",
+    "Fetch without error handling in comprehensive-sync-test.js: fetch('/api/events', { \n      credentials: 'includ...",
+    "Fetch without error handling in comprehensive-sync-test.js: fetch('/api/events', { \n      credentials: 'includ...",
+    "Promise without catch in comprehensive-sync-test.js at position 5986",
+    "Promise without catch in comprehensive-sync-test.js at position 1978",
+    "Fetch without error handling in debug-auth.js: fetch('/api/auth/force-fix', {\n      method: 'POST...",
+    "Promise without catch in direct-sync-test.js at position 3423",
+    "Promise without catch in final-integration-test.js at position 6366",
+    "Promise without catch in final-integration-test.js at position 3224",
+    "Promise without catch in final-validation-test.js at position 4473",
+    "Fetch without error handling in fix-auth-complete.js: fetch('/api/auth/force-fix', { \n        method: 'P...",
+    "Fetch without error handling in manual-sync-test.js: fetch('/api/sync/calendar', {\n      method: 'POST'...",
+    "Fetch without error handling in manual-sync-test.js: fetch('/api/events', {\n      credentials: 'include...",
+    "Promise without catch in manual-sync-test.js at position 1013",
+    "Promise without catch in pdf-export-audit.js at position 7256",
+    "Fetch without error handling in quick-sync-test.js: fetch('/api/sync/calendar', {\n  method: 'POST',\n  ...",
+    "Fetch without error handling in quick-sync-test.js: fetch('/api/events', { \n    credentials: 'include'...",
+    "Promise without catch in quick-sync-test.js at position 170",
+    "Promise without catch in quick-sync-test.js at position 205",
+    "Promise without catch in quick-sync-test.js at position 402",
+    "Promise without catch in quick-sync-test.js at position 437",
+    "Fetch without error handling in test-auth-fix.js: fetch('/api/auth/refresh-tokens', {\n          meth...",
+    "Fetch without error handling in test-auth-system.js: fetch('/api/auth/google/debug', {\n      credential...",
+    "Promise without catch in test-auth-system.js at position 418",
+    "Promise without catch in test-auth-system.js at position 690",
+    "Promise without catch in test-auth-system.js at position 1216",
+    "Promise without catch in test-enhanced-pixel-perfect.js at position 3801",
+    "Fetch without error handling in test-env-tokens.js: fetch('/api/auth/force-env-tokens', {\n      method...",
+    "Promise without catch in test-env-tokens.js at position 789",
+    "Fetch without error handling in test-in-browser.js: fetch('http://localhost:5000/api/auth/fix-google-c...",
+    "Fetch without error handling in test-in-browser.js: fetch('/api/auth/enhanced-calendar-sync', {\n      ...",
+    "Fetch without error handling in test-oauth-callback-direct.js: fetch('/api/test-routing')...",
+    "Promise without catch in test-oauth-flow.js at position 6351",
+    "Fetch without error handling in test-oauth-status.js: fetch('/api/auth/comprehensive-fix', {\n      metho...",
+    "Fetch without error handling in test-oauth-status.js: fetch('/api/auth/force-google-sync', {\n        met...",
+    "Fetch without error handling in test-oauth-status.js: fetch(`/api/live-sync/calendar/events?start=${star...",
+    "Promise without catch in test-oauth-status.js at position 216",
+    "Promise without catch in test-oauth-status.js at position 251",
+    "Promise without catch in test-oauth-status.js at position 825",
+    "Promise without catch in test-oauth-status.js at position 913",
+    "Promise without catch in test-oauth-status.js at position 1416",
+    "Promise without catch in test-oauth-status.js at position 1504",
+    "Promise without catch in test-oauth-status.js at position 2190",
+    "Promise without catch in test-oauth-status.js at position 2278",
+    "Promise without catch in test-oauth-token-fix.js at position 3234",
+    "Fetch without error handling in test-oauth-update.js: fetch(`${baseUrl}/api/auth/google/debug`)...",
+    "Fetch without error handling in test-oauth-verification.js: fetch('/api/events', { credentials: 'include' })...",
+    "Promise without catch in test-oauth-verification.js at position 1730",
+    "Promise without catch in test-pdf-export.js at position 3906",
+    "Promise without catch in test-sync-calendar.js at position 2491",
+    "Promise without catch in validate-export-improvements.js at position 4826",
+    "Promise without catch in live-bidirectional-test.js at position 5280",
+    "Promise without catch in live-bidirectional-test.js at position 2939",
+    "Promise without catch in live-bidirectional-test.js at position 3744",
+    "Fetch without error handling in test_pymypdf_with_real_events.js: fetch('/api/events')...",
+    "Fetch without error handling in test_pymypdf_with_real_events.js: fetch('/api/export/pymypdf-bidirectional', {\n     ...",
+    "Promise without catch in test-oauth-403-fix.js at position 1677",
+    "Promise without catch in test_unified_export.js at position 1569",
+    "Fetch without error handling in browser_export_test.js: fetch('/api/events')...",
+    "Promise without catch in browser_export_test.js at position 2948",
+    "Fetch without error handling in test_unified_bidirectional_linking.js: fetch('/api/events')...",
+    "Promise without catch in test_unified_bidirectional_linking.js at position 3420",
+    "Promise without catch in template_pixel_perfect_audit.js at position 12767",
+    "Promise without catch in realistic_template_audit.js at position 10366",
+    "Promise without catch in bidirectional_export_audit.js at position 14921",
+    "Promise without catch in pixel_perfect_bidirectional_audit.js at position 12792",
+    "Promise without catch in test-unified-export-fixed.js at position 505",
+    "Promise without catch in test-unified-export-fixed.js at position 1508",
+    "Promise without catch in test-oauth-fix.js at position 229",
+    "Promise without catch in test-oauth-fix.js at position 266",
+    "Promise without catch in test-oauth-fix.js at position 803",
+    "Fetch without error handling in oauth-flow-test.js: fetch(`${baseUrl}/api/auth/config`)...",
+    "Fetch without error handling in comprehensive-oauth-test.js: fetch(`${baseUrl}/api/auth/test-session`, {\n    me...",
+    "Fetch without error handling in comprehensive-oauth-test.js: fetch(`${baseUrl}/api/auth/config`)...",
+    "Promise without catch in comprehensive-oauth-test.js at position 4239",
+    "Promise without catch in server/public/assets/auditSystemDemo-RCAz240j.js at position 5899",
+    "Fetch without error handling in server/public/assets/index-DA3m5fIm.js: fetch(i.href,o)...",
+    "Fetch without error handling in server/public/assets/index-DA3m5fIm.js: fetch({cancelRefetch:!1})...",
+    "Fetch without error handling in server/public/assets/index-DA3m5fIm.js: fetch({cancelRefetch:!1})...",
+    "Fetch without error handling in server/public/assets/index-DA3m5fIm.js: fetch({...t}={})...",
+    "Fetch without error handling in server/public/assets/index-DA3m5fIm.js: fetch({...t})...",
+    "Fetch without error handling in server/public/assets/index-DA3m5fIm.js: fetch(t[0],{credentials:\"include\"})...",
+    "Fetch without error handling in server/public/assets/index-DA3m5fIm.js: fetch(t,{method:e,headers:A?{\"Content-Type\":\"appli...",
+    "Fetch without error handling in server/public/assets/index-DA3m5fIm.js: fetch(t[0],{credentials:\"include\"})...",
+    "Fetch without error handling in server/public/assets/index-DA3m5fIm.js: fetch(\"/api/events\")...",
+    "Promise without catch in server/public/assets/index-DA3m5fIm.js at position 5391",
+    "Promise without catch in server/public/assets/index-DA3m5fIm.js at position 88840",
+    "Promise without catch in server/public/assets/index-DA3m5fIm.js at position 115292",
+    "Promise without catch in server/public/assets/index-DA3m5fIm.js at position 157773",
+    "Promise without catch in server/public/assets/index-DA3m5fIm.js at position 157798",
+    "Promise without catch in server/public/assets/index-DA3m5fIm.js at position 157944",
+    "Promise without catch in server/public/assets/index-DA3m5fIm.js at position 175564",
+    "Promise without catch in server/public/assets/index-DA3m5fIm.js at position 180344",
+    "Promise without catch in server/public/assets/index-DA3m5fIm.js at position 180460",
+    "Promise without catch in server/public/assets/index-DA3m5fIm.js at position 265057",
+    "Promise without catch in server/public/assets/index-DA3m5fIm.js at position 282577",
+    "Promise without catch in server/public/assets/index-DA3m5fIm.js at position 316408",
+    "Promise without catch in server/public/assets/index-DA3m5fIm.js at position 452068",
+    "Promise without catch in server/public/assets/index-DA3m5fIm.js at position 466757",
+    "Promise without catch in server/public/assets/index-DA3m5fIm.js at position 467598",
+    "Promise without catch in server/public/assets/index-DA3m5fIm.js at position 467630",
+    "Promise without catch in server/public/assets/index-DA3m5fIm.js at position 698820",
+    "Promise without catch in server/public/assets/index-DA3m5fIm.js at position 700009",
+    "Promise without catch in server/public/assets/index-DA3m5fIm.js at position 700221",
+    "Promise without catch in server/public/assets/index-DA3m5fIm.js at position 700229",
+    "Promise without catch in server/public/assets/index-DA3m5fIm.js at position 700897",
+    "Promise without catch in server/public/assets/index-DA3m5fIm.js at position 702938",
+    "Promise without catch in server/public/assets/index-DA3m5fIm.js at position 702946",
+    "Promise without catch in server/public/assets/index-DA3m5fIm.js at position 703062",
+    "Promise without catch in server/public/assets/index-DA3m5fIm.js at position 703347",
+    "Promise without catch in server/public/assets/index-DA3m5fIm.js at position 703355",
+    "Promise without catch in server/public/assets/index-DA3m5fIm.js at position 704422",
+    "Promise without catch in server/public/assets/index-DA3m5fIm.js at position 704700",
+    "Promise without catch in server/public/assets/index-DA3m5fIm.js at position 704960",
+    "Promise without catch in server/public/assets/index-DA3m5fIm.js at position 705274",
+    "Promise without catch in server/public/assets/index-DA3m5fIm.js at position 705431",
+    "Promise without catch in server/public/assets/index-DA3m5fIm.js at position 705829",
+    "Promise without catch in server/public/assets/index-DA3m5fIm.js at position 705991",
+    "Promise without catch in server/public/assets/index-DA3m5fIm.js at position 706475",
+    "Promise without catch in server/public/assets/index-DA3m5fIm.js at position 706560",
+    "Promise without catch in server/public/assets/index-DA3m5fIm.js at position 706693",
+    "Promise without catch in server/public/assets/index-DA3m5fIm.js at position 706892",
+    "Promise without catch in server/public/assets/index-DA3m5fIm.js at position 707009",
+    "Promise without catch in server/public/assets/index-DA3m5fIm.js at position 707952",
+    "Promise without catch in server/public/assets/index-DA3m5fIm.js at position 707962",
+    "Promise without catch in server/public/assets/index-DA3m5fIm.js at position 708731",
+    "Promise without catch in server/public/assets/index-DA3m5fIm.js at position 841133",
+    "Promise without catch in server/public/assets/index-DA3m5fIm.js at position 841777",
+    "Promise without catch in server/public/assets/index-DA3m5fIm.js at position 841893",
+    "Promise without catch in server/public/assets/index-DA3m5fIm.js at position 841931",
+    "Promise without catch in server/public/assets/index-DA3m5fIm.js at position 1059986",
+    "Promise without catch in server/public/assets/index-DA3m5fIm.js at position 1060006",
+    "Promise without catch in server/public/assets/index-DA3m5fIm.js at position 154063",
+    "Promise without catch in server/public/assets/index-DA3m5fIm.js at position 157263",
+    "Promise without catch in server/public/assets/index-DA3m5fIm.js at position 283161",
+    "Promise without catch in server/public/assets/index-DA3m5fIm.js at position 452935",
+    "Promise without catch in server/public/assets/index-DA3m5fIm.js at position 473523",
+    "Promise without catch in server/public/assets/index-DA3m5fIm.js at position 473713",
+    "Promise without catch in server/public/assets/index-DA3m5fIm.js at position 476051",
+    "Promise without catch in server/public/assets/index-DA3m5fIm.js at position 476698",
+    "Promise without catch in server/public/assets/index-DA3m5fIm.js at position 511759",
+    "Promise without catch in server/public/assets/index-DA3m5fIm.js at position 603265",
+    "Promise without catch in server/public/assets/index-DA3m5fIm.js at position 955413",
+    "Promise without catch in server/public/assets/index-DA3m5fIm.js at position 955610",
+    "Fetch without error handling in server/public/assets/index.es-C81rq1qN.js: fetch(r)...",
+    "Fetch without error handling in server/public/assets/index.es-C81rq1qN.js: fetch(e)...",
+    "Fetch without error handling in server/public/assets/index.es-C81rq1qN.js: fetch(e)...",
+    "Promise without catch in server/public/assets/index.es-C81rq1qN.js at position 21111",
+    "Promise without catch in server/public/assets/index.es-C81rq1qN.js at position 24246",
+    "Promise without catch in server/public/assets/index.es-C81rq1qN.js at position 26583",
+    "Promise without catch in server/public/assets/index.es-C81rq1qN.js at position 26905",
+    "Promise without catch in server/public/assets/index.es-C81rq1qN.js at position 27588",
+    "Promise without catch in server/public/assets/index.es-C81rq1qN.js at position 28468",
+    "Promise without catch in server/public/assets/index.es-C81rq1qN.js at position 28542",
+    "Promise without catch in server/public/assets/index.es-C81rq1qN.js at position 88326",
+    "Promise without catch in server/public/assets/index.es-C81rq1qN.js at position 154057",
+    "Fetch without error handling in dist/index.js: fetch(`https://www.googleapis.com/calendar/v3/cale...",
+    "Promise without catch in dist/index.js at position 37513",
+    "Promise without catch in dist/index.js at position 66649",
+    "Promise without catch in dist/index.js at position 70741",
+    "Promise without catch in dist/index.js at position 71232",
+    "Promise without catch in dist/index.js at position 71704",
+    "Promise without catch in dist/index.js at position 75571",
+    "Promise without catch in dist/index.js at position 44444"
+  ],
+  "duplicate_code": {
+    "function cleanEventTitle(title: string): string { if (!title) return ''; // Remove \" Appointment\" su...": [
+      [
+        "PERFECT_currentWeeklyExport_BACKUP.ts",
+        5
+      ],
+      [
+        "src/utils/currentWeeklyExport.ts",
+        5
+      ]
+    ],
+    "function generateEnhancedDailyHTML(dayData: DayData): string { const { date, appointments, stats } =...": [
+      [
+        "attached_assets/COMPLETE_EXPORT_ROUTES_1752720773989.ts",
+        29
+      ],
+      [
+        "server/export-routes.ts",
+        29
+      ]
+    ],
+    "function getPreviousDay(dateStr: string): string { const date = new Date(dateStr); date.setDate(date...": [
+      [
+        "attached_assets/COMPLETE_EXPORT_ROUTES_1752720773989.ts",
+        465
+      ],
+      [
+        "server/export-routes.ts",
+        465
+      ]
+    ],
+    "function getNextDay(dateStr: string): string { const date = new Date(dateStr); date.setDate(date.get...": [
+      [
+        "attached_assets/COMPLETE_EXPORT_ROUTES_1752720773989.ts",
+        471
+      ],
+      [
+        "server/export-routes.ts",
+        471
+      ]
+    ],
+    "function getSampleDayData(date: string): DayData { // This is sample data - replace with your actual...": [
+      [
+        "attached_assets/COMPLETE_EXPORT_ROUTES_1752720773989.ts",
+        478
+      ],
+      [
+        "server/export-routes.ts",
+        478
+      ]
+    ],
+    "function generateWeeklyHTML(): string { return `<!DOCTYPE html> <html lang=\"en\"> <head> <meta charse...": [
+      [
+        "attached_assets/COMPLETE_EXPORT_ROUTES_1752720773989.ts",
+        568
+      ],
+      [
+        "server/export-routes.ts",
+        568
+      ]
+    ],
+    "export function registerExportRoutes(app: Express): void { // Three-column daily export app.get('/ap...": [
+      [
+        "attached_assets/COMPLETE_EXPORT_ROUTES_1752720773989.ts",
+        737
+      ],
+      [
+        "server/export-routes.ts",
+        737
+      ]
+    ],
+    "function genId() { count = (count + 1) % Number.MAX_SAFE_INTEGER return count.toString() } type Acti...": [
+      [
+        "client/src/hooks/use-toast.ts",
+        27
+      ],
+      [
+        "src/hooks/use-toast.ts",
+        27
+      ]
+    ],
+    "function dispatch(action: Action) { memoryState = reducer(memoryState, action) listeners.forEach((li...": [
+      [
+        "client/src/hooks/use-toast.ts",
+        133
+      ],
+      [
+        "src/hooks/use-toast.ts",
+        133
+      ]
+    ],
+    "function toast({ ...props }: Toast) { const id = genId() const update = (props: ToasterToast) => dis...": [
+      [
+        "client/src/hooks/use-toast.ts",
+        142
+      ],
+      [
+        "src/hooks/use-toast.ts",
+        142
+      ]
+    ],
+    "function useToast() { const [state, setState] = React.useState<State>(memoryState) React.useEffect((...": [
+      [
+        "client/src/hooks/use-toast.ts",
+        171
+      ],
+      [
+        "src/hooks/use-toast.ts",
+        171
+      ]
+    ],
+    "async function throwIfResNotOk(res: Response) { if (!res.ok) { const text = (await res.text()) || re...": [
+      [
+        "client/src/lib/queryClient.ts",
+        3
+      ],
+      [
+        "src/lib/queryClient.ts",
+        3
+      ]
+    ],
+    "export function cn(...inputs: ClassValue[]) { return twMerge(clsx(inputs)) }...": [
+      [
+        "client/src/lib/utils.ts",
+        4
+      ],
+      [
+        "src/lib/utils.ts",
+        4
+      ]
+    ],
+    "function drawHeader(pdf: jsPDF, weekStartDate: Date, weekEndDate: Date, config: any): void { // Set ...": [
+      [
+        "client/src/utils/customWeeklyExport.ts",
+        78
+      ],
+      [
+        "src/utils/customWeeklyExport.ts",
+        78
+      ]
+    ],
+    "function drawTimeGrid(pdf: jsPDF, weekStartDate: Date, events: CalendarEvent[], config: any): void {...": [
+      [
+        "client/src/utils/customWeeklyExport.ts",
+        107
+      ],
+      [
+        "src/utils/customWeeklyExport.ts",
+        107
+      ]
+    ],
+    "function drawDayHeaders(pdf: jsPDF, weekStartDate: Date, headerY: number, config: any, dayColumnWidt...": [
+      [
+        "client/src/utils/customWeeklyExport.ts",
+        184
+      ],
+      [
+        "src/utils/customWeeklyExport.ts",
+        184
+      ]
+    ],
+    "function drawEvents(pdf: jsPDF, weekStartDate: Date, events: CalendarEvent[], config: any, gridStart...": [
+      [
+        "client/src/utils/customWeeklyExport.ts",
+        222
+      ],
+      [
+        "src/utils/customWeeklyExport.ts",
+        222
+      ]
+    ],
+    "function getEventTypeInfo(event: CalendarEvent) { const title = (event.title || '').toLowerCase(); c...": [
+      [
+        "client/src/utils/dailyPDFExport.ts",
+        78
+      ],
+      [
+        "src/utils/dailyPDFExport.ts",
+        48
+      ]
+    ],
+    "function drawDailyHeader(pdf: jsPDF, selectedDate: Date, events: CalendarEvent[]) { const { margin, ...": [
+      [
+        "client/src/utils/dailyPDFExport.ts",
+        104
+      ],
+      [
+        "src/utils/dailyPDFExport.ts",
+        74
+      ]
+    ],
+    "function drawTimeGrid(pdf: jsPDF) { const { margin, timeColumnWidth, appointmentColumnWidth, timeSlo...": [
+      [
+        "client/src/utils/dailyPDFExport.ts",
+        254
+      ],
+      [
+        "src/utils/dailyPDFExport.ts",
+        171
+      ]
+    ],
+    "function drawAppointments(pdf: jsPDF, selectedDate: Date, events: CalendarEvent[]) { const { margin,...": [
+      [
+        "client/src/utils/dailyPDFExport.ts",
+        311
+      ],
+      [
+        "src/utils/dailyPDFExport.ts",
+        228
+      ]
+    ],
+    "export async function runDailyPlannerAudit(date: Date, events: CalendarEvent[]): Promise<DailyPlanne...": [
+      [
+        "client/src/utils/dailyPlannerAudit.ts",
+        244
+      ],
+      [
+        "src/utils/dailyPlannerAudit.ts",
+        244
+      ]
+    ],
+    "export function extractDashboardStyles(): StyleExtractionResult { const startTime = Date.now(); cons...": [
+      [
+        "client/src/utils/dashboardStyleExtractor.ts",
+        43
+      ],
+      [
+        "src/utils/dashboardStyleExtractor.ts",
+        43
+      ]
+    ],
+    "export function getDashboardMeasurements(): DashboardMeasurements { const result = extractDashboardS...": [
+      [
+        "client/src/utils/dashboardStyleExtractor.ts",
+        169
+      ],
+      [
+        "src/utils/dashboardStyleExtractor.ts",
+        169
+      ]
+    ],
+    "export async function captureScreenshot(): Promise<string | null> { try { console.log('\ud83d\udcf8 Capturing d...": [
+      [
+        "client/src/utils/dashboardStyleExtractor.ts",
+        174
+      ],
+      [
+        "src/utils/dashboardStyleExtractor.ts",
+        174
+      ]
+    ],
+    "function getDefaultMeasurements(): DashboardMeasurements { return { timeColumnWidth: 80, dayColumnWi...": [
+      [
+        "client/src/utils/dashboardStyleExtractor.ts",
+        203
+      ],
+      [
+        "src/utils/dashboardStyleExtractor.ts",
+        203
+      ]
+    ],
+    "export function logStyleComparison(dashboardStyles: any, pdfStyles: any) { console.group('\ud83c\udfaf STYLE CO...": [
+      [
+        "client/src/utils/dashboardStyleExtractor.ts",
+        233
+      ],
+      [
+        "src/utils/dashboardStyleExtractor.ts",
+        233
+      ]
+    ],
+    "export function enhanceEventDataIntegrity(events: CalendarEvent[]): EnhancedEventData[] { return eve...": [
+      [
+        "client/src/utils/dataIntegrityFix.ts",
+        30
+      ],
+      [
+        "src/utils/dataIntegrityFix.ts",
+        30
+      ]
+    ],
+    "function determineSourceType(event: CalendarEvent): 'simplepractice' | 'google' | 'manual' | 'holida...": [
+      [
+        "client/src/utils/dataIntegrityFix.ts",
+        70
+      ],
+      [
+        "src/utils/dataIntegrityFix.ts",
+        70
+      ]
+    ],
+    "function enhanceNotesData(event: CalendarEvent, sourceType: string): string { // Get original notes ...": [
+      [
+        "client/src/utils/dataIntegrityFix.ts",
+        95
+      ],
+      [
+        "src/utils/dataIntegrityFix.ts",
+        95
+      ]
+    ],
+    "function enhanceActionItemsData(event: CalendarEvent, sourceType: string): string { // Get original ...": [
+      [
+        "client/src/utils/dataIntegrityFix.ts",
+        142
+      ],
+      [
+        "src/utils/dataIntegrityFix.ts",
+        142
+      ]
+    ],
+    "function getEventStyling(sourceType: string): { backgroundColor: string; borderColor: string; border...": [
+      [
+        "client/src/utils/dataIntegrityFix.ts",
+        189
+      ],
+      [
+        "src/utils/dataIntegrityFix.ts",
+        189
+      ]
+    ],
+    "export function validateDataIntegrity(enhancedData: EnhancedEventData[]): { score: number; issues: s...": [
+      [
+        "client/src/utils/dataIntegrityFix.ts",
+        238
+      ],
+      [
+        "src/utils/dataIntegrityFix.ts",
+        238
+      ]
+    ],
+    "export function generatePixelPerfectReport( dashboardEvents: CalendarEvent[], exportEvents: Calendar...": [
+      [
+        "client/src/utils/dataIntegrityFix.ts",
+        297
+      ],
+      [
+        "src/utils/dataIntegrityFix.ts",
+        297
+      ]
+    ],
+    "export async function runDynamicDailyAudit(date: Date, events: CalendarEvent[]): Promise<DailyAuditR...": [
+      [
+        "client/src/utils/dynamicDailyAudit.ts",
+        503
+      ],
+      [
+        "src/utils/dynamicDailyAudit.ts",
+        471
+      ]
+    ],
+    "export async function exportDynamicDailyPlannerPDF( date: Date, events: CalendarEvent[] ): Promise<v...": [
+      [
+        "client/src/utils/dynamicDailyPlannerPDF.ts",
+        12
+      ],
+      [
+        "src/utils/dynamicDailyPlannerPDF.ts",
+        12
+      ]
+    ],
+    "export async function exportDynamicDailyPlannerHTML( date: Date, events: CalendarEvent[] ): Promise<...": [
+      [
+        "client/src/utils/dynamicDailyPlannerPDF.ts",
+        245
+      ],
+      [
+        "src/utils/dynamicDailyPlannerPDF.ts",
+        245
+      ]
+    ],
+    "export async function previewDynamicDailyPlanner( date: Date, events: CalendarEvent[] ): Promise<voi...": [
+      [
+        "client/src/utils/dynamicDailyPlannerPDF.ts",
+        283
+      ],
+      [
+        "src/utils/dynamicDailyPlannerPDF.ts",
+        283
+      ]
+    ],
+    "function formatTime(date: Date): string { return date.toLocaleTimeString('en-US', { hour: '2-digit',...": [
+      [
+        "client/src/utils/htmlTemplatePDF.ts",
+        7
+      ],
+      [
+        "client/src/utils/scaledDailyTemplate.ts",
+        5
+      ]
+    ],
+    "function cleanEventTitle(title: string): string { return title .replace(/[^\\w\\s\\-\\.\\,\\:\\(\\)]/g, '') ...": [
+      [
+        "client/src/utils/enhancedDailyExport.ts",
+        51
+      ],
+      [
+        "client/src/utils/workingDailyExport.ts",
+        51
+      ],
+      [
+        "src/utils/enhancedDailyExport.ts",
+        51
+      ],
+      [
+        "src/utils/workingDailyExport.ts",
+        51
+      ]
+    ],
+    "function getEventType(event: CalendarEvent) { const isSimplePractice = event.source === 'simplepract...": [
+      [
+        "client/src/utils/enhancedDailyExport.ts",
+        59
+      ],
+      [
+        "client/src/utils/workingDailyExport.ts",
+        59
+      ],
+      [
+        "src/utils/enhancedDailyExport.ts",
+        59
+      ],
+      [
+        "src/utils/workingDailyExport.ts",
+        59
+      ]
+    ],
+    "function drawEnhancedHeader(pdf: jsPDF, selectedDate: Date, events: CalendarEvent[]) { const { margi...": [
+      [
+        "client/src/utils/enhancedDailyExport.ts",
+        70
+      ],
+      [
+        "src/utils/enhancedDailyExport.ts",
+        70
+      ]
+    ],
+    "function drawEnhancedTimeGrid(pdf: jsPDF) { const { margin, timeColumnWidth, eventColumnWidth, timeS...": [
+      [
+        "client/src/utils/enhancedDailyExport.ts",
+        142
+      ],
+      [
+        "src/utils/enhancedDailyExport.ts",
+        142
+      ]
+    ],
+    "function drawEnhancedEvents(pdf: jsPDF, selectedDate: Date, events: CalendarEvent[]) { const { margi...": [
+      [
+        "client/src/utils/enhancedDailyExport.ts",
+        195
+      ],
+      [
+        "src/utils/enhancedDailyExport.ts",
+        195
+      ]
+    ],
+    "function getEventTypeInfo(event: CalendarEvent) { // Check for holiday events first const isHoliday ...": [
+      [
+        "client/src/utils/exactDailyPDFExport.ts",
+        60
+      ],
+      [
+        "src/utils/exactDailyPDFExport.ts",
+        60
+      ]
+    ],
+    "function drawDashboardHeader(pdf: jsPDF, selectedDate: Date, events: CalendarEvent[]) { const { marg...": [
+      [
+        "client/src/utils/exactDailyPDFExport.ts",
+        94
+      ],
+      [
+        "src/utils/exactDailyPDFExport.ts",
+        94
+      ]
+    ],
+    "function drawDashboardGrid(pdf: jsPDF, selectedDate: Date, events: CalendarEvent[]) { const { margin...": [
+      [
+        "client/src/utils/exactDailyPDFExport.ts",
+        258
+      ],
+      [
+        "src/utils/exactDailyPDFExport.ts",
+        258
+      ]
+    ],
+    "function drawExactHeader(pdf: jsPDF, weekStartDate: Date, weekEndDate: Date, SPEC: any, SCALE: numbe...": [
+      [
+        "client/src/utils/exactWeeklySpecExport.ts",
+        113
+      ],
+      [
+        "src/utils/exactWeeklySpecExport.ts",
+        113
+      ]
+    ],
+    "function drawExactTable(pdf: jsPDF, weekStartDate: Date, events: CalendarEvent[], SPEC: any, SCALE: ...": [
+      [
+        "client/src/utils/exactWeeklySpecExport.ts",
+        144
+      ],
+      [
+        "src/utils/exactWeeklySpecExport.ts",
+        144
+      ]
+    ],
+    "function drawExactAppointments(pdf: jsPDF, weekStartDate: Date, events: CalendarEvent[], SPEC: any, ...": [
+      [
+        "client/src/utils/exactWeeklySpecExport.ts",
+        291
+      ],
+      [
+        "src/utils/exactWeeklySpecExport.ts",
+        291
+      ]
+    ],
+    "function wrapText(text: string, fontSize: number, maxWidth: number): string[] { pdf.setFontSize(font...": [
+      [
+        "client/src/utils/exactWeeklySpecExport.ts",
+        433
+      ],
+      [
+        "src/utils/exactWeeklySpecExport.ts",
+        433
+      ]
+    ],
+    "export function auditExportData( allEvents: CalendarEvent[], filteredEvents: CalendarEvent[], select...": [
+      [
+        "client/src/utils/exportAudit.ts",
+        42
+      ],
+      [
+        "src/utils/exportAudit.ts",
+        42
+      ]
+    ],
+    "export function logExportAudit(report: ExportAuditReport, exportType: string): void { console.log(`\\...": [
+      [
+        "client/src/utils/exportAudit.ts",
+        177
+      ],
+      [
+        "src/utils/exportAudit.ts",
+        177
+      ]
+    ],
+    "export function validateEventData(events: CalendarEvent[]): CalendarEvent[] { return events.map(even...": [
+      [
+        "client/src/utils/exportAudit.ts",
+        250
+      ],
+      [
+        "src/utils/exportAudit.ts",
+        250
+      ]
+    ],
+    "export function cleanEventTitle(title: string): string { return title .replace(/\ud83d\udd12\\s*/g, '') // Remov...": [
+      [
+        "client/src/utils/exportAudit.ts",
+        268
+      ],
+      [
+        "src/utils/exportAudit.ts",
+        268
+      ]
+    ],
+    "export function unifyEventData( events: CalendarEvent[], selectedDate?: Date ): UnifiedEventData[] {...": [
+      [
+        "client/src/utils/exportAudit.ts",
+        304
+      ],
+      [
+        "src/utils/exportAudit.ts",
+        304
+      ]
+    ],
+    "export function validateGridAlignment( unifiedEvents: UnifiedEventData[] ): { isValid: boolean; issu...": [
+      [
+        "client/src/utils/exportAudit.ts",
+        391
+      ],
+      [
+        "src/utils/exportAudit.ts",
+        391
+      ]
+    ],
+    "export function generatePixelPerfectConfig( unifiedEvents: UnifiedEventData[], exportType: 'daily' |...": [
+      [
+        "client/src/utils/exportAudit.ts",
+        429
+      ],
+      [
+        "src/utils/exportAudit.ts",
+        429
+      ]
+    ],
+    "export function runPixelPerfectAudit( dashboardEvents: CalendarEvent[], exportEvents: CalendarEvent[...": [
+      [
+        "client/src/utils/exportAudit.ts",
+        467
+      ],
+      [
+        "src/utils/exportAudit.ts",
+        467
+      ]
+    ],
+    "export function runEnhancedPixelPerfectAudit( dashboardEvents: CalendarEvent[], exportEvents: Calend...": [
+      [
+        "client/src/utils/exportAudit.ts",
+        529
+      ],
+      [
+        "src/utils/exportAudit.ts",
+        529
+      ]
+    ],
+    "function drawPerfectHeader(pdf: jsPDF, weekStartDate: Date, weekEndDate: Date, events: CalendarEvent...": [
+      [
+        "client/src/utils/finalPixelPerfectExport.ts",
+        140
+      ],
+      [
+        "src/utils/finalPixelPerfectExport.ts",
+        140
+      ]
+    ],
+    "function drawPerfectLegend(pdf: jsPDF) { const config = FINAL_PERFECT_CONFIG; const legendY = config...": [
+      [
+        "client/src/utils/finalPixelPerfectExport.ts",
+        156
+      ],
+      [
+        "src/utils/finalPixelPerfectExport.ts",
+        156
+      ]
+    ],
+    "function drawPerfectGrid(pdf: jsPDF, startX: number, startY: number, width: number, height: number, ...": [
+      [
+        "client/src/utils/finalPixelPerfectExport.ts",
+        190
+      ],
+      [
+        "src/utils/finalPixelPerfectExport.ts",
+        190
+      ]
+    ],
+    "function drawPerfectDayHeaders(pdf: jsPDF, startX: number, startY: number, weekStartDate: Date) { co...": [
+      [
+        "client/src/utils/finalPixelPerfectExport.ts",
+        225
+      ],
+      [
+        "src/utils/finalPixelPerfectExport.ts",
+        225
+      ]
+    ],
+    "function drawPerfectTimeLabels(pdf: jsPDF, startX: number, startY: number, timeSlots: any[]) { const...": [
+      [
+        "client/src/utils/finalPixelPerfectExport.ts",
+        245
+      ],
+      [
+        "src/utils/finalPixelPerfectExport.ts",
+        245
+      ]
+    ],
+    "function drawPerfectEvents(pdf: jsPDF, startX: number, startY: number, weekStartDate: Date, events: ...": [
+      [
+        "client/src/utils/finalPixelPerfectExport.ts",
+        265
+      ],
+      [
+        "src/utils/finalPixelPerfectExport.ts",
+        265
+      ]
+    ],
+    "export async function auditAllExportFunctions(): Promise<ExportFunctionAudit[]> { console.log('\ud83d\udd0d COM...": [
+      [
+        "client/src/utils/findPerfectExport.ts",
+        51
+      ],
+      [
+        "src/utils/findPerfectExport.ts",
+        51
+      ]
+    ],
+    "async function auditExportFunction(fileName: string): Promise<ExportFunctionAudit> { const audit: Ex...": [
+      [
+        "client/src/utils/findPerfectExport.ts",
+        151
+      ],
+      [
+        "src/utils/findPerfectExport.ts",
+        151
+      ]
+    ],
+    "function analyzeExportFunctionContent(content: string, audit: ExportFunctionAudit): number { let sco...": [
+      [
+        "client/src/utils/findPerfectExport.ts",
+        183
+      ],
+      [
+        "src/utils/findPerfectExport.ts",
+        183
+      ]
+    ],
+    "export async function testAuditSystem() { console.log('\ud83d\ude80 TESTING EXPORT FUNCTION AUDIT SYSTEM'); con...": [
+      [
+        "client/src/utils/findPerfectExport.ts",
+        271
+      ],
+      [
+        "src/utils/findPerfectExport.ts",
+        271
+      ]
+    ],
+    "function filterRealAppointments(events: CalendarEvent[]): CalendarEvent[] { return events.filter(eve...": [
+      [
+        "client/src/utils/htmlTemplateExactMatch.ts",
+        58
+      ],
+      [
+        "client/src/utils/htmlTemplatePerfectFixed.ts",
+        90
+      ],
+      [
+        "client/src/utils/htmlTemplatePixelPerfect.ts",
+        77
+      ]
+    ],
+    "function drawHeader(pdf: jsPDF, weekStartDate: Date, weekEndDate: Date): void { const margin = 10; /...": [
+      [
+        "client/src/utils/htmlTemplatePDFImproved.ts",
+        87
+      ],
+      [
+        "src/utils/htmlTemplatePDFImproved.ts",
+        87
+      ]
+    ],
+    "function drawStats(pdf: jsPDF, events: CalendarEvent[]): void { const margin = 10; const contentWidt...": [
+      [
+        "client/src/utils/htmlTemplatePDFImproved.ts",
+        118
+      ],
+      [
+        "src/utils/htmlTemplatePDFImproved.ts",
+        118
+      ]
+    ],
+    "function drawLegend(pdf: jsPDF): void { const margin = 10; const contentWidth = HTML_TEMPLATE_CONFIG...": [
+      [
+        "client/src/utils/htmlTemplatePDFImproved.ts",
+        149
+      ],
+      [
+        "src/utils/htmlTemplatePDFImproved.ts",
+        149
+      ]
+    ],
+    "function drawCalendarGrid(pdf: jsPDF, weekStartDate: Date, events: CalendarEvent[]): void { const ma...": [
+      [
+        "client/src/utils/htmlTemplatePDFImproved.ts",
+        201
+      ],
+      [
+        "src/utils/htmlTemplatePDFImproved.ts",
+        201
+      ]
+    ],
+    "function drawAppointments(pdf: jsPDF, weekStartDate: Date, events: CalendarEvent[], gridStartY: numb...": [
+      [
+        "client/src/utils/htmlTemplatePDF.ts",
+        1430
+      ],
+      [
+        "src/utils/htmlTemplatePDF.ts",
+        1357
+      ]
+    ],
+    "function generateWeeklyHTML( weekStartDate: Date, weekEndDate: Date, events: CalendarEvent[], stats:...": [
+      [
+        "client/src/utils/htmlWeeklyExport.ts",
+        336
+      ],
+      [
+        "src/utils/htmlWeeklyExport.ts",
+        336
+      ]
+    ],
+    "function processEventsForGrid(events: CalendarEvent[], weekStartDate: Date, timeSlots: string[]): an...": [
+      [
+        "client/src/utils/htmlWeeklyExport.ts",
+        1120
+      ],
+      [
+        "src/utils/htmlWeeklyExport.ts",
+        1120
+      ]
+    ],
+    "function getEventType(event: CalendarEvent): string { if (event.title.includes('Appointment') || eve...": [
+      [
+        "client/src/utils/htmlWeeklyExport.ts",
+        1148
+      ],
+      [
+        "src/utils/htmlWeeklyExport.ts",
+        1148
+      ]
+    ],
+    "async function createVectorWeeklyPDF( capture: CaptureResult, weekStartDate: Date, weekEndDate: Date...": [
+      [
+        "client/src/utils/liveDashboardCapture.ts",
+        245
+      ],
+      [
+        "src/utils/liveDashboardCapture.ts",
+        245
+      ]
+    ],
+    "async function createVectorDailyPDF( capture: CaptureResult, selectedDate: Date, events: CalendarEve...": [
+      [
+        "client/src/utils/liveDashboardCapture.ts",
+        284
+      ],
+      [
+        "src/utils/liveDashboardCapture.ts",
+        284
+      ]
+    ],
+    "async function createDailyPageInPDF( pdf: jsPDF, date: Date, events: CalendarEvent[], pageNumber: nu...": [
+      [
+        "client/src/utils/liveDashboardCapture.ts",
+        387
+      ],
+      [
+        "src/utils/liveDashboardCapture.ts",
+        387
+      ]
+    ],
+    "function addNavigationFooter( pdf: jsPDF, currentPage: number, totalPages: number, pageType: 'weekly...": [
+      [
+        "client/src/utils/liveDashboardCapture.ts",
+        414
+      ],
+      [
+        "src/utils/liveDashboardCapture.ts",
+        414
+      ]
+    ],
+    "function getEventCalendarSource(event: CalendarEvent) { if (event.calendarId === '0np7sib5u30o7oc297...": [
+      [
+        "client/src/utils/matchingDailyExport.ts",
+        46
+      ],
+      [
+        "src/utils/matchingDailyExport.ts",
+        46
+      ]
+    ],
+    "function getEventColorClass(event: CalendarEvent) { if (event.calendarId === 'en.usa#holiday@group.v...": [
+      [
+        "client/src/utils/matchingDailyExport.ts",
+        56
+      ],
+      [
+        "src/utils/matchingDailyExport.ts",
+        56
+      ]
+    ],
+    "function isAllDayEvent(event: CalendarEvent) { const isMarkedAllDay = (event as any).isAllDay; const...": [
+      [
+        "client/src/utils/matchingDailyExport.ts",
+        69
+      ],
+      [
+        "src/utils/matchingDailyExport.ts",
+        69
+      ]
+    ],
+    "function formatEventTime(event: CalendarEvent) { const start = new Date(event.startTime); const end ...": [
+      [
+        "client/src/utils/matchingDailyExport.ts",
+        79
+      ],
+      [
+        "src/utils/matchingDailyExport.ts",
+        79
+      ]
+    ],
+    "function drawHeader(pdf: jsPDF, selectedDate: Date, totalEvents: number) { const { margin, colors, f...": [
+      [
+        "client/src/utils/matchingDailyExport.ts",
+        87
+      ],
+      [
+        "src/utils/matchingDailyExport.ts",
+        87
+      ]
+    ],
+    "function drawStats(pdf: jsPDF, events: CalendarEvent[], yPosition: number) { const { margin, colors,...": [
+      [
+        "client/src/utils/matchingDailyExport.ts",
+        151
+      ],
+      [
+        "src/utils/matchingDailyExport.ts",
+        151
+      ]
+    ],
+    "function drawAllDayEvents(pdf: jsPDF, events: CalendarEvent[], yPosition: number) { const { margin, ...": [
+      [
+        "client/src/utils/matchingDailyExport.ts",
+        197
+      ],
+      [
+        "src/utils/matchingDailyExport.ts",
+        197
+      ]
+    ],
+    "function drawScheduleGrid(pdf: jsPDF, events: CalendarEvent[], yPosition: number) { const { margin, ...": [
+      [
+        "client/src/utils/matchingDailyExport.ts",
+        246
+      ],
+      [
+        "src/utils/matchingDailyExport.ts",
+        246
+      ]
+    ],
+    "function generateTimeSlots() { const slots = []; for (let hour = 6; hour <= 23; hour++) { slots.push...": [
+      [
+        "client/src/utils/perfectDashboardExport.ts",
+        109
+      ],
+      [
+        "src/utils/perfectDashboardExport.ts",
+        109
+      ]
+    ],
+    "function getEventStyling(event: CalendarEvent) { // Holiday events detection if (event.title.toLower...": [
+      [
+        "client/src/utils/perfectDashboardExport.ts",
+        133
+      ],
+      [
+        "src/utils/perfectDashboardExport.ts",
+        133
+      ]
+    ],
+    "export async function exportPerfectWeeklyPDF( weekStartDate: Date, weekEndDate: Date, events: Calend...": [
+      [
+        "client/src/utils/perfectDashboardExport.ts",
+        173
+      ],
+      [
+        "src/utils/perfectDashboardExport.ts",
+        173
+      ]
+    ],
+    "export async function exportPerfectDailyPDF( selectedDate: Date, events: CalendarEvent[] ): Promise<...": [
+      [
+        "client/src/utils/perfectDashboardExport.ts",
+        374
+      ],
+      [
+        "src/utils/perfectDashboardExport.ts",
+        374
+      ]
+    ],
+    "function renderPerfectWeeklyEvents( pdf: jsPDF, events: CalendarEvent[], weekStartDate: Date, gridSt...": [
+      [
+        "client/src/utils/perfectDashboardExport.ts",
+        561
+      ],
+      [
+        "src/utils/perfectDashboardExport.ts",
+        561
+      ]
+    ],
+    "function renderPerfectDailyEvents( pdf: jsPDF, events: CalendarEvent[], gridStartX: number, gridStar...": [
+      [
+        "client/src/utils/perfectDashboardExport.ts",
+        643
+      ],
+      [
+        "src/utils/perfectDashboardExport.ts",
+        643
+      ]
+    ],
+    "export async function runPixelPerfectAudit(): Promise<PixelPerfectAuditResult> { console.log('\ud83d\udd0d Star...": [
+      [
+        "client/src/utils/pixelPerfectAudit.ts",
+        30
+      ],
+      [
+        "src/utils/pixelPerfectAudit.ts",
+        30
+      ]
+    ],
+    "export async function extractVisualTruthTable(measurements: DashboardMeasurements): Promise<VisualTr...": [
+      [
+        "client/src/utils/pixelPerfectAudit.ts",
+        95
+      ],
+      [
+        "src/utils/pixelPerfectAudit.ts",
+        95
+      ]
+    ],
+    "export function calculatePixelPerfectScore(truthTable: VisualTruthTable[]): number { if (truthTable....": [
+      [
+        "client/src/utils/pixelPerfectAudit.ts",
+        160
+      ],
+      [
+        "src/utils/pixelPerfectAudit.ts",
+        160
+      ]
+    ],
+    "function calculateAccuracy(browserValue: number, pdfValue: number): number { if (browserValue === 0)...": [
+      [
+        "client/src/utils/pixelPerfectAudit.ts",
+        169
+      ],
+      [
+        "src/utils/pixelPerfectAudit.ts",
+        169
+      ]
+    ],
+    "function generateRecommendations(truthTable: VisualTruthTable[], overallScore: number): string[] { c...": [
+      [
+        "client/src/utils/pixelPerfectAudit.ts",
+        178
+      ],
+      [
+        "src/utils/pixelPerfectAudit.ts",
+        178
+      ]
+    ],
+    "function getKnownCompromises(): string[] { return [ 'Font substitution: Inter \u2192 Helvetica in PDF exp...": [
+      [
+        "client/src/utils/pixelPerfectAudit.ts",
+        198
+      ],
+      [
+        "src/utils/pixelPerfectAudit.ts",
+        198
+      ]
+    ],
+    "function cleanAppointmentTitle(title: string): string { // Remove emoji and lock symbols, then remov...": [
+      [
+        "client/src/utils/pixelPerfectDailyExport.ts",
+        201
+      ],
+      [
+        "src/utils/pixelPerfectDailyExport.ts",
+        201
+      ]
+    ],
+    "function formatMilitaryTime(date: Date): string { return date.toLocaleTimeString('en-US', { hour: '2...": [
+      [
+        "client/src/utils/htmlTemplatePDF.ts",
+        1596
+      ],
+      [
+        "src/utils/htmlTemplatePDF.ts",
+        1512
+      ]
+    ],
+    "function drawPixelPerfectHeader(pdf: jsPDF, selectedDate: Date, events: CalendarEvent[]) { const con...": [
+      [
+        "client/src/utils/pixelPerfectDailyExport.ts",
+        219
+      ],
+      [
+        "src/utils/pixelPerfectDailyExport.ts",
+        219
+      ]
+    ],
+    "function drawBottomNavigation(pdf: jsPDF, selectedDate: Date) { const config = PIXEL_PERFECT_CONFIG;...": [
+      [
+        "client/src/utils/pixelPerfectDailyExport.ts",
+        335
+      ],
+      [
+        "src/utils/pixelPerfectDailyExport.ts",
+        335
+      ]
+    ],
+    "function drawPixelPerfectTimeGrid(pdf: jsPDF) { const config = PIXEL_PERFECT_CONFIG; const grid = co...": [
+      [
+        "client/src/utils/pixelPerfectDailyExport.ts",
+        367
+      ],
+      [
+        "src/utils/pixelPerfectDailyExport.ts",
+        367
+      ]
+    ],
+    "function drawPixelPerfectAppointments(pdf: jsPDF, selectedDate: Date, events: CalendarEvent[]) { con...": [
+      [
+        "client/src/utils/pixelPerfectDailyExport.ts",
+        421
+      ],
+      [
+        "src/utils/pixelPerfectDailyExport.ts",
+        421
+      ]
+    ],
+    "function getEventTypeInfoExtended(event: CalendarEvent): { sourceText: string; isSimplePractice: boo...": [
+      [
+        "client/src/utils/pixelPerfectDailyExport.ts",
+        605
+      ],
+      [
+        "src/utils/pixelPerfectDailyExport.ts",
+        605
+      ]
+    ],
+    "function extractDashboardStyles() { // Get the actual calendar container from the DOM const calendar...": [
+      [
+        "client/src/utils/pixelPerfectDashboardExport.ts",
+        13
+      ],
+      [
+        "src/utils/pixelPerfectDashboardExport.ts",
+        13
+      ]
+    ],
+    "function extractColors() { const root = document.documentElement; const computedStyle = getComputedS...": [
+      [
+        "client/src/utils/pixelPerfectDashboardExport.ts",
+        51
+      ],
+      [
+        "src/utils/pixelPerfectDashboardExport.ts",
+        51
+      ]
+    ],
+    "function extractFonts() { // Get actual font sizes from CSS classes const eventElement = document.qu...": [
+      [
+        "client/src/utils/pixelPerfectDashboardExport.ts",
+        66
+      ],
+      [
+        "src/utils/pixelPerfectDashboardExport.ts",
+        66
+      ]
+    ],
+    "function extractSpacing() { const timeSlot = document.querySelector('.time-slot'); const appointment...": [
+      [
+        "client/src/utils/pixelPerfectDashboardExport.ts",
+        79
+      ],
+      [
+        "src/utils/pixelPerfectDashboardExport.ts",
+        79
+      ]
+    ],
+    "function getFallbackStyles() { return { container: { width: 1200, height: 800 }, timeColumn: { width...": [
+      [
+        "client/src/utils/pixelPerfectDashboardExport.ts",
+        90
+      ],
+      [
+        "src/utils/pixelPerfectDashboardExport.ts",
+        90
+      ]
+    ],
+    "function createPDFConfig(dashboardStyles: any, viewType: 'weekly' | 'daily') { const isWeekly = view...": [
+      [
+        "client/src/utils/pixelPerfectDashboardExport.ts",
+        119
+      ],
+      [
+        "src/utils/pixelPerfectDashboardExport.ts",
+        119
+      ]
+    ],
+    "export async function exportPixelPerfectWeekly( weekStartDate: Date, weekEndDate: Date, events: Cale...": [
+      [
+        "client/src/utils/pixelPerfectDashboardExport.ts",
+        157
+      ],
+      [
+        "src/utils/pixelPerfectDashboardExport.ts",
+        157
+      ]
+    ],
+    "export async function exportPixelPerfectDaily( selectedDate: Date, events: CalendarEvent[] ): Promis...": [
+      [
+        "client/src/utils/pixelPerfectDashboardExport.ts",
+        204
+      ],
+      [
+        "src/utils/pixelPerfectDashboardExport.ts",
+        204
+      ]
+    ],
+    "function drawPixelPerfectWeeklyHeader(pdf: jsPDF, config: any, weekStartDate: Date, weekEndDate: Dat...": [
+      [
+        "client/src/utils/pixelPerfectDashboardExport.ts",
+        247
+      ],
+      [
+        "src/utils/pixelPerfectDashboardExport.ts",
+        247
+      ]
+    ],
+    "function drawPixelPerfectWeeklyGrid(pdf: jsPDF, config: any, weekStartDate: Date) { const { margin, ...": [
+      [
+        "client/src/utils/pixelPerfectDashboardExport.ts",
+        263
+      ],
+      [
+        "src/utils/pixelPerfectDashboardExport.ts",
+        263
+      ]
+    ],
+    "function drawPixelPerfectWeeklyEvents(pdf: jsPDF, config: any, weekStartDate: Date, events: Calendar...": [
+      [
+        "client/src/utils/pixelPerfectDashboardExport.ts",
+        330
+      ],
+      [
+        "src/utils/pixelPerfectDashboardExport.ts",
+        330
+      ]
+    ],
+    "function drawPixelPerfectDailyHeader(pdf: jsPDF, config: any, selectedDate: Date) { const { margin, ...": [
+      [
+        "client/src/utils/pixelPerfectDashboardExport.ts",
+        471
+      ],
+      [
+        "src/utils/pixelPerfectDashboardExport.ts",
+        471
+      ]
+    ],
+    "function drawPixelPerfectDailyGrid(pdf: jsPDF, config: any) { const { margin, pageWidth, timeColumnW...": [
+      [
+        "client/src/utils/pixelPerfectDashboardExport.ts",
+        492
+      ],
+      [
+        "src/utils/pixelPerfectDashboardExport.ts",
+        492
+      ]
+    ],
+    "function drawPixelPerfectDailyEvents(pdf: jsPDF, config: any, selectedDate: Date, events: CalendarEv...": [
+      [
+        "client/src/utils/pixelPerfectDashboardExport.ts",
+        538
+      ],
+      [
+        "src/utils/pixelPerfectDashboardExport.ts",
+        538
+      ]
+    ],
+    "function drawPixelPerfectHeader(pdf: jsPDF, weekStart: Date, weekEnd: Date, config: any): void { // ...": [
+      [
+        "client/src/utils/pixelPerfectPDFExport.ts",
+        62
+      ],
+      [
+        "src/utils/pixelPerfectPDFExport.ts",
+        62
+      ]
+    ],
+    "function drawPixelPerfectLegend(pdf: jsPDF, config: any): void { const legendY = config.margins.page...": [
+      [
+        "client/src/utils/pixelPerfectPDFExport.ts",
+        87
+      ],
+      [
+        "src/utils/pixelPerfectPDFExport.ts",
+        87
+      ]
+    ],
+    "function drawPixelPerfectGrid(pdf: jsPDF, config: any): void { const timeSlots = generateTimeSlots()...": [
+      [
+        "client/src/utils/pixelPerfectPDFExport.ts",
+        120
+      ],
+      [
+        "src/utils/pixelPerfectPDFExport.ts",
+        120
+      ]
+    ],
+    "function drawPixelPerfectTimeColumn(pdf: jsPDF, timeSlots: string[], config: any): void { // Time co...": [
+      [
+        "client/src/utils/pixelPerfectPDFExport.ts",
+        137
+      ],
+      [
+        "src/utils/pixelPerfectPDFExport.ts",
+        137
+      ]
+    ],
+    "function drawPixelPerfectDayColumns(pdf: jsPDF, config: any): void { const days = ['MON', 'TUE', 'WE...": [
+      [
+        "client/src/utils/pixelPerfectPDFExport.ts",
+        160
+      ],
+      [
+        "src/utils/pixelPerfectPDFExport.ts",
+        160
+      ]
+    ],
+    "function drawPixelPerfectGridLines(pdf: jsPDF, timeSlots: string[], config: any): void { // Set exac...": [
+      [
+        "client/src/utils/pixelPerfectPDFExport.ts",
+        181
+      ],
+      [
+        "src/utils/pixelPerfectPDFExport.ts",
+        181
+      ]
+    ],
+    "function drawPixelPerfectEvents(pdf: jsPDF, events: CalendarEvent[], weekStart: Date, config: any): ...": [
+      [
+        "client/src/utils/pixelPerfectPDFExport.ts",
+        199
+      ],
+      [
+        "src/utils/pixelPerfectPDFExport.ts",
+        199
+      ]
+    ],
+    "function getPixelPerfectEventColor(source: string, config: any): { r: number; g: number; b: number }...": [
+      [
+        "client/src/utils/pixelPerfectPDFExport.ts",
+        261
+      ],
+      [
+        "src/utils/pixelPerfectPDFExport.ts",
+        261
+      ]
+    ],
+    "function hexToRgb(hex: string): { r: number; g: number; b: number } { const result = /^#?([a-f\\d]{2}...": [
+      [
+        "client/src/utils/pixelPerfectPDFExport.ts",
+        272
+      ],
+      [
+        "src/utils/pixelPerfectPDFExport.ts",
+        272
+      ]
+    ],
+    "function wrapTextPixelPerfect(pdf: jsPDF, text: string, maxWidth: number): string[] { const words = ...": [
+      [
+        "client/src/utils/pixelPerfectPDFExport.ts",
+        281
+      ],
+      [
+        "src/utils/pixelPerfectPDFExport.ts",
+        281
+      ]
+    ],
+    "function filterWeekEvents(events: CalendarEvent[], weekStart: Date, weekEnd: Date): CalendarEvent[] ...": [
+      [
+        "client/src/utils/pixelPerfectPDFExport.ts",
+        305
+      ],
+      [
+        "src/utils/auditBasedPDFExport.ts",
+        120
+      ],
+      [
+        "src/utils/pixelPerfectPDFExport.ts",
+        305
+      ]
+    ],
+    "function formatDate(date: Date): string { return date.toLocaleDateString('en-US', { year: 'numeric',...": [
+      [
+        "client/src/utils/pixelPerfectPDFExport.ts",
+        321
+      ],
+      [
+        "src/utils/auditBasedPDFExport.ts",
+        381
+      ],
+      [
+        "src/utils/pixelPerfectPDFExport.ts",
+        321
+      ]
+    ],
+    "function displayAuditResults(auditResult: any): void { console.log('\ud83c\udfaf 100% PIXEL-PERFECT AUDIT RESUL...": [
+      [
+        "client/src/utils/pixelPerfectPDFExport.ts",
+        337
+      ],
+      [
+        "src/utils/pixelPerfectPDFExport.ts",
+        337
+      ]
+    ],
+    "export async function exportPixelPerfectPDF( date: Date, events: CalendarEvent[] ): Promise<void> { ...": [
+      [
+        "client/src/utils/pixelPerfectPDFExportFixed.ts",
+        37
+      ],
+      [
+        "src/utils/pixelPerfectPDFExportFixed.ts",
+        37
+      ]
+    ],
+    "async function extractDashboardMeasurements(): Promise<DashboardMeasurements> { console.log('\ud83d\udccf Extra...": [
+      [
+        "client/src/utils/pixelPerfectPDFExportFixed.ts",
+        148
+      ],
+      [
+        "src/utils/pixelPerfectPDFExportFixed.ts",
+        148
+      ]
+    ],
+    "function calculatePDFConfig(dashboard: DashboardMeasurements): PDFConfig { console.log('\ud83d\udcd0 Calculatin...": [
+      [
+        "client/src/utils/pixelPerfectPDFExportFixed.ts",
+        212
+      ],
+      [
+        "src/utils/pixelPerfectPDFExportFixed.ts",
+        212
+      ]
+    ],
+    "function generatePixelPerfectHTML( date: Date, events: CalendarEvent[], config: PDFConfig ): string ...": [
+      [
+        "client/src/utils/pixelPerfectPDFExportFixed.ts",
+        256
+      ],
+      [
+        "src/utils/pixelPerfectPDFExportFixed.ts",
+        256
+      ]
+    ],
+    "function generateTimeSlots(config: PDFConfig): string { const slots = []; // Generate time slots fro...": [
+      [
+        "client/src/utils/pixelPerfectPDFExportFixed.ts",
+        378
+      ],
+      [
+        "src/utils/pixelPerfectPDFExportFixed.ts",
+        378
+      ]
+    ],
+    "function generateAppointments(events: CalendarEvent[], config: PDFConfig): string { return events.ma...": [
+      [
+        "client/src/utils/pixelPerfectPDFExportFixed.ts",
+        397
+      ],
+      [
+        "src/utils/pixelPerfectPDFExportFixed.ts",
+        397
+      ]
+    ],
+    "async function generateWeeklyLayout( pdf: jsPDF, weekStartDate: Date, weekEndDate: Date, events: Cal...": [
+      [
+        "client/src/utils/remarkablePDFExactMatch.ts",
+        66
+      ],
+      [
+        "src/utils/remarkablePDFExactMatch.ts",
+        66
+      ]
+    ],
+    "function generateHeader(pdf: jsPDF, weekStartDate: Date, weekEndDate: Date) { const { margin, conten...": [
+      [
+        "client/src/utils/remarkablePDFExactMatch.ts",
+        93
+      ],
+      [
+        "src/utils/remarkablePDFExactMatch.ts",
+        93
+      ]
+    ],
+    "function generateStatistics(pdf: jsPDF, events: CalendarEvent[], weekStartDate: Date, weekEndDate: D...": [
+      [
+        "client/src/utils/remarkablePDFExactMatch.ts",
+        127
+      ],
+      [
+        "src/utils/remarkablePDFExactMatch.ts",
+        127
+      ]
+    ],
+    "function generateLegend(pdf: jsPDF, statsBottom: number): number { const { margin, contentWidth, fon...": [
+      [
+        "client/src/utils/remarkablePDFExactMatch.ts",
+        191
+      ],
+      [
+        "src/utils/remarkablePDFExactMatch.ts",
+        191
+      ]
+    ],
+    "function generateCalendarGrid(pdf: jsPDF, legendBottom: number, weekStartDate: Date, events: Calenda...": [
+      [
+        "client/src/utils/remarkablePDFExactMatch.ts",
+        245
+      ],
+      [
+        "src/utils/remarkablePDFExactMatch.ts",
+        245
+      ]
+    ],
+    "function generateGridHeaders(pdf: jsPDF, gridY: number, weekStartDate: Date, headerHeight: number) {...": [
+      [
+        "client/src/utils/remarkablePDFExactMatch.ts",
+        276
+      ],
+      [
+        "src/utils/remarkablePDFExactMatch.ts",
+        276
+      ]
+    ],
+    "function generateTimeSlots(pdf: jsPDF, timeGridY: number, timeGridHeight: number) { const { margin, ...": [
+      [
+        "client/src/utils/remarkablePDFExactMatch.ts",
+        315
+      ],
+      [
+        "src/utils/remarkablePDFExactMatch.ts",
+        315
+      ]
+    ],
+    "function generateColumnSeparators(pdf: jsPDF, gridY: number, gridHeight: number) { const { margin, t...": [
+      [
+        "client/src/utils/remarkablePDFExactMatch.ts",
+        339
+      ],
+      [
+        "src/utils/remarkablePDFExactMatch.ts",
+        339
+      ]
+    ],
+    "function generateRowSeparators(pdf: jsPDF, timeGridY: number, timeGridHeight: number) { const { marg...": [
+      [
+        "client/src/utils/remarkablePDFExactMatch.ts",
+        357
+      ],
+      [
+        "src/utils/remarkablePDFExactMatch.ts",
+        357
+      ]
+    ],
+    "function generateAppointments(pdf: jsPDF, timeGridY: number, timeGridHeight: number, weekStartDate: ...": [
+      [
+        "client/src/utils/remarkablePDFExactMatch.ts",
+        370
+      ],
+      [
+        "src/utils/remarkablePDFExactMatch.ts",
+        370
+      ]
+    ],
+    "function getWeekNumber(date: Date): number { const startOfYear = new Date(date.getFullYear(), 0, 1);...": [
+      [
+        "client/src/utils/remarkablePDFExactMatch.ts",
+        460
+      ],
+      [
+        "src/utils/remarkablePDFExactMatch.ts",
+        460
+      ]
+    ],
+    "async function generatePerfectLayout( pdf: jsPDF, weekStartDate: Date, weekEndDate: Date, events: Ca...": [
+      [
+        "client/src/utils/remarkableProPerfect.ts",
+        90
+      ],
+      [
+        "src/utils/remarkableProPerfect.ts",
+        90
+      ]
+    ],
+    "function generatePerfectHeader(pdf: jsPDF, weekStartDate: Date, weekEndDate: Date, startY: number): ...": [
+      [
+        "client/src/utils/remarkableProPerfect.ts",
+        111
+      ],
+      [
+        "src/utils/remarkableProPerfect.ts",
+        111
+      ]
+    ],
+    "function generatePerfectStats(pdf: jsPDF, events: CalendarEvent[], weekStartDate: Date, weekEndDate:...": [
+      [
+        "client/src/utils/remarkableProPerfect.ts",
+        140
+      ],
+      [
+        "src/utils/remarkableProPerfect.ts",
+        140
+      ]
+    ],
+    "function generatePerfectCalendarGrid(pdf: jsPDF, weekStartDate: Date, events: CalendarEvent[], start...": [
+      [
+        "client/src/utils/remarkableProPerfect.ts",
+        198
+      ],
+      [
+        "src/utils/remarkableProPerfect.ts",
+        198
+      ]
+    ],
+    "function generatePerfectDayHeaders(pdf: jsPDF, weekStartDate: Date, gridY: number, headerHeight: num...": [
+      [
+        "client/src/utils/remarkableProPerfect.ts",
+        224
+      ],
+      [
+        "src/utils/remarkableProPerfect.ts",
+        224
+      ]
+    ],
+    "function generatePerfectTimeSlots(pdf: jsPDF, timeGridY: number): void { const { margin, timeColumnW...": [
+      [
+        "client/src/utils/remarkableProPerfect.ts",
+        266
+      ],
+      [
+        "src/utils/remarkableProPerfect.ts",
+        266
+      ]
+    ],
+    "function generatePerfectGridLines(pdf: jsPDF, timeGridY: number, gridHeight: number): void { const {...": [
+      [
+        "client/src/utils/remarkableProPerfect.ts",
+        291
+      ],
+      [
+        "src/utils/remarkableProPerfect.ts",
+        291
+      ]
+    ],
+    "function generatePerfectAppointments(pdf: jsPDF, weekStartDate: Date, events: CalendarEvent[], timeG...": [
+      [
+        "client/src/utils/remarkableProPerfect.ts",
+        310
+      ],
+      [
+        "src/utils/remarkableProPerfect.ts",
+        310
+      ]
+    ],
+    "function getWeekNumber(date: Date): number { const firstDayOfYear = new Date(date.getFullYear(), 0, ...": [
+      [
+        "client/src/utils/remarkableProPerfectCSS.ts",
+        349
+      ],
+      [
+        "src/utils/remarkableProPerfectCSS.ts",
+        349
+      ]
+    ],
+    "async function generateExactCSSGrid( pdf: jsPDF, weekStartDate: Date, weekEndDate: Date, events: Cal...": [
+      [
+        "client/src/utils/remarkableProPerfectCSS.ts",
+        121
+      ],
+      [
+        "src/utils/remarkableProPerfectCSS.ts",
+        121
+      ]
+    ],
+    "function generateCompactHeader(pdf: jsPDF, weekStartDate: Date, weekEndDate: Date, startY: number): ...": [
+      [
+        "client/src/utils/remarkableProPerfectCSS.ts",
+        137
+      ],
+      [
+        "src/utils/remarkableProPerfectCSS.ts",
+        137
+      ]
+    ],
+    "function generateCSSGridStructure(pdf: jsPDF, weekStartDate: Date, events: CalendarEvent[], startY: ...": [
+      [
+        "client/src/utils/remarkableProPerfectCSS.ts",
+        154
+      ],
+      [
+        "src/utils/remarkableProPerfectCSS.ts",
+        154
+      ]
+    ],
+    "function generateDayHeaders(pdf: jsPDF, weekStartDate: Date, startX: number, startY: number, dayWidt...": [
+      [
+        "client/src/utils/remarkableProPerfectCSS.ts",
+        182
+      ],
+      [
+        "src/utils/remarkableProPerfectCSS.ts",
+        182
+      ]
+    ],
+    "function generateTimeSlots(pdf: jsPDF, startX: number, startY: number, timeWidth: number, hourHeight...": [
+      [
+        "client/src/utils/remarkableProPerfectCSS.ts",
+        213
+      ],
+      [
+        "src/utils/remarkableProPerfectCSS.ts",
+        213
+      ]
+    ],
+    "function generateDayGrid(pdf: jsPDF, startX: number, startY: number, dayWidth: number, hourHeight: n...": [
+      [
+        "client/src/utils/remarkableProPerfectCSS.ts",
+        243
+      ],
+      [
+        "src/utils/remarkableProPerfectCSS.ts",
+        243
+      ]
+    ],
+    "function generateAppointments(pdf: jsPDF, weekStartDate: Date, events: CalendarEvent[], gridStartX: ...": [
+      [
+        "client/src/utils/remarkableProPerfectCSS.ts",
+        258
+      ],
+      [
+        "src/utils/remarkableProPerfectCSS.ts",
+        258
+      ]
+    ],
+    "export async function exportSimplePDF(selectedDate: Date, events: CalendarEvent[]) { console.log('\ud83d\ude80 ...": [
+      [
+        "client/src/utils/simplePDFExport.ts",
+        4
+      ],
+      [
+        "src/utils/simplePDFExport.ts",
+        4
+      ]
+    ],
+    "export function testAuditSystem() { console.log('\\n\ud83d\udd0d TESTING EXPORT AUDIT SYSTEM WITH REAL DATA'); c...": [
+      [
+        "client/src/utils/testAuditSystem.ts",
+        103
+      ],
+      [
+        "src/utils/testAuditSystem.ts",
+        103
+      ]
+    ],
+    "export function wrapText(text: string, maxCharsPerLine: number = 18): string[] { if (!text) return [...": [
+      [
+        "client/src/utils/textWrappers.ts",
+        5
+      ],
+      [
+        "src/utils/textWrappers.ts",
+        5
+      ]
+    ],
+    "export function truncateText(text: string, maxLength: number = 25): string { if (!text) return ''; i...": [
+      [
+        "client/src/utils/textWrappers.ts",
+        42
+      ],
+      [
+        "src/utils/textWrappers.ts",
+        42
+      ]
+    ],
+    "export function getOptimalFontSize(textLength: number, containerHeight: number): number { // Base fo...": [
+      [
+        "client/src/utils/textWrappers.ts",
+        60
+      ],
+      [
+        "src/utils/textWrappers.ts",
+        60
+      ]
+    ],
+    "export function generateTimeSlots(): TimeSlot[] { const timeSlots: TimeSlot[] = []; // Generate time...": [
+      [
+        "client/src/utils/timeSlots.ts",
+        11
+      ],
+      [
+        "src/utils/timeSlots.ts",
+        11
+      ]
+    ],
+    "export function getTimeSlotIndex(time: string): number { const timeSlots = generateTimeSlots(); retu...": [
+      [
+        "client/src/utils/timeSlots.ts",
+        43
+      ],
+      [
+        "src/utils/timeSlots.ts",
+        43
+      ]
+    ],
+    "export function calculateSlotPosition(startTime: Date, endTime: Date): { startSlot: number; endSlot:...": [
+      [
+        "client/src/utils/timeSlots.ts",
+        48
+      ],
+      [
+        "src/utils/timeSlots.ts",
+        48
+      ]
+    ],
+    "export function formatTimeRange(startTime: Date, endTime: Date): string { const formatTime = (date: ...": [
+      [
+        "client/src/utils/timeSlots.ts",
+        61
+      ],
+      [
+        "src/utils/timeSlots.ts",
+        61
+      ]
+    ],
+    "export function getEventDurationInSlots(event: { startTime: Date; endTime: Date }): number { const s...": [
+      [
+        "client/src/utils/timeSlots.ts",
+        73
+      ],
+      [
+        "src/utils/timeSlots.ts",
+        73
+      ]
+    ],
+    "export function isEventInTimeSlot(event: { startTime: Date; endTime: Date }, timeSlot: { hour: numbe...": [
+      [
+        "client/src/utils/timeSlots.ts",
+        86
+      ],
+      [
+        "src/utils/timeSlots.ts",
+        86
+      ]
+    ],
+    "export function cleanEventTitle(title: string): string { if (!title) return ''; // Remove common suf...": [
+      [
+        "client/src/utils/titleCleaner.ts",
+        5
+      ],
+      [
+        "src/utils/titleCleaner.ts",
+        5
+      ]
+    ],
+    "export function formatEventTitle(title: string, maxLength: number = 30): string { const cleanTitle =...": [
+      [
+        "client/src/utils/titleCleaner.ts",
+        23
+      ],
+      [
+        "src/utils/titleCleaner.ts",
+        23
+      ]
+    ],
+    "export function cleanTextForPDF(text: string): string { if (!text) return ''; // Remove special char...": [
+      [
+        "client/src/utils/titleCleaner.ts",
+        34
+      ],
+      [
+        "src/utils/titleCleaner.ts",
+        34
+      ]
+    ],
+    "function drawCalendarPage(pdf: jsPDF, weekStartDate: Date, weekEndDate: Date, events: CalendarEvent[...": [
+      [
+        "client/src/utils/weeklyCalendarExport.ts",
+        63
+      ],
+      [
+        "src/utils/weeklyCalendarExport.ts",
+        63
+      ]
+    ],
+    "function drawHeader(pdf: jsPDF, weekStartDate: Date, weekEndDate: Date, margin: number, contentWidth...": [
+      [
+        "client/src/utils/weeklyCalendarExport.ts",
+        89
+      ],
+      [
+        "src/utils/weeklyCalendarExport.ts",
+        89
+      ]
+    ],
+    "function drawLegend(pdf: jsPDF, margin: number, headerHeight: number, contentWidth: number): void { ...": [
+      [
+        "client/src/utils/weeklyCalendarExport.ts",
+        156
+      ],
+      [
+        "src/utils/weeklyCalendarExport.ts",
+        156
+      ]
+    ],
+    "function drawDayHeaders(pdf: jsPDF, weekStartDate: Date, margin: number, headerHeight: number, timeC...": [
+      [
+        "client/src/utils/weeklyCalendarExport.ts",
+        217
+      ],
+      [
+        "src/utils/weeklyCalendarExport.ts",
+        217
+      ]
+    ],
+    "function drawTimeGrid(pdf: jsPDF, margin: number, headerHeight: number, timeColumnWidth: number, day...": [
+      [
+        "client/src/utils/weeklyCalendarExport.ts",
+        260
+      ],
+      [
+        "src/utils/weeklyCalendarExport.ts",
+        260
+      ]
+    ],
+    "function drawEvents(pdf: jsPDF, weekStartDate: Date, events: CalendarEvent[], margin: number, header...": [
+      [
+        "client/src/utils/weeklyCalendarExport.ts",
+        321
+      ],
+      [
+        "src/utils/weeklyCalendarExport.ts",
+        321
+      ]
+    ],
+    "function drawWeeklyOverviewPage(pdf: jsPDF, weekStartDate: Date, weekEndDate: Date, events: Calendar...": [
+      [
+        "client/src/utils/weeklyPackageExport.ts",
+        100
+      ],
+      [
+        "src/utils/weeklyPackageExport.ts",
+        100
+      ]
+    ],
+    "function drawWeeklyPackageFooter(pdf: jsPDF, pageNumber: number, totalPages: number) { const pageWid...": [
+      [
+        "client/src/utils/weeklyPackageExport.ts",
+        234
+      ],
+      [
+        "src/utils/weeklyPackageExport.ts",
+        234
+      ]
+    ],
+    "function drawHeader(pdf: jsPDF, selectedDate: Date, events: CalendarEvent[]) { const { margin, pageW...": [
+      [
+        "client/src/utils/workingDailyExport.ts",
+        70
+      ],
+      [
+        "src/utils/workingDailyExport.ts",
+        70
+      ]
+    ],
+    "function drawTimeGrid(pdf: jsPDF) { const { margin, timeColumnWidth, eventColumnWidth, timeSlotHeigh...": [
+      [
+        "client/src/utils/workingDailyExport.ts",
+        143
+      ],
+      [
+        "src/utils/workingDailyExport.ts",
+        143
+      ]
+    ],
+    "function drawEvents(pdf: jsPDF, selectedDate: Date, events: CalendarEvent[]) { const { margin, timeC...": [
+      [
+        "client/src/utils/workingDailyExport.ts",
+        198
+      ],
+      [
+        "src/utils/workingDailyExport.ts",
+        198
+      ]
+    ],
+    "function getEventTypeInfo(event: CalendarEvent): EventTypeInfo { // Check for holidays first const i...": [
+      [
+        "client/src/utils/htmlTemplatePDF.ts",
+        23
+      ],
+      [
+        "client/src/utils/scaledDailyTemplate.ts",
+        21
+      ],
+      [
+        "src/utils/htmlTemplatePDF.ts",
+        23
+      ]
+    ],
+    "export function drawDailyHeader(pdf: jsPDF, selectedDate: Date, events: CalendarEvent[], pageNumber:...": [
+      [
+        "client/src/utils/htmlTemplatePDF.ts",
+        276
+      ],
+      [
+        "src/utils/htmlTemplatePDF.ts",
+        276
+      ]
+    ],
+    "function drawHeader(pdf: jsPDF, weekStartDate: Date, weekEndDate: Date, events: CalendarEvent[]): vo...": [
+      [
+        "client/src/utils/htmlTemplatePDF.ts",
+        527
+      ],
+      [
+        "src/utils/htmlTemplatePDF.ts",
+        494
+      ]
+    ],
+    "function drawCalendarGrid(pdf: jsPDF, weekStartDate: Date, events: CalendarEvent[]): void { const { ...": [
+      [
+        "client/src/utils/htmlTemplatePDF.ts",
+        789
+      ],
+      [
+        "src/utils/htmlTemplatePDF.ts",
+        721
+      ]
+    ],
+    "function drawRemarkableDailyAppointments(pdf: jsPDF, selectedDate: Date, events: CalendarEvent[], gr...": [
+      [
+        "client/src/utils/htmlTemplatePDF.ts",
+        897
+      ],
+      [
+        "src/utils/htmlTemplatePDF.ts",
+        829
+      ]
+    ],
+    "function cleanEventTitle(title: string | undefined): string { if (!title) return 'Untitled Event'; l...": [
+      [
+        "client/src/utils/htmlTemplatePDF.ts",
+        1585
+      ],
+      [
+        "src/utils/htmlTemplatePDF.ts",
+        1501
+      ]
+    ],
+    "function drawRemarkableDailyAppointments_old(pdf: jsPDF, selectedDate: Date, events: CalendarEvent[]...": [
+      [
+        "client/src/utils/htmlTemplatePDF.ts",
+        1604
+      ],
+      [
+        "src/utils/htmlTemplatePDF.ts",
+        1520
+      ]
+    ],
+    "function Router() { return ( <Switch> <Route path=\"/\" component={Planner} /> <Route component={NotFo...": [
+      [
+        "client/src/App.tsx",
+        11
+      ],
+      [
+        "src/App.tsx",
+        11
+      ]
+    ],
+    "function App() { const handleError = (error: Error, errorInfo: string) => { // Log error to console ...": [
+      [
+        "client/src/App.tsx",
+        20
+      ],
+      [
+        "src/App.tsx",
+        20
+      ]
+    ],
+    "function MinimalApp() { return <div>Hello World</div>; } const container = document.getElementById(\"...": [
+      [
+        "client/src/main-minimal.tsx",
+        3
+      ],
+      [
+        "src/main-minimal.tsx",
+        3
+      ]
+    ],
+    "export function DateRangeInfo() { const startDate = new Date(2024, 0, 1); const endDate = new Date(2...": [
+      [
+        "client/src/components/DateRangeInfo.tsx",
+        5
+      ],
+      [
+        "src/components/DateRangeInfo.tsx",
+        5
+      ]
+    ],
+    "function Badge({ className, variant, ...props }: BadgeProps) { return ( <div className={cn(badgeVari...": [
+      [
+        "client/src/components/ui/badge.tsx",
+        30
+      ],
+      [
+        "src/components/ui/badge.tsx",
+        30
+      ]
+    ],
+    "function Calendar({ className, classNames, showOutsideDays = true, ...props }: CalendarProps) { retu...": [
+      [
+        "client/src/components/ui/calendar.tsx",
+        10
+      ],
+      [
+        "src/components/ui/calendar.tsx",
+        10
+      ]
+    ],
+    "function useCarousel() { const context = React.useContext(CarouselContext) if (!context) { throw new...": [
+      [
+        "client/src/components/ui/carousel.tsx",
+        33
+      ],
+      [
+        "src/components/ui/carousel.tsx",
+        33
+      ]
+    ],
+    "function useChart() { const context = React.useContext(ChartContext) if (!context) { throw new Error...": [
+      [
+        "client/src/components/ui/chart.tsx",
+        27
+      ],
+      [
+        "src/components/ui/chart.tsx",
+        27
+      ]
+    ],
+    "function getPayloadConfigFromPayload( config: ChartConfig, payload: unknown, key: string ) { if (typ...": [
+      [
+        "client/src/components/ui/chart.tsx",
+        320
+      ],
+      [
+        "src/components/ui/chart.tsx",
+        320
+      ]
+    ],
+    "function MenubarMenu({ ...props }: React.ComponentProps<typeof MenubarPrimitive.Menu>) { return <Men...": [
+      [
+        "client/src/components/ui/menubar.tsx",
+        9
+      ],
+      [
+        "src/components/ui/menubar.tsx",
+        9
+      ]
+    ],
+    "function MenubarGroup({ ...props }: React.ComponentProps<typeof MenubarPrimitive.Group>) { return <M...": [
+      [
+        "client/src/components/ui/menubar.tsx",
+        15
+      ],
+      [
+        "src/components/ui/menubar.tsx",
+        15
+      ]
+    ],
+    "function MenubarPortal({ ...props }: React.ComponentProps<typeof MenubarPrimitive.Portal>) { return ...": [
+      [
+        "client/src/components/ui/menubar.tsx",
+        21
+      ],
+      [
+        "src/components/ui/menubar.tsx",
+        21
+      ]
+    ],
+    "function MenubarRadioGroup({ ...props }: React.ComponentProps<typeof MenubarPrimitive.RadioGroup>) {...": [
+      [
+        "client/src/components/ui/menubar.tsx",
+        27
+      ],
+      [
+        "src/components/ui/menubar.tsx",
+        27
+      ]
+    ],
+    "function MenubarSub({ ...props }: React.ComponentProps<typeof MenubarPrimitive.Sub>) { return <Menub...": [
+      [
+        "client/src/components/ui/menubar.tsx",
+        33
+      ],
+      [
+        "src/components/ui/menubar.tsx",
+        33
+      ]
+    ],
+    "function useSidebar() { const context = React.useContext(SidebarContext) if (!context) { throw new E...": [
+      [
+        "client/src/components/ui/sidebar.tsx",
+        45
+      ],
+      [
+        "src/components/ui/sidebar.tsx",
+        45
+      ]
+    ],
+    "function Skeleton({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) { return ( <div cla...": [
+      [
+        "client/src/components/ui/skeleton.tsx",
+        3
+      ],
+      [
+        "src/components/ui/skeleton.tsx",
+        3
+      ]
+    ],
+    "export function Toaster() { const { toasts } = useToast() return ( <ToastProvider> {toasts.map(funct...": [
+      [
+        "client/src/components/ui/toaster.tsx",
+        11
+      ],
+      [
+        "src/components/ui/toaster.tsx",
+        11
+      ]
+    ],
+    "export function AuthAuditSystem() { const [auditResults, setAuditResults] = useState<ComprehensiveAu...": [
+      [
+        "client/src/components/sidebar/AuthAuditSystem.tsx",
+        28
+      ],
+      [
+        "src/components/sidebar/AuthAuditSystem.tsx",
+        28
+      ]
+    ],
+    "export function useIsMobile() { const [isMobile, setIsMobile] = React.useState<boolean | undefined>(...": [
+      [
+        "client/src/hooks/use-mobile.tsx",
+        5
+      ],
+      [
+        "src/hooks/use-mobile.tsx",
+        5
+      ]
+    ],
+    "async function runAuthenticationVerification() { console.log('\ud83e\uddea Authentication Improvements Verifica...": [
+      [
+        "browser-auth-test.js",
+        6
+      ],
+      [
+        "test-auth-improvements.js",
+        6
+      ]
+    ]
+  },
+  "recommendations": [
+    "Add comprehensive error handling for fetch calls and promises",
+    "Fix API endpoint mismatches between frontend and backend",
+    "Refactor duplicate code into reusable functions",
+    "Break down complex files into smaller modules"
+  ]
+}
