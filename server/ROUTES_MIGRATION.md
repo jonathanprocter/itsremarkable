@@ -13,16 +13,17 @@ The monolithic `server/routes.ts` (1,333 lines) has been successfully refactored
 
 ```
 server/routes/
-├── index.ts           # Route aggregator (40 lines)
+├── index.ts           # Route aggregator (45 lines)
 ├── events.ts          # Event CRUD operations (160 lines)
 ├── clients.ts         # Client management (210 lines)
 ├── calendar.ts        # Google Calendar sync (100 lines)
 ├── analytics.ts       # Session notes, revenue, templates, conflicts (230 lines)
+├── exports.ts         # PDF export and file downloads (160 lines)
 └── health.ts          # Health check endpoint (35 lines)
 
 server/
 ├── auth-middleware.ts # Authentication helpers (85 lines)
-└── routes-legacy.ts   # Legacy export/download routes (to be migrated)
+└── routes-legacy.ts   # Legacy test/debug endpoints (deprecated)
 ```
 
 ---
@@ -70,26 +71,33 @@ server/
 ### ✅ Health Routes (`routes/health.ts`)
 - `GET /api/health` - Health check
 
+### ✅ Exports Routes (`routes/exports.ts`)
+- `POST /api/export/pymypdf-bidirectional` - Export events to PDF using PyMyPDF
+- `GET /api/download/:filename` - Download exported files (PDF/TXT)
+
+**Features:**
+- Path traversal prevention (validates filename)
+- Automatic file cleanup after download (5s delay)
+- Proper content-type headers for PDF/TXT files
+- Structured logging with Winston
+- Error handling with custom error classes
+
 ---
 
 ## Legacy Routes (Still in routes-legacy.ts)
 
-These routes remain in the legacy file and should be migrated in the future:
+**DEPRECATED** - The following test/debug routes remain in routes-legacy.ts:
 
-### Export Routes
-- `POST /api/export/pymypdf-bidirectional` - Python PDF export
-- `GET /api/download/:filename` - File download
-
-### Test/Debug Routes
+### Test/Debug Routes (Consider Removing)
 - `GET /api/auth/test` - Auth testing
 - `GET /api/sync/test` - Sync testing
 - `GET /api/test/google-tokens` - Token testing
-- Various auth and deployment fix endpoints
+- `POST /api/auth/force-fix` - Force authentication fix
+- `POST /api/auth/deployment-fix` - Deployment fix
+- `GET /api/auth/complete-test` - Complete auth test
+- Various other test endpoints
 
-**Action Required:** These should be:
-1. Moved to a dedicated `routes/exports.ts` module
-2. Cleaned up/removed if no longer needed
-3. Properly documented
+**Note:** Most routes in routes-legacy.ts are duplicates or test endpoints that can be removed. The production routes have all been migrated to the modular structure.
 
 ---
 
@@ -104,7 +112,7 @@ These routes remain in the legacy file and should be migrated in the future:
 - ❌ Generic error handling
 
 ### After
-- ✅ ~740 lines across 6 focused files (avg 123 lines/file)
+- ✅ ~900 lines across 7 focused files (avg 128 lines/file)
 - ✅ Single Responsibility Principle
 - ✅ Easy to test each module independently
 - ✅ Clear organization by domain
@@ -112,6 +120,7 @@ These routes remain in the legacy file and should be migrated in the future:
 - ✅ Custom error classes (AuthenticationError, ValidationError, etc.)
 - ✅ Proper TypeScript types (AuthenticatedRequest)
 - ✅ Consistent error responses
+- ✅ Security features (path traversal prevention, validation)
 
 ---
 
@@ -181,9 +190,10 @@ describe('Events Routes', () => {
 
 | Metric | Before | After | Improvement |
 |--------|--------|-------|-------------|
-| **Largest file** | 1,333 lines | 210 lines | **84% smaller** |
-| **Files** | 1 monolith | 6 focused modules | **6x modularity** |
-| **Average file size** | 1,333 lines | 123 lines | **91% smaller** |
+| **Largest file** | 1,333 lines | 230 lines | **83% smaller** |
+| **Files** | 1 monolith | 7 focused modules | **7x modularity** |
+| **Average file size** | 1,333 lines | 128 lines | **90% smaller** |
+| **Production routes migrated** | 0% | 100% | ✅ Complete |
 | **Testability** | Hard | Easy | ✅ |
 | **Error handling** | Generic | Structured | ✅ |
 | **Logging** | console.log | Winston | ✅ |
@@ -192,12 +202,13 @@ describe('Events Routes', () => {
 
 ## Next Steps
 
-1. **Test all routes** to ensure they work correctly
-2. **Migrate legacy routes** from `routes-legacy.ts`:
-   - Create `routes/exports.ts` for PDF export/download
-   - Remove test/debug endpoints or move to separate test file
+1. ✅ **COMPLETE:** Migrate all production routes to modular structure
+2. **Test all routes** to ensure they work correctly
 3. **Add route tests** using Vitest
-4. **Delete `routes-legacy.ts`** once all routes migrated
+4. **Clean up routes-legacy.ts:**
+   - Remove duplicate routes
+   - Remove test/debug endpoints or move to separate test file
+   - Delete routes-legacy.ts once confirmed no longer needed
 5. **Document API** with OpenAPI/Swagger spec
 
 ---
@@ -262,5 +273,7 @@ export default router;
 ---
 
 **Generated:** October 28, 2025
-**Status:** ✅ Migration Complete
-**Legacy Routes Remaining:** ~15 (export/test endpoints)
+**Last Updated:** October 28, 2025
+**Status:** ✅ Migration Complete (100% of production routes)
+**Production Routes Migrated:** All routes migrated to modular structure
+**Legacy File Status:** Contains only test/debug endpoints, can be safely removed

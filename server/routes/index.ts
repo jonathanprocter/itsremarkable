@@ -5,6 +5,7 @@ import healthRouter from './health';
 import clientsRouter from './clients';
 import calendarRouter from './calendar';
 import analyticsRouter from './analytics';
+import exportsRouter from './exports';
 import clientRoutes from '../clientRoutes';
 import { addMinimalOAuthRoutes } from '../minimal-oauth';
 import { logger } from '../logger';
@@ -28,12 +29,13 @@ export async function registerRoutes(app: Express) {
   app.use('/api/clients', clientsRouter);
   app.use('/api/calendar', calendarRouter);
   app.use('/api', analyticsRouter); // Includes session-notes, revenue, templates, conflicts
+  app.use('/api', exportsRouter); // Export and download endpoints
   app.use('/api/health', healthRouter);
   app.use('/api', clientRoutes); // Legacy client routes (clientRoutes.ts)
 
   logger.info('All routes registered successfully');
   logger.debug('Route modules loaded', {
-    modules: ['events', 'clients', 'calendar', 'analytics', 'health'],
+    modules: ['events', 'clients', 'calendar', 'analytics', 'exports', 'health'],
   });
 
   return server;
