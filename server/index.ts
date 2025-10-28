@@ -2,14 +2,15 @@ import express, { type Request, Response, NextFunction } from "express";
 import session from "express-session";
 import passport from "passport";
 import helmet from "helmet";
-import { registerRoutes } from "./routes";
+import { registerRoutes } from "./routes/index";
 import { setupVite, serveStatic, log } from "./vite";
 import { pool } from "./db";
 import ConnectPgSimple from "connect-pg-simple";
 import http from "http";
-import { initializeMinimalOAuth, addMinimalOAuthRoutes } from "./minimal-oauth";
+import { initializeMinimalOAuth } from "./minimal-oauth";
 import { env } from "./config";
 import { logger, logStartup, logShutdown, logSession, requestLoggerMiddleware } from "./logger";
+import { AppError } from "./errors";
 
 const app = express();
 
@@ -104,19 +105,38 @@ app.use((req, res, next) => {
     logger.info('Routes registered successfully');
 
     // Global error handler
-  app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-    const status = err.status || err.statusCode || 500;
+  app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
+    // Handle AppError instances
+    if (err instanceof AppError) {
+      logger.error('Application error', {
+        code: err.code,
+        statusCode: err.statusCode,
+        message: err.message,
+        details: err.details,
+      });
+
+      if (!res.headersSent) {
+        res.status(err.statusCode).json(err.toJSON());
+      }
+      return;
+    }
+
+    // Handle unexpected errors
+    const status = (err as any).status || (err as any).statusCode || 500;
     const message = err.message || "Internal Server Error";
 
-    logger.error('Server error', {
+    logger.error('Unexpected server error', {
       error: message,
       status,
-      stack: err.stack
+      stack: err.stack,
     });
 
     // Only send response if headers haven't been sent yet
     if (!res.headersSent) {
-      res.status(status).json({ message });
+      res.status(status).json({
+        error: message,
+        code: 'INTERNAL_ERROR',
+      });
     }
   });
 
