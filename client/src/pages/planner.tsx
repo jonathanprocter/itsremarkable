@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
 import { useTabTransitions } from '@/hooks/useTabTransitions';
@@ -30,25 +30,25 @@ import {
 } from '@/components/planner';
 
 // Import export utilities (these remain as they are complex domain logic)
-import { exportExactGridPDF } from '@/utils/exactGridPDFExport';
-import { exportDailyToPDF } from '@/utils/dailyPDFExport';
-import { exportWeeklyPackage } from '@/utils/weeklyPackageExport';
+// import { exportExactGridPDF } from '@/utils/exactGridPDFExport';
+// import { exportDailyToPDF } from '@/utils/dailyPDFExport';
+// import { exportWeeklyPackage } from '@/utils/weeklyPackageExport';
 import { exportBidirectionalWeeklyPackage } from '@/utils/bidirectionalWeeklyPackage';
 import { exportDynamicDailyPlannerPDF } from '@/utils/dynamicDailyPlannerPDF';
-import { exportTrulyPixelPerfectWeeklyPDF } from '@/utils/trulyPixelPerfectExport';
-import { exportExactWeeklySpec } from '@/utils/exactWeeklySpecExport';
-import { exportExactWeeklyPackage } from '@/utils/exactWeeklyPackageExport';
+// import { exportTrulyPixelPerfectWeeklyPDF } from '@/utils/trulyPixelPerfectExport';
+// import { exportExactWeeklySpec } from '@/utils/exactWeeklySpecExport';
+// import { exportExactWeeklyPackage } from '@/utils/exactWeeklyPackageExport';
 import { export100PercentPixelPerfectPDF } from '@/utils/pixelPerfectPDFExport';
 import { exportEnhancedWeeklyPDF } from '@/utils/enhancedWeeklyPDFExport';
-import { exportEnhancedDailyPDF } from '@/utils/enhancedDailyPDFExport';
-import { exportEnhancedWeeklyPackage } from '@/utils/enhancedWeeklyPackageExport';
+// import { exportEnhancedDailyPDF } from '@/utils/enhancedDailyPDFExport';
+// import { exportEnhancedWeeklyPackage } from '@/utils/enhancedWeeklyPackageExport';
 import { exportHtmlTemplateDailyPDF } from '@/utils/htmlTemplateDailyExport';
 import { exportHTMLTemplatePerfect } from '@/utils/htmlTemplatePerfectExport';
 import { exportPerfectDailyCalendarPDF } from '@/utils/perfectDailyCalendarPDF';
 import { exportIsolatedCalendarPDF } from '@/utils/isolatedCalendarPDF';
 import { runIsolatedCalendarAudit } from '@/utils/isolatedCalendarAudit';
 import { exportBrowserReplicaPDF } from '@/utils/browserReplicaPDF';
-import { pixelPerfectAuditSystem } from '@/utils/pixelPerfectAuditSystem';
+// import { pixelPerfectAuditSystem } from '@/utils/pixelPerfectAuditSystem';
 
 /**
  * Planner Component (Refactored)
@@ -69,7 +69,7 @@ export default function Planner() {
   const [viewMode, setViewMode] = useState<ViewMode>('weekly');
 
   // Custom hooks
-  const { user, isAuthenticated, handleOAuthLogin, handleLogout } =
+  const { user, handleOAuthLogin, handleLogout } =
     usePlannerAuth();
 
   const {
@@ -77,9 +77,6 @@ export default function Planner() {
     filteredEvents,
     isLoading: eventsLoading,
     refetch: refetchEvents,
-    filters,
-    setFilters,
-    toggleFilter,
     eventStats,
   } = usePlannerEvents();
 
@@ -212,7 +209,12 @@ export default function Planner() {
 
       switch (exportType) {
         case 'enhanced-weekly':
-          await exportEnhancedWeeklyPDF(selectedDate, allEvents);
+          // Calculate week start and end dates for enhanced weekly export
+          const enhancedWeekStart = new Date(selectedDate);
+          enhancedWeekStart.setDate(selectedDate.getDate() - selectedDate.getDay());
+          const enhancedWeekEnd = new Date(enhancedWeekStart);
+          enhancedWeekEnd.setDate(enhancedWeekStart.getDate() + 6);
+          await exportEnhancedWeeklyPDF(allEvents, enhancedWeekStart, enhancedWeekEnd);
           break;
         case 'bidirectional-weekly':
           // Calculate week start and end dates for bidirectional export
@@ -226,13 +228,13 @@ export default function Planner() {
           await exportDynamicDailyPlannerPDF(new Date(), allEvents);
           break;
         case 'perfect-daily':
-          await exportPerfectDailyCalendarPDF(selectedDate, allEvents);
+          await exportPerfectDailyCalendarPDF({ selectedDate, events: allEvents });
           break;
         case 'isolated-calendar':
-          await exportIsolatedCalendarPDF(selectedDate, allEvents);
+          await exportIsolatedCalendarPDF({ selectedDate, events: allEvents });
           break;
         case 'browser-replica':
-          await exportBrowserReplicaPDF(selectedDate, allEvents);
+          await exportBrowserReplicaPDF(allEvents, selectedDate);
           break;
         case 'html-template-daily':
           await exportHtmlTemplateDailyPDF(selectedDate, allEvents);
@@ -241,7 +243,12 @@ export default function Planner() {
           await exportHTMLTemplatePerfect(selectedDate, allEvents);
           break;
         case 'new-pixel-perfect-daily':
-          await export100PercentPixelPerfectPDF(selectedDate, allEvents);
+          // Calculate week start and end dates for pixel perfect export
+          const pixelWeekStart = new Date(selectedDate);
+          pixelWeekStart.setDate(selectedDate.getDate() - selectedDate.getDay());
+          const pixelWeekEnd = new Date(pixelWeekStart);
+          pixelWeekEnd.setDate(pixelWeekStart.getDate() + 6);
+          await export100PercentPixelPerfectPDF(pixelWeekStart, pixelWeekEnd, allEvents);
           break;
         default:
           throw new Error(`Unknown export type: ${exportType}`);
