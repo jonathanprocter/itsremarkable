@@ -19,10 +19,6 @@ externalPort = 80
 localPort = 37579
 externalPort = 3001
 
-[[ports]]
-localPort = 42401
-externalPort = 3000
-
 [workflows]
 runButton = "Restart with Fixes"
 

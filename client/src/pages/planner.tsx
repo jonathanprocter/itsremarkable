@@ -214,6 +214,14 @@ export default function Planner() {
         case 'enhanced-weekly':
           await exportEnhancedWeeklyPDF(selectedDate, allEvents);
           break;
+        case 'bidirectional-weekly':
+          // Calculate week start and end dates for bidirectional export
+          const weekStart = new Date(selectedDate);
+          weekStart.setDate(selectedDate.getDate() - selectedDate.getDay());
+          const weekEnd = new Date(weekStart);
+          weekEnd.setDate(weekStart.getDate() + 6);
+          await exportBidirectionalWeeklyPackage(weekStart, weekEnd, allEvents);
+          break;
         case 'dynamic-daily':
           await exportDynamicDailyPlannerPDF(new Date(), allEvents);
           break;
