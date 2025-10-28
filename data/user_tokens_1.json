@@ -1,0 +1,13 @@
+{
+  "userId": "1",
+  "tokens": {
+    "access_token": "ya29.a0ATi6K2uFR7rhuMGOafv26regrjGhIlGZ7Nc2Xwx2nXWoTsc2egP6OTfMZBWuu15VcfxifBRq-1JQsk5-gwW7k9fyjm6ZeAAqeIMrkLkm0g0OMkUy32kjcFNQ2ojH1paTyMb2gwVsKZZXRBUqKgFYfALDYvCVYgW-TADLnUZJjO2yQjUyuUoleL_UMhQTX4fOW31xDWYaCgYKAW4SARISFQHGX2MiHxKcXsa9Gj-Ileyy3P3djw0206",
+    "refresh_token": "1//05-282v0TgtpiCgYIARAAGAUSNwF-L9Ir6cGqEzm0-OXecdrBudjvFzRkU8PdDuIG89c6iAC_F7gp7kStmAsTDTdTtLxir1Lnydk",
+    "scope": "https://www.googleapis.com/auth/calendar.readonly https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile openid",
+    "token_type": "Bearer",
+    "id_token": "eyJhbGciOiJSUzI1NiIsImtpZCI6Ijg4NDg5MjEyMmUyOTM5ZmQxZjMxMzc1YjJiMzYzZWM4MTU3MjNiYmIiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhenAiOiI4Mzk5NjcwNzgyMjUtaGQwbmE1azRjMmUybGdpZDVybzA0Nm50dHUzMzc1Y2cuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJhdWQiOiI4Mzk5NjcwNzgyMjUtaGQwbmE1azRjMmUybGdpZDVybzA0Nm50dHUzMzc1Y2cuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJzdWIiOiIxMTY2MTA2MzMzNzUxOTU4NTU1NzQiLCJlbWFpbCI6ImpvbmF0aGFuLnByb2N0ZXJAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImF0X2hhc2giOiJ4MU4zZ2NRWTBRR0NaNDczOEl4NnN3IiwibmFtZSI6IkpvbmF0aGFuIFByb2N0ZXIiLCJwaWN0dXJlIjoiaHR0cHM6Ly9saDMuZ29vZ2xldXNlcmNvbnRlbnQuY29tL2EvQUNnOG9jTEFsaGlFVWpkUlR1aEpGVHAwY0NvcW5Ib0pVU0lNN05aeHM5aVcyQUlGNUVzc285dHA9czk2LWMiLCJnaXZlbl9uYW1lIjoiSm9uYXRoYW4iLCJmYW1pbHlfbmFtZSI6IlByb2N0ZXIiLCJpYXQiOjE3NjE1ODk5MDgsImV4cCI6MTc2MTU5MzUwOH0.L_QjNCvdh2rIijqvRlLh5SnAqOHMYSQXEHwIRnyAhvqcw2a3ZiwvmLHjrSRRO3ueLpLfGdMDCMYkfgiSivrGVCnC3O8STmfy13pqFaAyPFCrTrGbOui9htaUmWKNZsIEF6DqsH4_kDuc0z915ebT1vyKej0T7LyAFDVPGUPnmpvmQ4_cog4U8UVrcfpX3uEF6B2pElRyQcNVd4r4ln0aLdJ7DvrRmoaru_bBvtWNlwwddgldcwCR6kNfjYUmbTxobuXxX-As1Eeo9KYEWZHs8_3MmERA7K2Fh0dqSALsF-DgkCvpaMTpHPL2GBBDQNegEnRK1baqvP0R_fxa4u3MPQ",
+    "refresh_token_expires_in": 604799,
+    "expiry_date": 1761593507281
+  },
+  "savedAt": "2025-10-27T14:31:48.283-04:00"
+}
