@@ -1,7 +1,5 @@
 import { useState } from 'react';
 import { generateTimeSlots, getEventDurationInSlots, isEventInTimeSlot } from '../../utils/timeSlots';
-import { formatDateShort } from '../../utils/dateUtils';
-import { cleanEventTitle } from '../../utils/textCleaner';
 import { wrapText } from '../../utils/textWrappers';
 import { CalendarEvent, CalendarDay } from '../../types/calendar';
 import { cn } from '@/lib/utils';
@@ -64,12 +62,12 @@ export const WeeklyCalendarGrid = ({
     setDropZone({ date, time: `${timeSlot.hour.toString().padStart(2, '0')}:${timeSlot.minute.toString().padStart(2, '0')}` });
   };
 
-  const handleDragLeave = (e: React.DragEvent) => {
+  const handleDragLeave = () => {
     // Clear drop zone when leaving
     setDropZone(null);
   };
 
-  const handleDragEnd = (e: React.DragEvent) => {
+  const handleDragEnd = () => {
     // Clear drag state
     setDraggedEventId(null);
     setDropZone(null);
@@ -109,16 +107,13 @@ export const WeeklyCalendarGrid = ({
 
       const eventDate = startTime;
 
-      // Check if backend marked it as all-day
-      const isMarkedAllDay = (event as any).isAllDay;
-
       // Check if event is all-day by looking at duration and time patterns
       const duration = endTime.getTime() - startTime.getTime();
       const hours = duration / (1000 * 60 * 60);
       const startHour = startTime.getHours();
       const startMinute = startTime.getMinutes();
       const isFullDay = startHour === 0 && startMinute === 0 && (hours === 24 || hours % 24 === 0);
-      const isAllDayEvent = isMarkedAllDay || isFullDay || hours >= 20;
+      const isAllDayEvent = isFullDay || hours >= 20;
 
       if (!isAllDayEvent) return false;
 
@@ -146,13 +141,12 @@ export const WeeklyCalendarGrid = ({
       const eventDate = startTime;
 
       // Filter out all-day events from time slots
-      const isMarkedAllDay = (event as any).isAllDay;
       const duration = endTime.getTime() - startTime.getTime();
       const hours = duration / (1000 * 60 * 60);
       const startHour = startTime.getHours();
       const startMinute = startTime.getMinutes();
       const isFullDay = startHour === 0 && startMinute === 0 && (hours === 24 || hours % 24 === 0);
-      const isAllDayEvent = isMarkedAllDay || isFullDay || hours >= 20;
+      const isAllDayEvent = isFullDay || hours >= 20;
 
       // Skip all-day events
       if (isAllDayEvent) return false;
@@ -349,8 +343,6 @@ export const WeeklyCalendarGrid = ({
                   if (!isFirstSlot) return null;
 
                   const eventSourceClass = getEventSourceClass(event);
-                  const isSimplePractice = eventSourceClass.includes('simplepractice');
-                  const isGoogle = eventSourceClass.includes('google');
 
                   // Calculate appointment height based on exact duration
                   const eventStart = event.startTime instanceof Date ? event.startTime : new Date(event.startTime);
