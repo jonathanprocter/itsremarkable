@@ -2,8 +2,8 @@
 import { google } from 'googleapis';
 import { OAuth2Client } from 'google-auth-library';
 import { db } from './db';
-import { users } from '@shared/schema';
-import { eq } from 'drizzle-orm';
+import { users, oauthTokens } from '@shared/schema';
+import { eq, and } from 'drizzle-orm';
 import fs from 'fs/promises';
 import path from 'path';
 
@@ -90,43 +90,87 @@ export class GoogleOAuthManager {
     }
   }
 
-  // ===== 4. Token Storage (File-based with DB fallback) =====
+  // ===== 4. Token Storage (Database-based) =====
   private async saveUserTokens(userId: string, tokens: UserTokens): Promise<void> {
     try {
-      // Create data directory if it doesn't exist
-      const dataDir = path.join(process.cwd(), 'data');
-      try {
-        await fs.mkdir(dataDir, { recursive: true });
-      } catch (error) {
-        // Directory might already exist
+      // Check if tokens already exist for this user and provider
+      const existingToken = await db
+        .select()
+        .from(oauthTokens)
+        .where(
+          and(
+            eq(oauthTokens.userId, parseInt(userId)),
+            eq(oauthTokens.provider, 'google')
+          )
+        )
+        .limit(1);
+
+      const tokenData = {
+        userId: parseInt(userId),
+        provider: 'google',
+        accessToken: tokens.access_token,
+        refreshToken: tokens.refresh_token || null,
+        tokenType: tokens.token_type || 'Bearer',
+        expiresAt: tokens.expiry_date ? new Date(tokens.expiry_date) : null,
+        scope: tokens.scope || this.SCOPES.join(' '),
+        updatedAt: new Date(),
+      };
+
+      if (existingToken.length > 0) {
+        // Update existing tokens
+        await db
+          .update(oauthTokens)
+          .set(tokenData)
+          .where(
+            and(
+              eq(oauthTokens.userId, parseInt(userId)),
+              eq(oauthTokens.provider, 'google')
+            )
+          );
+      } else {
+        // Insert new tokens
+        await db.insert(oauthTokens).values({
+          ...tokenData,
+          createdAt: new Date(),
+        });
       }
 
-      // Save to file
-      const tokenPath = path.join(dataDir, `user_tokens_${userId}.json`);
-      await fs.writeFile(tokenPath, JSON.stringify({
-        userId,
-        tokens,
-        savedAt: new Date().toISOString()
-      }, null, 2));
-
-      console.log(`✅ Tokens saved for user ${userId}`);
+      console.log(`✅ Tokens saved to database for user ${userId}`);
     } catch (error) {
       console.error(`❌ Failed to save tokens for user ${userId}:`, error);
       throw error;
     }
   }
 
-  // ===== 5. Token Retrieval (No Dev Token Fallbacks!) =====
+  // ===== 5. Token Retrieval (From Database) =====
   private async getUserTokens(userId: string): Promise<UserTokens | null> {
     try {
-      const dataDir = path.join(process.cwd(), 'data');
-      const tokenPath = path.join(dataDir, `user_tokens_${userId}.json`);
+      const result = await db
+        .select()
+        .from(oauthTokens)
+        .where(
+          and(
+            eq(oauthTokens.userId, parseInt(userId)),
+            eq(oauthTokens.provider, 'google')
+          )
+        )
+        .limit(1);
       
-      const data = await fs.readFile(tokenPath, 'utf8');
-      const { tokens } = JSON.parse(data);
-      return tokens;
+      if (result.length === 0) {
+        console.log(`No tokens found in database for user ${userId}`);
+        return null;
+      }
+
+      const token = result[0];
+      return {
+        access_token: token.accessToken,
+        refresh_token: token.refreshToken || '',
+        expiry_date: token.expiresAt ? new Date(token.expiresAt).getTime() : undefined,
+        token_type: token.tokenType || 'Bearer',
+        scope: token.scope || this.SCOPES.join(' '),
+      };
     } catch (error) {
-      console.log(`No tokens found for user ${userId}`);
+      console.error(`Failed to retrieve tokens for user ${userId}:`, error);
       return null;
     }
   }
@@ -176,12 +220,18 @@ export class GoogleOAuthManager {
   // ===== 7. Clear Invalid Tokens =====
   private async clearUserTokens(userId: string): Promise<void> {
     try {
-      const dataDir = path.join(process.cwd(), 'data');
-      const tokenPath = path.join(dataDir, `user_tokens_${userId}.json`);
-      await fs.unlink(tokenPath);
-      console.log(`🗑️ Cleared invalid tokens for user ${userId}`);
+      await db
+        .delete(oauthTokens)
+        .where(
+          and(
+            eq(oauthTokens.userId, parseInt(userId)),
+            eq(oauthTokens.provider, 'google')
+          )
+        );
+      console.log(`🗑️ Cleared invalid tokens from database for user ${userId}`);
     } catch (error) {
-      // File might not exist, that's fine
+      console.error(`Failed to clear tokens for user ${userId}:`, error);
+      // Continue even if deletion fails
     }
   }
 
