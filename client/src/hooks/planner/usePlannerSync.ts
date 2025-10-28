@@ -1,6 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
-import { Button } from '@/components/ui/button';
 
 export interface UsePlannerSyncReturn {
   syncCalendar: () => void;
@@ -60,17 +59,8 @@ export function usePlannerSync(onSyncSuccess?: () => void): UsePlannerSyncReturn
       if (error.message?.includes('Authentication required')) {
         toast({
           title: 'Authentication Required',
-          description: 'Google OAuth tokens have expired. Please re-authenticate.',
+          description: 'Google OAuth tokens have expired. Please click "Re-authenticate Google" to continue.',
           variant: 'destructive',
-          action: (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => (window.location.href = '/api/auth/google')}
-            >
-              Re-authenticate
-            </Button>
-          ),
         });
       } else {
         toast({
