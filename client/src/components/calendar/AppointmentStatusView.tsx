@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
 import { CalendarEvent } from '@/types/calendar';
 import { AppointmentStatusModal } from './AppointmentStatusModal';
-import { 
-  getAppointmentStatusStyles, 
-  getStatusBadgeInfo, 
+import {
+  getAppointmentStatusStyles,
+  getStatusBadgeInfo,
   shouldShowStrikethrough,
   isAppointmentEvent,
-  getAppointmentStatusLabel 
+  getAppointmentStatusLabel
 } from '@/utils/appointmentStatusUtils';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
+import { isSameDayEST, formatTime24EST } from '@/utils/timezoneUtils';
 
 interface AppointmentStatusViewProps {
   events: CalendarEvent[];
@@ -22,12 +23,9 @@ export function AppointmentStatusView({ events, selectedDate, onEventClick }: Ap
   const [modalOpen, setModalOpen] = useState(false);
 
   // Filter events for the selected date and appointments only
+  // Use EST-aware date comparison to avoid timezone issues
   const appointmentEvents = events.filter(event => {
-    const eventDate = new Date(event.startTime);
-    const selectedDateOnly = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate());
-    const eventDateOnly = new Date(eventDate.getFullYear(), eventDate.getMonth(), eventDate.getDate());
-    
-    return eventDateOnly.getTime() === selectedDateOnly.getTime() && isAppointmentEvent(event);
+    return isSameDayEST(event.startTime, selectedDate) && isAppointmentEvent(event);
   }).sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
 
   const handleEventClick = (event: CalendarEvent) => {
@@ -37,15 +35,12 @@ export function AppointmentStatusView({ events, selectedDate, onEventClick }: Ap
   };
 
   const formatTime = (date: Date) => {
-    return date.toLocaleTimeString('en-US', { 
-      hour: '2-digit', 
-      minute: '2-digit',
-      hour12: false 
-    });
+    // Use EST timezone-aware formatting with 24-hour format
+    return formatTime24EST(date);
   };
 
   const formatTimeRange = (startTime: Date, endTime: Date) => {
-    return `${formatTime(startTime)}-${formatTime(endTime)}`;
+    return `${formatTime24EST(startTime)}-${formatTime24EST(endTime)}`;
   };
 
   if (appointmentEvents.length === 0) {

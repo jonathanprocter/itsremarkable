@@ -6,6 +6,7 @@ import { TaskAutomation } from "../workflow/TaskAutomation";
 import { FocusTimeOptimizer } from "./FocusTimeOptimizer";
 import { CrossPlatformSync } from "../integrations/CrossPlatformSync";
 import { Brain, Calendar, Gauge, Link, Target, TrendingUp, Workflow, Zap } from "lucide-react";
+import { isTodayEST, nowEST, toEST } from "@/utils/timezoneUtils";
 
 interface ProductivityHubProps {
   events: any[];
@@ -15,17 +16,16 @@ interface ProductivityHubProps {
 export function ProductivityHub({ events, selectedDate }: ProductivityHubProps) {
   const [activeTab, setActiveTab] = useState("overview");
 
-  // Calculate productivity metrics
+  // Calculate productivity metrics using EST timezone
   const calculateProductivityMetrics = () => {
-    const today = new Date();
+    const today = nowEST();
     const todayEvents = events.filter(event => {
-      const eventDate = new Date(event.startTime);
-      return eventDate.toDateString() === today.toDateString();
+      return isTodayEST(event.startTime);
     });
 
     const thisWeekEvents = events.filter(event => {
-      const eventDate = new Date(event.startTime);
-      const weekStart = new Date(today);
+      const eventDate = toEST(event.startTime);
+      const weekStart = toEST(today);
       weekStart.setDate(today.getDate() - today.getDay());
       const weekEnd = new Date(weekStart);
       weekEnd.setDate(weekStart.getDate() + 6);

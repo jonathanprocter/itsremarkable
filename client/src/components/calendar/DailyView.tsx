@@ -6,6 +6,7 @@ import { formatDate } from '../../utils/dateUtils';
 import { generateTimeSlots } from '../../utils/timeSlots';
 import { CalendarEvent } from '../../types/calendar';
 import { getLocationDisplay } from '../../utils/locationUtils';
+import { isSameDayEST, formatTime24EST } from '../../utils/timezoneUtils';
 
 interface DailyViewProps {
   selectedDate: Date;
@@ -56,9 +57,8 @@ export const DailyView = ({
         return false;
       }
 
-      const selectedDateString = selectedDate.toDateString();
-      const eventDateString = startTime.toDateString();
-      const matches = eventDateString === selectedDateString;
+      // Use EST-aware date comparison to avoid timezone issues
+      const matches = isSameDayEST(startTime, selectedDate);
 
       // Debug specific events
       if (event.title.toLowerCase().includes('calvin') || event.title.toLowerCase().includes('hill')) {
@@ -391,7 +391,8 @@ export const DailyView = ({
       return 'Invalid time';
     }
 
-    return `${start.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })}-${end.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })}`;
+    // Use EST timezone-aware formatting with 24-hour format
+    return `${formatTime24EST(start)}-${formatTime24EST(end)}`;
   };
 
   const getDayName = (date: Date) => {

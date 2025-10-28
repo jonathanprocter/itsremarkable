@@ -2,6 +2,7 @@ import React from 'react';
 import { CalendarEvent } from '../types/calendar';
 import { Button } from './ui/button';
 import { Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
+import { isSameDayEST, nowEST } from '../utils/timezoneUtils';
 
 interface PerfectDailyCalendarProps {
   selectedDate: Date;
@@ -16,10 +17,9 @@ export const PerfectDailyCalendar: React.FC<PerfectDailyCalendarProps> = ({
   onDateChange,
   onExportPDF
 }) => {
-  // Filter events for the selected date
+  // Filter events for the selected date using EST-aware comparison
   const dayEvents = events.filter(event => {
-    const eventDate = new Date(event.startTime);
-    return eventDate.toDateString() === selectedDate.toDateString();
+    return isSameDayEST(event.startTime, selectedDate);
   });
 
   // Generate time slots (every 30 minutes from 6:00 to 23:30)
@@ -79,7 +79,8 @@ export const PerfectDailyCalendar: React.FC<PerfectDailyCalendarProps> = ({
 
   const goToToday = () => {
     if (onDateChange) {
-      onDateChange(new Date());
+      // Use EST for "today" to ensure consistency
+      onDateChange(nowEST());
     }
   };
 

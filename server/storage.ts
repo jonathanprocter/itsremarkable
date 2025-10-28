@@ -1,14 +1,14 @@
-import { 
-  users, events, dailyNotes, statusChangeLogs, clients, sessionNotes, 
+import {
+  users, events, dailyNotes, statusChangeLogs, clients, sessionNotes,
   scheduleConflicts, locationSettings, revenueTracking, appointmentTemplates,
-  type User, type InsertUser, type Event, type InsertEvent, type DailyNote, 
+  type User, type InsertUser, type Event, type InsertEvent, type DailyNote,
   type InsertDailyNote, type StatusChangeLog, type InsertStatusChangeLog,
   type Client, type InsertClient, type SessionNote, type InsertSessionNote,
   type ScheduleConflict, type LocationSetting, type InsertLocationSetting,
   type RevenueRecord, type AppointmentTemplate, type InsertAppointmentTemplate
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, and, desc, gte, lte, or, sql } from "drizzle-orm";
+import { eq, and, desc, gte, lte, or, sql, ne } from "drizzle-orm";
 
 export interface IStorage {
   // User management
@@ -22,6 +22,8 @@ export interface IStorage {
 
   // Event management
   getEvents(userId: number): Promise<Event[]>;
+  getEventsByUserId(userId: number): Promise<Event[]>;
+  getEventsByDateRange(userId: number, startDate: string, endDate: string): Promise<Event[]>;
   createEvent(event: InsertEvent): Promise<Event>;
   upsertEvent(userId: number, sourceId: string, event: Partial<Event>): Promise<Event>;
   updateEvent(eventId: number, updates: Partial<Event>): Promise<Event | null>;
@@ -206,6 +208,27 @@ export class DatabaseStorage implements IStorage {
     return await db.select().from(events).where(eq(events.userId, userId));
   }
 
+  async getEventsByUserId(userId: number): Promise<Event[]> {
+    return await db.select().from(events).where(eq(events.userId, userId));
+  }
+
+  async getEventsByDateRange(userId: number, startDate: string, endDate: string): Promise<Event[]> {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    return await db
+      .select()
+      .from(events)
+      .where(
+        and(
+          eq(events.userId, userId),
+          gte(events.startTime, start),
+          lte(events.startTime, end)
+        )
+      )
+      .orderBy(events.startTime);
+  }
+
   async createEvent(event: InsertEvent): Promise<Event> {
     const [newEvent] = await db
       .insert(events)
@@ -340,7 +363,16 @@ export class DatabaseStorage implements IStorage {
 
   // Client management methods
   async getClients(userId: number): Promise<Client[]> {
-    return await db.select().from(clients).where(eq(clients.userId, userId));
+    // Exclude archived clients
+    return await db
+      .select()
+      .from(clients)
+      .where(
+        and(
+          eq(clients.userId, userId),
+          ne(clients.status, 'archived')
+        )
+      );
   }
 
   async getClient(clientId: number, userId: number): Promise<Client | undefined> {
