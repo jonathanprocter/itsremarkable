@@ -3,6 +3,7 @@ import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import { Express, Request, Response } from 'express';
 import { env } from './config';
 import { logger, logAuth, logOAuth } from './logger';
+import { oauthManager } from './GoogleOAuthManager';
 
 // Enhanced domain detection with multiple fallbacks
 function getCurrentDomain(): string {
@@ -76,12 +77,6 @@ export function initializeMinimalOAuth() {
       const userEmail = profile.emails?.[0]?.value;
       logAuth('OAuth authentication successful', { email: userEmail });
 
-      // Store tokens in environment - TODO: Move to database in Phase 1.5
-      process.env.GOOGLE_ACCESS_TOKEN = accessToken;
-      if (refreshToken) {
-        process.env.GOOGLE_REFRESH_TOKEN = refreshToken;
-      }
-
       // Get or create user in database
       const { storage } = await import('./storage');
       const googleId = profile.id;
@@ -107,6 +102,18 @@ export function initializeMinimalOAuth() {
         logAuth('Found existing Google user', { userId: user.id, email });
       }
 
+      // Save tokens to database using GoogleOAuthManager
+      const tokens = {
+        access_token: accessToken,
+        refresh_token: refreshToken || '',
+        expiry_date: Date.now() + (60 * 60 * 1000), // Default to 1 hour expiry
+        token_type: 'Bearer',
+        scope: 'profile email https://www.googleapis.com/auth/calendar'
+      };
+      
+      // Save tokens using the OAuth manager (which now uses the database)
+      await oauthManager.saveUserTokens(user.id.toString(), tokens);
+      
       const userObject = {
         id: user.id, // Use actual database ID
         email: user.email,
@@ -259,51 +266,27 @@ export function addMinimalOAuthRoutes(app: Express) {
     });
   });
 
-  // Auth status with proper token validation
+  // Auth status with proper token validation using database
   app.get('/api/auth/status', async (req: Request, res: Response) => {
     const hasSessionUser = !!(req.session && req.session.user);
     const hasUserData = !!req.user;
+    const userId = req.user?.id || req.session?.user?.id;
     
-    // Test if tokens are actually valid by making a simple API call
+    // Check tokens from database using GoogleOAuthManager
     let hasValidTokens = false;
-    if (process.env.GOOGLE_ACCESS_TOKEN) {
+    if (userId) {
       try {
-        const { google } = await import('googleapis');
-        const oauth2Client = new google.auth.OAuth2();
-        oauth2Client.setCredentials({ access_token: process.env.GOOGLE_ACCESS_TOKEN });
+        const authStatus = await oauthManager.checkAuthStatus(userId.toString());
+        hasValidTokens = authStatus.hasValidTokens;
         
-        // Test token with a simple API call
-        const oauth2 = google.oauth2({ version: 'v2', auth: oauth2Client });
-        await oauth2.userinfo.get();
-        hasValidTokens = true;
-        console.log('✅ Google tokens validated successfully');
-      } catch (error) {
-        console.log('❌ Google tokens invalid or expired:', error.message);
-        hasValidTokens = false;
-        
-        // Try to refresh if we have a refresh token
-        if (process.env.GOOGLE_REFRESH_TOKEN) {
-          try {
-            console.log('🔄 Attempting token refresh...');
-            const { google } = await import('googleapis');
-            const oauth2Client = new google.auth.OAuth2(
-              process.env.GOOGLE_CLIENT_ID,
-              process.env.GOOGLE_CLIENT_SECRET
-            );
-            oauth2Client.setCredentials({
-              refresh_token: process.env.GOOGLE_REFRESH_TOKEN
-            });
-            
-            const { credentials } = await oauth2Client.refreshAccessToken();
-            if (credentials.access_token) {
-              process.env.GOOGLE_ACCESS_TOKEN = credentials.access_token;
-              hasValidTokens = true;
-              console.log('✅ Token refresh successful');
-            }
-          } catch (refreshError) {
-            console.log('❌ Token refresh failed:', refreshError.message);
-          }
+        if (hasValidTokens) {
+          console.log('✅ Google tokens validated successfully from database');
+        } else {
+          console.log('❌ Google tokens invalid or missing in database');
         }
+      } catch (error) {
+        console.log('❌ Error checking auth status:', error.message);
+        hasValidTokens = false;
       }
     }
 
@@ -312,7 +295,7 @@ export function addMinimalOAuthRoutes(app: Express) {
       hasValidTokens,
       hasSessionUser,
       sessionExists: !!req.session,
-      userId: req.user?.id || req.session?.user?.id || 'none'
+      userId: userId || 'none'
     });
 
     // Consider user authenticated if they have session data or user object

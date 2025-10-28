@@ -91,7 +91,7 @@ export class GoogleOAuthManager {
   }
 
   // ===== 4. Token Storage (Database-based) =====
-  private async saveUserTokens(userId: string, tokens: UserTokens): Promise<void> {
+  public async saveUserTokens(userId: string, tokens: UserTokens): Promise<void> {
     try {
       // Check if tokens already exist for this user and provider
       const existingToken = await db

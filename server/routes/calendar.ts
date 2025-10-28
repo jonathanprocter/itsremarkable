@@ -3,6 +3,7 @@ import { requireAuth, AuthenticatedRequest } from '../auth-middleware';
 import { logger, logIntegration } from '../logger';
 import { AuthenticationError, ExternalServiceError } from '../errors';
 import { env } from '../config';
+import { oauthManager } from '../GoogleOAuthManager';
 
 const router = Router();
 
@@ -16,34 +17,40 @@ router.get('/sync', requireAuth, async (req: AuthenticatedRequest, res) => {
 
     logIntegration('google-calendar', 'Calendar sync requested', { userId });
 
-    // Check for access token
-    // TODO: Replace with database token lookup once Phase 1.5 is complete
-    const accessToken = process.env.GOOGLE_ACCESS_TOKEN;
+    // Check authentication status using GoogleOAuthManager
+    const authStatus = await oauthManager.checkAuthStatus(userId.toString());
 
-    if (!accessToken) {
-      throw new AuthenticationError('Google Calendar access token not found', {
+    if (!authStatus.hasValidTokens) {
+      throw new AuthenticationError('Google Calendar access token not found or invalid', {
         needsAuth: true,
         authUrl: '/api/auth/google',
       });
     }
 
-    // Verify token is valid by making a test request
+    // Sync calendar events using the authenticated oauth client
     try {
-      const { google } = await import('googleapis');
-      const oauth2Client = new google.auth.OAuth2();
-      oauth2Client.setCredentials({ access_token: accessToken });
+      const events = await oauthManager.syncCalendarEvents(userId.toString(), 'primary');
 
-      const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
-      await calendar.calendarList.list({ maxResults: 1 });
-
-      logIntegration('google-calendar', 'Calendar sync successful', { userId });
+      logIntegration('google-calendar', 'Calendar sync successful', {
+        userId,
+        eventCount: events.length,
+      });
 
       res.json({
         success: true,
         hasToken: true,
         message: 'Google Calendar access verified',
+        events,
       });
     } catch (error) {
+      if (error.message.includes('AUTHENTICATION_REQUIRED') || 
+          error.message.includes('REAUTHENTICATION_REQUIRED')) {
+        throw new AuthenticationError('Google Calendar authentication expired', {
+          needsAuth: true,
+          authUrl: '/api/auth/google',
+        });
+      }
+
       logger.error('Google Calendar API error', {
         error: error instanceof Error ? error.message : String(error),
       });
