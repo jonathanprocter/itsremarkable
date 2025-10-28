@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { storage } from '../storage';
-import { requireAuth, optionalAuth, AuthenticatedRequest } from '../auth-middleware';
+import { requireAuth, AuthenticatedRequest } from '../auth-middleware';
 import { logger } from '../logger';
 import { ValidationError, DatabaseError } from '../errors';
 
@@ -14,9 +14,9 @@ const router = Router();
  * GET /api/session-notes
  * Get session notes, optionally filtered by client
  */
-router.get('/session-notes', optionalAuth, async (req: AuthenticatedRequest, res) => {
+router.get('/session-notes', requireAuth, async (req: AuthenticatedRequest, res) => {
   try {
-    const userId = req.authenticatedUserId || 1; // TODO: Remove fallback
+    const userId = req.authenticatedUserId!;
     const clientId = req.query.clientId ? parseInt(req.query.clientId as string) : undefined;
 
     logger.debug('Fetching session notes', { userId, clientId });
@@ -34,9 +34,9 @@ router.get('/session-notes', optionalAuth, async (req: AuthenticatedRequest, res
  * POST /api/session-notes
  * Create a new session note
  */
-router.post('/session-notes', optionalAuth, async (req: AuthenticatedRequest, res) => {
+router.post('/session-notes', requireAuth, async (req: AuthenticatedRequest, res) => {
   try {
-    const userId = req.authenticatedUserId || 1; // TODO: Remove fallback
+    const userId = req.authenticatedUserId!;
     const noteData = req.body;
 
     // Validation
@@ -77,9 +77,9 @@ router.post('/session-notes', optionalAuth, async (req: AuthenticatedRequest, re
  * GET /api/revenue/analytics
  * Get revenue analytics and statistics
  */
-router.get('/revenue/analytics', optionalAuth, async (req: AuthenticatedRequest, res) => {
+router.get('/revenue/analytics', requireAuth, async (req: AuthenticatedRequest, res) => {
   try {
-    const userId = req.authenticatedUserId || 1; // TODO: Remove fallback
+    const userId = req.authenticatedUserId!;
 
     logger.debug('Fetching revenue analytics', { userId });
 
@@ -103,9 +103,9 @@ router.get('/revenue/analytics', optionalAuth, async (req: AuthenticatedRequest,
  * GET /api/revenue
  * Get revenue records
  */
-router.get('/revenue', optionalAuth, async (req: AuthenticatedRequest, res) => {
+router.get('/revenue', requireAuth, async (req: AuthenticatedRequest, res) => {
   try {
-    const userId = req.authenticatedUserId || 1; // TODO: Remove fallback
+    const userId = req.authenticatedUserId!;
 
     logger.debug('Fetching revenue records', { userId });
 
@@ -125,9 +125,9 @@ router.get('/revenue', optionalAuth, async (req: AuthenticatedRequest, res) => {
  * GET /api/templates
  * Get all appointment templates for user
  */
-router.get('/templates', optionalAuth, async (req: AuthenticatedRequest, res) => {
+router.get('/templates', requireAuth, async (req: AuthenticatedRequest, res) => {
   try {
-    const userId = req.authenticatedUserId || 1; // TODO: Remove fallback
+    const userId = req.authenticatedUserId!;
 
     logger.debug('Fetching appointment templates', { userId });
 
@@ -143,9 +143,9 @@ router.get('/templates', optionalAuth, async (req: AuthenticatedRequest, res) =>
  * POST /api/templates
  * Create a new appointment template
  */
-router.post('/templates', optionalAuth, async (req: AuthenticatedRequest, res) => {
+router.post('/templates', requireAuth, async (req: AuthenticatedRequest, res) => {
   try {
-    const userId = req.authenticatedUserId || 1; // TODO: Remove fallback
+    const userId = req.authenticatedUserId!;
     const templateData = req.body;
 
     // Validation
@@ -217,9 +217,9 @@ router.post('/conflicts/detect', requireAuth, async (req: AuthenticatedRequest, 
  * GET /api/conflicts
  * Get all schedule conflicts for user
  */
-router.get('/conflicts', optionalAuth, async (req: AuthenticatedRequest, res) => {
+router.get('/conflicts', requireAuth, async (req: AuthenticatedRequest, res) => {
   try {
-    const userId = req.authenticatedUserId || 1; // TODO: Remove fallback
+    const userId = req.authenticatedUserId!;
     const resolved = req.query.resolved === 'true';
 
     logger.debug('Fetching schedule conflicts', { userId, resolved });
@@ -237,7 +237,7 @@ router.get('/conflicts', optionalAuth, async (req: AuthenticatedRequest, res) =>
  * PUT /api/conflicts/:id/resolve
  * Mark a conflict as resolved
  */
-router.put('/conflicts/:id/resolve', optionalAuth, async (req: AuthenticatedRequest, res) => {
+router.put('/conflicts/:id/resolve', requireAuth, async (req: AuthenticatedRequest, res) => {
   try {
     const conflictId = parseInt(req.params.id);
 

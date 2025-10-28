@@ -38,12 +38,6 @@ export function getAuthenticatedUserId(req: Request): number | null {
     }
   }
 
-  // Development fallback (TEMPORARY - remove in production)
-  if (req.session?.isAuthenticated && env.NODE_ENV === 'development') {
-    logger.warn('Development fallback: using default user ID 2');
-    return 2;
-  }
-
   logger.debug('No valid user ID found');
   return null;
 }

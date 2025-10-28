@@ -110,12 +110,16 @@ router.get('/download/:filename', async (req, res) => {
     const fs = await import('fs');
     const path = await import('path');
 
-    // Security: Validate filename to prevent path traversal
-    if (filename.includes('..') || filename.includes('/') || filename.includes('\\')) {
-      throw new ValidationError('Invalid filename');
-    }
+    // Security: Robust path validation to prevent path traversal
+    // Use whitelist approach: resolve path and verify it stays within allowed directory
+    const allowedDir = path.default.resolve(process.cwd());
+    const filePath = path.default.resolve(process.cwd(), filename);
 
-    const filePath = path.default.join(process.cwd(), filename);
+    // Ensure the resolved path is within the allowed directory
+    if (!filePath.startsWith(allowedDir + path.default.sep) && filePath !== allowedDir) {
+      logger.warn('Path traversal attempt detected', { filename, filePath, allowedDir });
+      throw new ValidationError('Invalid filename - path traversal not allowed');
+    }
 
     if (!fs.default.existsSync(filePath)) {
       logger.warn('File not found for download', { filename, filePath });
@@ -138,17 +142,13 @@ router.get('/download/:filename', async (req, res) => {
         if (!res.headersSent) {
           res.status(500).json({ error: 'Download failed' });
         }
-      } else {
-        // Clean up file after download
-        setTimeout(() => {
-          try {
-            fs.default.unlinkSync(filePath);
-            logger.debug('Cleaned up downloaded file', { filename });
-          } catch (cleanupError) {
-            logger.error('File cleanup error', { error: cleanupError, filename });
-          }
-        }, 5000); // Delete after 5 seconds
       }
+
+      // Clean up file immediately after download completes (success or failure)
+      // Using async to avoid blocking, but errors are logged
+      fs.promises.unlink(filePath)
+        .then(() => logger.debug('Cleaned up downloaded file', { filename }))
+        .catch((cleanupError) => logger.error('File cleanup error', { error: cleanupError, filename }));
     });
   } catch (error) {
     logger.error('Download endpoint error', { error });

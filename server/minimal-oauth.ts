@@ -167,54 +167,6 @@ export function initializeMinimalOAuth() {
 export function addMinimalOAuthRoutes(app: Express) {
   console.log('🛣️ Adding minimal OAuth routes...');
 
-  // Session restoration endpoint (for fixing broken sessions)
-  app.post('/api/auth/restore-session', async (req: Request, res: Response) => {
-    try {
-      console.log('🔧 Attempting session restoration...');
-      
-      // Try to find user by stored tokens
-      if (process.env.GOOGLE_ACCESS_TOKEN) {
-        console.log('📡 Found stored access token, attempting user lookup...');
-        
-        // Use storage to find user - this will need to be implemented
-        const { storage } = await import('./storage');
-        const users = await storage.getAllUsers();
-        
-        if (users && users.length > 0) {
-          const user = users[0]; // For now, take the first user
-          console.log('👤 Found user for session restoration:', user.id);
-          
-          // Manually restore session
-          req.session.user = user;
-          req.session.userId = user.id;
-          req.session.isAuthenticated = true;
-          
-          // Ensure session is saved
-          req.session.save((saveErr) => {
-            if (saveErr) {
-              console.error('Session save error:', saveErr);
-              return res.json({ success: false, error: 'Session save failed' });
-            }
-            
-            console.log('✅ Session restored successfully');
-            res.json({ 
-              success: true, 
-              message: 'Session restored',
-              user: { id: user.id, email: user.email, name: user.name }
-            });
-          });
-        } else {
-          res.json({ success: false, error: 'No users found' });
-        }
-      } else {
-        res.json({ success: false, error: 'No valid tokens found' });
-      }
-    } catch (error) {
-      console.error('Session restoration error:', error);
-      res.json({ success: false, error: error.message });
-    }
-  });
-
   // Start OAuth
   app.get('/api/auth/google', passport.authenticate('google'));
 

@@ -102,6 +102,20 @@ export async function syncGoogleCalendarEvents(req: any, startDate?: string, end
         const calendarEvents = events.data.items || [];
         syncResults.totalEvents += calendarEvents.length;
 
+        // OPTIMIZATION: Fetch all existing events once before the loop to avoid N+1 queries
+        const allExistingEvents = await getEventsByDateRange(
+          userId,
+          startDate || new Date().toISOString().split('T')[0],
+          endDate || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+        );
+
+        // Create a Map for O(1) lookups keyed by calendarId + title + startTime
+        const existingEventsMap = new Map();
+        for (const existingEvent of allExistingEvents) {
+          const key = `${existingEvent.calendarId}|${existingEvent.title}|${existingEvent.startTime?.toISOString()}`;
+          existingEventsMap.set(key, existingEvent);
+        }
+
         for (const event of calendarEvents) {
           if (!event.start || !event.end) continue;
 
@@ -121,18 +135,9 @@ export async function syncGoogleCalendarEvents(req: any, startDate?: string, end
           };
 
           try {
-            // Check if event already exists
-            const existingEvents = await getEventsByDateRange(
-              userId,
-              new Date(eventData.startTime),
-              new Date(eventData.endTime)
-            );
-
-            const existingEvent = existingEvents.find(e => 
-              e.calendarId === cal.id && 
-              e.title === eventData.title &&
-              e.startTime?.toISOString() === new Date(eventData.startTime).toISOString()
-            );
+            // Check if event already exists using O(1) Map lookup instead of database query
+            const lookupKey = `${cal.id}|${eventData.title}|${new Date(eventData.startTime).toISOString()}`;
+            const existingEvent = existingEventsMap.get(lookupKey);
 
             if (existingEvent) {
               // Update existing event
