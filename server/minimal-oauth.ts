@@ -1,56 +1,60 @@
 import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import { Express, Request, Response } from 'express';
+import { env } from './config';
+import { logger, logAuth, logOAuth } from './logger';
 
 // Enhanced domain detection with multiple fallbacks
 function getCurrentDomain(): string {
   // Try multiple environment variables for domain detection
-  const domains = process.env.REPLIT_DOMAINS;
-  const replId = process.env.REPL_ID;
-  const replitUrl = process.env.REPLIT_URL;
+  const domains = env.REPLIT_DOMAINS;
+  const replId = env.REPL_ID;
+  const replitUrl = env.REPLIT_URL;
 
-  console.log('🌐 Domain detection:', {
-    domains,
-    replId,
-    replitUrl,
-    nodeEnv: process.env.NODE_ENV
+  logger.debug('Domain detection', {
+    hasDomains: !!domains,
+    hasReplId: !!replId,
+    hasReplitUrl: !!replitUrl,
+    nodeEnv: env.NODE_ENV
   });
 
   // Try REPLIT_DOMAINS first
   if (domains) {
     const domain = `https://${domains.split(',')[0]}`;
-    console.log('✅ Using REPLIT_DOMAINS:', domain);
+    logger.info('Using REPLIT_DOMAINS for OAuth redirect', { domain });
     return domain;
   }
 
   // Try REPLIT_URL if available
   if (replitUrl) {
-    console.log('✅ Using REPLIT_URL:', replitUrl);
+    logger.info('Using REPLIT_URL for OAuth redirect', { url: replitUrl });
     return replitUrl;
   }
 
   // Fallback to current known domain
   const fallbackDomain = 'https://5a6f843f-53cb-48cf-8afc-05f223a337ff-00-3gvxznlnxvdl8.riker.replit.dev';
-  console.log('⚠️ Using fallback domain:', fallbackDomain);
+  logger.warn('Using fallback domain for OAuth redirect', { domain: fallbackDomain });
   return fallbackDomain;
 }
 
 // Initialize OAuth with minimal configuration
 export function initializeMinimalOAuth() {
-  console.log('🚀 Initializing minimal OAuth...');
+  logOAuth('Initializing OAuth configuration');
 
   // Clear any invalid tokens on startup
   if (process.env.GOOGLE_ACCESS_TOKEN) {
-    console.log('🧹 Clearing potentially invalid tokens from environment');
+    logger.warn('Clearing potentially invalid tokens from environment');
     delete process.env.GOOGLE_ACCESS_TOKEN;
     delete process.env.GOOGLE_REFRESH_TOKEN;
   }
 
   const redirectUri = `${getCurrentDomain()}/api/auth/callback`;
 
-  console.log('🔗 Redirect URI:', redirectUri);
-  console.log('🔑 Has Client ID:', !!process.env.GOOGLE_CLIENT_ID);
-  console.log('🔐 Has Client Secret:', !!process.env.GOOGLE_CLIENT_SECRET);
+  logOAuth('OAuth redirect URI configured', { redirectUri });
+  logger.debug('OAuth credentials present', {
+    hasClientId: !!env.GOOGLE_CLIENT_ID,
+    hasClientSecret: !!env.GOOGLE_CLIENT_SECRET
+  });
 
   // Clear existing strategies but preserve session support
   if (passport._strategies.google) {
@@ -63,15 +67,16 @@ export function initializeMinimalOAuth() {
 
   // Configure single Google strategy
   passport.use(new GoogleStrategy({
-    clientID: process.env.GOOGLE_CLIENT_ID!,
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    clientID: env.GOOGLE_CLIENT_ID,
+    clientSecret: env.GOOGLE_CLIENT_SECRET,
     callbackURL: redirectUri,
     scope: ['profile', 'email', 'https://www.googleapis.com/auth/calendar']
   }, async (accessToken: string, refreshToken: string, profile: any, done: any) => {
     try {
-      console.log('✅ OAuth success for:', profile.emails?.[0]?.value);
+      const userEmail = profile.emails?.[0]?.value;
+      logAuth('OAuth authentication successful', { email: userEmail });
 
-      // Store tokens in environment
+      // Store tokens in environment - TODO: Move to database in Phase 1.5
       process.env.GOOGLE_ACCESS_TOKEN = accessToken;
       if (refreshToken) {
         process.env.GOOGLE_REFRESH_TOKEN = refreshToken;
@@ -85,21 +90,21 @@ export function initializeMinimalOAuth() {
 
       // First try to find existing user by Google ID
       let user = await storage.getUserByGoogleId(googleId);
-      
+
       if (!user) {
         // Try to find by email
         const existingUser = await storage.getUserByUsername(email);
         if (existingUser) {
           // Update existing user with Google ID
           user = existingUser;
-          console.log('🔗 Linking existing user with Google ID');
+          logAuth('Linking existing user with Google account', { userId: user.id, email });
         } else {
           // Create new user
           user = await storage.createGoogleUser(googleId, email, name);
-          console.log('👤 Created new Google user with ID:', user.id);
+          logAuth('Created new Google user', { userId: user.id, email });
         }
       } else {
-        console.log('👤 Found existing Google user with ID:', user.id);
+        logAuth('Found existing Google user', { userId: user.id, email });
       }
 
       const userObject = {
@@ -110,43 +115,52 @@ export function initializeMinimalOAuth() {
         refreshToken: refreshToken
       };
 
-      console.log('🎯 Created user object:', { id: userObject.id, email: userObject.email, name: userObject.name, hasTokens: !!accessToken });
+      logAuth('User session created', {
+        userId: userObject.id,
+        email: userObject.email,
+        hasTokens: !!accessToken
+      });
       return done(null, userObject);
     } catch (error) {
-      console.error('❌ OAuth user creation/retrieval error:', error);
+      logger.error('OAuth user creation/retrieval error', {
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined
+      });
       return done(error, null);
     }
   }));
 
   // Enhanced serialization for better session persistence
   passport.serializeUser((user: any, done) => {
-    console.log('📝 Serializing user for session storage:', { id: user.id, email: user.email });
+    logger.debug('Serializing user for session', { userId: user.id });
     // Store only the user ID in the session for security and efficiency
     done(null, user.id);
   });
 
   passport.deserializeUser(async (userId: number, done) => {
     try {
-      console.log('🔍 Deserializing user ID from session:', userId);
-      
+      logger.debug('Deserializing user from session', { userId });
+
       // Retrieve full user data from database using stored ID
       const { storage } = await import('./storage');
       const user = await storage.getUserById(userId);
-      
+
       if (user) {
-        console.log('✅ User found in database:', { id: user.id, email: user.email });
+        logger.debug('User found in database', { userId: user.id });
         done(null, user);
       } else {
-        console.log('❌ User not found in database for ID:', userId);
+        logger.warn('User not found in database', { userId });
         done(null, false);
       }
     } catch (error) {
-      console.error('❌ User deserialization error:', error);
+      logger.error('User deserialization error', {
+        error: error instanceof Error ? error.message : String(error)
+      });
       done(error, null);
     }
   });
 
-  console.log('✅ Minimal OAuth configured');
+  logOAuth('OAuth configuration complete');
 }
 
 // Add minimal OAuth routes

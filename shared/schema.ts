@@ -25,6 +25,20 @@ export const users = pgTable("users", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// OAuth tokens table for secure token storage
+export const oauthTokens = pgTable("oauth_tokens", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  provider: text("provider").notNull(), // 'google', 'notion', etc.
+  accessToken: text("access_token").notNull(),
+  refreshToken: text("refresh_token"),
+  tokenType: text("token_type").default("Bearer"),
+  expiresAt: timestamp("expires_at"),
+  scope: text("scope"), // Space-separated scopes
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 export const events = pgTable("events", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").references(() => users.id),
@@ -243,7 +257,11 @@ export const insertStatusChangeLogSchema = createInsertSchema(statusChangeLogs).
   changedAt: true,
 });
 
-
+export const insertOAuthTokenSchema = createInsertSchema(oauthTokens).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
 
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
@@ -253,3 +271,5 @@ export type DailyNote = typeof dailyNotes.$inferSelect;
 export type InsertDailyNote = z.infer<typeof insertDailyNotesSchema>;
 export type StatusChangeLog = typeof statusChangeLogs.$inferSelect;
 export type InsertStatusChangeLog = z.infer<typeof insertStatusChangeLogSchema>;
+export type OAuthToken = typeof oauthTokens.$inferSelect;
+export type InsertOAuthToken = z.infer<typeof insertOAuthTokenSchema>;

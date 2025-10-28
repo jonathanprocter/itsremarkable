@@ -7,6 +7,8 @@ import { pool } from "./db";
 import ConnectPgSimple from "connect-pg-simple";
 import http from "http";
 import { initializeMinimalOAuth, addMinimalOAuthRoutes } from "./minimal-oauth";
+import { env } from "./config";
+import { logger, logStartup, logShutdown, logSession, requestLoggerMiddleware } from "./logger";
 
 const app = express();
 
@@ -22,7 +24,7 @@ const PgSession = ConnectPgSimple(session);
 
 // Session configuration with PostgreSQL store
 const sessionStore = new PgSession({
-  conString: process.env.DATABASE_URL!,
+  conString: env.DATABASE_URL,
   tableName: 'session',
   createTableIfMissing: true,
   pruneSessionInterval: 60 * 15, // Prune expired sessions every 15 minutes
@@ -32,31 +34,31 @@ const sessionStore = new PgSession({
 
 // Handle session store errors gracefully
 sessionStore.on('error', (err) => {
-  console.error('Session store error:', err);
+  logger.error('Session store error', { error: err.message, stack: err.stack });
   // Don't crash the server on session store errors
 });
 
 // Add connection error handling
 sessionStore.on('connect', () => {
-  console.log('✅ Session store connected to PostgreSQL');
+  logger.info('Session store connected to PostgreSQL');
 });
 
 sessionStore.on('disconnect', () => {
-  console.warn('⚠️ Session store disconnected from PostgreSQL');
+  logger.warn('Session store disconnected from PostgreSQL');
 });
 
 app.use(session({
   store: sessionStore,
-  secret: process.env.SESSION_SECRET || 'remarkable-planner-secret-key-2025',
+  secret: env.SESSION_SECRET,
   resave: false, // Don't save session if unmodified
   saveUninitialized: false, // Only save sessions when data is stored - prevents unnecessary sessions
   rolling: true, // Reset expiration on each request to keep active sessions alive
   name: 'remarkable.sid', // Use unique session name
   cookie: {
-    secure: false, // Must be false for HTTP in development
+    secure: env.NODE_ENV === 'production', // Secure cookies in production
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days for reasonable session length
     httpOnly: true, // Secure cookie - prevents XSS attacks
-    sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax', // More secure sameSite policy
+    sameSite: env.NODE_ENV === 'production' ? 'strict' : 'lax', // More secure sameSite policy
     path: '/', // Ensure cookie is sent for all paths
     domain: undefined // Let browser set domain automatically
   }
@@ -69,46 +71,18 @@ app.use(passport.session());
 // Initialize minimal OAuth
 initializeMinimalOAuth();
 
-app.use((req, res, next) => {
-  const start = Date.now();
-  const path = req.path;
-  let capturedJsonResponse: Record<string, any> | undefined = undefined;
-
-  const originalResJson = res.json;
-  res.json = function (bodyJson, ...args) {
-    capturedJsonResponse = bodyJson;
-    return originalResJson.apply(res, [bodyJson, ...args]);
-  };
-
-  res.on("finish", () => {
-    const duration = Date.now() - start;
-    if (path.startsWith("/api")) {
-      let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
-      if (capturedJsonResponse) {
-        logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
-      }
-
-      if (logLine.length > 80) {
-        logLine = logLine.slice(0, 79) + "…";
-      }
-
-      log(logLine);
-    }
-  });
-
-  next();
-});
+// Use winston request logging middleware
+app.use(requestLoggerMiddleware);
 
 // Session debugging and persistence middleware
 app.use((req, res, next) => {
-  console.log(`🔍 Session ID: ${req.sessionID}`);
-  console.log(`🔍 Session data:`, req.session);
+  logSession('Session activity', req.sessionID);
 
   // Ensure session is saved after each request
   const originalSend = res.send;
   res.send = function(data) {
     req.session.save((err) => {
-      if (err) console.error('Session save error:', err);
+      if (err) logger.error('Session save error', { error: err.message });
       originalSend.call(this, data);
     });
   };
@@ -118,16 +92,20 @@ app.use((req, res, next) => {
 
 (async () => {
   try {
-    console.log('Starting server setup...');
+    logStartup();
     const server = await registerRoutes(app);
-    console.log('Routes registered successfully');
+    logger.info('Routes registered successfully');
 
     // Global error handler
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
     const message = err.message || "Internal Server Error";
 
-    console.error('Server error:', err);
+    logger.error('Server error', {
+      error: message,
+      status,
+      stack: err.stack
+    });
 
     // Only send response if headers haven't been sent yet
     if (!res.headersSent) {
@@ -137,27 +115,28 @@ app.use((req, res, next) => {
 
   // Handle unhandled promise rejections
   process.on('unhandledRejection', (reason, promise) => {
-    console.error('Unhandled Rejection at:', promise, 'reason:', reason);
-    // Log additional context if available
-    if (reason instanceof Error) {
-      console.error('Stack trace:', reason.stack);
-    }
+    logger.error('Unhandled Rejection', {
+      reason: reason instanceof Error ? reason.message : String(reason),
+      stack: reason instanceof Error ? reason.stack : undefined
+    });
   });
 
   // Handle uncaught exceptions
   process.on('uncaughtException', (error) => {
-    console.error('Uncaught Exception:', error);
-    console.error('Stack trace:', error.stack);
+    logger.error('Uncaught Exception', {
+      error: error.message,
+      stack: error.stack
+    });
   });
 
   // CRITICAL: Ensure API routes are fully registered before Vite setup
   // to prevent frontend from intercepting OAuth callbacks
-  console.log('✅ All API routes registered, now setting up frontend...');
+  logger.info('All API routes registered, now setting up frontend');
 
   if (app.get("env") === "development") {
-    console.log('Setting up Vite (after API routes)...');
+    logger.info('Setting up Vite (after API routes)');
     await setupVite(app, server);
-    console.log('Vite setup complete');
+    logger.info('Vite setup complete');
   } else {
     serveStatic(app);
   }
@@ -165,25 +144,25 @@ app.use((req, res, next) => {
   // ALWAYS serve the app on port 5000
   // this serves both the API and the client.
   // It is the only port that is not firewalled.
-  const port = 5000;
+  const port = env.PORT;
 
   // Add error handling before listen
   server.on('error', (err: any) => {
-    console.error('Server error:', err);
+    logger.error('Server error', { error: err.message, code: err.code });
     if (err.code === 'EADDRINUSE') {
-      console.error(`Port ${port} is already in use`);
-      console.log('Please use the Clean Start workflow to kill existing processes');
+      logger.error(`Port ${port} is already in use`);
+      logger.info('Please use the Clean Start workflow to kill existing processes');
       process.exit(1);
     }
   });
 
   // Graceful shutdown
   const gracefulShutdown = () => {
-    console.log('Shutting down gracefully...');
+    logShutdown();
     server.close(() => {
-      console.log('HTTP server closed');
+      logger.info('HTTP server closed');
       pool.end(() => {
-        console.log('Database pool closed');
+        logger.info('Database pool closed');
         process.exit(0);
       });
     });
@@ -196,10 +175,11 @@ app.use((req, res, next) => {
   const startServer = () => {
     try {
       server.listen(port, "0.0.0.0", () => {
+        logger.info(`Server listening on port ${port}`);
         log(`serving on port ${port}`);
       });
     } catch (error) {
-      console.error('Failed to start server:', error);
+      logger.error('Failed to start server', { error });
       process.exit(1);
     }
   };
@@ -207,7 +187,7 @@ app.use((req, res, next) => {
   startServer();
 
   } catch (error) {
-    console.error('Server startup failed:', error);
+    logger.error('Server startup failed', { error });
     process.exit(1);
   }
 })();
