@@ -66,12 +66,14 @@ export function initializeMinimalOAuth() {
   passport._serializers = [];
   passport._deserializers = [];
 
-  // Configure single Google strategy
+  // Configure single Google strategy with proper refresh token configuration
   passport.use(new GoogleStrategy({
     clientID: env.GOOGLE_CLIENT_ID,
     clientSecret: env.GOOGLE_CLIENT_SECRET,
     callbackURL: redirectUri,
-    scope: ['profile', 'email', 'https://www.googleapis.com/auth/calendar']
+    scope: ['profile', 'email', 'https://www.googleapis.com/auth/calendar'],
+    accessType: 'offline',
+    prompt: 'consent',
   }, async (accessToken: string, refreshToken: string, profile: any, done: any) => {
     try {
       const userEmail = profile.emails?.[0]?.value;
@@ -102,6 +104,12 @@ export function initializeMinimalOAuth() {
         logAuth('Found existing Google user', { userId: user.id, email });
       }
 
+      // Validate we have a refresh token (required for persistent authentication)
+      if (!refreshToken) {
+        console.error('⚠️ No refresh token received from Google. User must grant offline access.');
+        // Still save the tokens but log the warning
+      }
+      
       // Save tokens to database using GoogleOAuthManager
       const tokens = {
         access_token: accessToken,
@@ -222,8 +230,12 @@ export function addMinimalOAuthRoutes(app: Express) {
     }
   });
 
-  // Start OAuth
-  app.get('/api/auth/google', passport.authenticate('google'));
+  // Start OAuth with proper refresh token request
+  app.get('/api/auth/google', passport.authenticate('google', {
+    accessType: 'offline',
+    prompt: 'consent',
+    scope: ['profile', 'email', 'https://www.googleapis.com/auth/calendar']
+  }));
 
   // OAuth callback with enhanced error handling
   app.get('/api/auth/callback', (req: Request, res: Response, next) => {
