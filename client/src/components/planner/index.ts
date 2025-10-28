@@ -20,3 +20,9 @@ export type { PlannerAppointmentsViewProps } from './PlannerAppointmentsView';
 
 export { PlannerExportView } from './PlannerExportView';
 export type { PlannerExportViewProps, ExportType } from './PlannerExportView';
+
+export { PlannerProductivityView } from './PlannerProductivityView';
+export type { PlannerProductivityViewProps } from './PlannerProductivityView';
+
+// Productivity sub-components
+export * from './productivity';
