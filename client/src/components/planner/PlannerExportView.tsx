@@ -5,6 +5,7 @@ import { CalendarEvent, CalendarDay } from '@/types/calendar';
 
 export type ExportType =
   | 'enhanced-weekly'
+  | 'bidirectional-weekly'
   | 'dynamic-daily'
   | 'perfect-daily'
   | 'isolated-calendar'
@@ -87,6 +88,23 @@ export function PlannerExportView({
         <p className="text-sm text-red-700 mt-2">
           Export PDF with forced statistics (12 appointments, 11.5h scheduled,
           52% free time) and debug logging
+        </p>
+      </div>
+
+      {/* 8-Page Bidirectional Weekly Export - Featured */}
+      <div className="border-l-4 border-blue-500 bg-blue-50 p-4 rounded mb-4">
+        <h4 className="font-medium text-blue-800 mb-2">
+          📚 Complete Weekly Package
+        </h4>
+        <Button
+          onClick={() => onExportPDF('bidirectional-weekly')}
+          className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white"
+        >
+          <Download className="h-4 w-4 mr-2" />
+          📖 8-Page Bidirectional Weekly Export
+        </Button>
+        <p className="text-sm text-blue-700 mt-2">
+          Complete weekly package with navigation: 1 weekly overview + 7 daily pages with bidirectional links
         </p>
       </div>
 
