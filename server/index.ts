@@ -1,6 +1,7 @@
 import express, { type Request, Response, NextFunction } from "express";
 import session from "express-session";
 import passport from "passport";
+import helmet from "helmet";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { pool } from "./db";
@@ -11,6 +12,12 @@ import { env } from "./config";
 import { logger, logStartup, logShutdown, logSession, requestLoggerMiddleware } from "./logger";
 
 const app = express();
+
+// Security headers
+app.use(helmet({
+  contentSecurityPolicy: env.NODE_ENV === 'production' ? undefined : false, // Disable in dev for Vite HMR
+  crossOriginEmbedderPolicy: false, // Allow embedding for OAuth flows
+}));
 
 // Trust proxy for proper session handling in production
 app.set('trust proxy', 1);
